@@ -1,0 +1,47 @@
+{
+  "count_in_file": 140,
+  "quotes": [
+    {
+      "decision": "`verify_claim_against_contract` is pure Python — stop- word filtering, Jaccard similarity, constraint-denial pattern detection. Returns `NLIGroundingScore` (Entailment / Contradiction / Neutral) with a `logical_meaning` string. No LLM inside.",
+      "id": "ADR-034",
+      "source": "Generic_Agentic_Validation_Code/3_development_documentation/architecture_decisions.md",
+      "title": "Tooled deterministic CoVe — no LLM in verification (inherits v1 ADR-006)"
+    },
+    {
+      "decision": "Every read-only data class uses `model_config = ConfigDict(frozen=True, extra=\"forbid\")`. Includes: VCDeps, VCDepsCompact, StaticEnterpriseContractBaselines, Tier1Result, Tier2Result, Tier3Result, Committee, every input model.",
+      "id": "ADR-039",
+      "source": "Generic_Agentic_Validation_Code/3_development_documentation/architecture_decisions.md",
+      "title": "`frozen=True` Pydantic config on all read-only data classes"
+    },
+    {
+      "decision": "`node_open_hitl` calls `langgraph.interrupt`. The caller (`run_validation_workflow`) returns the ValidationReport at the interrupt snapshot.",
+      "id": "ADR-042",
+      "source": "Generic_Agentic_Validation_Code/3_development_documentation/architecture_decisions.md",
+      "title": "LangGraph `interrupt/Command(resume=…)` for HITL pause/resume"
+    },
+    {
+      "decision": "Every test in `tests/` is hermetic: - `TestModel` for tests that just assert the agent ran and emitted a schema-valid output. - `FunctionModel(callable)` for tests that need to script specific tool-call sequences (e.g. ADR-051's parallel-fanout assertion).",
+      "id": "ADR-045",
+      "source": "Generic_Agentic_Validation_Code/3_development_documentation/architecture_decisions.md",
+      "title": "Hermetic tests via pydantic-ai `TestModel` / `FunctionModel`"
+    },
+    {
+      "decision": "Collect everything observability-related into one package, `validation_workflow.observability`, with a clean three-layer internal split: - `observability.events` — the contract.",
+      "id": "ADR-061",
+      "source": "Generic_Agentic_Validation_Code/3_development_documentation/architecture_decisions.md",
+      "title": "Observability abstraction: `validation_workflow.observability` is the single integration point"
+    },
+    {
+      "decision": "Wrap the Judge in two deterministic CoVe layers with a configurable retry-on-Contradiction loop (`pipeline/cove_loop.py`): 1.",
+      "id": "ADR-091",
+      "source": "Generic_Agentic_Validation_Code/3_development_documentation/architecture_decisions.md",
+      "title": "Two-layer CoVe with retry (the Judge weighs, the verifier filters)"
+    },
+    {
+      "decision": "All NI outbound is proposed by the machine, sent only after a reviewer confirms: - The engine stays IO-agnostic (CLAUDE.md rule 8): nodes COMPOSE drafts, they do not send.",
+      "id": "ADR-094",
+      "source": "Generic_Agentic_Validation_Code/3_development_documentation/architecture_decisions.md",
+      "title": "HITL-gated NI outbound: no agent emails the NI without a human"
+    }
+  ]
+}

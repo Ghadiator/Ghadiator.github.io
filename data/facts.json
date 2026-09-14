@@ -1,0 +1,108 @@
+{
+  "facts": [
+    {
+      "display": "140",
+      "id": "adr_count",
+      "label": "Architecture decision records",
+      "note": "Append-only. The highest number allocated is 165, so ~25 numbers are unused — the v1 archive holds the earliest records and a few numbers were skipped. README.md still says 63; that figure is stale.",
+      "source": "grep -cE '^## ADR-[0-9]+' Generic_Agentic_Validation_Code/3_development_documentation/architecture_decisions.md",
+      "unit": "ADRs",
+      "value": 140
+    },
+    {
+      "display": "1,528",
+      "id": "test_functions",
+      "label": "Test functions",
+      "note": "Counted by grep. Parametrised cases make the collected total higher — see tests_passing.",
+      "source": "grep -rhoE '^\\s*(async )?def test_' --include=*.py Generic_Agentic_Validation_Code --exclude-dir=_archive_v1 | wc -l",
+      "unit": "tests",
+      "value": 1528
+    },
+    {
+      "display": "1,588",
+      "id": "tests_passing",
+      "label": "Tests passing",
+      "note": "Observed 2026-08-14 on Python 3.12.13. The suite takes about two minutes, so it was run in ten chunks whose totals sum to exactly the 1,596 that --collect-only reports — that is what makes the coverage complete rather than merely large. The repository's prose says 1,593 passed; the measured split has five more skips.",
+      "source": "python -m pytest  (from Generic_Agentic_Validation_Code/)",
+      "unit": "passed, 8 skipped, 0 failed",
+      "value": 1588
+    },
+    {
+      "display": "0",
+      "id": "live_llm_calls",
+      "label": "Live model calls in the default test run",
+      "note": "pytest.ini pins addopts to -m \"not live\". Reaching a real provider requires opting in with the `live` marker, so the default run cannot touch one.",
+      "source": "grep -n 'addopts' Generic_Agentic_Validation_Code/pytest.ini",
+      "unit": "calls",
+      "value": 0
+    },
+    {
+      "display": "172",
+      "id": "test_files",
+      "label": "Test files",
+      "note": "Excludes the frozen v1 archive.",
+      "source": "find Generic_Agentic_Validation_Code -name 'test_*.py' -not -path '*_archive_v1*' | wc -l",
+      "unit": "files",
+      "value": 172
+    },
+    {
+      "display": "11",
+      "id": "rule_sections",
+      "label": "Rule sections in the ruleset",
+      "note": "Sections 1-11, plus the five meta-principles in section 0.",
+      "source": "grep -cE '^## [1-9][0-9]*\\. ' governance/GOVERNANCE_AS_CODE.md",
+      "unit": "sections",
+      "value": 11
+    },
+    {
+      "display": "42",
+      "id": "hermetic_scenarios",
+      "label": "Hermetic demo scenarios",
+      "note": "Runnable with no API key and no network. Six of them are replayed on this page.",
+      "source": "awk 'NR>=3198' Generic_Agentic_Validation_Code/validation_workflow/observability/dashboard/scenarios.py | grep -cE '^\\s{4}\"[a-z0-9_]+\":\\s*\\{'",
+      "unit": "scenarios",
+      "value": 42
+    },
+    {
+      "display": "20",
+      "id": "workflow_states",
+      "label": "Canonical workflow states",
+      "note": "Each is a validated model carrying its own allowable next states, so an illegal transition cannot be constructed.",
+      "source": "python -c \"from validation_workflow.step_7_8_validation.models.workflow_state import CANONICAL_STATES; print(len(CANONICAL_STATES))\"  # a grep counts 21: the class statement matches its own constructor",
+      "unit": "states",
+      "value": 20
+    },
+    {
+      "display": "5",
+      "id": "meta_principles",
+      "label": "Meta-principles",
+      "note": "Section 0 of the ruleset.",
+      "source": "governance/GOVERNANCE_AS_CODE.md section 0",
+      "unit": "principles",
+      "value": 5
+    }
+  ],
+  "generated_by": "site/scripts/export_site_data.py",
+  "headline_ids": [
+    "tests_passing",
+    "live_llm_calls",
+    "adr_count",
+    "rule_sections",
+    "hermetic_scenarios"
+  ],
+  "honesty_notes": [
+    "Every number above is produced by the command printed beside it.",
+    "The test count is a count of test functions in the tree, not a record of a passing run. This page does not claim the suite is green.",
+    "CI wall-clock time is not stated anywhere verifiable in the repository, so it is not shown."
+  ],
+  "pipeline_steps_shipped": {
+    "claim": "Steps 3-9 of the workflow are shipped as code modules.",
+    "modules": [
+      "step_3_4_email_monitoring",
+      "step_5_6_automated_reminders",
+      "step_7_8_validation",
+      "step_9_email_summarization"
+    ],
+    "source": "ls -d Generic_Agentic_Validation_Code/validation_workflow/step_*"
+  }
+}

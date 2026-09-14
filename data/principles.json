@@ -1,0 +1,40 @@
+{
+  "principles": [
+    {
+      "meaning": "the shape of every domain object is validated, so malformed state cannot exist",
+      "name": "Structure over trust",
+      "order": 1,
+      "short": "Structure over trust",
+      "slug": "structure"
+    },
+    {
+      "meaning": "every external dependency is swappable without a code change, so the deployed system is the reviewed system",
+      "name": "Config over hardcoding",
+      "order": 2,
+      "short": "Config over hardcoding",
+      "slug": "config"
+    },
+    {
+      "meaning": "every state transition is written to an append-only stream, so \"what did the agent decide, and why\" is always answerable",
+      "name": "Evidence over assertion",
+      "order": 3,
+      "short": "Evidence over assertion",
+      "slug": "evidence"
+    },
+    {
+      "meaning": "machines propose, a human confirms anything that leaves a durable mark",
+      "name": "Humans over automation for consequences",
+      "order": 4,
+      "short": "Humans over automation",
+      "slug": "humans"
+    },
+    {
+      "meaning": "the agent has a deterministic fallback, and the tests never touch a live model",
+      "name": "Determinism over hope",
+      "order": 5,
+      "short": "Determinism over hope",
+      "slug": "determinism"
+    }
+  ],
+  "source": "governance/GOVERNANCE_AS_CODE.md section 0"
+}

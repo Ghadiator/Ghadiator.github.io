@@ -1,0 +1,328 @@
+{
+  "events": [
+    {
+      "actor": "system",
+      "detail": "Country DE",
+      "kind": "workflow.start",
+      "label": "Run started — INDIVIDUAL_HEALTH submission, version 1",
+      "refs": [
+        "validation_workflow/orchestrator.py"
+      ],
+      "seq": 1,
+      "stage": "ingest",
+      "ts_rel": 1
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.start",
+      "label": "Tier-1 deterministic rules running",
+      "refs": [
+        "validation_workflow/step_7_8_validation/pipeline/tier1_deterministic.py"
+      ],
+      "seq": 2,
+      "stage": "tier1",
+      "ts_rel": 2
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A1 PASS — BMI identity (recomputed from height and weight)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 3,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 3
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A2 PASS — Age identity (recomputed at cover start)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 4,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 4
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A3 PASS — Deductible sanity (0 ≤ deductible < sum insured)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 5,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 5
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A4 PASS — Unit-scale sanity (height, weight, cigarettes, alcohol)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 6,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 6
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A5 PASS — Date sanity (birth < application ≤ cover start)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 7,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 7
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A6 PASS — Condition chronology (birth ≤ onset ≤ resolved ≤ application)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 8,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 8
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A7 PASS — Treatment consistency (ongoing implies unresolved)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 9,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 9
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A8 PASS — Code shape (ICD-10, ISCO-08, ISO-4217, ISO-3166)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 10,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 10
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A9 PASS — Non-negative monetary amounts",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 11,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 11
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A10 PASS — Disclosure–evidence coherence (hospitalisation needs a trail)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 12,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 12
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A11 PASS — Smoker consistency (cigarettes per day vs declared status)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 13,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 13
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A12 PASS — Risk-point arithmetic (total equals sum of components)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 14,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 14
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A13 PASS — History depth (declared count matches the record)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 15,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 15
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "tier1.rule",
+      "label": "A14 PASS — Disclosure notice recorded (VVG §19(5))",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 16,
+      "stage": "tier1",
+      "status": "pass",
+      "ts_rel": 16
+    },
+    {
+      "actor": "system",
+      "detail": "A15 (third-party consent): CLINIC-7 was obtained from a third party with no consent recorded for that issuer (VVG §213).",
+      "kind": "tier1.rule",
+      "label": "A15 FAIL — Third-party consent present (VVG §213)",
+      "refs": [
+        "governance/GOVERNANCE_AS_CODE.md 1"
+      ],
+      "seq": 17,
+      "stage": "tier1",
+      "status": "fail",
+      "ts_rel": 17
+    },
+    {
+      "actor": "system",
+      "detail": "0 violation(s) · None ms",
+      "kind": "tier1.result",
+      "label": "Tier-1 failed",
+      "refs": [
+        "validation_workflow/step_7_8_validation/pipeline/tier1_deterministic.py"
+      ],
+      "seq": 18,
+      "stage": "tier1",
+      "ts_rel": 18
+    },
+    {
+      "actor": "system",
+      "detail": "1 deterministic violation(s); no lookup, no model.",
+      "kind": "decision.routing",
+      "label": "Routing: route_to_rules_failed",
+      "refs": [
+        "validation_workflow/step_7_8_validation/pipeline/tier_router.py"
+      ],
+      "seq": 19,
+      "stage": "verdict",
+      "ts_rel": 19
+    },
+    {
+      "actor": "system",
+      "detail": "None ms of pipeline work",
+      "kind": "kpi.snapshot",
+      "label": "Tier path A_REJECT · None",
+      "refs": [
+        "Generic_Agentic_Validation_Code/3_development_documentation/STEP_7_8_data_flow_and_KPIs.md"
+      ],
+      "seq": 20,
+      "stage": "verdict",
+      "ts_rel": 20
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "workflow.terminal",
+      "label": "Terminal state: Rules_failed",
+      "refs": [],
+      "seq": 21,
+      "stage": "verdict",
+      "status": "terminal",
+      "ts_rel": 21
+    }
+  ],
+  "group": "Safety & governance",
+  "one_liner": "A third-party medical report with no recorded consent fails the case before a single risk factor is examined.",
+  "outcome": {
+    "committee_summary": null,
+    "human_resumed": false,
+    "models_invoked": false,
+    "reached_human_gate": false,
+    "terminal_state": "Rules_failed",
+    "tier_path": "A_REJECT"
+  },
+  "provenance": {
+    "derivation": "Captured by binding an event sink to the repository's own hermetic scenario and recording what the pipeline emitted. No event in this file was written by hand.",
+    "exported_event_count": 21,
+    "models_actually_used": [],
+    "raw_event_count": 21,
+    "scenario_key": "mra_missing_consent",
+    "source": "Generic_Agentic_Validation_Code/validation_workflow/observability/dashboard/scenarios.py",
+    "ts_rel_note": "ts_rel is the event's ordinal position in the trace, not a measured time. Wall-clock was deliberately not recorded so the export stays byte-stable across runs."
+  },
+  "slug": "mra_missing_consent",
+  "stages": [
+    {
+      "index": 1,
+      "key": "ingest",
+      "label": "Ingest"
+    },
+    {
+      "index": 2,
+      "key": "memory",
+      "label": "Case memory"
+    },
+    {
+      "index": 3,
+      "key": "tier1",
+      "label": "Tier-1"
+    },
+    {
+      "index": 4,
+      "key": "tier2",
+      "label": "Tier-2"
+    },
+    {
+      "index": 5,
+      "key": "tier3",
+      "label": "Tier-3"
+    },
+    {
+      "index": 6,
+      "key": "hitl",
+      "label": "Human gate"
+    },
+    {
+      "index": 7,
+      "key": "verdict",
+      "label": "Verdict"
+    }
+  ],
+  "title": "Unlawfully assembled case (A15 — VVG §213)"
+}
