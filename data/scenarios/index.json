@@ -1,168 +1,138 @@
 {
   "dropped": [],
-  "note": "Traces exported from the repository's hermetic fixtures — no live model calls.",
+  "note": "Executed synthetic supplier fixtures; no live model calls.",
   "order": [
-    "ablation_hitl_gate",
-    "committee_asks_reviewer",
-    "hitl_pause_resume",
-    "hitl_reject",
-    "judge_bluff",
-    "mra_barred_basis_stripped",
-    "mra_basistarif_blocked",
-    "mra_borderline_band",
-    "mra_undisclosed_condition",
-    "r1_violation",
-    "tier3_escalation",
-    "mra_missing_consent",
-    "mra_smoker_inconsistency",
-    "mra_standard_accept",
-    "standard_pass",
-    "structurally_invalid"
+    "supplier_variance_review",
+    "supplier_clean",
+    "supplier_rate_correction",
+    "supplier_missing_document",
+    "supplier_unsupported_claim",
+    "supplier_invented_narrative",
+    "supplier_injection",
+    "supplier_duplicate",
+    "supplier_over_limit",
+    "supplier_total_mismatch",
+    "supplier_currency_mismatch",
+    "supplier_invalid",
+    "supplier_pending"
   ],
   "scenarios": [
     {
-      "event_count": 35,
-      "group": "Why each decision matters (live A/B)",
-      "one_liner": "A naive machine auto-closes the case; the real gate pauses for the reviewer, who rejects it.",
+      "event_count": 42,
+      "group": "Exception review",
+      "one_liner": "Approved rates and a valid contract, but a 30% increase in service volume triggers evidence review.",
       "reached_human_gate": true,
-      "slug": "ablation_hitl_gate",
-      "terminal_state": "VALIDATION_rejected",
-      "title": "A/B — human decision gate (ADR-078)"
-    },
-    {
-      "event_count": 79,
-      "group": "Committee & verification",
-      "one_liner": "Mid-committee, the Judge asks the on-call reviewer an advisory question and finalises in the same run.",
-      "reached_human_gate": true,
-      "slug": "committee_asks_reviewer",
-      "terminal_state": "Anomaly_flagged",
-      "title": "Committee asks the reviewer (sync consultation)"
+      "slug": "supplier_variance_review",
+      "terminal_state": "Approved",
+      "title": "Unusual service volume → reviewer approval"
     },
     {
       "event_count": 35,
-      "group": "Safety & governance",
-      "one_liner": "The engine pauses at a non-clean verdict; only the reviewer's decision approves the case.",
+      "group": "Standard review",
+      "one_liner": "Invoice arithmetic, documents and contract checks pass; a named reviewer approves the submission.",
       "reached_human_gate": true,
-      "slug": "hitl_pause_resume",
-      "terminal_state": "VALIDATION_approved",
-      "title": "Human decision gate (pause + approve)"
+      "slug": "supplier_clean",
+      "terminal_state": "Approved",
+      "title": "Matching invoice → reviewer approval"
     },
     {
-      "event_count": 35,
-      "group": "Safety & governance",
-      "one_liner": "The engine pauses at a non-clean verdict; the reviewer declines and the case reaches VALIDATION_rejected.",
+      "event_count": 64,
+      "group": "Correction loop",
+      "one_liner": "A rate-card mismatch prompts a correction; version 2 is revalidated before approval.",
       "reached_human_gate": true,
-      "slug": "hitl_reject",
-      "terminal_state": "VALIDATION_rejected",
-      "title": "Human decision gate (pause + reject)"
+      "slug": "supplier_rate_correction",
+      "terminal_state": "Approved",
+      "title": "Incorrect rate → correction → approval"
     },
     {
-      "event_count": 85,
-      "group": "Committee & verification",
-      "one_liner": "A Judge flags an anomaly without verified evidence; the engine mechanically strips the unsupported tag.",
+      "event_count": 54,
+      "group": "Correction loop",
+      "one_liner": "The reviewer requests the missing service report, then approves the corrected submission.",
       "reached_human_gate": true,
-      "slug": "judge_bluff",
-      "terminal_state": "Anomaly_flagged",
-      "title": "Unsupported Judge claim blocked"
+      "slug": "supplier_missing_document",
+      "terminal_state": "Approved",
+      "title": "Missing service report → correction"
     },
     {
-      "event_count": 43,
-      "group": "Safety & governance",
-      "one_liner": "The committee rests a refusal on sex; the guard strips the basis and the refusal goes with it.",
+      "event_count": 41,
+      "group": "Adversarial controls",
+      "one_liner": "A scripted proposal cites a charge the evidence does not support; the firewall removes it before review.",
       "reached_human_gate": true,
-      "slug": "mra_barred_basis_stripped",
-      "terminal_state": "Referred_to_assessor",
-      "title": "Barred basis stripped (Test-Achats)"
+      "slug": "supplier_unsupported_claim",
+      "terminal_state": "Approved",
+      "title": "Unsupported AI finding removed"
     },
     {
       "event_count": 42,
-      "group": "Safety & governance",
-      "one_liner": "A refusal is proposed on the statutory basic tariff, where a contracting obligation means refusal is not an available outcome.",
+      "group": "Adversarial controls",
+      "one_liner": "A proposal carries correct figures but fabricated prose; the verifier keeps the checked numbers and restates the finding.",
       "reached_human_gate": true,
-      "slug": "mra_basistarif_blocked",
-      "terminal_state": "Referred_to_assessor",
-      "title": "Refusal with nowhere to land (VVG §193(5))"
+      "slug": "supplier_invented_narrative",
+      "terminal_state": "Approved",
+      "title": "Invented narrative replaced by evidence"
     },
     {
-      "event_count": 40,
-      "group": "Committee & verification",
-      "one_liner": "Risk points sit beside an acceptance boundary, so the case is argued and then referred to a named assessor.",
+      "event_count": 42,
+      "group": "Adversarial controls",
+      "one_liner": "A malicious instruction in a supplier note never enters the proposal inputs or gains decision authority.",
       "reached_human_gate": true,
-      "slug": "mra_borderline_band",
-      "terminal_state": "Referred_to_assessor",
-      "title": "Where the rules run out (E6 — borderline)"
+      "slug": "supplier_injection",
+      "terminal_state": "Approved",
+      "title": "Supplier instruction excluded"
     },
     {
-      "event_count": 40,
-      "group": "Committee & verification",
-      "one_liner": "A report records a BMI the application does not; the committee proposes a catalogued exclusion and the guards leave it standing.",
+      "event_count": 36,
+      "group": "Contract checks",
+      "one_liner": "The approved-invoice register already contains this supplier and invoice identity.",
       "reached_human_gate": true,
-      "slug": "mra_undisclosed_condition",
-      "terminal_state": "Referred_to_assessor",
-      "title": "Evidence against declaration (E3)"
+      "slug": "supplier_duplicate",
+      "terminal_state": "Rejected",
+      "title": "Duplicate invoice → rejection"
     },
     {
-      "event_count": 28,
-      "group": "Catching problems",
-      "one_liner": "A mistyped claims ratio is caught deterministically and the sender receives one remediation email.",
+      "event_count": 36,
+      "group": "Contract checks",
+      "one_liner": "A numerically valid invoice exceeds the approved contract limit and cannot be approved.",
       "reached_human_gate": true,
-      "slug": "r1_violation",
-      "terminal_state": "Rules_failed",
-      "title": "Arithmetic rule catch (R1 — claims-ratio identity)"
+      "slug": "supplier_over_limit",
+      "terminal_state": "Rejected",
+      "title": "Spending limit exceeded → rejection"
     },
     {
-      "event_count": 78,
-      "group": "Committee & verification",
-      "one_liner": "A claims-ratio spike that breaks no hard rule is escalated to the committee and flagged for review.",
+      "event_count": 24,
+      "group": "Invoice checks",
+      "one_liner": "The declared invoice total differs from the sum of its service lines; the case waits for the supplier.",
       "reached_human_gate": true,
-      "slug": "tier3_escalation",
-      "terminal_state": "Anomaly_flagged",
-      "title": "Committee escalation on a statistical anomaly"
+      "slug": "supplier_total_mismatch",
+      "terminal_state": "Awaiting_supplier",
+      "title": "Invoice total mismatch → correction request"
     },
     {
-      "event_count": 21,
-      "group": "Safety & governance",
-      "one_liner": "A third-party medical report with no recorded consent fails the case before a single risk factor is examined.",
-      "reached_human_gate": false,
-      "slug": "mra_missing_consent",
-      "terminal_state": "Rules_failed",
-      "title": "Unlawfully assembled case (A15 — VVG §213)"
+      "event_count": 36,
+      "group": "Contract checks",
+      "one_liner": "The invoice currency differs from the approved contract currency.",
+      "reached_human_gate": true,
+      "slug": "supplier_currency_mismatch",
+      "terminal_state": "Rejected",
+      "title": "Currency mismatch → rejection"
     },
     {
-      "event_count": 21,
-      "group": "Catching problems",
-      "one_liner": "An application declaring 'never smoked' alongside twenty a day is caught by arithmetic before any lookup or model.",
+      "event_count": 9,
+      "group": "Invoice checks",
+      "one_liner": "An unexpected field fails the typed boundary before any validation tier runs.",
       "reached_human_gate": false,
-      "slug": "mra_smoker_inconsistency",
-      "terminal_state": "Rules_failed",
-      "title": "Deterministic catch (A11 — declared non-smoker)"
+      "slug": "supplier_invalid",
+      "terminal_state": "Intake_rejected",
+      "title": "Malformed submission rejected at intake"
     },
     {
-      "event_count": 37,
-      "group": "Straight-through processing",
-      "one_liner": "A clean individual health application passes every deterministic check and completes with no model and no assessor.",
-      "reached_human_gate": false,
-      "slug": "mra_standard_accept",
-      "terminal_state": "Assessment_passed",
-      "title": "Individual cover — straight through"
-    },
-    {
-      "event_count": 53,
-      "group": "Straight-through processing",
-      "one_liner": "A compliant submission passes every check deterministically and completes in seconds with zero reviewer touch.",
-      "reached_human_gate": false,
-      "slug": "standard_pass",
-      "terminal_state": "Validation_passed",
-      "title": "Compliant Submission — Straight Through Pass"
-    },
-    {
-      "event_count": 2,
-      "group": "Catching problems",
-      "one_liner": "A workbook that isn't a VC template is rejected loudly at parse time — before any tier runs and before a case exists.",
-      "reached_human_gate": false,
-      "slug": "structurally_invalid",
-      "terminal_state": "Structurally_invalid",
-      "title": "Malformed workbook rejected at intake"
+      "event_count": 30,
+      "group": "Human oversight",
+      "one_liner": "The workflow remains suspended with no recorded reviewer decision and no archive action.",
+      "reached_human_gate": true,
+      "slug": "supplier_pending",
+      "terminal_state": "Awaiting_reviewer",
+      "title": "Review gate holds an unresolved case"
     }
   ]
 }

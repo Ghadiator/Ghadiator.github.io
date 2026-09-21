@@ -1,38 +1,14 @@
 {
   "authored": true,
-  "authoring_note": "Hand-authored framing, not mined from the repository. Every evidence_ref is checked to exist; every mapping is a concept mapping and carries the scope it does not cover.",
-  "disclaimer": "This lab operationalizes the engineering substance of these obligations. It is a demonstration system, not a certified compliance claim.",
+  "authoring_note": "Conceptual reference mappings, authored against the supplier implementation.",
+  "disclaimer": "Supplier invoice review is the intended purpose. These are reference control mappings, not a claim that this deployment is high-risk or certified compliant. Applicability requires an assessment of intended purpose and deployment context.",
   "rows": [
     {
-      "article": "Art. 14 — human oversight",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/hitl",
-      "honest_scope": "Demonstrates a technical oversight mechanism on one workflow. It does not establish oversight competence, authority or training, which are organisational and out of scope here.",
-      "iso_42001": "A.6 / A.9 — operation and human oversight controls",
-      "mechanism": "Human-authority invariant plus a LangGraph interrupt gate: the run suspends and no durable action occurs until a named reviewer resumes it.",
-      "nist_ai_rmf": [
-        "Govern",
-        "Manage"
-      ],
-      "regulation": "EU AI Act"
-    },
-    {
-      "article": "Art. 12 — record-keeping / logging",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/telemetry/process_event.py",
-      "honest_scope": "Shows the logging design and the audit chain it produces. Retention periods, tamper-evidence and log custody are not implemented.",
-      "iso_42001": "7.5 / A.6 — documented information and life-cycle logging",
-      "mechanism": "Append-only event stream with a closed scalar payload catalog; every state transition is a typed record with actor and timestamp.",
-      "nist_ai_rmf": [
-        "Measure",
-        "Manage"
-      ],
-      "regulation": "EU AI Act"
-    },
-    {
-      "article": "Art. 9 — risk management system",
-      "evidence_ref": "Generic_Agentic_Validation_Code/3_development_documentation/ai_risk_audit_and_defenses.md",
-      "honest_scope": "A point-in-time engineering risk audit of one system. Not a continuous, lifecycle-wide risk management process with post-market monitoring.",
-      "iso_42001": "6.1 / A.5 — risk assessment and treatment",
-      "mechanism": "Documented risk audit with prioritised defensive measures, the P0 set implemented and demonstrable as scenarios.",
+      "article": "Art. 9 — risk management",
+      "evidence_ref": "supplier_review/assurance.py",
+      "honest_scope": "Finite fixture tests, not a lifecycle risk-management system.",
+      "iso_42001": "Conceptual alignment: documented controls and review evidence; no clause-level conformity claim.",
+      "mechanism": "Executable failure cases and control probes.",
       "nist_ai_rmf": [
         "Map",
         "Measure",
@@ -41,84 +17,85 @@
       "regulation": "EU AI Act"
     },
     {
-      "article": "Art. 15 — accuracy, robustness, cybersecurity",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/tests",
-      "honest_scope": "Reproducibility and robustness of the surrounding engineering. There is no accuracy benchmark against ground truth and no adversarial security evaluation.",
-      "iso_42001": "A.6 — AI system life cycle and verification",
-      "mechanism": "Typed contracts on every domain object plus a hermetic test suite that binds a scripted model in place of any provider, so the same input yields the same verdict.",
+      "article": "Art. 10 — data governance",
+      "evidence_ref": "supplier_review/models.py",
+      "honest_scope": "Operational input provenance; no training data or representativeness study.",
+      "iso_42001": "Conceptual alignment: documented controls and review evidence; no clause-level conformity claim.",
+      "mechanism": "Versioned contract snapshot and typed supplier input.",
+      "nist_ai_rmf": [
+        "Map",
+        "Measure"
+      ],
+      "regulation": "EU AI Act"
+    },
+    {
+      "article": "Art. 12 — record-keeping",
+      "evidence_ref": "supplier_review/workflow.py",
+      "honest_scope": "In-memory recording; no production custody, retention or tamper-proof storage.",
+      "iso_42001": "Conceptual alignment: documented controls and review evidence; no clause-level conformity claim.",
+      "mechanism": "Ordered immutable event records include actors and outcomes.",
+      "nist_ai_rmf": [
+        "Measure",
+        "Manage"
+      ],
+      "regulation": "EU AI Act"
+    },
+    {
+      "article": "Art. 14 — human oversight",
+      "evidence_ref": "supplier_review/workflow.py",
+      "honest_scope": "Configured identity allowlist in a reference runner, not deployed authentication or staff training.",
+      "iso_42001": "Conceptual alignment: documented controls and review evidence; no clause-level conformity claim.",
+      "mechanism": "The workflow suspends for an allowlisted reviewer.",
+      "nist_ai_rmf": [
+        "Govern",
+        "Manage"
+      ],
+      "regulation": "EU AI Act"
+    },
+    {
+      "article": "Art. 14(4) — interpretable output",
+      "evidence_ref": "supplier_review/workflow.py",
+      "honest_scope": "Computed structured findings; no claim of explaining a live model.",
+      "iso_42001": "Conceptual alignment: documented controls and review evidence; no clause-level conformity claim.",
+      "mechanism": "Verified findings and failed checks are packaged for review.",
+      "nist_ai_rmf": [
+        "Measure",
+        "Manage"
+      ],
+      "regulation": "EU AI Act"
+    },
+    {
+      "article": "Art. 15 — robustness",
+      "evidence_ref": "supplier_review/tests/test_workflow.py",
+      "honest_scope": "No live-model accuracy benchmark or comprehensive security certification.",
+      "iso_42001": "Conceptual alignment: documented controls and review evidence; no clause-level conformity claim.",
+      "mechanism": "Typed inputs, Decimal arithmetic and tested rejection paths.",
       "nist_ai_rmf": [
         "Measure"
+      ],
+      "regulation": "EU AI Act"
+    },
+    {
+      "article": "Art. 26 — operational oversight",
+      "evidence_ref": "supplier_review/workflow.py",
+      "honest_scope": "Technical demonstration, not a determination that deployer obligations apply.",
+      "iso_42001": "Conceptual alignment: documented controls and review evidence; no clause-level conformity claim.",
+      "mechanism": "Named decisions and correction history are recorded.",
+      "nist_ai_rmf": [
+        "Govern",
+        "Manage"
       ],
       "regulation": "EU AI Act"
     },
     {
       "article": "Annex IV — technical documentation",
-      "evidence_ref": "Generic_Agentic_Validation_Code/3_development_documentation/system_card.md",
-      "honest_scope": "Covers design rationale and system behaviour. It is not assembled or formatted as an Annex IV conformity dossier.",
-      "iso_42001": "7.5 — documented information",
-      "mechanism": "Append-only architecture decision records, a written process-semantics specification, and a system card.",
+      "evidence_ref": "supplier_review/README.md",
+      "honest_scope": "A reference specification, not a conformity dossier.",
+      "iso_42001": "Conceptual alignment: documented controls and review evidence; no clause-level conformity claim.",
+      "mechanism": "Documented supplier purpose, behavior and integration limits.",
       "nist_ai_rmf": [
         "Govern",
         "Map"
-      ],
-      "regulation": "EU AI Act"
-    },
-    {
-      "article": "AI management system (AIMS) — clauses 4-10",
-      "evidence_ref": "governance/GOVERNANCE_AS_CODE.md",
-      "honest_scope": "A working agreement enforced in one codebase. An AIMS additionally requires organisational scope, roles, internal audit and management review, none of which a repository can supply.",
-      "iso_42001": "4-10 — context, leadership, planning, support, operation",
-      "mechanism": "The eleven-section ruleset itself, each section pointing at the type, config key, test or gate that enforces it.",
-      "nist_ai_rmf": [
-        "Govern"
-      ],
-      "regulation": "ISO/IEC 42001"
-    },
-    {
-      "article": "Art. 10 — data and data governance",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/models/medical_risk_inputs.py",
-      "honest_scope": "Art. 10's obligations attach to training, validation and testing data sets. This system trains nothing and has none, so what is shown is the adjacent discipline applied to operational input: provenance labelling, special-category identification, and categories excluded from the basis. There is no representativeness study and no bias measurement against outcomes.",
-      "iso_42001": "A.7 — data for AI systems",
-      "mechanism": "Provenance is a required field on every disclosed condition, so a finding derived from genetic diagnostics is identifiable; special-category fields are typed rather than free text; and a barred-category set is removed from the decision basis by a deterministic control rather than by instruction.",
-      "nist_ai_rmf": [
-        "Map",
-        "Measure"
-      ],
-      "regulation": "EU AI Act"
-    },
-    {
-      "article": "Art. 26 — obligations of deployers",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/pipeline/medical_risk_graph.py",
-      "honest_scope": "Art. 26 obliges a deployer, and this repository is not one. What exists here are the technical affordances a deployer would need: attributable decisions, a suspension that cannot be bypassed, and a reproducible package. Assigning competent overseers, training them, retaining logs and informing affected workers are organisational duties no codebase can discharge.",
-      "iso_42001": "A.9 — use of AI systems",
-      "mechanism": "The workflow suspends on a graph interrupt until a named assessor resumes it; the decision model has no default for who decided, so an unattributed one cannot be constructed; and the review package handed over is built deterministically, so two assessors on the same case see the same material.",
-      "nist_ai_rmf": [
-        "Govern",
-        "Manage"
-      ],
-      "regulation": "EU AI Act"
-    },
-    {
-      "article": "Art. 86 — right to explanation of individual decisions",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/models/medical_risk_verdict.py",
-      "honest_scope": "This is the material an explanation would be built from, not the explanation. Art. 86 gives an affected person a right against the deployer, and no applicant-facing artefact is generated here. What the structure does establish is that the decision path is reconstructable at all — a control that fired silently could not be explained afterwards by anyone.",
-      "iso_42001": "A.9 — use of AI systems",
-      "mechanism": "Every control that acts on a verdict records what it changed, from what to what, and why; the proposal, the escalation reasons and each guard action travel together into the suspension payload; and the audit stream carries the proposed and final disposition side by side.",
-      "nist_ai_rmf": [
-        "Measure",
-        "Manage"
-      ],
-      "regulation": "EU AI Act"
-    },
-    {
-      "article": "Art. 14(4) — enabling the overseer to interpret output",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/pipeline/cove_loop.py",
-      "honest_scope": "The reviewer sees which claims survived verification and which were dropped, which is what Art. 14(4)(c) asks of the information given to an overseer. Deliberately NOT mapped to Art. 13: that obliges instructions for use aimed at deployers, and no such artefact exists here. Not a model-explainability claim either.",
-      "iso_42001": "A.9 — use of AI systems",
-      "mechanism": "Procedural Chain-of-Verification firewall with a minimum-survivor override, so an unsupported model claim cannot reach the reviewer as a finding.",
-      "nist_ai_rmf": [
-        "Measure",
-        "Manage"
       ],
       "regulation": "EU AI Act"
     }

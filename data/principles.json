@@ -1,40 +1,24 @@
 {
   "principles": [
     {
-      "meaning": "the shape of every domain object is validated, so malformed state cannot exist",
-      "name": "Structure over trust",
-      "order": 1,
-      "short": "Structure over trust",
-      "slug": "structure"
+      "id": "1",
+      "meaning": "Typed boundaries and explicit allowed transitions.",
+      "name": "Structure over trust"
     },
     {
-      "meaning": "every external dependency is swappable without a code change, so the deployed system is the reviewed system",
-      "name": "Config over hardcoding",
-      "order": 2,
-      "short": "Config over hardcoding",
-      "slug": "config"
+      "id": "2",
+      "meaning": "Findings must match computed invoice evidence.",
+      "name": "Evidence over assertion"
     },
     {
-      "meaning": "every state transition is written to an append-only stream, so \"what did the agent decide, and why\" is always answerable",
-      "name": "Evidence over assertion",
-      "order": 3,
-      "short": "Evidence over assertion",
-      "slug": "evidence"
+      "id": "3",
+      "meaning": "Only an authorised reviewer decides.",
+      "name": "Humans retain authority"
     },
     {
-      "meaning": "machines propose, a human confirms anything that leaves a durable mark",
-      "name": "Humans over automation for consequences",
-      "order": 4,
-      "short": "Humans over automation",
-      "slug": "humans"
-    },
-    {
-      "meaning": "the agent has a deterministic fallback, and the tests never touch a live model",
-      "name": "Determinism over hope",
-      "order": 5,
-      "short": "Determinism over hope",
-      "slug": "determinism"
+      "id": "4",
+      "meaning": "Synthetic fixture runs produce the displayed traces.",
+      "name": "Reproducible demonstrations"
     }
-  ],
-  "source": "governance/GOVERNANCE_AS_CODE.md section 0"
+  ]
 }

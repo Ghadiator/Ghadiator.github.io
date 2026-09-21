@@ -1,0 +1,148 @@
+{
+  "events": [
+    {
+      "actor": "human",
+      "detail": "Case CASE-082; authorised buyer procurement.reviewer; due 2026-09-01",
+      "kind": "workflow.start",
+      "label": "Supplier document collection opened",
+      "node": "request",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 1,
+      "stage": "request",
+      "ts_rel": 0
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: New → Requested",
+      "node": "request",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 2,
+      "stage": "request",
+      "ts_rel": 1
+    },
+    {
+      "actor": "system",
+      "detail": "14 day(s) to deadline; fixture outbox only, no email sent",
+      "kind": "collection.reminder",
+      "label": "Collection reminder prepared",
+      "node": "reminders",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 3,
+      "stage": "reminders",
+      "ts_rel": 2
+    },
+    {
+      "actor": "system",
+      "detail": "7 day(s) to deadline; fixture outbox only, no email sent",
+      "kind": "collection.reminder",
+      "label": "Collection reminder prepared",
+      "node": "reminders",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 4,
+      "stage": "reminders",
+      "ts_rel": 3
+    },
+    {
+      "actor": "system",
+      "detail": "3 day(s) to deadline; fixture outbox only, no email sent",
+      "kind": "collection.reminder",
+      "label": "Collection reminder prepared",
+      "node": "reminders",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 5,
+      "stage": "reminders",
+      "ts_rel": 4
+    },
+    {
+      "actor": "system",
+      "detail": "1 schema error(s)",
+      "kind": "intake.rejected",
+      "label": "Malformed supplier submission rejected",
+      "node": "intake",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 6,
+      "stage": "ingest",
+      "ts_rel": 5
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Requested → Intake_rejected",
+      "node": "intake",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 7,
+      "stage": "ingest",
+      "ts_rel": 6
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Intake_rejected → Archived",
+      "node": "intake",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 8,
+      "stage": "ingest",
+      "ts_rel": 7
+    },
+    {
+      "actor": "system",
+      "detail": "Immutable event records; persistence and production retention are integration responsibilities",
+      "kind": "case.archived",
+      "label": "Decision and evidence archived in fixture memory",
+      "node": "archive",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 9,
+      "stage": "archive",
+      "ts_rel": 8
+    }
+  ],
+  "group": "Invoice checks",
+  "one_liner": "An unexpected field fails the typed boundary before any validation tier runs.",
+  "outcome": {
+    "committee_summary": null,
+    "human_resumed": false,
+    "models_invoked": false,
+    "reached_human_gate": false,
+    "route": null,
+    "terminal_state": "Intake_rejected"
+  },
+  "provenance": {
+    "derivation": "Executed from synthetic supplier fixtures. Events are emitted by the supplier workflow; no exported event is hand-sequenced or relabelled.",
+    "exported_event_count": 9,
+    "models_actually_used": [],
+    "raw_event_count": 9,
+    "scenario_key": "supplier_invalid",
+    "source": "supplier_review/scenarios.py",
+    "ts_rel_note": "Ordinal event position, not wall-clock time. Mail, contract access and archive storage use in-memory fixtures."
+  },
+  "slug": "supplier_invalid",
+  "stages": [
+    "request",
+    "reminders",
+    "ingest",
+    "archive"
+  ],
+  "title": "Malformed submission rejected at intake"
+}

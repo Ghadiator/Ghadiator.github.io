@@ -1,0 +1,888 @@
+{
+  "events": [
+    {
+      "actor": "human",
+      "detail": "Case CASE-082; authorised buyer procurement.reviewer; due 2026-09-01",
+      "kind": "workflow.start",
+      "label": "Supplier document collection opened",
+      "node": "request",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 1,
+      "stage": "request",
+      "ts_rel": 0
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: New → Requested",
+      "node": "request",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 2,
+      "stage": "request",
+      "ts_rel": 1
+    },
+    {
+      "actor": "system",
+      "detail": "14 day(s) to deadline; fixture outbox only, no email sent",
+      "kind": "collection.reminder",
+      "label": "Collection reminder prepared",
+      "node": "reminders",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 3,
+      "stage": "reminders",
+      "ts_rel": 2
+    },
+    {
+      "actor": "system",
+      "detail": "7 day(s) to deadline; fixture outbox only, no email sent",
+      "kind": "collection.reminder",
+      "label": "Collection reminder prepared",
+      "node": "reminders",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 4,
+      "stage": "reminders",
+      "ts_rel": 3
+    },
+    {
+      "actor": "system",
+      "detail": "3 day(s) to deadline; fixture outbox only, no email sent",
+      "kind": "collection.reminder",
+      "label": "Collection reminder prepared",
+      "node": "reminders",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 5,
+      "stage": "reminders",
+      "ts_rel": 4
+    },
+    {
+      "actor": "system",
+      "detail": "INV-2026-082 · version 1 · 1 service line(s)",
+      "kind": "intake.received",
+      "label": "Supplier billing workbook parsed",
+      "node": "intake",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 6,
+      "stage": "ingest",
+      "ts_rel": 5
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Requested → Received",
+      "node": "intake",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 7,
+      "stage": "ingest",
+      "ts_rel": 6
+    },
+    {
+      "actor": "system",
+      "detail": "Previous version 0; current version 1",
+      "kind": "history.attached",
+      "label": "Submission history attached",
+      "node": "memory",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 8,
+      "stage": "memory",
+      "ts_rel": 7
+    },
+    {
+      "actor": "system",
+      "detail": "Free-form notes are not passed to the proposal adapter or used to approve invoices. Two illustrative signatures; not a comprehensive injection detector. Exclusion from proposal and decision inputs is the control that holds.",
+      "kind": "security.input",
+      "label": "Supplier free text kept outside decision inputs",
+      "node": "memory",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 9,
+      "stage": "memory",
+      "ts_rel": 8
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.started",
+      "label": "Deterministic invoice checks started",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 10,
+      "stage": "checks",
+      "ts_rel": 9
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.rule",
+      "label": "R1 PASS — Line amounts equal quantity × rate",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 11,
+      "stage": "checks",
+      "ts_rel": 10
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.rule",
+      "label": "R2 PASS — Invoice total equals line sum",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 12,
+      "stage": "checks",
+      "ts_rel": 11
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.rule",
+      "label": "R3 PASS — Service period is ordered",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 13,
+      "stage": "checks",
+      "ts_rel": 12
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.rule",
+      "label": "R4 PASS — Invoice date follows service period",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 14,
+      "stage": "checks",
+      "ts_rel": 13
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.rule",
+      "label": "R5 PASS — Service codes are unique",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 15,
+      "stage": "checks",
+      "ts_rel": 14
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.rule",
+      "label": "R6 PASS — Required service reports are attached",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 16,
+      "stage": "checks",
+      "ts_rel": 15
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Received → Rules_checked",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 17,
+      "stage": "checks",
+      "ts_rel": 16
+    },
+    {
+      "actor": "system",
+      "detail": "CTR-2026-014 · v3 · PO PO-2026-082 · EUR limit 15000.00",
+      "kind": "contract.snapshot_loaded",
+      "label": "Approved contract snapshot loaded",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 18,
+      "stage": "contract",
+      "sub": "t2.baseline",
+      "ts_rel": 17
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Supplier matches contract registry — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 19,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 18
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Contract identifier matches — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 20,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 19
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Purchase order matches — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 21,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 20
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Currency matches contract — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 22,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 21
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Service period is covered by contract — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 23,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 22
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Rates match approved rate card — FAIL",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 24,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 23
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Invoice total stays within spending limit — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 25,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 24
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Invoice is not already approved — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 26,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 25
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Rules_checked → Baseline_checked",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 27,
+      "stage": "contract",
+      "ts_rel": 26
+    },
+    {
+      "actor": "system",
+      "detail": "1 failed checks; 0 verified findings; no payment instruction",
+      "kind": "review.package",
+      "label": "Deterministic review package assembled",
+      "node": "advisory",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 28,
+      "stage": "advisory",
+      "ts_rel": 27
+    },
+    {
+      "actor": "system",
+      "detail": "Rates match approved rate card",
+      "kind": "remediation.email.composed",
+      "label": "Supplier clarification drafted",
+      "node": "remediation",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 29,
+      "stage": "remediation",
+      "ts_rel": 28
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Baseline_checked → Awaiting_reviewer",
+      "node": "remediation",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 30,
+      "stage": "remediation",
+      "ts_rel": 29
+    },
+    {
+      "actor": "human",
+      "detail": "Approval, rejection and a supplier correction request require an explicit named decision.",
+      "kind": "hitl.opened",
+      "label": "Run suspended for authorised reviewer",
+      "node": "gate",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 31,
+      "stage": "review",
+      "ts_rel": 30
+    },
+    {
+      "actor": "human",
+      "detail": "procurement.reviewer: Correct the documented discrepancy and resubmit the workbook.",
+      "kind": "hitl.resumed",
+      "label": "Reviewer decision — REQUEST_CHANGES",
+      "node": "gate",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 32,
+      "stage": "review",
+      "ts_rel": 31
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Awaiting_reviewer → Awaiting_supplier",
+      "node": "gate",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 33,
+      "stage": "review",
+      "ts_rel": 32
+    },
+    {
+      "actor": "system",
+      "detail": "Validation decision only; this runner does not initiate payments",
+      "kind": "workflow.terminal",
+      "label": "Recorded outcome: Awaiting_supplier",
+      "node": "remediation",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 34,
+      "stage": "remediation",
+      "ts_rel": 33
+    },
+    {
+      "actor": "system",
+      "detail": "INV-2026-082 · version 2 · 1 service line(s)",
+      "kind": "intake.received",
+      "label": "Supplier billing workbook parsed",
+      "node": "intake",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 35,
+      "stage": "ingest",
+      "ts_rel": 34
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Awaiting_supplier → Received",
+      "node": "intake",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 36,
+      "stage": "ingest",
+      "ts_rel": 35
+    },
+    {
+      "actor": "system",
+      "detail": "Previous version 1; current version 2",
+      "kind": "history.attached",
+      "label": "Submission history attached",
+      "node": "memory",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 37,
+      "stage": "memory",
+      "ts_rel": 36
+    },
+    {
+      "actor": "system",
+      "detail": "Free-form notes are not passed to the proposal adapter or used to approve invoices. Two illustrative signatures; not a comprehensive injection detector. Exclusion from proposal and decision inputs is the control that holds.",
+      "kind": "security.input",
+      "label": "Supplier free text kept outside decision inputs",
+      "node": "memory",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 38,
+      "stage": "memory",
+      "ts_rel": 37
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.started",
+      "label": "Deterministic invoice checks started",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 39,
+      "stage": "checks",
+      "ts_rel": 38
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.rule",
+      "label": "R1 PASS — Line amounts equal quantity × rate",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 40,
+      "stage": "checks",
+      "ts_rel": 39
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.rule",
+      "label": "R2 PASS — Invoice total equals line sum",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 41,
+      "stage": "checks",
+      "ts_rel": 40
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.rule",
+      "label": "R3 PASS — Service period is ordered",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 42,
+      "stage": "checks",
+      "ts_rel": 41
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.rule",
+      "label": "R4 PASS — Invoice date follows service period",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 43,
+      "stage": "checks",
+      "ts_rel": 42
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.rule",
+      "label": "R5 PASS — Service codes are unique",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 44,
+      "stage": "checks",
+      "ts_rel": 43
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "checks.rule",
+      "label": "R6 PASS — Required service reports are attached",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 45,
+      "stage": "checks",
+      "ts_rel": 44
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Received → Rules_checked",
+      "node": "rules",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 46,
+      "stage": "checks",
+      "ts_rel": 45
+    },
+    {
+      "actor": "system",
+      "detail": "CTR-2026-014 · v3 · PO PO-2026-082 · EUR limit 15000.00",
+      "kind": "contract.snapshot_loaded",
+      "label": "Approved contract snapshot loaded",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 47,
+      "stage": "contract",
+      "sub": "t2.baseline",
+      "ts_rel": 46
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Supplier matches contract registry — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 48,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 47
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Contract identifier matches — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 49,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 48
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Purchase order matches — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 50,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 49
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Currency matches contract — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 51,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 50
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Service period is covered by contract — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 52,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 51
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Rates match approved rate card — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 53,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 52
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Invoice total stays within spending limit — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 54,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 53
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "contract.check",
+      "label": "Invoice is not already approved — PASS",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 55,
+      "stage": "contract",
+      "sub": "t2.compare",
+      "ts_rel": 54
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Rules_checked → Baseline_checked",
+      "node": "crosscheck",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 56,
+      "stage": "contract",
+      "ts_rel": 55
+    },
+    {
+      "actor": "system",
+      "detail": "0 failed checks; 0 verified findings; no payment instruction",
+      "kind": "review.package",
+      "label": "Deterministic review package assembled",
+      "node": "advisory",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 57,
+      "stage": "advisory",
+      "ts_rel": 56
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Baseline_checked → Awaiting_reviewer",
+      "node": "advisory",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 58,
+      "stage": "advisory",
+      "ts_rel": 57
+    },
+    {
+      "actor": "human",
+      "detail": "Approval, rejection and a supplier correction request require an explicit named decision.",
+      "kind": "hitl.opened",
+      "label": "Run suspended for authorised reviewer",
+      "node": "gate",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 59,
+      "stage": "review",
+      "ts_rel": 58
+    },
+    {
+      "actor": "human",
+      "detail": "procurement.reviewer: Reviewed the contract checks and service report; the submission is approved.",
+      "kind": "hitl.resumed",
+      "label": "Reviewer decision — APPROVE",
+      "node": "gate",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 60,
+      "stage": "review",
+      "ts_rel": 59
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Awaiting_reviewer → Approved",
+      "node": "gate",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 61,
+      "stage": "review",
+      "ts_rel": 60
+    },
+    {
+      "actor": "system",
+      "detail": "Validation decision only; this runner does not initiate payments",
+      "kind": "workflow.terminal",
+      "label": "Recorded outcome: Approved",
+      "node": "disposition",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 62,
+      "stage": "disposition",
+      "ts_rel": 61
+    },
+    {
+      "actor": "system",
+      "detail": "",
+      "kind": "audit.row_appended",
+      "label": "Audit: Approved → Archived",
+      "node": "disposition",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 63,
+      "stage": "disposition",
+      "ts_rel": 62
+    },
+    {
+      "actor": "system",
+      "detail": "Immutable event records; persistence and production retention are integration responsibilities",
+      "kind": "case.archived",
+      "label": "Decision and evidence archived in fixture memory",
+      "node": "archive",
+      "refs": [
+        "supplier_review/workflow.py"
+      ],
+      "seq": 64,
+      "stage": "archive",
+      "ts_rel": 63
+    }
+  ],
+  "group": "Correction loop",
+  "one_liner": "A rate-card mismatch prompts a correction; version 2 is revalidated before approval.",
+  "outcome": {
+    "committee_summary": null,
+    "human_resumed": true,
+    "models_invoked": false,
+    "reached_human_gate": true,
+    "route": "CONTRACT_CLEAR",
+    "terminal_state": "Approved"
+  },
+  "provenance": {
+    "derivation": "Executed from synthetic supplier fixtures. Events are emitted by the supplier workflow; no exported event is hand-sequenced or relabelled.",
+    "exported_event_count": 64,
+    "models_actually_used": [],
+    "raw_event_count": 64,
+    "scenario_key": "supplier_rate_correction",
+    "source": "supplier_review/scenarios.py",
+    "ts_rel_note": "Ordinal event position, not wall-clock time. Mail, contract access and archive storage use in-memory fixtures."
+  },
+  "slug": "supplier_rate_correction",
+  "stages": [
+    "request",
+    "reminders",
+    "ingest",
+    "memory",
+    "checks",
+    "contract",
+    "advisory",
+    "remediation",
+    "review",
+    "disposition",
+    "archive"
+  ],
+  "title": "Incorrect rate → correction → approval"
+}

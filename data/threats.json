@@ -1,37 +1,46 @@
 {
-  "source": "Generic_Agentic_Validation_Code/3_development_documentation/ai_risk_audit_and_defenses.md",
   "threats": [
     {
-      "adr": "ADR-034",
-      "defense": "A procedural Chain-of-Verification firewall verifies every claim in pure Python — stop-word filtering, Jaccard similarity, constraint-denial detection — with no model inside it. When no claim survives as Entailment, a minimum-survivor rule overrides the verdict to \"insufficient verifiable evidence\" and the case goes to a human.",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/pipeline/cove_loop.py",
-      "id": "judge_bluff",
-      "scenario": "judge_bluff",
-      "threat": "The Judge asserts a conclusion no evidence supports — a confident sentence with nothing under it."
+      "defense": "Notes are excluded from proposal inputs and decisions.",
+      "evidence_ref": "supplier_review/assurance.py",
+      "id": "supplier-instruction",
+      "threat": "Supplier text asks the system to bypass review."
     },
     {
-      "adr": "ADR-089",
-      "defense": "One append-only event stream with a single registered backend per process, a closed scalar payload catalog, and reads only through the registered reader — never by parsing the raw file.",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/telemetry/process_event.py",
-      "id": "split_brain",
-      "scenario": "",
-      "threat": "Two processes each write their own copy of the audit stream, so the record of what happened depends on which host you ask."
+      "defense": "Reviewer identity is checked against the configured allowlist.",
+      "evidence_ref": "supplier_review/assurance.py",
+      "id": "unauthorised-reviewer",
+      "threat": "The submitting supplier tries to approve its own invoice."
     },
     {
-      "adr": "ADR-026",
-      "defense": "Workflow states are validated models, not bare enums: each carries a stable identifier, a definition, and its set of allowable next states, so an illegal transition is unrepresentable rather than merely discouraged. Only a human can set the terminal rejection.",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/models/workflow_state.py",
-      "id": "illegal_transition",
-      "scenario": "",
-      "threat": "Code moves a case into a state it should not be able to reach — for example marking a case rejected without a human."
+      "defense": "Only case-bound computed findings enter the review package.",
+      "evidence_ref": "supplier_review/assurance.py",
+      "id": "unsupported-charge",
+      "threat": "A proposal invents an additional charge."
     },
     {
-      "adr": "ADR-094",
-      "defense": "The run suspends on a LangGraph interrupt. Nothing outbound leaves and no durable artefact is written until a named reviewer resumes it, and the resume itself is an audited event.",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/hitl",
-      "id": "silent_autonomy",
-      "scenario": "hitl_pause_resume",
-      "threat": "The agent quietly does something durable — sends a message, writes to a system of record — without anyone confirming it."
+      "defense": "A verified finding is restated from checked evidence; proposal prose is discarded.",
+      "evidence_ref": "supplier_review/assurance.py",
+      "id": "invented-narrative",
+      "threat": "A proposal pairs correct figures with a fabricated account of events."
+    },
+    {
+      "defense": "Unknown submission fields fail parsing.",
+      "evidence_ref": "supplier_review/assurance.py",
+      "id": "extra-field",
+      "threat": "An input adds an approval override."
+    },
+    {
+      "defense": "At most 4 proposals may enter verification.",
+      "evidence_ref": "supplier_review/assurance.py",
+      "id": "proposal-budget",
+      "threat": "A proposer returns more findings than allowed."
+    },
+    {
+      "defense": "An adapter fault forfeits its proposals without stranding the case.",
+      "evidence_ref": "supplier_review/assurance.py",
+      "id": "adapter-failure",
+      "threat": "The proposal adapter raises instead of returning findings."
     }
   ]
 }

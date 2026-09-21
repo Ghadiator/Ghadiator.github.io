@@ -1,0 +1,118 @@
+{
+  "note": "Canonical supplier workflow states, generated from the implementation catalog.",
+  "source": "supplier_review/workflow.py",
+  "states": [
+    {
+      "band": "system",
+      "evidence_ref": "supplier_review/workflow.py · SupplierWorkflow",
+      "next": [
+        "Requested"
+      ],
+      "note": "No collection request has been opened yet.",
+      "state": "New"
+    },
+    {
+      "band": "system",
+      "evidence_ref": "supplier_review/workflow.py · request()",
+      "next": [
+        "Intake_rejected",
+        "Received"
+      ],
+      "note": "An allowlisted buyer opened the request; deadline reminders may fire.",
+      "state": "Requested"
+    },
+    {
+      "band": "system",
+      "evidence_ref": "supplier_review/models.py · Submission",
+      "next": [
+        "Rules_checked"
+      ],
+      "note": "A submission parsed into the frozen model and was bound to the requested case.",
+      "state": "Received"
+    },
+    {
+      "band": "system",
+      "evidence_ref": "supplier_review/models.py · Submission",
+      "next": [
+        "Archived"
+      ],
+      "note": "The payload failed the typed boundary. It never became a case and no reviewer sees it.",
+      "state": "Intake_rejected"
+    },
+    {
+      "band": "system",
+      "evidence_ref": "supplier_review/workflow.py · RULE_NAMES",
+      "next": [
+        "Awaiting_reviewer",
+        "Baseline_checked"
+      ],
+      "note": "The six deterministic invoice checks ran. Any failure routes straight to a reviewer.",
+      "state": "Rules_checked"
+    },
+    {
+      "band": "system",
+      "evidence_ref": "supplier_review/workflow.py · BASELINE_NAMES",
+      "next": [
+        "Awaiting_reviewer",
+        "Committee_reviewed"
+      ],
+      "note": "The eight contract cross-checks ran against the approved snapshot.",
+      "state": "Baseline_checked"
+    },
+    {
+      "band": "proposal",
+      "evidence_ref": "supplier_review/workflow.py · _committee()",
+      "next": [
+        "Awaiting_reviewer"
+      ],
+      "note": "Bounded scripted roles proposed findings; only canonical findings survived verification.",
+      "state": "Committee_reviewed"
+    },
+    {
+      "band": "human",
+      "evidence_ref": "supplier_review/workflow.py · resume()",
+      "next": [
+        "Approved",
+        "Awaiting_supplier",
+        "Rejected"
+      ],
+      "note": "The run is suspended. Only an allowlisted reviewer may resume it, and hard failures cannot be approved.",
+      "state": "Awaiting_reviewer"
+    },
+    {
+      "band": "human",
+      "evidence_ref": "supplier_review/workflow.py · submit()",
+      "next": [
+        "Intake_rejected",
+        "Received"
+      ],
+      "note": "A reviewer requested a correction. The next version keeps the invoice identity and is revalidated from the start.",
+      "state": "Awaiting_supplier"
+    },
+    {
+      "band": "terminal",
+      "evidence_ref": "supplier_review/models.py · Decision",
+      "next": [
+        "Archived"
+      ],
+      "note": "A named reviewer accepted the submission for downstream processing. No payment is initiated.",
+      "state": "Approved"
+    },
+    {
+      "band": "terminal",
+      "evidence_ref": "supplier_review/models.py · Decision",
+      "next": [
+        "Archived"
+      ],
+      "note": "A named reviewer rejected the submission and recorded a rationale.",
+      "state": "Rejected"
+    },
+    {
+      "band": "terminal",
+      "evidence_ref": "supplier_review/workflow.py · archive()",
+      "next": [],
+      "note": "The decision and its evidence were archived in fixture memory. Durable retention is an integration responsibility.",
+      "state": "Archived"
+    }
+  ]
+}

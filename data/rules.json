@@ -1,111 +1,122 @@
 {
   "mechanism_types": [
-    "types",
-    "config",
-    "tests",
-    "gates",
-    "logging"
+    "Types",
+    "Rules",
+    "Budget",
+    "Verification",
+    "Gate",
+    "State",
+    "Evidence",
+    "Tests"
   ],
   "rules": [
     {
-      "adr": "ADR-026",
-      "enforced_by": "Pydantic models with frozen=True and extra=\"forbid\"; a state catalog whose members carry their own allowable next states",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/models/workflow_state.py",
+      "adr": "Supplier reference",
+      "enforced_by": "Frozen Pydantic models with extra=\"forbid\".",
+      "evidence_ref": "supplier_review/models.py",
       "id": 1,
-      "mechanism_type": "types",
-      "principle": "structure",
-      "title": "Typed, validated domain model (validation-first)"
+      "mechanism_type": "Types",
+      "principle": "Malformed fields are rejected before evaluation.",
+      "title": "Typed submission boundary"
     },
     {
-      "adr": "ADR-086",
-      "enforced_by": "every external interface read from the environment; model selection is provider-prefixed (provider:model), never a branch in code",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/config.py",
+      "adr": "Supplier reference",
+      "enforced_by": "Decimal line calculations and invoice-total equality.",
+      "evidence_ref": "supplier_review/workflow.py",
       "id": 2,
-      "mechanism_type": "config",
-      "principle": "config",
-      "title": "Configuration discipline (env-driven, nothing hardcoded)"
+      "mechanism_type": "Rules",
+      "principle": "Numbers must reconcile before a contract is consulted.",
+      "title": "Invoice arithmetic"
     },
     {
-      "adr": "ADR-089",
-      "enforced_by": "one append-only event stream with a closed, scalar payload catalog and a single registered backend per process",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/telemetry/process_event.py",
+      "adr": "Supplier reference",
+      "enforced_by": "Supplier, PO, currency, validity, rates, cap and duplicate checks.",
+      "evidence_ref": "supplier_review/workflow.py",
       "id": 3,
-      "mechanism_type": "logging",
-      "principle": "evidence",
-      "title": "The event stream as the single source of truth"
+      "mechanism_type": "Rules",
+      "principle": "Submitted rates cannot replace the approved rate card.",
+      "title": "Contract authority"
     },
     {
-      "adr": "ADR-042",
-      "enforced_by": "a LangGraph interrupt that suspends the run; no outbound message and no durable artefact without an explicit human confirmation",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/hitl",
+      "adr": "Supplier reference",
+      "enforced_by": "At most four structured proposals; an over-budget or failing adapter forfeits all of them.",
+      "evidence_ref": "supplier_review/workflow.py",
       "id": 4,
-      "mechanism_type": "gates",
-      "principle": "humans",
-      "title": "Human-in-the-loop for anything with consequences"
+      "mechanism_type": "Budget",
+      "principle": "A proposed finding has no decision authority.",
+      "title": "Bounded proposals"
     },
     {
-      "adr": "ADR-154",
-      "enforced_by": "capability-scoped toolsets with a per-agent tool budget checked by a test, a cross-provider fallback tier, and a deterministic last-resort code path",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/model_fallback.py",
+      "adr": "Supplier reference",
+      "enforced_by": "Claim code, invoice identity and observed value checked against computed evidence.",
+      "evidence_ref": "supplier_review/workflow.py",
       "id": 5,
-      "mechanism_type": "types",
-      "principle": "determinism",
-      "title": "Agent reliability — scoped capabilities & deterministic fallback"
+      "mechanism_type": "Verification",
+      "principle": "Unsupported proposals never become accepted findings.",
+      "title": "Evidence verification"
     },
     {
-      "adr": "ADR-045",
-      "enforced_by": "pydantic-ai TestModel / FunctionModel bound in place of any provider, in-memory stores for every external interface, and per-test isolation of the event stream",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/tests",
+      "adr": "Supplier reference",
+      "enforced_by": "An admitted finding is restated from the checked evidence; proposal prose is discarded.",
+      "evidence_ref": "supplier_review/workflow.py",
       "id": 6,
-      "mechanism_type": "tests",
-      "principle": "determinism",
-      "title": "Hermetic, reproducible tests"
+      "mechanism_type": "Verification",
+      "principle": "A verified number cannot carry invented narrative.",
+      "title": "Canonical findings"
     },
     {
-      "adr": "ADR-092",
-      "enforced_by": "append-only ADRs taking the next free number, plus a drift test that fails when the generated overview goes stale",
-      "evidence_ref": "Generic_Agentic_Validation_Code/3_development_documentation/architecture_decisions.md",
+      "adr": "Supplier reference",
+      "enforced_by": "Reviewer allowlist and an explicit Awaiting_reviewer state.",
+      "evidence_ref": "supplier_review/workflow.py",
       "id": 7,
-      "mechanism_type": "gates",
-      "principle": "evidence",
-      "title": "Append-only decision records & accumulative knowledge"
+      "mechanism_type": "Gate",
+      "principle": "A validated submission still needs an authorised reviewer.",
+      "title": "Named human review"
     },
     {
-      "adr": "ADR-075",
-      "enforced_by": "durable state in the shared backend only; the engine reads and writes logical paths and a separate layer owns cloud mirroring",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/step_7_8_validation/services",
+      "adr": "Supplier reference",
+      "enforced_by": "resume() rejects approval while failures remain.",
+      "evidence_ref": "supplier_review/workflow.py",
       "id": 8,
-      "mechanism_type": "config",
-      "principle": "config",
-      "title": "Durable state in the shared backend; the host is disposable"
+      "mechanism_type": "Gate",
+      "principle": "A reviewer cannot approve an invoice with hard check failures.",
+      "title": "Fail closed"
     },
     {
-      "adr": "ADR-096",
-      "enforced_by": "an observable running version, SemVer with stated triggers, conventional commits, and a pre-push grep for hardcoded models, endpoints and local paths",
-      "evidence_ref": "Generic_Agentic_Validation_Code/validation_workflow/version.py",
+      "adr": "Supplier reference",
+      "enforced_by": "Same case and invoice ID, increasing version, full revalidation.",
+      "evidence_ref": "supplier_review/workflow.py",
       "id": 9,
-      "mechanism_type": "gates",
-      "principle": "evidence",
-      "title": "Release, versioning & change hygiene"
+      "mechanism_type": "State",
+      "principle": "A corrected invoice must retain its identity and increase its version.",
+      "title": "Correction lineage"
     },
     {
-      "adr": "ADR-038",
-      "enforced_by": "no blanket except, explicit key access over silent defaults, no mutable defaults, and one stated timezone convention",
-      "evidence_ref": "CONTRIBUTING.md",
+      "adr": "Supplier reference",
+      "enforced_by": "Frozen Event objects exposed as a tuple; in-memory archive.",
+      "evidence_ref": "supplier_review/workflow.py",
       "id": 10,
-      "mechanism_type": "types",
-      "principle": "structure",
-      "title": "Code style & safety defaults"
+      "mechanism_type": "Evidence",
+      "principle": "Original observations remain available after correction.",
+      "title": "Append-only event records"
     },
     {
-      "adr": "ADR-092",
-      "enforced_by": "reviewed feature branches only, with binding shared context in version-controlled rule files rather than per-developer tool settings",
-      "evidence_ref": "PROJECT_RULES.md",
+      "adr": "Supplier reference",
+      "enforced_by": "D−14, D−7, D−3 and due-date escalation, once per checkpoint.",
+      "evidence_ref": "supplier_review/workflow.py",
       "id": 11,
-      "mechanism_type": "gates",
-      "principle": "humans",
-      "title": "Collaboration"
+      "mechanism_type": "Rules",
+      "principle": "Reminder generation is repeatable and deadline-bound.",
+      "title": "Deadline reminders"
+    },
+    {
+      "adr": "Supplier reference",
+      "enforced_by": "Executed supplier fixtures plus tests and control probes.",
+      "evidence_ref": "supplier_review/tests/test_workflow.py",
+      "id": 12,
+      "mechanism_type": "Tests",
+      "principle": "Displayed traces and probe results must be reproducible.",
+      "title": "Executable assurance"
     }
-  ],
-  "source": "governance/GOVERNANCE_AS_CODE.md"
+  ]
 }
