@@ -3,7 +3,7 @@
 The built output of a working reference implementation, published as a static
 site.
 
-Live at: _(set once deployed)_
+Live at: **https://ghadiator.github.io/**
 
 ## What this is
 
@@ -65,5 +65,8 @@ Serve it at the **domain root** — routes and downloads are root-relative, so
 - **Cloudflare Pages** — direct upload of this directory, or connect the repo
   with an empty build command and `/` as the output directory.
 - **GitHub Pages** — serve from the default branch root. `.nojekyll` is
-  present because Jekyll would otherwise drop `_next/`.
+  present because Jekyll would otherwise drop `_next/`. This repository is
+  `Ghadiator.github.io`, so Pages serves it at the domain root, which is
+  required: the build contains 55 root-absolute URLs and sets no `basePath`,
+  so hosting it under a subdirectory would 404 every asset.
 - **Anything else** — `python3 -m http.server 8000` from this directory.
