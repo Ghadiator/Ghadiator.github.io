@@ -1,0 +1,78 @@
+{
+  "hazards": [
+    {
+      "consequence": "A reviewer approves on evidence that was never checked, believing the numbers vouch for the story.",
+      "control": "A verified finding is rebuilt from the checked evidence; the proposal's own wording is discarded.",
+      "evidence_ref": "supplier_review/workflow.py",
+      "hazard": "A proposal pairs correct figures with a fabricated account of events.",
+      "id": "H1",
+      "residual": "Only a computed volume variance is admissible. Any other finding type is dropped rather than verified — the runner cannot check it, so it does not carry it.",
+      "test": "test_verified_finding_is_restated_from_evidence_not_proposal_prose"
+    },
+    {
+      "consequence": "An invoice is accepted on the supplier's own say-so.",
+      "control": "Free text never reaches the proposal adapter or the decision; the proposer is handed a revalidated submission with the note removed.",
+      "evidence_ref": "supplier_review/workflow.py",
+      "hazard": "Supplier free text instructs the system to approve without review.",
+      "id": "H2",
+      "residual": "The instruction-pattern detector is two signatures and is not a comprehensive injection detector. Structural exclusion is what holds, not detection.",
+      "test": "test_supplier_note_never_reaches_proposal_adapter"
+    },
+    {
+      "consequence": "A submission is disposed of by someone with no authority to do it, and the record says otherwise.",
+      "control": "An explicit Awaiting_reviewer state plus a reviewer allowlist; an unauthorised resume raises and mutates nothing.",
+      "evidence_ref": "supplier_review/workflow.py",
+      "hazard": "An unauthorised actor records a decision.",
+      "id": "H3",
+      "residual": "A reference authorization check against a configured set, not a production identity system, session model or delegation chain.",
+      "test": "test_gate_prevents_archive_and_unauthorised_decision"
+    },
+    {
+      "consequence": "An invoice that failed arithmetic or contract checks is approved anyway.",
+      "control": "resume() refuses an approval while failures remain; the case must be corrected or rejected.",
+      "evidence_ref": "supplier_review/workflow.py",
+      "hazard": "A hard check failure is waived at the gate.",
+      "id": "H4",
+      "residual": "Covers this runner's fourteen checks. A check that is not implemented cannot fail, and so cannot block.",
+      "test": "test_hard_rule_failure_cannot_be_overridden"
+    },
+    {
+      "consequence": "A duplicate payment downstream.",
+      "control": "The supplier-and-invoice identity is checked against an approved-invoice register before approval is possible.",
+      "evidence_ref": "supplier_review/workflow.py",
+      "hazard": "The same invoice is submitted and accepted twice.",
+      "id": "H5",
+      "residual": "The register is an in-memory fixture. A deployment needs a durable, shared one, or the check only sees one process.",
+      "test": "test_contract_failures_drive_rejection"
+    },
+    {
+      "consequence": "The record no longer shows what was originally claimed, so the decision cannot be reconstructed.",
+      "control": "A correction must keep the case and invoice identity and increase its version; earlier events stay in the record and every check runs again.",
+      "evidence_ref": "supplier_review/workflow.py",
+      "hazard": "A correction quietly replaces the submission it corrects.",
+      "id": "H6",
+      "residual": "Records are held in memory for the run. Durable custody, retention and tamper evidence are integration responsibilities.",
+      "test": "test_correction_revalidates_and_keeps_original_events"
+    },
+    {
+      "consequence": "The case is stranded mid-run with no findings and no reviewer, or unchecked proposals reach the package.",
+      "control": "An adapter that raises or exceeds its budget forfeits every proposal, and the case still reaches the gate.",
+      "evidence_ref": "supplier_review/workflow.py",
+      "hazard": "The proposal adapter fails or floods the verifier.",
+      "id": "H7",
+      "residual": "Bounds the blast radius of a bad proposer; it does not make the proposer trustworthy.",
+      "test": "test_failing_proposal_adapter_forfeits_findings_and_reaches_the_gate"
+    },
+    {
+      "consequence": "The page asserts a level of verification that no longer corresponds to anything.",
+      "control": "The test count is recorded against a digest of the supplier sources and is withdrawn from the page when the digest stops matching.",
+      "evidence_ref": "supplier_review/verification.py",
+      "hazard": "A displayed assurance figure outlives the code it measured.",
+      "id": "H8",
+      "residual": "Covers the supplier sources only. It detects a stale figure; it does not detect a test that passes for the wrong reason.",
+      "test": "test_scenarios_are_reproducible_and_attributable"
+    }
+  ],
+  "note": "Authored hazard analysis for the supplier reference runner. Each row names the control, the file that implements it, the test that exercises it, and the residual risk it leaves.",
+  "source": "supplier_review/hazards.py"
+}
