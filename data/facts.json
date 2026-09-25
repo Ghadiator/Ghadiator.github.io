@@ -5,7 +5,7 @@
       "id": "tests_passing",
       "label": "Supplier tests passed",
       "note": "Recorded against the current supplier source digest.",
-      "observed_on": "2026-09-24",
+      "observed_on": "2026-09-25",
       "source": "python -m supplier_review.verification",
       "unit": "",
       "value": 47

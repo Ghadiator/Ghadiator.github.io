@@ -362,16 +362,15 @@
     },
     {
       "actor": "system",
-      "detail": "Scripted model stand-in; no live model calls",
+      "detail": "Scripted persona stand-ins; no live model calls",
       "kind": "exception.started",
       "label": "Bounded exception review started",
-      "node": "committee",
+      "node": "proponent",
       "refs": [
         "supplier_review/workflow.py"
       ],
       "seq": 28,
       "stage": "exception",
-      "sub": "c.frame",
       "ts_rel": 27
     },
     {
@@ -379,13 +378,12 @@
       "detail": "INV-2026-082 is within the EUR 15000.00 cap and uses approved rates.",
       "kind": "committee.proponent.argument",
       "label": "Proponent: contractual checks passed",
-      "node": "committee",
+      "node": "proponent",
       "refs": [
         "supplier_review/workflow.py"
       ],
       "seq": 29,
       "stage": "exception",
-      "sub": "c.proponent",
       "ts_rel": 28
     },
     {
@@ -393,13 +391,12 @@
       "detail": "An additional EUR 900 charge should cause rejection.",
       "kind": "committee.opponent.argument",
       "label": "Opponent proposes a finding",
-      "node": "committee",
+      "node": "opponent",
       "refs": [
         "supplier_review/workflow.py"
       ],
       "seq": 30,
       "stage": "exception",
-      "sub": "c.opponent",
       "ts_rel": 29
     },
     {
@@ -421,13 +418,12 @@
       "detail": "0 verified finding(s); 1 unsupported finding(s) removed. A reviewer retains decision authority.",
       "kind": "committee.judge.argument",
       "label": "Judge packages verified evidence",
-      "node": "committee",
+      "node": "judge",
       "refs": [
         "supplier_review/workflow.py"
       ],
       "seq": 32,
       "stage": "exception",
-      "sub": "c.judge",
       "ts_rel": 31
     },
     {
@@ -435,7 +431,7 @@
       "detail": "",
       "kind": "audit.row_appended",
       "label": "Audit: Baseline_checked → Committee_reviewed",
-      "node": "committee",
+      "node": "judge",
       "refs": [
         "supplier_review/workflow.py"
       ],
