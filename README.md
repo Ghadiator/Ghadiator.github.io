@@ -22,14 +22,27 @@ here is a conformity assessment or certification.
 
 - **Architecture** — the connected workflow from collection request through
   reminders, intake, deterministic checks, contract cross-check, bounded
-  exception review, evidence verification, the reviewer gate, the correction
-  loop and the archive. Three components open into their own internals, and a
-  recorded run walks all of it, suspending at **every** human gate.
+  adversarial review, evidence verification, the reviewer gate, the correction
+  loop and the archive. A recorded run walks all of it, suspending at **every**
+  human gate.
+
+  The adversarial committee is on this view rather than behind a drill-down:
+  `07 Proponent → 08 Opponent → 09 Evidence firewall (CoVe) → 10 Judge`.
+  The ordering is the point — chain-of-verification runs *between* the Opponent
+  and the Judge, so the Judge never weighs a claim that has not already been
+  re-derived from the invoice and contract. Selecting any of the four shows
+  what it said. Two components still open into their own internals.
+
+  A specific run is linkable with `?scenario=<slug>`; an unknown slug falls
+  back to the default rather than rendering an empty page.
 - **Compliance** — classification before compliance, then obligation →
   mechanism → evidence across the EU AI Act, ISO/IEC 42001 and NIST AI RMF.
   Every row states what it does *not* establish.
-- **Assurance** — the control set, the threat-to-defence mapping, and executed
-  control probes.
+- **Assurance** — eight hazards, each shown with the control it required, the
+  file implementing it, the test exercising it and **the residual risk it does
+  not cover**; then the control set, the threat-to-defence mapping, and
+  executed control probes. The derivation comes first: a control list says what
+  the system does, not what the controls were derived from.
 - **Evidence** — the complete ordered event record of any recorded run, with
   JSON download.
 
