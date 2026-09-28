@@ -21,11 +21,6 @@
       "relation": "supports"
     },
     {
-      "child": "A2",
-      "parent": "G1",
-      "relation": "supports"
-    },
-    {
       "child": "G2",
       "parent": "S1",
       "relation": "supports"
@@ -124,6 +119,16 @@
       "child": "D8",
       "parent": "Sn8",
       "relation": "attacks"
+    },
+    {
+      "child": "G6",
+      "parent": "S1",
+      "relation": "supports"
+    },
+    {
+      "child": "D0",
+      "parent": "G6",
+      "relation": "attacks"
     }
   ],
   "nodes": [
@@ -142,7 +147,7 @@
       "kind": "strategy",
       "ref": "",
       "status": null,
-      "text": "Argue over the four ways a disposal can be wrong: a violation is approved, an unchecked finding is believed, the wrong person decides, or the record cannot reconstruct what happened.",
+      "text": "Argue over the five ways a disposal can be wrong: a violation is approved, an unchecked finding is believed, the wrong person decides, the record cannot reconstruct what happened, or every check passes against reference data that was itself wrong.",
       "undeveloped": false
     },
     {
@@ -166,15 +171,6 @@
     {
       "hazard": "",
       "id": "A1",
-      "kind": "assumption",
-      "ref": "",
-      "status": null,
-      "text": "The contract, rate card, PO and spending limit given to the runner are themselves correct and current. The runner checks a submission against them; it does not validate them.",
-      "undeveloped": false
-    },
-    {
-      "hazard": "",
-      "id": "A2",
       "kind": "assumption",
       "ref": "",
       "status": null,
@@ -360,16 +356,35 @@
       "status": "bounded",
       "text": "Covers the supplier sources only. It detects a stale figure; it does not detect a test that passes for the wrong reason.",
       "undeveloped": false
+    },
+    {
+      "hazard": "",
+      "id": "G6",
+      "kind": "goal",
+      "ref": "",
+      "status": null,
+      "text": "The contract, rate card, PO and spending limit a submission is checked against are themselves correct and current.",
+      "undeveloped": true
+    },
+    {
+      "hazard": "",
+      "id": "D0",
+      "kind": "defeater",
+      "ref": "",
+      "status": "open",
+      "text": "Nothing in this runner checks the reference data. Every arithmetic and contract check is exact against whatever contract, rate card and limit it was handed, so a stale rate card or a superseded PO produces a correct-looking approval against the wrong terms, and no control here would notice. Closing this needs a source of truth for contract data and a currency check against it — neither of which is in scope for a reference runner, which is why the branch is drawn undeveloped rather than argued.",
+      "undeveloped": false
     }
   ],
   "note": "Goal Structuring Notation, with defeaters from eliminative argumentation. Goals are authored; every solution and defeater is derived from the hazard log, so the argument cannot claim coverage the hazards do not have.",
   "source": "supplier_review/assurance_case.py",
   "summary": {
     "bounded": 6,
-    "defeaters": 8,
-    "goals": 5,
-    "open": 2,
+    "defeaters": 9,
+    "goals": 6,
+    "open": 3,
     "rebutted": 0,
-    "solutions": 8
+    "solutions": 8,
+    "undeveloped": 1
   }
 }
