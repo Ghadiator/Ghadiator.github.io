@@ -1,0 +1,375 @@
+{
+  "edges": [
+    {
+      "child": "S1",
+      "parent": "G1",
+      "relation": "supports"
+    },
+    {
+      "child": "C1",
+      "parent": "G1",
+      "relation": "supports"
+    },
+    {
+      "child": "C2",
+      "parent": "G1",
+      "relation": "supports"
+    },
+    {
+      "child": "A1",
+      "parent": "G1",
+      "relation": "supports"
+    },
+    {
+      "child": "A2",
+      "parent": "G1",
+      "relation": "supports"
+    },
+    {
+      "child": "G2",
+      "parent": "S1",
+      "relation": "supports"
+    },
+    {
+      "child": "Sn4",
+      "parent": "G2",
+      "relation": "supports"
+    },
+    {
+      "child": "D4",
+      "parent": "Sn4",
+      "relation": "attacks"
+    },
+    {
+      "child": "Sn5",
+      "parent": "G2",
+      "relation": "supports"
+    },
+    {
+      "child": "D5",
+      "parent": "Sn5",
+      "relation": "attacks"
+    },
+    {
+      "child": "G3",
+      "parent": "S1",
+      "relation": "supports"
+    },
+    {
+      "child": "Sn1",
+      "parent": "G3",
+      "relation": "supports"
+    },
+    {
+      "child": "D1",
+      "parent": "Sn1",
+      "relation": "attacks"
+    },
+    {
+      "child": "Sn2",
+      "parent": "G3",
+      "relation": "supports"
+    },
+    {
+      "child": "D2",
+      "parent": "Sn2",
+      "relation": "attacks"
+    },
+    {
+      "child": "Sn7",
+      "parent": "G3",
+      "relation": "supports"
+    },
+    {
+      "child": "D7",
+      "parent": "Sn7",
+      "relation": "attacks"
+    },
+    {
+      "child": "G4",
+      "parent": "S1",
+      "relation": "supports"
+    },
+    {
+      "child": "Sn3",
+      "parent": "G4",
+      "relation": "supports"
+    },
+    {
+      "child": "D3",
+      "parent": "Sn3",
+      "relation": "attacks"
+    },
+    {
+      "child": "G5",
+      "parent": "S1",
+      "relation": "supports"
+    },
+    {
+      "child": "Sn6",
+      "parent": "G5",
+      "relation": "supports"
+    },
+    {
+      "child": "D6",
+      "parent": "Sn6",
+      "relation": "attacks"
+    },
+    {
+      "child": "Sn8",
+      "parent": "G5",
+      "relation": "supports"
+    },
+    {
+      "child": "D8",
+      "parent": "Sn8",
+      "relation": "attacks"
+    }
+  ],
+  "nodes": [
+    {
+      "hazard": "",
+      "id": "G1",
+      "kind": "goal",
+      "ref": "",
+      "status": null,
+      "text": "A supplier submission is disposed of only on checked evidence, by someone authorised to decide, leaving a record that reconstructs the decision.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "",
+      "id": "S1",
+      "kind": "strategy",
+      "ref": "",
+      "status": null,
+      "text": "Argue over the four ways a disposal can be wrong: a violation is approved, an unchecked finding is believed, the wrong person decides, or the record cannot reconstruct what happened.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "",
+      "id": "C1",
+      "kind": "context",
+      "ref": "",
+      "status": null,
+      "text": "Scope: one hermetic reference runner over recurring service-provider billing submissions. Contracts, rate cards, POs and registers are fixtures held in this process, not live integrations.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "",
+      "id": "C2",
+      "kind": "context",
+      "ref": "",
+      "status": null,
+      "text": "The committee's three personas are scripted, deterministic roles. No model is called, so nothing here is evidence about model behaviour.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "",
+      "id": "A1",
+      "kind": "assumption",
+      "ref": "",
+      "status": null,
+      "text": "The contract, rate card, PO and spending limit given to the runner are themselves correct and current. The runner checks a submission against them; it does not validate them.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "",
+      "id": "A2",
+      "kind": "assumption",
+      "ref": "",
+      "status": null,
+      "text": "The reviewer at the gate reads what the package shows them. Every controllability grade in the hazard log rests on this.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "",
+      "id": "G2",
+      "kind": "goal",
+      "ref": "",
+      "status": null,
+      "text": "A submission that fails an arithmetic or contract check cannot be approved, and the same invoice cannot be approved twice.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H4",
+      "id": "Sn4",
+      "kind": "solution",
+      "ref": "supplier_review/workflow.py · test_hard_rule_failure_cannot_be_overridden",
+      "status": null,
+      "text": "resume() refuses an approval while failures remain; the case must be corrected or rejected. Exercised by test_hard_rule_failure_cannot_be_overridden.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H4",
+      "id": "D4",
+      "kind": "defeater",
+      "ref": "supplier_review/workflow.py",
+      "status": "bounded",
+      "text": "Covers this runner's fourteen checks. A check that is not implemented cannot fail, and so cannot block.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H5",
+      "id": "Sn5",
+      "kind": "solution",
+      "ref": "supplier_review/workflow.py · test_contract_failures_drive_rejection",
+      "status": null,
+      "text": "The supplier-and-invoice identity is checked against an approved-invoice register before approval is possible. Exercised by test_contract_failures_drive_rejection.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H5",
+      "id": "D5",
+      "kind": "defeater",
+      "ref": "supplier_review/workflow.py",
+      "status": "open",
+      "text": "The register lives in memory for the length of one run. Across two processes — or one restart — it sees nothing, so in a deployment this control is effectively absent until a durable shared register replaces it. This is the widest gap in the log and the first thing an integration has to close.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "",
+      "id": "G3",
+      "kind": "goal",
+      "ref": "",
+      "status": null,
+      "text": "No finding reaches the reviewer that was not rebuilt from evidence the runner checked itself.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H1",
+      "id": "Sn1",
+      "kind": "solution",
+      "ref": "supplier_review/workflow.py · test_verified_finding_is_restated_from_evidence_not_proposal_prose",
+      "status": null,
+      "text": "A verified finding is rebuilt from the checked evidence; the proposal's own wording is discarded. Exercised by test_verified_finding_is_restated_from_evidence_not_proposal_prose.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H1",
+      "id": "D1",
+      "kind": "defeater",
+      "ref": "supplier_review/workflow.py",
+      "status": "bounded",
+      "text": "Only a computed volume variance is admissible. Any other finding type is dropped rather than verified — the runner cannot check it, so it does not carry it.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H2",
+      "id": "Sn2",
+      "kind": "solution",
+      "ref": "supplier_review/workflow.py · test_supplier_note_never_reaches_proposal_adapter",
+      "status": null,
+      "text": "Free text never reaches the proposal adapter or the decision; the proposer is handed a revalidated submission with the note removed. Exercised by test_supplier_note_never_reaches_proposal_adapter.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H2",
+      "id": "D2",
+      "kind": "defeater",
+      "ref": "supplier_review/workflow.py",
+      "status": "bounded",
+      "text": "The instruction-pattern detector is two signatures and is not a comprehensive injection detector. Structural exclusion is what holds, not detection.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H7",
+      "id": "Sn7",
+      "kind": "solution",
+      "ref": "supplier_review/workflow.py · test_failing_proposal_adapter_forfeits_findings_and_reaches_the_gate",
+      "status": null,
+      "text": "An adapter that raises or exceeds its budget forfeits every proposal, and the case still reaches the gate. Exercised by test_failing_proposal_adapter_forfeits_findings_and_reaches_the_gate.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H7",
+      "id": "D7",
+      "kind": "defeater",
+      "ref": "supplier_review/workflow.py",
+      "status": "bounded",
+      "text": "Bounds the blast radius of a bad proposer; it does not make the proposer trustworthy.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "",
+      "id": "G4",
+      "kind": "goal",
+      "ref": "",
+      "status": null,
+      "text": "Only a reviewer on the configured allowlist can record a decision, and an unauthorised attempt changes nothing.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H3",
+      "id": "Sn3",
+      "kind": "solution",
+      "ref": "supplier_review/workflow.py · test_gate_prevents_archive_and_unauthorised_decision",
+      "status": null,
+      "text": "An explicit Awaiting_reviewer state plus a reviewer allowlist; an unauthorised resume raises and mutates nothing. Exercised by test_gate_prevents_archive_and_unauthorised_decision.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H3",
+      "id": "D3",
+      "kind": "defeater",
+      "ref": "supplier_review/workflow.py",
+      "status": "open",
+      "text": "The allowlist is a set held by this process. The mechanism — an explicit authorisation check that mutates nothing on failure — transfers to a deployment; the identity behind it does not, and a session or delegation model would have to supply it.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "",
+      "id": "G5",
+      "kind": "goal",
+      "ref": "",
+      "status": null,
+      "text": "The record reconstructs what was claimed, what was checked and who decided — including across a correction.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H6",
+      "id": "Sn6",
+      "kind": "solution",
+      "ref": "supplier_review/workflow.py · test_correction_revalidates_and_keeps_original_events",
+      "status": null,
+      "text": "A correction must keep the case and invoice identity and increase its version; earlier events stay in the record and every check runs again. Exercised by test_correction_revalidates_and_keeps_original_events.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H6",
+      "id": "D6",
+      "kind": "defeater",
+      "ref": "supplier_review/workflow.py",
+      "status": "bounded",
+      "text": "Records are held in memory for the run. Durable custody, retention and tamper evidence are integration responsibilities.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H8",
+      "id": "Sn8",
+      "kind": "solution",
+      "ref": "supplier_review/verification.py · test_scenarios_are_reproducible_and_attributable",
+      "status": null,
+      "text": "The test count is recorded against a digest of the supplier sources and is withdrawn from the page when the digest stops matching. Exercised by test_scenarios_are_reproducible_and_attributable.",
+      "undeveloped": false
+    },
+    {
+      "hazard": "H8",
+      "id": "D8",
+      "kind": "defeater",
+      "ref": "supplier_review/verification.py",
+      "status": "bounded",
+      "text": "Covers the supplier sources only. It detects a stale figure; it does not detect a test that passes for the wrong reason.",
+      "undeveloped": false
+    }
+  ],
+  "note": "Goal Structuring Notation, with defeaters from eliminative argumentation. Goals are authored; every solution and defeater is derived from the hazard log, so the argument cannot claim coverage the hazards do not have.",
+  "source": "supplier_review/assurance_case.py",
+  "summary": {
+    "bounded": 6,
+    "defeaters": 8,
+    "goals": 5,
+    "open": 2,
+    "rebutted": 0,
+    "solutions": 8
+  }
+}
