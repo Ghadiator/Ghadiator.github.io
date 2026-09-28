@@ -1,14 +1,14 @@
 {
   "facts": [
     {
-      "display": "47",
+      "display": "58",
       "id": "tests_passing",
       "label": "Supplier tests passed",
       "note": "Recorded against the current supplier source digest.",
       "observed_on": "2026-09-28",
       "source": "python -m supplier_review.verification",
       "unit": "",
-      "value": 47
+      "value": 58
     },
     {
       "display": "13",
