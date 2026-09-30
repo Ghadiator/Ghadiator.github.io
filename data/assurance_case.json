@@ -354,7 +354,7 @@
       "kind": "defeater",
       "ref": "supplier_review/verification.py",
       "status": "bounded",
-      "text": "Covers the supplier sources only. It detects a stale figure; it does not detect a test that passes for the wrong reason.",
+      "text": "Covers the supplier sources only. It detects a stale figure; it does not detect a test that passes for the wrong reason. It also fires only while the page is being built: a figure already published stays on the live site until the next deploy, so the digest bounds what a build may claim rather than what a deployed page still shows. Observed — adding five tests left the site displaying 71 against a suite of 78 until this deploy.",
       "undeveloped": false
     },
     {
