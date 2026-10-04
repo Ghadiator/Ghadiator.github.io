@@ -145,7 +145,7 @@
       "test": "test_scenarios_are_reproducible_and_attributable"
     }
   ],
-  "note": "Authored hazard analysis for the supplier reference runner. Each row names the control, the file that implements it, the test that exercises it, the residual risk it leaves, and a grading of the integrity the hazard requires against the integrity the control achieves.",
+  "note": "Authored for this runner. Each row carries its control, the test that exercises it, what it still leaves uncovered, and a grading.",
   "scale": {
     "basis": "Adapted from the severity/exposure/controllability determination used in functional safety. It is an adaptation for this workflow, not a classification under any standard.",
     "control_class": {
