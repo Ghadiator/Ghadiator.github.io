@@ -14,7 +14,9 @@
     "supplier_total_mismatch",
     "supplier_currency_mismatch",
     "supplier_invalid",
-    "supplier_pending"
+    "supplier_pending",
+    "supplier_adapter_failure",
+    "supplier_proposal_budget"
   ],
   "scenarios": [
     {
@@ -133,6 +135,24 @@
       "slug": "supplier_pending",
       "terminal_state": "Awaiting_reviewer",
       "title": "Review gate holds an unresolved case"
+    },
+    {
+      "event_count": 40,
+      "group": "Committee limits",
+      "one_liner": "The adapter raises mid-review; every proposal is forfeited and the case still reaches a reviewer.",
+      "reached_human_gate": true,
+      "slug": "supplier_adapter_failure",
+      "terminal_state": "Approved",
+      "title": "Proposal adapter fails → opponent contributes nothing"
+    },
+    {
+      "event_count": 40,
+      "group": "Committee limits",
+      "one_liner": "The adapter returns more findings than the budget allows; none enter verification.",
+      "reached_human_gate": true,
+      "slug": "supplier_proposal_budget",
+      "terminal_state": "Approved",
+      "title": "Too many proposals → all discarded"
     }
   ]
 }
