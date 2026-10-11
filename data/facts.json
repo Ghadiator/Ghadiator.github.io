@@ -1,23 +1,13 @@
 {
   "facts": [
     {
-      "display": "78",
-      "id": "tests_passing",
-      "label": "Supplier tests passed",
-      "note": "Recorded against the current supplier source digest.",
-      "observed_on": "2026-10-07",
-      "source": "python -m supplier_review.verification",
-      "unit": "",
-      "value": 78
-    },
-    {
-      "display": "13",
+      "display": "15",
       "id": "supplier_scenarios",
       "label": "Executed supplier scenarios",
       "note": "",
       "source": "supplier_review/scenarios.py",
       "unit": "",
-      "value": 13
+      "value": 15
     },
     {
       "display": "14",
@@ -58,11 +48,11 @@
   ],
   "generated_by": "site/scripts/export_site_data.py",
   "headline_ids": [
-    "tests_passing",
     "supplier_scenarios",
     "deterministic_checks",
     "live_llm_calls",
-    "control_probes"
+    "control_probes",
+    "workflow_states"
   ],
   "honesty_notes": [
     "Counts and traces come from the supplier reference runner, not another domain, and measure only its scope.",

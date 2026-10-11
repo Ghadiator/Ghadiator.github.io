@@ -2786,16 +2786,452 @@
         "version": 1
       },
       "title": "Review gate holds an unresolved case"
+    },
+    {
+      "attempts": 1,
+      "audit": [
+        {
+          "from_state": "New",
+          "seq": 2,
+          "to_state": "Requested"
+        },
+        {
+          "from_state": "Requested",
+          "seq": 7,
+          "to_state": "Received"
+        },
+        {
+          "from_state": "Received",
+          "seq": 17,
+          "to_state": "Rules_checked"
+        },
+        {
+          "from_state": "Rules_checked",
+          "seq": 27,
+          "to_state": "Baseline_checked"
+        },
+        {
+          "from_state": "Baseline_checked",
+          "seq": 32,
+          "to_state": "Committee_reviewed"
+        },
+        {
+          "from_state": "Committee_reviewed",
+          "seq": 34,
+          "to_state": "Awaiting_reviewer"
+        },
+        {
+          "from_state": "Awaiting_reviewer",
+          "seq": 37,
+          "to_state": "Approved"
+        },
+        {
+          "from_state": "Approved",
+          "seq": 39,
+          "to_state": "Archived"
+        }
+      ],
+      "case_id": "CASE-082",
+      "checks": [
+        {
+          "attempt": 1,
+          "id": "R1",
+          "name": "Line amounts equal quantity × rate",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "id": "R2",
+          "name": "Invoice total equals line sum",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "id": "R3",
+          "name": "Service period is ordered",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "id": "R4",
+          "name": "Invoice date follows service period",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "id": "R5",
+          "name": "Service codes are unique",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "id": "R6",
+          "name": "Required service reports are attached",
+          "ok": true
+        }
+      ],
+      "contract": {
+        "contract_id": "CTR-2026-014",
+        "currency": "EUR",
+        "prior_period_total": "10000.00",
+        "purchase_order": "PO-2026-082",
+        "required_documents": [
+          "service-report"
+        ],
+        "spending_limit": "15000.00",
+        "supplier_id": "SUP-014",
+        "valid_from": "2026-01-01",
+        "valid_to": "2026-12-31",
+        "variance_threshold": "0.20",
+        "version": "v3"
+      },
+      "contract_checks": [
+        {
+          "attempt": 1,
+          "name": "Supplier matches contract registry",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Contract identifier matches",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Purchase order matches",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Currency matches contract",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Service period is covered by contract",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Rates match approved rate card",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Invoice total stays within spending limit",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Invoice is not already approved",
+          "ok": true
+        }
+      ],
+      "due": "2026-09-01",
+      "event_count": 40,
+      "failures": [],
+      "findings": [],
+      "gates": [
+        {
+          "decision": "APPROVE",
+          "rationale": "Reviewed the contract checks and service report; the submission is approved.",
+          "reviewer": "procurement.reviewer",
+          "seq": 35
+        }
+      ],
+      "group": "Committee limits",
+      "human_resumed": true,
+      "models_invoked": true,
+      "one_liner": "The adapter raises mid-review; every proposal is forfeited and the case still reaches a reviewer.",
+      "reached_gate": true,
+      "reminders": [
+        {
+          "detail": "14 day(s) to deadline; fixture outbox only, no email sent",
+          "label": "Collection reminder prepared",
+          "seq": 3
+        },
+        {
+          "detail": "7 day(s) to deadline; fixture outbox only, no email sent",
+          "label": "Collection reminder prepared",
+          "seq": 4
+        },
+        {
+          "detail": "3 day(s) to deadline; fixture outbox only, no email sent",
+          "label": "Collection reminder prepared",
+          "seq": 5
+        }
+      ],
+      "requested_on": "2026-08-15",
+      "requester": "procurement.reviewer",
+      "route": "EXCEPTION_REVIEW",
+      "slug": "supplier_adapter_failure",
+      "stages": [
+        "request",
+        "reminders",
+        "ingest",
+        "memory",
+        "checks",
+        "contract",
+        "exception",
+        "advisory",
+        "review",
+        "disposition",
+        "archive"
+      ],
+      "state": "Approved",
+      "submission": {
+        "currency": "EUR",
+        "documents": [
+          "service-report"
+        ],
+        "has_supplier_note": true,
+        "invoice_date": "2026-09-01",
+        "invoice_id": "INV-2026-082",
+        "lines": [
+          {
+            "amount": "13000.00",
+            "quantity": "130",
+            "service_code": "maintenance-hour",
+            "unit_rate": "100.00"
+          }
+        ],
+        "missing_documents": [],
+        "period_end": "2026-08-31",
+        "period_start": "2026-08-01",
+        "purchase_order": "PO-2026-082",
+        "supplier_id": "SUP-014",
+        "total": "13000.00",
+        "version": 1
+      },
+      "title": "Proposal adapter fails → opponent contributes nothing"
+    },
+    {
+      "attempts": 1,
+      "audit": [
+        {
+          "from_state": "New",
+          "seq": 2,
+          "to_state": "Requested"
+        },
+        {
+          "from_state": "Requested",
+          "seq": 7,
+          "to_state": "Received"
+        },
+        {
+          "from_state": "Received",
+          "seq": 17,
+          "to_state": "Rules_checked"
+        },
+        {
+          "from_state": "Rules_checked",
+          "seq": 27,
+          "to_state": "Baseline_checked"
+        },
+        {
+          "from_state": "Baseline_checked",
+          "seq": 32,
+          "to_state": "Committee_reviewed"
+        },
+        {
+          "from_state": "Committee_reviewed",
+          "seq": 34,
+          "to_state": "Awaiting_reviewer"
+        },
+        {
+          "from_state": "Awaiting_reviewer",
+          "seq": 37,
+          "to_state": "Approved"
+        },
+        {
+          "from_state": "Approved",
+          "seq": 39,
+          "to_state": "Archived"
+        }
+      ],
+      "case_id": "CASE-082",
+      "checks": [
+        {
+          "attempt": 1,
+          "id": "R1",
+          "name": "Line amounts equal quantity × rate",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "id": "R2",
+          "name": "Invoice total equals line sum",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "id": "R3",
+          "name": "Service period is ordered",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "id": "R4",
+          "name": "Invoice date follows service period",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "id": "R5",
+          "name": "Service codes are unique",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "id": "R6",
+          "name": "Required service reports are attached",
+          "ok": true
+        }
+      ],
+      "contract": {
+        "contract_id": "CTR-2026-014",
+        "currency": "EUR",
+        "prior_period_total": "10000.00",
+        "purchase_order": "PO-2026-082",
+        "required_documents": [
+          "service-report"
+        ],
+        "spending_limit": "15000.00",
+        "supplier_id": "SUP-014",
+        "valid_from": "2026-01-01",
+        "valid_to": "2026-12-31",
+        "variance_threshold": "0.20",
+        "version": "v3"
+      },
+      "contract_checks": [
+        {
+          "attempt": 1,
+          "name": "Supplier matches contract registry",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Contract identifier matches",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Purchase order matches",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Currency matches contract",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Service period is covered by contract",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Rates match approved rate card",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Invoice total stays within spending limit",
+          "ok": true
+        },
+        {
+          "attempt": 1,
+          "name": "Invoice is not already approved",
+          "ok": true
+        }
+      ],
+      "due": "2026-09-01",
+      "event_count": 40,
+      "failures": [],
+      "findings": [],
+      "gates": [
+        {
+          "decision": "APPROVE",
+          "rationale": "Reviewed the contract checks and service report; the submission is approved.",
+          "reviewer": "procurement.reviewer",
+          "seq": 35
+        }
+      ],
+      "group": "Committee limits",
+      "human_resumed": true,
+      "models_invoked": true,
+      "one_liner": "The adapter returns more findings than the budget allows; none enter verification.",
+      "reached_gate": true,
+      "reminders": [
+        {
+          "detail": "14 day(s) to deadline; fixture outbox only, no email sent",
+          "label": "Collection reminder prepared",
+          "seq": 3
+        },
+        {
+          "detail": "7 day(s) to deadline; fixture outbox only, no email sent",
+          "label": "Collection reminder prepared",
+          "seq": 4
+        },
+        {
+          "detail": "3 day(s) to deadline; fixture outbox only, no email sent",
+          "label": "Collection reminder prepared",
+          "seq": 5
+        }
+      ],
+      "requested_on": "2026-08-15",
+      "requester": "procurement.reviewer",
+      "route": "EXCEPTION_REVIEW",
+      "slug": "supplier_proposal_budget",
+      "stages": [
+        "request",
+        "reminders",
+        "ingest",
+        "memory",
+        "checks",
+        "contract",
+        "exception",
+        "advisory",
+        "review",
+        "disposition",
+        "archive"
+      ],
+      "state": "Approved",
+      "submission": {
+        "currency": "EUR",
+        "documents": [
+          "service-report"
+        ],
+        "has_supplier_note": true,
+        "invoice_date": "2026-09-01",
+        "invoice_id": "INV-2026-082",
+        "lines": [
+          {
+            "amount": "13000.00",
+            "quantity": "130",
+            "service_code": "maintenance-hour",
+            "unit_rate": "100.00"
+          }
+        ],
+        "missing_documents": [],
+        "period_end": "2026-08-31",
+        "period_start": "2026-08-01",
+        "purchase_order": "PO-2026-082",
+        "supplier_id": "SUP-014",
+        "total": "13000.00",
+        "version": 1
+      },
+      "title": "Too many proposals → all discarded"
     }
   ],
   "note": "One structured record per executed fixture run. Submission and contract come from the run object; checks, transitions and reviewer decisions are parsed from its own emitted events, strictly — an unreadable label fails this export.",
   "source": "supplier_review/scenarios.py",
   "summary": {
-    "audit_rows": 96,
+    "audit_rows": 112,
     "awaiting_decision": 1,
-    "cases": 13,
-    "reached_gate": 12,
-    "reminders": 39,
+    "cases": 15,
+    "reached_gate": 14,
+    "reminders": 45,
     "states": [
       "Approved",
       "Awaiting_reviewer",
