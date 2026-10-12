@@ -1,0 +1,81 @@
+{
+  "counts": {
+    "absent": 1,
+    "config": 4,
+    "fixture": 3,
+    "live": 0,
+    "total": 8
+  },
+  "note": "Every external interface is environment-selected. Switching provider, or turning live proposals on, is an environment edit rather than a code change — and a half-configured environment raises instead of quietly behaving like a fixture run.",
+  "seams": [
+    {
+      "detail": "Scripted stand-ins today; a live model plugs into the same Callable.",
+      "env": "SUPPLIER_PROPOSER_MODE · SUPPLIER_PROPOSER_MODEL",
+      "name": "Proposal adapter",
+      "ref": "supplier_review/adapters.py",
+      "status": "config"
+    },
+    {
+      "detail": "Read by the provider SDK from the environment; never written in code.",
+      "env": "ANTHROPIC_API_KEY · OPENAI_API_KEY · GROQ_API_KEY · GOOGLE_API_KEY",
+      "name": "Provider credentials",
+      "ref": "supplier_review/config.py",
+      "status": "config"
+    },
+    {
+      "detail": "Who may record a decision. The fixtures use one reviewer.",
+      "env": "SUPPLIER_REVIEWERS",
+      "name": "Reviewer allowlist",
+      "ref": "supplier_review/config.py",
+      "status": "config"
+    },
+    {
+      "detail": "The approved contract, rate card and spending limit a submission is checked against.",
+      "env": "—",
+      "name": "Contract registry",
+      "ref": "supplier_review/scenarios.py",
+      "status": "fixture"
+    },
+    {
+      "detail": "Collection requests and reminders are composed to an in-memory outbox; no mail leaves.",
+      "env": "—",
+      "name": "Supplier correspondence",
+      "ref": "supplier_review/workflow.py",
+      "status": "fixture"
+    },
+    {
+      "detail": "Frozen event records held in memory. Durable retention is an integration responsibility.",
+      "env": "—",
+      "name": "Evidence archive",
+      "ref": "supplier_review/workflow.py",
+      "status": "fixture"
+    },
+    {
+      "detail": "Per-call input and output tokens. Zero under the scripted adapter, because nothing is called.",
+      "env": "—",
+      "name": "Token accounting",
+      "ref": "supplier_review/adapters.py",
+      "status": "config"
+    },
+    {
+      "detail": "Not a seam. This workflow reaches a validation decision and stops; it never instructs a payment.",
+      "env": "—",
+      "name": "Payment",
+      "ref": "supplier_review/workflow.py",
+      "status": "absent"
+    }
+  ],
+  "settings": {
+    "blocked_because": "no model configured (SUPPLIER_PROPOSER_MODEL is unset)",
+    "key_env": "",
+    "key_present": false,
+    "model": "",
+    "proposer_mode": "scripted",
+    "provider": "",
+    "ready_for_live": false,
+    "reviewers": [
+      "procurement.reviewer"
+    ]
+  },
+  "source": "supplier_review/adapters.py"
+}
