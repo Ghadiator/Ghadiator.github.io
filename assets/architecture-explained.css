@@ -29,3 +29,16 @@ main .deck::before{content:"01 / INTERACTIVE MODULAR ARCHITECTURE";display:block
 .ax-caution{background:var(--deck-bg,#101b2d);border-left:3px solid var(--deck-record,#93a6bd);border-radius:0 8px 8px 0;margin:17px 0 0;padding:12px 15px;color:var(--deck-dim,#93a6bd);font-size:11.5px;line-height:1.75}
 @media(max-width:760px){.ax-story{margin:18px 10px}.ax-section{padding:18px}.ax-grid,.ax-law-grid{grid-template-columns:1fr}.ax-roles>strong{width:100%}}
 @media(prefers-reduced-motion:reduce){.ax-story *{scroll-behavior:auto!important}}
+
+/* Links bind the token-usage and process-semantics reference blocks to their actual source components. */
+.ax-related{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:15px}
+.ax-related>strong{font:690 10px ui-monospace,monospace;letter-spacing:.09em;color:var(--deck-dim,#93a6bd);margin-right:6px}
+.ax-related-link{padding:7px 10px;border:1px solid var(--deck-line-2,rgba(140,160,190,.4));border-radius:8px;color:var(--deck-text,#e5edf7);font-size:11px;cursor:pointer}
+.ax-related-link:is(:hover,:focus-visible){border-color:var(--deck-machine,#7dcdbd);color:var(--deck-machine,#7dcdbd)}
+.ax-economics{background:var(--deck-bg,#101b2d);border-left:3px solid var(--deck-model,#a7a4eb);padding:13px 15px;border-radius:0 7px 7px 0;font-size:12px;line-height:1.7;margin:0 0 13px}
+.ax-transitions{padding:14px;border:1px solid var(--deck-line-2,rgba(140,160,190,.3));border-radius:10px;margin:10px 0 16px}
+.ax-transitions h3{font-size:12px;font-weight:700;margin:0 0 13px}
+.ax-transition{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--deck-line-2,rgba(140,160,190,.18));font-size:11px}
+.ax-transition strong{color:var(--deck-machine,#7dcdbd);flex:0 0 132px}
+.ax-transition span{flex:1;color:var(--deck-dim,#93a6bd)}
+@media(max-width:760px){.ax-related>strong{width:100%}.ax-transition{flex-direction:column;gap:4px}.ax-transition strong{flex:auto}}
