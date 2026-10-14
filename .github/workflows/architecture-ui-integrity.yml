@@ -39,12 +39,29 @@ jobs:
           assert 'Select a component, a route, or an obligation. Three components open further.' not in html
           assert 'children:(0,n.jsx)(ex,{selection:L' not in js
           assert 'data-node="external"' in html, 'Keep Approved contract as a selectable modular diagram block'
+          for control, source, target in (
+              ('token_economics', 'judge', 'token_economics'),
+              ('process_semantics', 'process_semantics', 'orchestrator')
+          ):
+              assert 'data-node="' + control + '"' in html, 'Missing modular block: ' + control
+              assert 'id:"' + control + '"' in js, 'Missing React architecture block: ' + control
+              assert 'data-route="' + source + '→' + target + '"' in html, 'Missing connector for ' + control
+              assert 'data-edge="' + source + '→' + target + '"' in html, 'Missing connector label for ' + control
+          assert 'Human-in-the-loop (HITL)' in html and 'Human-in-the-loop (HITL)' in js, 'Human review block must use HITL'
+          assert 'Final disposition</span>' not in html, 'Old HITL label must not remain'
+          assert 'supplier_review/adapters.py' in js and 'supplier_review/workflow.py' in js
+          assert '12-state transition catalogue' in js
+          assert 'four-finding proposal cap' in js, 'Proposal budget must not be confused with token usage'
+          assert 'data-node="proponent"' in html and 'data-node="opponent"' in html and 'data-node="firewall"' in html and 'data-node="judge"' in html
+          guide_source = Path("assets/architecture-explained.js").read_text()
+          for marker in ('token_economics:', 'process_semantics:', 'disposition:["Human-in-the-loop (HITL)"', '0 live model calls', 'workflow_states.json', 'four proposed findings', 'record.events'):
+              assert marker in guide_source, 'Missing connected control evidence: ' + marker
           assert '[L,z]=(0,i.useState)(null)' in js
           assert 'if(!o||"node"===o.t&&"disposition"===o.id)' in js
           assert 'lg:grid-cols-[1fr_17rem] lg:divide-x' not in html and js
-          assert 'page-2d56a5bff821821b.js?v=20261014-clean-architecture-35' in html
-          assert '/assets/architecture-explained.js?v=20261014-archfirst-36' in html
-          assert '/assets/architecture-explained.css?v=20261014-archfirst-36' in html
+          assert 'page-2d56a5bff821821b.js?v=20261014-token-semantics-hitl-37' in html
+          assert '/assets/architecture-explained.js?v=20261014-economics-semantics-hitl-37' in html
+          assert '/assets/architecture-explained.css?v=20261014-economics-semantics-hitl-37' in html
           guide = Path('assets/architecture-explained.js').read_text()
           guide_css = Path('assets/architecture-explained.css').read_text()
           assert html.index('<h1') < html.index('deck overflow-hidden'), "Architecture diagram must lead the page"
