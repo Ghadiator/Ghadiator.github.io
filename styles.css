@@ -59,3 +59,55 @@
 @media(max-width:770px){.overview-hero{padding:32px 24px}.overview-hero h1{font-size:clamp(28px,6.4vw,40px);letter-spacing:-1.4px}.overview-hero p{font-size:12.5px}.overview-benefits{gap:9px 14px}.overview-section-heading{align-items:start;flex-direction:column;gap:9px}.journey-grid{grid-template-columns:1fr}.journey-step{min-height:0;padding:18px 20px}.journey-step-top{margin-bottom:8px}.balance-banner{padding:21px;align-items:flex-start;gap:12px}.balance-icon{width:40px;height:40px}.balance-icon svg{width:20px;height:20px}.promise-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:420px){.promise-grid{grid-template-columns:1fr}.overview-benefits{gap:8px 13px}.balance-banner{flex-direction:column}}
 @media(prefers-reduced-motion:reduce){.journey-step:hover{transform:none}}
+
+
+/* Industry blueprint presentation adapted from the DAiA design language.
+   Supplier-review terms and all recorded evidence remain unchanged. */
+:root {
+  --nav:#ffffff;--nav2:#f2f2f3;--nav-text:#5d5d60;
+  --bg:#f2f2f3;--card:#fff;--text:#1d1f20;--muted:#5d5d60;
+  --line:rgba(29,31,32,.16);--line2:#d4d4d7;
+  --primary:#416180;--darkblue:#1d2d3d;--teal:#597ea3;
+  --shadow:none;--radius:2px;
+}
+body{font-family:"Barlow","Segoe UI",Arial,sans-serif;background:#f2f2f3;color:#1d1f20}
+.sidebar{background:#fff;color:#1d1f20;border-right:1px solid var(--line)}
+.brand-wrap{padding:25px 21px 20px}
+.brand-icon{border-radius:2px;background:#416180;border:1px solid #416180;color:#fff}
+.brand-text{font-family:"Barlow Condensed","Arial Narrow","Segoe UI",sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.brand-sub{color:#5d5d60}
+.workspace-switch{background:#f2f2f3;border:1px solid var(--line);border-radius:2px;color:#1d1f20}
+.workspace-logo{background:#416180;border-radius:2px;color:white}
+.workspace-switch small{color:#5d5d60}
+.workspace-chevron{color:#7a7a7d}
+.sidebar-section-label{color:#5d5d60;font-family:"Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.14em;font-size:11px}
+.nav-list a{border-radius:2px;color:#5d5d60}
+.nav-list a:hover{color:#1d1f20;background:#eef6ff}
+.nav-list a.active{background:#eef6ff;color:#1d2d3d;box-shadow:inset 3px 0 0 #416180}
+.nav-list a.active>span[data-icon]{color:#416180}
+.nav-spark{color:#597ea3}
+.sidebar-scope{background:#f2f2f3;border:1px solid var(--line);border-radius:2px}
+.scope-top,.sidebar-scope strong{color:#1d1f20}
+.sidebar-scope p,.sidebar-credit small{color:#5d5d60}
+.sidebar-scope a{color:#416180}
+.pulsedot,.tiny-dot{background:#5980a6;box-shadow:none}
+.sidebar-credit{border-top:1px solid var(--line)}
+.sidebar-credit strong{color:#1d1f20}
+.avatar{background:#d6ebff;color:#1d2d3d}
+.more-dots{color:#7a7a7d}
+.topbar{border-bottom:1px solid var(--line);background:#fff;backdrop-filter:none}
+.environment-chip{background:#eef6ff;border:1px solid #d6ebff;border-radius:2px;color:#416180}
+.github-top,.icon-btn{border-radius:2px}
+#main{max-width:1600px}
+h1,h2,h3,.page-title,.overview-hero h1,.overview-section-heading h2{font-family:"Barlow Condensed","Arial Narrow","Segoe UI",sans-serif;letter-spacing:.005em}
+.overview-hero,.journey-step,.promise-card,.balance-banner,.overview-stat,.panel,.card,.metric-card{
+  border-radius:2px!important;box-shadow:none!important
+}
+.promise-card,.journey-step{border-color:var(--line)!important}
+.promise-icon,.journey-step-icon{border-radius:2px!important}
+.journey-step:hover,.promise-card:hover{box-shadow:none;transform:none}
+.promise-card{position:relative}
+.promise-card::before,.promise-card::after{content:"+";position:absolute;font:400 15px/1 ui-monospace,monospace;color:#5980a6}
+.promise-card::before{top:-9px;left:-7px}.promise-card::after{bottom:-9px;right:-7px}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #416180;outline-offset:2px}
+@media(max-width:770px){.sidebar{box-shadow:0 0 0 1px var(--line)}}
