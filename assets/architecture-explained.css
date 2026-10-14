@@ -1,3 +1,5 @@
+/* Original modular diagram is the FIRST section; all explanations follow it. */
+main .deck::before{content:"01 / INTERACTIVE MODULAR ARCHITECTURE";display:block;padding:11px 20px;border-bottom:1px solid var(--deck-line-2,rgba(130,160,180,.26));color:var(--deck-machine,#7dcdbd);font:700 10px/1.5 ui-monospace,SFMono-Regular,monospace;letter-spacing:.15em;background:var(--deck-panel,#17253b)}
 /* Extends the original modular Architecture page without changing its canvas. */
 .ax-story{max-width:1380px;margin:24px auto 28px;display:grid;gap:20px;color:var(--deck-text,#e5edf7);font-family:inherit}
 .ax-section{border:1px solid var(--deck-line-2,rgba(140,160,190,.25));border-radius:17px;background:var(--deck-panel,#17253b);padding:23px 26px}
