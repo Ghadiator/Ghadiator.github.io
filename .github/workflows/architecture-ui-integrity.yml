@@ -1,0 +1,46 @@
+name: Architecture UI integrity
+on:
+  pull_request:
+    paths:
+      - architecture/index.html
+      - _next/static/chunks/app/architecture/page-2d56a5bff821821b.js
+      - .github/workflows/architecture-ui-integrity.yml
+  push:
+    branches: [main]
+    paths:
+      - architecture/index.html
+      - _next/static/chunks/app/architecture/page-2d56a5bff821821b.js
+      - .github/workflows/architecture-ui-integrity.yml
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check architecture JavaScript syntax
+        run: node --check _next/static/chunks/app/architecture/page-2d56a5bff821821b.js
+      - name: Ensure unwanted panels are removed and evidence preserved
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          html = Path("architecture/index.html").read_text()
+          js = Path("_next/static/chunks/app/architecture/page-2d56a5bff821821b.js").read_text()
+          assert 'Component <!-- -->13' not in html
+          assert 'audit ledger' not in html and 'audit ledger' not in js
+          assert 'Empty. Nothing has happened yet.' not in html and 'Empty. Nothing has happened yet.' not in js
+          assert 'Recorded from the engine&#x27;s own hermetic fixtures.' not in html
+          assert 'Select a component, a route, or an obligation. Three components open further.' in html and js
+          assert '[L,z]=(0,i.useState)(null)' in js
+          assert 'if(!o||"node"===o.t&&"disposition"===o.id)' in js
+          assert 'lg:grid-cols-[1fr_17rem] lg:divide-x' not in html and js
+          assert 'page-2d56a5bff821821b.js?v=20261014-inspector-31' in html
+          for term in ("Proponent", "Opponent", "CoVe firewall", "Judge", 'data-node="disposition"'):
+              assert term in html, f"Keep architecture blocks: {term}"
+          for path, sha in {
+              "data/facts.json":"15987cfbcb97c404fe71865881da5457adc5546d",
+              "data/scenarios/index.json":"f384fc608e6c38bc0df9257cd4af7842f7ca7476"
+          }.items():
+              actual = subprocess.check_output(["git","hash-object",path], text=True).strip()
+              assert actual == sha, f"Recorded evidence changed: {path}"
+          print("Architecture inspector and recorded-evidence checks passed.")
+          PY
