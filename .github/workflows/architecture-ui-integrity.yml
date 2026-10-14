@@ -35,11 +35,14 @@ jobs:
           assert 'audit ledger' not in html and 'audit ledger' not in js
           assert 'Empty. Nothing has happened yet.' not in html and 'Empty. Nothing has happened yet.' not in js
           assert 'Recorded from the engine&#x27;s own hermetic fixtures.' not in html
-          assert 'Select a component, a route, or an obligation. Three components open further.' in html and js
+          assert 'grid deck-hair-children' not in html and js, 'Legacy component inspector must not be rendered'
+          assert 'Select a component, a route, or an obligation. Three components open further.' not in html
+          assert 'children:(0,n.jsx)(ex,{selection:L' not in js
+          assert 'data-node="external"' in html, 'Keep Approved contract as a selectable modular diagram block'
           assert '[L,z]=(0,i.useState)(null)' in js
           assert 'if(!o||"node"===o.t&&"disposition"===o.id)' in js
           assert 'lg:grid-cols-[1fr_17rem] lg:divide-x' not in html and js
-          assert 'page-2d56a5bff821821b.js?v=20261014-inspector-31' in html
+          assert 'page-2d56a5bff821821b.js?v=20261014-clean-architecture-35' in html
           assert '/assets/architecture-explained.js?v=20261014-archguide-34' in html
           assert '/assets/architecture-explained.css?v=20261014-archguide-34' in html
           guide = Path('assets/architecture-explained.js').read_text()
