@@ -3,12 +3,16 @@ on:
   pull_request:
     paths:
       - architecture/index.html
+      - assets/architecture-explained.js
+      - assets/architecture-explained.css
       - _next/static/chunks/app/architecture/page-2d56a5bff821821b.js
       - .github/workflows/architecture-ui-integrity.yml
   push:
     branches: [main]
     paths:
       - architecture/index.html
+      - assets/architecture-explained.js
+      - assets/architecture-explained.css
       - _next/static/chunks/app/architecture/page-2d56a5bff821821b.js
       - .github/workflows/architecture-ui-integrity.yml
 jobs:
@@ -17,7 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check architecture JavaScript syntax
-        run: node --check _next/static/chunks/app/architecture/page-2d56a5bff821821b.js
+        run: |
+          node --check _next/static/chunks/app/architecture/page-2d56a5bff821821b.js
+          node --check assets/architecture-explained.js
       - name: Ensure unwanted panels are removed and evidence preserved
         run: |
           python3 - <<'PY'
@@ -34,6 +40,13 @@ jobs:
           assert 'if(!o||"node"===o.t&&"disposition"===o.id)' in js
           assert 'lg:grid-cols-[1fr_17rem] lg:divide-x' not in html and js
           assert 'page-2d56a5bff821821b.js?v=20261014-inspector-31' in html
+          assert '/assets/architecture-explained.js?v=20261014-archguide-34' in html
+          assert '/assets/architecture-explained.css?v=20261014-archguide-34' in html
+          guide = Path('assets/architecture-explained.js').read_text()
+          for term in ('What is it?', 'What does it do?', 'Why is it included?', 'What does it cover and what are its limits?', 'What actually happened?', 'EU AI ACT GOVERNANCE VIEW', 'proponent', 'opponent', 'firewall', 'judge', 'record.events', 'scope'):
+              assert term in guide, f'Missing architecture guide: {term}'
+          assert 'document.querySelector("main .deck")' in guide
+          assert 'not a claim of EU AI Act compliance' in guide
           for term in ("Proponent", "Opponent", "CoVe firewall", "Judge", 'data-node="disposition"'):
               assert term in html, f"Keep architecture blocks: {term}"
           for path, sha in {
