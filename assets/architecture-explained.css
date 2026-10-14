@@ -77,3 +77,51 @@ main .deck::before{content:"01 / INTERACTIVE MODULAR ARCHITECTURE";display:block
   font:600 10px/1.4 ui-monospace,SFMono-Regular,monospace;
   letter-spacing:.025em;color:var(--deck-dim);pointer-events:none;
 }
+
+
+/* Industry blueprint front-end adaptation; diagrams and recorded evidence stay intact. */
+:root{
+  --deck-bg:#f2f2f3;--deck-panel:#ffffff;--deck-raise:#eef6ff;
+  --deck-line:rgba(29,31,32,.16);--deck-line-2:rgba(29,31,32,.25);
+  --deck-text:#1d1f20;--deck-dim:#5d5d60;
+  --deck-machine:#416180;--deck-model:#39746d;
+  --deck-human:#87662f;--deck-record:#687688;
+  --color-surface:#ffffff;--color-surface-alt:#f2f2f3;
+  --color-ink:#1d1f20;--color-muted:#5d5d60;--color-faint:#7a7a7d;
+  --color-accent-700:#416180;--color-accent-600:#597ea3;
+}
+body{background:#f2f2f3;color:#1d1f20;font-family:"Barlow","Segoe UI",Arial,sans-serif}
+aside.bg-surface{border-right-color:rgba(29,31,32,.16)}
+main h1,main h2,.ax-section h2,.ax-focus h3{font-family:"Barlow Condensed","Arial Narrow","Segoe UI",sans-serif;letter-spacing:.006em}
+main .deck{border-radius:2px!important;box-shadow:none}
+main .deck::before{background:#eef6ff;color:#416180}
+.ax-section,.ax-explain-card,.ax-law,.ax-focus,.ax-event,.ax-caution,
+.ax-related-link,.ax-role,.ax-economics{border-radius:2px!important;box-shadow:none!important}
+.ax-section{border-color:rgba(29,31,32,.16);position:relative}
+.ax-section::before,.ax-section::after{
+ content:"+";position:absolute;color:#5980a6;font:400 15px/1 ui-monospace,monospace;pointer-events:none
+}
+.ax-section::before{left:-7px;top:-9px}
+.ax-section::after{right:-7px;bottom:-9px}
+.deck [data-node]{border-radius:3px!important}
+.deck [data-node="orchestrator"],.deck [data-node="process_semantics"]{
+  border-radius:2px!important;
+  background-color:#eef6ff!important;
+}
+.deck [data-node="process_semantics"]{background-color:#f5f5f8!important}
+.deck [data-node="token_economics"]{
+  background-color:#eef6ff!important;
+}
+.deck [data-node="orchestrator"] > span.block > span:first-child,
+.deck [data-node="process_semantics"] > span.block > span:first-child{
+  font-size:15px;font-weight:700
+}
+.deck [data-node="token_economics"]::after{content:none}
+.deck-canvas{background-color:#f2f2f3}
+.deck button:focus-visible,.ax-story button:focus-visible,.ax-story a:focus-visible{
+ outline:2px solid #416180;outline-offset:2px
+}
+@media(max-width:1300px){
+ .deck [data-node="orchestrator"]::after,
+ .deck [data-node="process_semantics"]::after{font-size:10px}
+}
