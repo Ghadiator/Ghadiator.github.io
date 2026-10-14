@@ -1,14 +1,9 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="refresh" content="0;url=/?view=audit"><meta name="robots" content="noindex"><title>Redirecting · Governance as Code</title></head>
-<body><p>Redirecting to the <a id="destination" href="/?view=audit">new Governance as Code interface</a>.</p>
-<script>
-(function(){
-  var p=new URLSearchParams(location.search), next=new URLSearchParams();
-  next.set('view','audit');
-  var scenario=p.get('scenario') || p.get('id');
-  if(scenario)next.set('scenario',scenario);
-  var u='/?'+next.toString()+(location.hash||'');
-  document.getElementById('destination').href=u;
-  location.replace(u);
-})();
-</script></body></html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Case detail · Generic Supplier Validation</title>
+<meta name="description" content="Read-only synthetic supplier-validation workbench. No live AI or external systems.">
+<meta http-equiv="refresh" content="0;url=/?view=case">
+<script>const q=new URLSearchParams(location.search),to=new URL("/?view=case",location.origin);
+const slug=q.get("scenario")||q.get("id");if(slug)to.searchParams.set("scenario",slug);
+location.replace(to.pathname+to.search);</script></head>
+<body><p>Opening the generic case detail view. <a href="/?view=case">Continue to the workbench</a>.</p></body></html>
