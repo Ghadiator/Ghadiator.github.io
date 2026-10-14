@@ -1,14 +1,9 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="refresh" content="0;url=/?view=overview"><meta name="robots" content="noindex"><title>Redirecting · Governance as Code</title></head>
-<body><p>Redirecting to the <a id="destination" href="/?view=overview">new Governance as Code interface</a>.</p>
-<script>
-(function(){
-  var p=new URLSearchParams(location.search), next=new URLSearchParams();
-  next.set('view','overview');
-  var scenario=p.get('scenario') || null;
-  if(scenario)next.set('scenario',scenario);
-  var u='/?'+next.toString()+(location.hash||'');
-  document.getElementById('destination').href=u;
-  location.replace(u);
-})();
-</script></body></html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · Generic Supplier Validation</title>
+<meta name="description" content="Read-only synthetic supplier-validation workbench. No live AI or external systems.">
+<meta http-equiv="refresh" content="0;url=/?view=dashboard">
+<script>const q=new URLSearchParams(location.search),to=new URL("/?view=dashboard",location.origin);
+const slug=q.get("scenario")||q.get("id");if(slug)to.searchParams.set("scenario",slug);
+location.replace(to.pathname+to.search);</script></head>
+<body><p>Opening the generic dashboard view. <a href="/?view=dashboard">Continue to the workbench</a>.</p></body></html>

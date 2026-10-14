@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - app.js
+      - assets/generic-workbench.js
       - styles.css
       - index.html
       - .github/workflows/frontend-integrity.yml
@@ -10,6 +11,7 @@ on:
     branches: [main]
     paths:
       - app.js
+      - assets/generic-workbench.js
       - styles.css
       - index.html
       - .github/workflows/frontend-integrity.yml
@@ -19,7 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate JavaScript syntax
-        run: node --check app.js
+        run: |
+          node --check app.js
+          node --check assets/generic-workbench.js
       - name: Check plain-language introduction and preserved evidence
         run: |
           python3 - <<'PY'
@@ -39,8 +43,8 @@ jobs:
           assert "Example data · No live AI" in html
           assert 'href="/architecture/"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
-          assert 'styles.css?v=20261014-industry-blueprint-40' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261014-industry-blueprint-40' in html, "Script must use a cache-busting URL"
+          assert 'styles.css?v=20261014-complete-workbench-41' in html, "Stylesheet must use a cache-busting URL"
+          assert 'app.js?v=20261014-complete-workbench-41' in html, "Script must use a cache-busting URL"
           expected = {
               "architecture/index.html": "043957f786fd71f8f61a8c3258f86cbbcd8004b7",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
@@ -54,10 +58,88 @@ jobs:
           assert 'Barlow+Condensed' in shell
           assert 'data-view="architecture"' in shell
           assert 'data-view="overview"' in shell
-          for removed in ('data-view="cases" href=', 'data-view="audit" href=',
-                          'sidebar-section-label group-space'):
-              assert removed not in shell, 'Legacy homepage sidebar navigation must remain hidden'
+          required_tabs = (
+              'dashboard', 'tickets', 'inbound', 'cases', 'monitor', 'tokens',
+              'pool', 'governance', 'architecture', 'integration', 'audit'
+          )
+          for tab in required_tabs:
+              assert 'data-view="'+tab+'"' in html, f'Missing DAiA-equivalent public tab: {tab}'
+              assert tab + ':' in app, f'Missing app router view: {tab}'
+          assert 'assets/generic-workbench.js?v=20261014-complete-workbench-41' in html
+          assert html.index('assets/generic-workbench.js') < html.index('src="./app.js')
+          workbench = Path('assets/generic-workbench.js').read_text()
+          for screen in ('overview', 'tickets', 'inbound', 'cases', 'monitor', 'economics',
+                         'pool', 'detail', 'ticket', 'newticket', 'governanceHub', 'analytics', 'login'):
+              assert screen in workbench, f'Missing public generic frontend route: {screen}'
+          for prohibited in ('VCInput', 'warzone', 'claims-ratio', 'reinsurance quota',
+                             'NI clarification', 'underwriting', 'MedicalVC'):
+              assert prohibited.lower() not in workbench.lower(), 'Private domain term leaked: '+prohibited
+          assert 'Main orchestrator' not in html, 'The modular Architecture remains a separate preserved page'
+          assert 'data-view="architecture" href="/architecture/"' in html
+          for disclaimer in ('No live-model', 'no live-model', 'no live provider usage'):
+              if disclaimer.lower() in workbench.lower():
+                  break
+          else:
+              assert 'no live-model call' in workbench.lower()
+          route_aliases = {
+              'dashboard/index.html':'dashboard', 'tickets/index.html':'tickets',
+              'inbound/index.html':'inbound', 'cases/index.html':'cases',
+              'monitor/index.html':'monitor', 'token-economics/index.html':'tokens',
+              'pool-analytics/index.html':'pool', 'governance/index.html':'governance',
+              'integration/index.html':'integration', 'audit/index.html':'audit',
+              'case/index.html':'case', 'ticket/index.html':'ticket',
+              'tickets/new/index.html':'newticket', 'analytics/index.html':'analytics',
+              'login/index.html':'login'
+          }
+          for alias, target in route_aliases.items():
+              text = Path(alias).read_text()
+              assert 'new URL("/?view='+target+'"' in text, 'Broken DAiA route alias: '+alias
+              assert 'scenario' in text and 'No live AI' in text
+          assert Path('architecture/index.html').read_text().count('data-node="orchestrator"') == 1
           assert 'Industry blueprint' in Path('styles.css').read_text()
           print("Homepage flow, generic design language and evidence checks passed.")
 
           PY
+      - name: Smoke-test all ported views against actual supplier fixtures
+        run: |
+          node <<'JS'
+          const fs = require('fs');
+          const vm = require('vm');
+          const index = JSON.parse(fs.readFileSync('data/scenarios/index.json', 'utf8'));
+          const scenario = JSON.parse(fs.readFileSync('data/scenarios/supplier_variance_review.json', 'utf8'));
+          const rules = JSON.parse(fs.readFileSync('data/rules.json', 'utf8'));
+          const sandbox = { window: {} };
+          vm.runInNewContext(fs.readFileSync('assets/generic-workbench.js','utf8'), sandbox);
+          const wb = sandbox.window.GenericWorkbench;
+          const escape = s => String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;')
+             .replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+          const state = {index, facts:{facts:[]}, loaded:{rules},
+             workbenchTab:'summary', filter:'all', search:'', playing:false, eventIndex:0};
+          const ctx = {state, h:escape, currentCase:()=>index.scenarios[0],
+             scenarioData:()=>scenario, events:()=>scenario.events,
+             activeEvent:()=>scenario.events[0],
+             renderCaseSelector:()=>'<select>scenario</select>',
+             renderTimeline:()=>'<section>event list</section>',
+             fmtStatus:s=>'<span>'+escape(s)+'</span>', DISPLAY_STAGES:{},
+             icon:()=>'<svg></svg>'};
+          const screens=['overview','tickets','inbound','cases','monitor','economics',
+             'pool','detail','ticket','newticket','analytics','login'];
+          for (const screen of screens) {
+             const markup = wb[screen](ctx);
+             if (!markup || markup.length < 180 || !markup.includes('wb-page')) throw Error(screen+' failed to render');
+          }
+          for (const tab of ['controls','rules','lessons','incidents','system']) {
+             state.workbenchTab=tab;
+             const out=wb.governanceHub(ctx,()=>'<article>source mapping</article>');
+             if (!out.includes('wb-page')) throw Error('governance '+tab+' failed');
+          }
+          for (const tab of ['summary','committee','timeline','human']) {
+             state.workbenchTab=tab;
+             if (!wb.detail(ctx).includes('Case review')) throw Error('case detail '+tab+' failed');
+          }
+          const untrusted='<img src=x onerror=alert(1)>';
+          state.search=untrusted;
+          const out=wb.tickets(ctx);
+          if (out.includes(untrusted)) throw Error('HTML injection in search value');
+          console.log('All generic frontend views rendered with original supplier fixtures.');
+          JS
