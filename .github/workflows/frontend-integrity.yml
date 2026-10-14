@@ -81,6 +81,21 @@ jobs:
                   break
           else:
               assert 'no live-model call' in workbench.lower()
+          route_aliases = {
+              'dashboard/index.html':'dashboard', 'tickets/index.html':'tickets',
+              'inbound/index.html':'inbound', 'cases/index.html':'cases',
+              'monitor/index.html':'monitor', 'token-economics/index.html':'tokens',
+              'pool-analytics/index.html':'pool', 'governance/index.html':'governance',
+              'integration/index.html':'integration', 'audit/index.html':'audit',
+              'case/index.html':'case', 'ticket/index.html':'ticket',
+              'tickets/new/index.html':'newticket', 'analytics/index.html':'analytics',
+              'login/index.html':'login'
+          }
+          for alias, target in route_aliases.items():
+              text = Path(alias).read_text()
+              assert 'new URL("/?view='+target+'"' in text, 'Broken DAiA route alias: '+alias
+              assert 'scenario' in text and 'No live AI' in text
+          assert Path('architecture/index.html').read_text().count('data-node="orchestrator"') == 1
           assert 'Industry blueprint' in Path('styles.css').read_text()
           print("Homepage flow, generic design language and evidence checks passed.")
 
