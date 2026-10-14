@@ -39,28 +39,40 @@ jobs:
           assert 'Select a component, a route, or an obligation. Three components open further.' not in html
           assert 'children:(0,n.jsx)(ex,{selection:L' not in js
           assert 'data-node="external"' in html, 'Keep Approved contract as a selectable modular diagram block'
-          for control, source, target in (
-              ('token_economics', 'judge', 'token_economics'),
-              ('process_semantics', 'process_semantics', 'orchestrator')
-          ):
+          for control in ('token_economics', 'process_semantics', 'post_cove'):
               assert 'data-node="' + control + '"' in html, 'Missing modular block: ' + control
               assert 'id:"' + control + '"' in js, 'Missing React architecture block: ' + control
-              assert 'data-route="' + source + '→' + target + '"' in html, 'Missing connector for ' + control
-              assert 'data-edge="' + source + '→' + target + '"' in html, 'Missing connector label for ' + control
+          for path_id in (
+              'proponent→firewall', 'opponent→firewall', 'firewall→judge',
+              'judge→post_cove', 'post_cove→advisory',
+              'orchestrator→process_semantics', 'disposition→process_semantics',
+              'post_cove→token_economics', 'token_economics→post_cove',
+          ):
+              assert 'data-route="' + path_id + '"' in html, 'Missing graph connector: ' + path_id
+              assert 'data-edge="' + path_id + '"' in html, 'Missing graph connector label: ' + path_id
+              assert 'id:"' + path_id + '"' in js, 'Missing React graph connector: ' + path_id
+          for removed in ('proponent→judge', 'judge→advisory', 'process_semantics→orchestrator'):
+              assert 'data-route="' + removed + '"' not in html, 'Obsolete bypass: ' + removed
+              assert 'id:"' + removed + '"' not in js, 'Obsolete React bypass: ' + removed
+          assert 'D−14' not in html and 'D−14' not in js, 'Remove countdown shorthand from reminder block'
+          for term in ('Main orchestrator', 'LangGraph', 'Process semantics pool', 'ProcessEvent', 'Pre-Judge CoVe', 'Post-Judge CoVe'):
+              assert term in html and term in js, f'Missing source architecture label: {term}'
           assert 'Human-in-the-loop (HITL)' in html and 'Human-in-the-loop (HITL)' in js, 'Human review block must use HITL'
           assert 'Final disposition</span>' not in html, 'Old HITL label must not remain'
-          assert 'supplier_review/adapters.py' in js and 'supplier_review/workflow.py' in js
-          assert '12-state transition catalogue' in js
-          assert 'four-finding proposal cap' in js, 'Proposal budget must not be confused with token usage'
+          assert 'validation_workflow/orchestrator.py' in js, 'LangGraph orchestration source missing'
+          assert 'validation_workflow/telemetry/emitter.py' in js, 'ProcessEvent pool emitter source missing'
+          assert 'pipeline/cove_loop.py' in js, 'Two-layer CoVe source missing'
+          assert 'four-proposal limit is not a token budget' in js, 'Do not conflate tokens with proposal limits'
           assert 'data-node="proponent"' in html and 'data-node="opponent"' in html and 'data-node="firewall"' in html and 'data-node="judge"' in html
           guide_source = Path("assets/architecture-explained.js").read_text()
-          for marker in ('token_economics:', 'process_semantics:', 'disposition:["Human-in-the-loop (HITL)"', '0 live model calls', 'workflow_states.json', 'four proposed findings', 'record.events'):
+          for marker in ('token_economics:', 'process_semantics:', 'post_cove:', 'disposition:["Human-in-the-loop (HITL)"', 'LangGraph StateGraph', 'ProcessEvent', 'zero live-model tokens', 'none is invented here', 'record.events'):
               assert marker in guide_source, 'Missing connected control evidence: ' + marker
+          assert 'SupplierWorkflow' in guide_source and 'supplier fixture' in guide_source, 'Keep the implementation distinction explicit'
           assert '[L,z]=(0,i.useState)(null)' in js
           assert 'if(!o||"node"===o.t&&"disposition"===o.id)' in js
           assert 'lg:grid-cols-[1fr_17rem] lg:divide-x' not in html and js
-          assert 'page-2d56a5bff821821b.js?v=20261014-token-semantics-hitl-37' in html
-          assert '/assets/architecture-explained.js?v=20261014-economics-semantics-hitl-37' in html
+          assert 'page-2d56a5bff821821b.js?v=20261014-cove-langgraph-pool-38' in html
+          assert '/assets/architecture-explained.js?v=20261014-cove-langgraph-pool-38' in html
           assert '/assets/architecture-explained.css?v=20261014-economics-semantics-hitl-37' in html
           guide = Path('assets/architecture-explained.js').read_text()
           guide_css = Path('assets/architecture-explained.css').read_text()
@@ -74,7 +86,7 @@ jobs:
               assert term in guide, f'Missing architecture guide: {term}'
           assert 'document.querySelector("main .deck")' in guide
           assert 'not a claim of EU AI Act compliance' in guide
-          for term in ("Proponent", "Opponent", "CoVe firewall", "Judge", 'data-node="disposition"'):
+          for term in ("Proponent", "Opponent", "Pre-Judge CoVe", "Judge", 'data-node="disposition"'):
               assert term in html, f"Keep architecture blocks: {term}"
           for path, sha in {
               "data/facts.json":"15987cfbcb97c404fe71865881da5457adc5546d",

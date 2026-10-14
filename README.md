@@ -26,15 +26,22 @@ here is a conformity assessment or certification.
   loop and the archive. A recorded run walks all of it, suspending at **every**
   human gate.
 
-  The adversarial committee is on this view rather than behind a drill-down:
-  `07 Proponent → 08 Opponent → 09 Evidence firewall (CoVe) → 10 Judge`.
-  The ordering is the point — chain-of-verification runs *between* the Opponent
-  and the Judge, so the Judge never weighs a claim that has not already been
-  re-derived from the invoice and contract. Selecting any of the four shows
-  what it said. Two components still open into their own internals.
+  The diagram distinguishes the published supplier-invoice fixture from a broader
+  validation-workflow source architecture. In that broader source,
+  **Proponent and Opponent** both pass through **pre-Judge CoVe**;
+  the Judge then sends its newly synthesized claims through **post-Judge CoVe**.
+  Token/call budgets and configured fallbacks support bounded recovery without
+  bypassing verification or the human decision gate. The main orchestration
+  mechanism there is a **LangGraph StateGraph**. It emits process transitions
+  and other typed events to a **ProcessEvent pool**, which supports audit and
+  case continuity.
 
-  A specific run is linkable with `?scenario=<slug>`; an unknown slug falls
-  back to the default rather than rendering an empty page.
+  The supplier fixture replay is deliberately smaller: scripted personas,
+  one recorded Opponent-finding verifier, a Python SupplierWorkflow state
+  machine, and in-memory audit events. The additional source-architecture
+  stages are marked as such and are not presented as executed supplier events.
+  Reminders remain implemented but the canvas uses plain-language labels.
+
 - **Compliance** — classification before compliance, then obligation →
   mechanism → evidence across the EU AI Act, ISO/IEC 42001 and NIST AI RMF.
   Every row states what it does *not* establish.

@@ -42,7 +42,7 @@ jobs:
           assert 'styles.css?v=20261014-simplified-homepage-2034012' in html, "Stylesheet must use a cache-busting URL"
           assert 'app.js?v=20261014-simplified-homepage-2034012' in html, "Script must use a cache-busting URL"
           expected = {
-              "architecture/index.html": "d67311c7d5f83715cb0cf9cdd9f304e315c6147e",
+              "architecture/index.html": "634d7f13f833a0c04108ec78172220a04a551b28",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
               "data/scenarios/index.json": "f384fc608e6c38bc0df9257cd4af7842f7ca7476"
           }
