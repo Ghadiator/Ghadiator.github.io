@@ -39,15 +39,25 @@ jobs:
           assert "Example data · No live AI" in html
           assert 'href="/architecture/"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
-          assert 'styles.css?v=20261014-simplified-homepage-2034012' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261014-simplified-homepage-2034012' in html, "Script must use a cache-busting URL"
+          assert 'styles.css?v=20261014-industry-blueprint-40' in html, "Stylesheet must use a cache-busting URL"
+          assert 'app.js?v=20261014-industry-blueprint-40' in html, "Script must use a cache-busting URL"
           expected = {
-              "architecture/index.html": "634d7f13f833a0c04108ec78172220a04a551b28",
+              "architecture/index.html": "043957f786fd71f8f61a8c3258f86cbbcd8004b7",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
               "data/scenarios/index.json": "f384fc608e6c38bc0df9257cd4af7842f7ca7476"
           }
           for path, sha in expected.items():
               actual = subprocess.check_output(["git", "hash-object", path], text=True).strip()
               assert actual == sha, f"Source file changed unexpectedly: {path}"
-          print("Homepage flow and evidence checks passed.")
+
+          shell = Path('index.html').read_text()
+          assert 'Barlow+Condensed' in shell
+          assert 'data-view="architecture"' in shell
+          assert 'data-view="overview"' in shell
+          for removed in ('data-view="cases" href=', 'data-view="audit" href=',
+                          'sidebar-section-label group-space'):
+              assert removed not in shell, 'Legacy homepage sidebar navigation must remain hidden'
+          assert 'Industry blueprint' in Path('styles.css').read_text()
+          print("Homepage flow, generic design language and evidence checks passed.")
+
           PY
