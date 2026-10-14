@@ -6,6 +6,7 @@ on:
       - assets/architecture-explained.js
       - assets/architecture-explained.css
       - _next/static/chunks/app/architecture/page-2d56a5bff821821b.js
+      - _next/static/chunks/app/layout-00714e284e207e0e.js
       - .github/workflows/architecture-ui-integrity.yml
   push:
     branches: [main]
@@ -14,6 +15,7 @@ on:
       - assets/architecture-explained.js
       - assets/architecture-explained.css
       - _next/static/chunks/app/architecture/page-2d56a5bff821821b.js
+      - _next/static/chunks/app/layout-00714e284e207e0e.js
       - .github/workflows/architecture-ui-integrity.yml
 jobs:
   validate:
@@ -71,9 +73,40 @@ jobs:
           assert '[L,z]=(0,i.useState)(null)' in js
           assert 'if(!o||"node"===o.t&&"disposition"===o.id)' in js
           assert 'lg:grid-cols-[1fr_17rem] lg:divide-x' not in html and js
-          assert 'page-2d56a5bff821821b.js?v=20261014-cove-langgraph-pool-38' in html
-          assert '/assets/architecture-explained.js?v=20261014-cove-langgraph-pool-38' in html
-          assert '/assets/architecture-explained.css?v=20261014-economics-semantics-hitl-37' in html
+          assert 'page-2d56a5bff821821b.js?v=20261014-workflow-rails-39' in html
+          assert '/assets/architecture-explained.js?v=20261014-workflow-rails-39' in html
+          assert '/assets/architecture-explained.css?v=20261014-workflow-rails-39' in html
+
+          # Workflow-wide layers surround the detailed stages; token management
+          # is inside the committee rather than appearing as an extra verdict.
+          assert 'G={w:1250,h:980}' in js, "Full canvas must include both wide rails"
+          wide = {
+              'orchestrator': 'x:14,y:12,w:1220,h:76',
+              'process_semantics': 'x:14,y:880,w:1220,h:76',
+              'token_economics': 'x:440,y:286,w:538,h:66',
+          }
+          for nid, coords in wide.items():
+              start = js.index('id:"'+nid+'"')
+              assert coords in js[start:start+1150], f'Wrong scope or position: {nid}'
+              assert 'data-node="'+nid+'"' in html
+          assert 'label:"COMMITTEE ORCHESTRATION"' in js
+          assert 'COMMITTEE ORCHESTRATION' in html
+          assert 'M1234,50 L1242,50 L1242,918 L1234,918' in js
+          assert 'M1234,50 L1242,50 L1242,918 L1234,918' in html
+          assert 'M911,256 L911,286' in js, "CoVe to resource control arrow missing"
+          assert 'M978,320 L994,320 L994,244 L978,244' in js, "Bounded revision feedback missing"
+          # Both desktop and mobile navigation must remain minimal after hydration.
+          shell = Path('_next/static/chunks/app/layout-00714e284e207e0e.js').read_text()
+          for forbidden in ('title:"Reception"', 'title:"Oversight"', 'label:"Process audit"'):
+              assert forbidden not in shell
+          for link in ('/dashboard/', '/cases/', '/requests/', '/audit/', '/safety/',
+                       '/governance/', '/red-team/', '/integration/'):
+              assert 'href="'+link+'"' not in html, "Removed link visible in exported HTML: "+link
+          assert 'label:"Architecture"' in shell and 'label:"Introduction"' in shell
+          assert 'Industry blueprint' in Path('assets/architecture-explained.css').read_text()
+          assert 'Barlow+Condensed' in html
+          for leak in ('VC ingest', 'NI clarification', 'reinsurance quota'):
+              assert leak not in html, "Underwriting-specific wording leaked: "+leak
           guide = Path('assets/architecture-explained.js').read_text()
           guide_css = Path('assets/architecture-explained.css').read_text()
           assert html.index('<h1') < html.index('deck overflow-hidden'), "Architecture diagram must lead the page"
