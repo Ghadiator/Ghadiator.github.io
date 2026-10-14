@@ -43,9 +43,16 @@ jobs:
           assert 'if(!o||"node"===o.t&&"disposition"===o.id)' in js
           assert 'lg:grid-cols-[1fr_17rem] lg:divide-x' not in html and js
           assert 'page-2d56a5bff821821b.js?v=20261014-clean-architecture-35' in html
-          assert '/assets/architecture-explained.js?v=20261014-archguide-34' in html
-          assert '/assets/architecture-explained.css?v=20261014-archguide-34' in html
+          assert '/assets/architecture-explained.js?v=20261014-archfirst-36' in html
+          assert '/assets/architecture-explained.css?v=20261014-archfirst-36' in html
           guide = Path('assets/architecture-explained.js').read_text()
+          guide_css = Path('assets/architecture-explained.css').read_text()
+          assert html.index('<h1') < html.index('deck overflow-hidden'), "Architecture diagram must lead the page"
+          assert '01 / INTERACTIVE MODULAR ARCHITECTURE' in guide_css, "Architecture is section 01"
+          sections = ('02 / UNDERSTAND THE COMPONENT', '03 / RECORDED WORKFLOW RESULT', '04 / EU AI ACT GOVERNANCE VIEW')
+          assert all(section in guide for section in sections), "The sections below architecture must be numbered 02 through 04"
+          assert guide.index(sections[0]) < guide.index(sections[1]) < guide.index(sections[2]), "Sections must remain in explanatory, results, governance order"
+          assert 'root.previousElementSibling!==deck' in guide and 'deck.insertAdjacentElement("afterend",root)' in guide, "Companion content must remain directly after the modular architecture"
           for term in ('What is it?', 'What does it do?', 'Why is it included?', 'What does it cover and what are its limits?', 'What actually happened?', 'EU AI ACT GOVERNANCE VIEW', 'proponent', 'opponent', 'firewall', 'judge', 'record.events', 'scope'):
               assert term in guide, f'Missing architecture guide: {term}'
           assert 'document.querySelector("main .deck")' in guide

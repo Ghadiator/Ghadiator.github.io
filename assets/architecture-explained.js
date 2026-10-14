@@ -45,14 +45,14 @@ function draw(){
  root.replaceChildren();
  var m=meta[chosen]||meta.proponent, title=m[0];
  var s1=fill(root,el("section","ax-section"));
- fill(s1,el("div","ax-kicker","01 / UNDERSTAND THE ARCHITECTURE"));
+ fill(s1,el("div","ax-kicker","02 / UNDERSTAND THE COMPONENT"));
  fill(s1,el("h2","","What is this component, and why is it here?"));
  fill(s1,el("p","ax-lead","Select a block in the modular architecture above. Its purpose, safeguards and recorded output appear here."));
  var focus=fill(s1,el("div","ax-focus"));fill(focus,el("span","ax-chip","SELECTED MODULE"));fill(focus,el("h3","",title));
  var grid=fill(s1,el("div","ax-grid"));card(grid,"What is it?",m[1]);card(grid,"What does it do?",m[2]);card(grid,"Why is it included?",m[3]);card(grid,"What does it cover and what are its limits?",m[4]);
  var row=fill(s1,el("div","ax-roles"));fill(row,el("strong","","REVIEW COMMITTEE"));
  ["proponent","opponent","firewall","judge"].forEach(function(id){var b=fill(row,el("button",id===chosen?"ax-role active":"ax-role",meta[id][0]));b.type="button";b.addEventListener("click",function(){chosen=id;draw();var n=document.querySelector(".deck [data-node='"+id+"']");if(n)n.click();});});
- var s2=fill(root,el("section","ax-section"));fill(s2,el("div","ax-kicker","02 / RECORDED WORKFLOW RESULT"));fill(s2,el("h2","","What actually happened?"));
+ var s2=fill(root,el("section","ax-section"));fill(s2,el("div","ax-kicker","03 / RECORDED WORKFLOW RESULT"));fill(s2,el("h2","","What actually happened?"));
  if(record&&Array.isArray(record.events)){
    fill(s2,el("p","ax-lead",(record.title||"Selected scenario")+" · Recorded outcome: "+(record.outcome&&record.outcome.terminal_state||"Not specified")+" · "+record.events.length+" total events."));
    var items=record.events.filter(function(event){return event.node===chosen||(chosen==="orchestrator"&&event.kind==="audit.row_appended");});
@@ -62,7 +62,7 @@ function draw(){
    items.slice(0,10).forEach(function(event){var li=fill(ol,el("li","ax-event"));fill(li,el("span","ax-seq",String(event.seq).padStart(2,"0")));var info=fill(li,el("div",""));fill(info,el("strong","",event.label));if(event.detail)fill(info,el("p","",event.detail));fill(info,el("small","",event.actor+" · "+event.kind));});
    fill(s2,el("p","ax-note","These are records exported from the completed example, not a new model run. Use the replay above to follow the sequence."));
  }else fill(s2,el("p","ax-lead",loading?"Loading recorded events…":"The recorded case could not be loaded. The architecture remains available."));
- var s3=fill(root,el("section","ax-section"));fill(s3,el("div","ax-kicker","03 / EU AI ACT GOVERNANCE VIEW"));fill(s3,el("h2","","Which governance principles does this support?"));
+ var s3=fill(root,el("section","ax-section"));fill(s3,el("div","ax-kicker","04 / EU AI ACT GOVERNANCE VIEW"));fill(s3,el("h2","","Which governance principles does this support?"));
  fill(s3,el("p","ax-lead","The controls below are linked to selected EU AI Act provisions. Each explains the demonstrated mechanism and the remaining limitation."));
  var laws=fill(s3,el("div","ax-law-grid"));
  m[5].forEach(function(article){if(!scope[article])return;var d=scope[article];var c=fill(laws,el("article","ax-law"));fill(c,el("strong","",article+" · "+d[0]));fill(c,el("p","",d[1]));fill(c,el("p","ax-gap","Still missing: "+d[2]));var a=fill(c,el("a","","Official text ↗"));a.href="https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-"+(article.match(/\d+/)||["14"])[0];a.target="_blank";a.rel="noopener noreferrer";});
@@ -70,7 +70,13 @@ function draw(){
 }
 function attach(){
  var deck=document.querySelector("main .deck");if(!deck)return false;
- if(!root||!root.isConnected){root=el("div","ax-story");root.id="architecture-explained";deck.insertAdjacentElement("afterend",root);draw();}
+ // The interactive modular Architecture MUST remain first, before all companion sections.
+ var firstMount=!root;
+ if(!root){root=el("div","ax-story");root.id="architecture-explained";}
+ if(root.parentElement!==deck.parentElement||root.previousElementSibling!==deck){
+   deck.insertAdjacentElement("afterend",root);
+ }
+ if(firstMount)draw();
  var selected=deck.querySelector('[data-node][aria-pressed="true"]');if(selected&&meta[selected.dataset.node]&&chosen!==selected.dataset.node){chosen=selected.dataset.node;draw();}
  load();return true;
 }
