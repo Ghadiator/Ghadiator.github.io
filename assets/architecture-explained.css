@@ -42,3 +42,38 @@ main .deck::before{content:"01 / INTERACTIVE MODULAR ARCHITECTURE";display:block
 .ax-transition strong{color:var(--deck-machine,#7dcdbd);flex:0 0 132px}
 .ax-transition span{flex:1;color:var(--deck-dim,#93a6bd)}
 @media(max-width:760px){.ax-related>strong{width:100%}.ax-transition{flex-direction:column;gap:4px}.ax-transition strong{flex:auto}}
+
+/* Presentation hierarchy: the LangGraph controller and ProcessEvent stream
+   span the whole workflow; token controls remain inside the committee. */
+.deck [data-node="orchestrator"],.deck [data-node="process_semantics"]{
+  border-width:1.5px!important;
+  background:color-mix(in srgb,var(--deck-machine) 10%,var(--deck-panel))!important;
+  box-shadow:inset 4px 0 0 var(--deck-machine)!important;
+  padding:12px 18px!important;
+}
+.deck [data-node="process_semantics"]{
+  background:color-mix(in srgb,var(--deck-record) 12%,var(--deck-panel))!important;
+  box-shadow:inset 4px 0 0 var(--deck-record)!important;
+}
+.deck [data-node="orchestrator"]::after,.deck [data-node="process_semantics"]::after{
+  position:absolute;right:26px;top:26px;white-space:nowrap;
+  font:600 11px/1.6 ui-monospace,SFMono-Regular,monospace;
+  letter-spacing:.03em;pointer-events:none;color:var(--deck-dim);
+}
+.deck [data-node="orchestrator"]::after{
+  content:"ROUTING  /  INTERRUPT & RESUME  /  CORRECTIONS  /  EVENT EMISSION";
+}
+.deck [data-node="process_semantics"]::after{
+  content:"EVENT PRODUCERS → SHARED EVENT STREAM → CONFORMANCE & AUDIT";
+}
+.deck [data-node="token_economics"]{
+  border-left:4px solid var(--deck-model)!important;
+  background:color-mix(in srgb,var(--deck-model) 13%,var(--deck-panel))!important;
+  padding:9px 15px!important;
+}
+.deck [data-node="token_economics"]::after{
+  content:"CALL BUDGETS  ·  RETRY LIMITS  ·  CONDITIONAL FALLBACK";
+  position:absolute;right:20px;top:26px;white-space:nowrap;
+  font:600 10px/1.4 ui-monospace,SFMono-Regular,monospace;
+  letter-spacing:.025em;color:var(--deck-dim);pointer-events:none;
+}
