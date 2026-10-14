@@ -1,0 +1,46 @@
+name: Frontend and evidence integrity
+on:
+  pull_request:
+    paths:
+      - app.js
+      - styles.css
+      - index.html
+      - .github/workflows/frontend-integrity.yml
+  push:
+    branches: [main]
+    paths:
+      - app.js
+      - styles.css
+      - index.html
+      - .github/workflows/frontend-integrity.yml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate JavaScript syntax
+        run: node --check app.js
+      - name: Check plain-language introduction and preserved evidence
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          app = Path("app.js").read_text()
+          html = Path("index.html").read_text()
+          assert app.count('<article class="journey-step') == 6, "The opening must show exactly six workflow stages"
+          overview = app[app.index("function renderOverview()"):app.index("function renderCaseSelector()")]
+          assert overview.index('journey-section') < overview.index('overview-measures'), "Workflow must precede technical metrics"
+          for term in ("Clear rules for facts.", "AI for unusual cases.", "People make the decisions.", "scripted AI roles", "Proponent", "Opponent", "CoVe", "Judge"):
+              assert term in overview, f"Missing content: {term}"
+          assert "Example data · No live AI" in html
+          assert 'href="/architecture/"' in html
+          expected = {
+              "architecture/index.html": "f674f11eaaf1b27940280a5c3f2d50d9cf2d0daf",
+              "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
+              "data/scenarios/index.json": "f384fc608e6c38bc0df9257cd4af7842f7ca7476"
+          }
+          for path, sha in expected.items():
+              actual = subprocess.check_output(["git", "hash-object", path], text=True).strip()
+              assert actual == sha, f"Source file changed unexpectedly: {path}"
+          print("Homepage flow and evidence checks passed.")
+          PY
