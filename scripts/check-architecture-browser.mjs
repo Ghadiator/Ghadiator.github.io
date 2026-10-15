@@ -46,10 +46,52 @@ try{
  assert.equal(after,"true","Clicking the original orchestrator block must activate the React interaction");
  console.log("BAD_RESPONSES",JSON.stringify(responses.slice(0,30)));
  await page.screenshot({path:"architecture-embedded-test.png",fullPage:false});
- const tabs=page.locator("[data-architecture-tab]");
- await tabs.nth(1).click();
- await page.waitForTimeout(400);
- console.log("REPLAY_PROBE",JSON.stringify({text:(await page.locator("#main").innerText()).slice(0,300),selected:await tabs.nth(1).getAttribute("class")}));
- await tabs.nth(2).click();
- console.log("IO_PROBE",(await page.locator("#main").innerText()).slice(0,270));
+ const deck=page.frameLocator("#modularArchitectureFrame");
+ const picker=deck.locator('select[aria-label="Recorded scenario"]');
+ assert.ok(await picker.count(),"Scenario selector must appear in the original modular canvas");
+ assert.ok((await picker.locator("option").count())>=10,"The recorded scenarios must be selectable");
+ const diagram=deck.locator(".deck-canvas");
+ const header=deck.locator(".deck > div").filter({has:deck.locator("span.w-full.min-w-0")}).first();
+ const graphRect=await diagram.boundingBox(),summaryBefore=await header.boundingBox();
+ assert.ok(graphRect,"The modular graph must be visible before the replay begins");
+ assert.equal(summaryBefore,null,"The terminal-state summary must be hidden before a run starts");
+ await picker.selectOption("supplier_clean");
+ await page.waitForTimeout(1100);
+ const selected=await page.evaluate(()=>({
+  scenario:new URLSearchParams(location.search).get("scenario"),
+  src:document.getElementById("modularArchitectureFrame")?.getAttribute("src")
+ }));
+ assert.equal(selected.scenario,"supplier_clean","Parent and embedded selector must share the selected scenario");
+ const runButton=deck.getByRole("button",{name:"Run",exact:true});
+ await runButton.click();
+ await page.waitForFunction(()=>{
+  const box=document.getElementById("workflow-results");
+  return box&&/Event [1-9] of/.test(box.innerText);
+ },{timeout:10000});
+ const summaryAfter=await header.boundingBox();
+ assert.ok(summaryAfter&&graphRect.y<summaryAfter.y,"After playback starts, the architecture must precede the run summary");
+ const output=await page.locator("#workflow-results").innerText();
+ assert.ok(output.includes("Module exchanges and evidence"),"Evidence must be beneath the diagram");
+ assert.ok(!output.includes("Recorded workflow result"),"The final outcome must not be shown before the run completes");
+ console.log("SCENARIO_REPLAY",JSON.stringify({selected,resultText:output.slice(0,450)}));
+ // The final verdict and AI-role exchanges must appear only when selected
+ // replay events include them, never as a premature banner.
+ await picker.selectOption("supplier_variance_review");
+ await page.waitForTimeout(500);
+ const scrub=deck.locator('input[aria-label="Position in the recorded run"]');
+ await scrub.focus();
+ await scrub.press("End");
+ await page.waitForFunction(()=>document.getElementById("workflow-results")?.innerText.includes("Recorded workflow result"),null,{timeout:12000});
+ const complete=await page.locator("#workflow-results").innerText();
+ assert.ok(complete.includes("Scripted adversarial committee"),"Proponent/Opponent/verification/Judge dialogue must follow the recorded workflow");
+ assert.ok(complete.includes("Recorded workflow result"),"Terminal state must appear when the replay reaches its last event");
+ console.log("COMPLETED_REPLAY",JSON.stringify({length:complete.length,hasCommittee:true,hasOutcome:true}));
+
+ // The archived compiled architecture already has a React #418 HTML
+ // hydration warning because its SSR markup was customized independently.
+ // This PR intentionally does not edit the integrity-pinned compiled artifact.
+ // Every other console or runtime error remains a regression.
+ const unexpected=errors.filter(e=>!e.includes("Minified React error #418"));
+ console.log("KNOWN_LEGACY_HYDRATION_WARNING",errors.filter(e=>e.includes("Minified React error #418")).length);
+ if(unexpected.length)throw new Error(unexpected.slice(0,10).join("\\n"));
 }finally{await browser.close();}
