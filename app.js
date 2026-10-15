@@ -114,7 +114,7 @@ const FACTS = [
 const DEFAULT_STAGES = ['request','reminders','ingest','memory','checks','contract','exception','advisory','remediation','review','disposition','archive'];
 const DISPLAY_STAGES={request:'Request',reminders:'Reminders',ingest:'Intake',memory:'History',checks:'Rule checks',contract:'Contract',exception:'Exception',advisory:'Advisory + CoVe',remediation:'Remediation',review:'Human gate',disposition:'Decision',archive:'Archive'};
 const STAGE_ICONS={request:'file',reminders:'clock',ingest:'download',memory:'database',checks:'check',contract:'book-open',exception:'alert',advisory:'shield-check',remediation:'workflow',review:'user',disposition:'scale',archive:'lock'};
-const VIEW_NAMES={overview:'Introduction',architecture:'Architecture',evidence:'Evidence & learning',dashboard:'Dashboard',tickets:'Document requests',submissions:'New submissions',newticket:'New submission',ticket:'Request detail',inbound:'Supplier intake',cases:'Processed cases',case:'Case detail',monitor:'Architecture scenarios',tokens:'Token economics',governance:'Governance',attacker:'Red Team attacker',redteam:'Control probes',personas:'Chat with the code',integration:'Integration',audit:'Process audit',assurance:'Hazards & controls',analytics:'Detection analytics',login:'Access & scope'};
+const VIEW_NAMES={overview:'Introduction',architecture:'Architecture',evidence:'Evidence & learning',dashboard:'Dashboard',tickets:'Document requests',submissions:'Document collection',newticket:'New submission',ticket:'Request detail',inbound:'Supplier intake',cases:'Recorded cases',case:'Case detail',monitor:'Architecture scenarios',tokens:'Token economics',governance:'Governance controls',attacker:'Red Team attacker',redteam:'Control probes',personas:'AI roles & controls',integration:'Integration',audit:'Process audit',assurance:'Hazards & controls',analytics:'Detection analytics',login:'Access & scope'};
 const state={view:'overview',architectureTab:'diagram',personaMode:'chat',evidenceTab:'reports',submissionTab:'compose',submissionMode:'request',attackerTab:'campaign',attackerRevealed:0,attackerNotes:[],personaName:'integrator',personaSessions:{},workbenchTab:'summary',scenario:'supplier_variance_review',index:{scenarios:SCENARIOS},facts:{facts:FACTS},loaded:{},raw:{},eventIndex:0,playing:false,speed:1150,search:'',filter:'all',selectedObligation:0,selectedHazard:0,loading:{},errors:{},help:false};
 let playTimer=null,toastTimer=null,loadToken=0;
 const $=x=>document.querySelector(x);
@@ -426,7 +426,7 @@ function mountEmbeddedArchitecture(){
 }
 
 function refreshLinkState(){document.querySelectorAll('[data-view]').forEach(el=>{const selected=el.dataset.view===state.view;el.classList.toggle('active',selected);if(el.closest('nav')){if(selected)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');}});$('#currentCrumb').textContent=VIEW_NAMES[state.view]||'Architecture';}
-function route(view,slug,{push=true}={}){if(view==='monitor'){view='architecture';state.architectureTab='replay';}else if(view==='pool'){view='dashboard';}else if(view==='tickets'){view='submissions';state.submissionTab='history';}else if(view==='newticket'){view='submissions';state.submissionTab='compose';state.submissionMode='request';}else if(view==='redteam'||view==='attacker'){view='personas';state.personaMode='attacker';state.attackerTab='campaign';}else if(view==='architecture'&&state.view!=='architecture'){state.architectureTab='diagram';state.architectureCursor=-1;}if(!(view in VIEW_NAMES))view='overview';stopPlay();state.animateNext=true;state.view=view;state.workbenchTab=({case:'summary',inbound:'pending',governance:'system'})[view]||'summary';if(slug&&SCENARIOS.some(x=>x.slug===slug)||slug&&state.index.scenarios.some(x=>x.slug===slug)){if(slug!==state.scenario){state.scenario=slug;state.eventIndex=0;}}state.search='';state.filter='all';if(push)history.pushState(null,'',linkView(view,state.scenario));refreshLinkState();render();$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');window.scrollTo({top:0,behavior:'auto'});}
+function route(view,slug,{push=true}={}){if(view==='monitor'){view='architecture';state.architectureTab='replay';}else if(view==='pool'){view='dashboard';}else if(view==='tickets'){view='submissions';state.submissionTab='history';}else if(view==='newticket'){view='submissions';state.submissionTab='compose';state.submissionMode='request';}else if(view==='redteam'||view==='attacker'){view='personas';state.personaMode='attacker';state.attackerTab='campaign';}else if(view==='architecture'&&state.view!=='architecture'){state.architectureTab='diagram';state.architectureCursor=-1;}if(!(view in VIEW_NAMES))view='overview';stopPlay();state.animateNext=true;state.view=view;state.workbenchTab=({case:'summary',inbound:'pending',governance:'system'})[view]||'summary';if(slug&&SCENARIOS.some(x=>x.slug===slug)||slug&&state.index.scenarios.some(x=>x.slug===slug)){if(slug!==state.scenario){state.scenario=slug;state.eventIndex=0;}}state.search='';state.filter='all';if(push)history.pushState(null,'',linkView(view,state.scenario));refreshLinkState();render();closeMobileNav();window.scrollTo({top:0,behavior:'auto'});}
 function notify(message){const el=$('#toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3600);}
 function button(label,action,{kind='',glyph='',disabled=false}={}){return `<button type="button" class="button ${kind}" data-action="${h(action)}" ${disabled?'disabled':''}>${glyph?icon(glyph):''}${h(label)}</button>`;}
 function pageHeader(eyebrow,title,desc,right=''){return `<div class="page-header"><div><div class="eyebrow"><span class="eyebrow-line"></span>${h(eyebrow)}</div><h1 class="page-title">${h(title)}</h1><p class="page-desc">${h(desc)}</p></div>${right?`<div class="page-toolbar">${right}</div>`:''}</div>`;}
@@ -581,9 +581,37 @@ const wbtab=event.target.closest('[data-wb-tab]');if(wbtab){event.preventDefault
 MAIN.addEventListener('change',event=>{if(event.target.id==='scenarioSelect'){stopPlay();state.scenario=event.target.value;state.eventIndex=0;history.replaceState(null,'',linkView(state.view,state.scenario));render();}if(event.target.id==='caseFilter'||event.target.id==='actorFilter'){state.filter=event.target.value;render();}if(event.target.id==='speedSelect'){state.speed=Number(event.target.value);if(state.playing){stopPlay();togglePlay();}else render();}});
 MAIN.addEventListener('input',event=>{if(event.target.id==='caseSearch'||event.target.id==='auditSearch'){const id=event.target.id;const caret=event.target.selectionStart;state.search=event.target.value;render();const focusEl=document.getElementById(id);if(focusEl){focusEl.focus();try{focusEl.setSelectionRange(caret,caret);}catch{}}}});
 document.body.addEventListener('click',event=>{const viewlink=event.target.closest('.sidebar [data-view]');if(viewlink){event.preventDefault();route(viewlink.dataset.view,state.scenario);}});
-$('#mobileMenu').addEventListener('click',()=>{$('#sidebar').classList.add('open');$('#mobileOverlay').classList.add('visible');});
-$('#mobileClose').addEventListener('click',()=>{$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');});
-$('#mobileOverlay').addEventListener('click',()=>{$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');});
+/* Drawer uses the same navigation links as desktop. Focus stays inside while open. */
+function openMobileNav(){
+ const sidebar=$('#sidebar');
+ sidebar.classList.add('open');
+ $('#mobileOverlay').classList.add('visible');
+ $('#mobileMenu').setAttribute('aria-expanded','true');
+ document.body.classList.add('nav-drawer-open');
+ $('#mobileClose').focus();
+}
+function closeMobileNav({restoreFocus=false}={}){
+ const wasOpen=$('#sidebar').classList.contains('open');
+ $('#sidebar').classList.remove('open');
+ $('#mobileOverlay').classList.remove('visible');
+ $('#mobileMenu').setAttribute('aria-expanded','false');
+ document.body.classList.remove('nav-drawer-open');
+ if(restoreFocus&&wasOpen)$('#mobileMenu').focus();
+}
+$('#mobileMenu').addEventListener('click',openMobileNav);
+$('#mobileClose').addEventListener('click',()=>closeMobileNav({restoreFocus:true}));
+$('#mobileOverlay').addEventListener('click',()=>closeMobileNav({restoreFocus:true}));
+$('#sidebar').addEventListener('keydown',event=>{
+ if(event.key!=='Tab'||!$('#sidebar').classList.contains('open'))return;
+ const focusable=Array.from($('#sidebar').querySelectorAll('a[href],button:not([disabled])')).filter(el=>el.getClientRects().length>0);
+ if(!focusable.length)return;
+ const first=focusable[0],last=focusable[focusable.length-1];
+ if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+ else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+});
+window.addEventListener('resize',()=>{
+ if(window.innerWidth>770&&$('#sidebar').classList.contains('open'))closeMobileNav();
+});
 MAIN.addEventListener('submit',async event=>{
  if(event.target.id==='public-submission-form'){
   event.preventDefault();const form=event.target,mode=state.submissionMode;
@@ -607,5 +635,5 @@ MAIN.addEventListener('submit',async event=>{
 });
 $('#helpButton').addEventListener('click',()=>notify('Read-only evidence viewer · synthetic fixtures · no live-model testing or certification.'));
 window.addEventListener('popstate',()=>{const params=new URLSearchParams(location.search);const s=params.get('scenario');route(params.get('view')||'overview',s,{push:false});});
-window.addEventListener('keydown',ev=>{if(ev.target.closest('input,textarea,select')||ev.altKey||ev.ctrlKey||ev.metaKey)return;if(ev.key==='ArrowRight'&&['architecture','audit'].includes(state.view)){stopPlay();setEvent(state.eventIndex+1);}else if(ev.key==='ArrowLeft'&&['architecture','audit'].includes(state.view)){stopPlay();setEvent(state.eventIndex-1);}else if(ev.key==='Escape'){$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');}});
+window.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&$('#sidebar').classList.contains('open')){ev.preventDefault();closeMobileNav({restoreFocus:true});return;}if(ev.target.closest('input,textarea,select')||ev.altKey||ev.ctrlKey||ev.metaKey)return;if(ev.key==='ArrowRight'&&['architecture','audit'].includes(state.view)){stopPlay();setEvent(state.eventIndex+1);}else if(ev.key==='ArrowLeft'&&['architecture','audit'].includes(state.view)){stopPlay();setEvent(state.eventIndex-1);}else if(ev.key==='Escape')closeMobileNav();});
 (async()=>{window.PublicBackend?.init().then(()=>{renderIfNeeded();}).catch(()=>{});const params=new URLSearchParams(location.search);state.scenario=SCENARIOS.some(s=>s.slug===params.get('scenario'))?params.get('scenario'):'supplier_variance_review';const requestedView=params.get('view');if(requestedView==='monitor')state.architectureTab='replay';if(requestedView==='tickets')state.submissionTab='history';if(requestedView==='newticket'){state.submissionTab='compose';state.submissionMode='request';}if(['redteam','attacker'].includes(requestedView)){state.attackerTab='campaign';state.personaMode='attacker';}state.view=requestedView==='monitor'?'architecture':requestedView==='pool'?'dashboard':['tickets','newticket'].includes(requestedView)?'submissions':['redteam','attacker'].includes(requestedView)?'personas':VIEW_NAMES[requestedView]?requestedView:'overview';hydrateIcons();render();const available=await Promise.all([ensureData('index'),ensureData('facts')]);if(available.some(Boolean))renderIfNeeded();})();
