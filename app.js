@@ -154,20 +154,45 @@ function linkView(view,scenario){return `?view=${encodeURIComponent(view)}&scena
 // The existing architecture artifact remains authoritative and unmodified.
 // Mount only its interactive content in the current workbench; never navigate
 // the parent page to its old Next.js shell.
-function embeddedArchitectureUrl(slug){return `/architecture/?embedded=1&scenario=${encodeScenario(slug)}`;}
+function embeddedArchitectureUrl(slug){return `/architecture/?embedded=1&case=${encodeScenario(slug)}`;}
 function renderArchitectureContracts(){return `<div class="wb-page"><div class="wb-head"><div><span class="wb-kicker">SOURCE CONTRACTS · VALIDATION ENGINE</span><h1>Inputs, transformations & outputs</h1><p>These boundaries explain the data consumed and emitted by the generic supplier-validation pipeline.</p></div></div><div class="wb-two"><section class="wb-panel"><div class="wb-panel-head"><h2>Input evidence</h2></div><div class="wb-panel-body"><p><strong>Supplier document:</strong> invoice ID, supplier, contract and PO references, currency, service period, service lines, quantities, rates, amounts, attachments and supplier notes.</p><p><strong>Authoritative references:</strong> approved contract, rate card, spending limit, reviewer rights and historical disposition register.</p><p>Supplier narrative is untrusted and never overrides a verified contract.</p></div></section><section class="wb-panel"><div class="wb-panel-head"><h2>Output and decisions</h2></div><div class="wb-panel-body"><p>Typed intake, arithmetic results, contract findings, evidence-supported exceptions, committee and CoVe outputs, reviewer decision state and immutable event references.</p><p>No model proposal approves a case: an authorized human reviews the evidence before disposition.</p></div></section></div><div class="wb-notice"><strong>Source flow:</strong> intake → deterministic validation → contract checks → bounded persona proposals → CoVe verification → human review → ProcessEvent trail. Public replay is scripted, not a live engine.</div></div>`;}
+
+function renderWorkflowResults(){
+ const all=events();
+ const position=Number.isInteger(state.architectureCursor)?state.architectureCursor:-1;
+ const cursor=Math.min(position,all.length-1);
+ if(cursor<0){
+  return '<section class="wb-page workflow-results"><div class="wb-head"><div><span class="wb-kicker">WORKFLOW OUTPUT · FOLLOWS THE ARCHITECTURE</span><h2>Module exchanges and recorded evidence</h2><p>Choose a scenario and press Run above. As the recorded workflow advances, its module outputs, audit events and AI-role exchanges appear here.</p></div></div></section>';
+ }
+ if(!all.length){
+  return '<section class="wb-page workflow-results"><div class="wb-notice">Verified event data is loading; no workflow results have been fabricated.</div></section>';
+ }
+ const visible=all.slice(0,cursor+1),current=all[cursor],done=cursor===all.length-1;
+ const ledger='<div class="event-list">'+visible.slice(-12).map(ev=>
+  `<div class="event-row ${ev===current?'active':''}"><span class="event-seq">${String(ev.seq).padStart(2,'0')}</span><span class="event-bullet ${ev.actor==='human'?'human':ev.actor==='system'?'':'scripted'}"></span><span><strong>${h(ev.label)}</strong><small>${h(ev.kind)} · ${h(ev.actor)} · ${h(ev.stage)}</small></span></div>»
+ ).join('')+'</div>';
+ // Reuse the existing DAiA-adapted evidence and committee panels, driven by
+ // the SAME ordinal cursor as the interactive modular graph above.
+ const ctx={...workbenchContext(),events:()=>visible,activeEvent:()=>current,renderTimeline:()=>ledger};
+ const holder=document.createElement('template');
+ holder.innerHTML=window.GenericWorkbench.monitor(ctx);
+ const evidence=holder.content.querySelector('.wb-two')?.outerHTML||'';
+ const committee=visible.some(ev=>ev.kind.startsWith('committee.')||ev.kind==='verification.result')
+  ?holder.content.querySelector('.wb-committee')?.outerHTML||'':'';
+ const outcome=done?`<section class="wb-panel"><div class="wb-panel-head"><h2>Recorded workflow result</h2></div><div class="wb-panel-body"><div class="wb-inline-actions">${fmtStatus(currentCase().terminal_state)}<span class="count-chip">${all.length} recorded events</span></div><p class="wb-foot">This is the outcome of an executed synthetic reference fixture. The animation did not execute a new review or issue a human decision.</p></div></section>»:'';
+ return `<section class="wb-page workflow-results" aria-label="Workflow outputs and exchange"><div class="wb-head"><div><span class="wb-kicker">WORKFLOW OUTPUT · FROM THE RECORDED EXECUTION</span><h2>Module exchanges and evidence</h2><p>Event ${cursor+1} of ${all.length} · ${h(currentCase().title)}. The record below follows the same playback position as the modular architecture.</p></div></div>${evidence}${committee}${outcome}</section>»;
+}
+function refreshWorkflowResults(){
+ const target=document.getElementById('workflow-results');
+ if(target)target.innerHTML=renderWorkflowResults();
+}
 function renderEmbeddedArchitecture(){
- const isReplay=state.architectureTab==='replay';const isIO=state.architectureTab==='io';
  return `<div class="page-entrance unified-architecture-view">
- <div class="unified-architecture-context"><span class="section-overline">ARCHITECTURE · INTERACTIVE SYSTEM</span><span>Orchestration · Committee + CoVe · ProcessEvent · Human decision</span></div>
- <div class="wb-tabs unified-architecture-tabs" role="group" aria-label="Architecture sections">
-  <button type="button" class="wb-tab ${(!isReplay&&!isIO)?'selected':''}" data-architecture-tab="diagram" aria-pressed="${(!isReplay&&!isIO)}">01 · Modular architecture</button>
-  <button type="button" class="wb-tab ${isReplay?'selected':''}" data-architecture-tab="replay" aria-pressed="${isReplay}">02 · Recorded data flow</button>
-  <button type="button" class="wb-tab ${isIO?'selected':''}" data-architecture-tab="io" aria-pressed="${isIO}">03 · Inputs & outputs</button>
- </div>
- ${isIO?renderArchitectureContracts():isReplay?window.GenericWorkbench.monitor(workbenchContext()):`<iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular generic validation architecture" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>`}
- <p class="unified-architecture-note">The modular architecture and scenario replay share this one tab. Recorded supplier traces use scripted AI roles, not live model calls; the diagram, CoVe checks, event inspection and governance boundaries remain visible.</p>
- </div>`;
+  <div class="unified-architecture-context"><span class="section-overline">ARCHITECTURE · SELECT A SCENARIO, THEN RUN</span><span>Modular dataflow · verified handoffs · human decision gate</span></div>
+  <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular validation workflow and scenario player" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
+  <div id="workflow-results" class="architecture-workflow-results">${renderWorkflowResults()}</div>
+  <p class="unified-architecture-note">The architecture player and the results below read the same recorded synthetic case. AI roles are scripted and human approvals shown are historical fixture records, not live actions.</p>
+ </div>»;
 }
 function recoverArchitectureFrame(frame){
  if(frame.dataset.recoveryTried==='1'){
