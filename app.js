@@ -306,6 +306,11 @@ function mountEmbeddedArchitecture(){
      .deck > div:has(select[aria-label="Recorded scenario"]){order:1}
      .deck > div:has(input[aria-label="Position in the recorded run"]){order:2}
      .deck > div:has(> .deck-canvas){order:3}
+     /* Those sections are already represented by the shared workbench below
+        this iframe. In embedded mode they obscure the run's evidence and
+        show the completed outcome before replay has begun. Standalone
+        architecture keeps the full companion guide unchanged. */
+     .ax-story{display:none!important}
    `;
    doc.head.appendChild(style);
   }
