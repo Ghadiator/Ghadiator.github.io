@@ -188,7 +188,7 @@ function mountEmbeddedArchitecture(){
   // Both documents are served from the same GitHub Pages origin.
   // Style is injected into the iframe's document; the architecture
   // React bundle, diagram edges and companion explanations are untouched.
-  let doc;try{doc=frame.contentDocument;}catch{return;}
+  let doc;try{doc=frame.contentDocument;}catch{recoverArchitectureFrame(frame);return;}
   if(!doc||!doc.head||!doc.body){recoverArchitectureFrame(frame);return;}
   const frameStyle=doc.createElement('style');
   frameStyle.id='unified-workbench-embed-style';
