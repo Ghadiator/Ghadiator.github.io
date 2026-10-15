@@ -1,0 +1,34 @@
+name: Modular architecture browser smoke
+on:
+  push:
+    branches: [fix/modular-architecture-embedded-view]
+  pull_request:
+    paths:
+      - 'app.js'
+      - 'assets/architecture-embed.css'
+      - 'scripts/check-architecture-browser.mjs'
+      - 'architecture-embed/**'
+      - '.github/workflows/architecture-browser-check.yml'
+jobs:
+  chromium:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install --no-save --no-package-lock playwright-core@1.56.1
+      - name: Find Chrome
+        run: |
+          which google-chrome || which chromium || true
+          if [ -x /usr/bin/google-chrome ]; then echo "CHROME_PATH=/usr/bin/google-chrome" >> "$GITHUB_ENV"; fi
+          if [ -x /usr/bin/chromium ]; then echo "CHROME_PATH=/usr/bin/chromium" >> "$GITHUB_ENV"; fi
+      - name: Inspect actual public Architecture page and workflows
+        run: node scripts/check-architecture-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: architecture-embedded-chromium
+          path: architecture-embedded-test.png
