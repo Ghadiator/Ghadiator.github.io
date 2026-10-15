@@ -53,6 +53,12 @@ try{
  const outsideBefore=page.locator("#architecture-detail");
  assert.ok((await outsideBefore.innerText()).includes("Pick a case and step through it"),"Introductory text must appear below the graph");
  assert.ok((await outsideBefore.innerText()).includes("Look inside"),"Modular drill controls must appear below the graph");
+ const drillControl=outsideBefore.locator('[data-deck-action="drill"]').first();
+ await drillControl.click();
+ await page.waitForFunction(()=>document.querySelector('#architecture-detail [data-deck-action="back"]'),null,{timeout:10000});
+ await outsideBefore.locator('[data-deck-action="back"]').click();
+ await page.waitForFunction(()=>!document.querySelector('#architecture-detail [data-deck-action="back"]'),null,{timeout:10000});
+ console.log("MODULE_DRILL", "React drill-down and return are controlled from beneath the modular canvas");
  const diagram=deck.locator(".deck-canvas");
  const header=deck.locator(".deck > div").filter({has:deck.locator("span.w-full.min-w-0")}).first();
  const graphRect=await diagram.boundingBox(),summaryBefore=await header.boundingBox();
