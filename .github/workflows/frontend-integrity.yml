@@ -10,6 +10,7 @@ on:
       - data/backend-config.json
       - assets/public-personas.js
       - assets/public-attacker.js
+      - assets/story-journey.js
       - styles.css
       - index.html
       - .github/workflows/frontend-integrity.yml
@@ -24,6 +25,7 @@ on:
       - data/backend-config.json
       - assets/public-personas.js
       - assets/public-attacker.js
+      - assets/story-journey.js
       - styles.css
       - index.html
       - .github/workflows/frontend-integrity.yml
@@ -41,6 +43,7 @@ jobs:
           node --check assets/public-local-runner.js
           node --check assets/public-personas.js
           node --check assets/public-attacker.js
+          node --check assets/story-journey.js
       - name: Check plain-language introduction and preserved evidence
         run: |
           python3 - <<'PY'
@@ -60,8 +63,8 @@ jobs:
           assert "Example data · No live AI" in html
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
-          assert 'styles.css?v=20261015-unified-navigation-44' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261015-unified-navigation-44' in html, "Script must use a cache-busting URL"
+          assert 'styles.css?v=20261015-story-flow-45' in html, "Stylesheet must use a cache-busting URL"
+          assert 'app.js?v=20261015-story-flow-45' in html, "Script must use a cache-busting URL"
           expected = {
               "architecture/index.html": "043957f786fd71f8f61a8c3258f86cbbcd8004b7",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
@@ -76,14 +79,13 @@ jobs:
           assert 'data-view="architecture"' in shell
           assert 'data-view="overview"' in shell
           required_tabs = (
-              'overview', 'architecture', 'dashboard', 'submissions',
-              'inbound', 'cases', 'tokens', 'governance', 'attacker',
-              'personas', 'integration', 'audit'
+              'overview', 'architecture', 'personas', 'governance', 'evidence',
+              'submissions', 'cases'
           )
           for tab in required_tabs:
               assert 'data-view="'+tab+'"' in html, f'Missing DAiA-equivalent public tab: {tab}'
               assert tab + ':' in app, f'Missing app router view: {tab}'
-          assert 'assets/generic-workbench.js?v=20261015-unified-navigation-44' in html
+          assert 'assets/generic-workbench.js?v=20261015-story-flow-45' in html
           assert html.index('assets/generic-workbench.js') < html.index('src="./app.js')
           workbench = Path('assets/generic-workbench.js').read_text()
           for screen in ('overview', 'tickets', 'inbound', 'cases', 'monitor', 'economics',
@@ -117,23 +119,27 @@ jobs:
           first_nav = html.index('<nav class="nav-list">')
           first_two = html[first_nav:html.index('</nav>', first_nav)]
           assert first_two.index('data-view="overview"') < first_two.index('data-view="architecture"')
-          assert len(__import__('re').findall('data-view=', first_two)) == 2
-          assert 'START HERE' in html and 'REFERENCE</div>' not in html
+          assert __import__('re').findall(r'data-view="([^"]+)"', first_two) == ['overview','architecture','personas','governance','evidence']
+          assert 'THE STORY · FIVE STAGES' in html and 'REFERENCE</div>' not in html
           assert '<a data-view="monitor"' not in html, 'Scenario theater belongs inside Architecture'
           assert '<a data-view="pool"' not in html, 'Pool Analytics tab is removed'
-          assert 'data-architecture-tab="diagram"' in app and 'data-architecture-tab="replay"' in app
+          assert all('data-architecture-tab="'+t+'"' in app for t in ('diagram','replay','io'))
           assert 'renderEmbeddedArchitecture' in app and 'mountEmbeddedArchitecture' in app
           assert "location.assign(classicArchitectureUrl" not in app
           assert "location.replace(classicArchitectureUrl" not in app
           assert "state.view=requestedView==='monitor'?'architecture'" in app
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'href="?view=architecture"' in app, 'Introduction links remain in shell'
-          for asset in ('public-submissions.js', 'public-personas.js', 'public-attacker.js'):
-              assert 'assets/'+asset+'?v=20261015-unified-navigation-44' in html
+          for asset in ('public-submissions.js', 'public-personas.js', 'public-attacker.js', 'story-journey.js'):
+              assert 'assets/'+asset+'?v=20261015-story-flow-45' in html
               assert Path('assets/'+asset).stat().st_size > 1500
           assert 'PublicSubmissions.submit' in app and 'PublicPersonas.send' in app
           assert 'data-attacker-action' in Path('assets/public-attacker.js').read_text()
           assert 'Pool Analytics' not in html, 'No orphan Pool tab label'
+          assert html.count('data-view="evidence" href=') == 1
+          assert 'data-persona-mode="attacker"' in app and 'data-evidence-tab' in app
+          assert 'problem-pitch' in app and 'THE BUSINESS CHALLENGE' in app
+          assert 'function renderArchitectureContracts()' in app
           assert html.count('data-view="personas"') == 1, 'There must be only one Chat with the code entry'
           assert 'data-view="tickets" href=' not in html, 'Document requests must be one destination'
           assert 'data-view="redteam" href=' not in html, 'Control probes must be inside Red Team'
@@ -142,7 +148,7 @@ jobs:
           assert 'PublicPersonas.chat' not in Path('assets/public-attacker.js').read_text()
           assert "view==='tickets';" not in app
           assert "else if(view==='tickets'){view='submissions'" in app
-          assert "else if(view==='redteam'){view='attacker'" in app
+          assert "else if(view==='redteam'||view==='attacker'){view='personas'" in app
           backend_config = __import__('json').loads(Path('data/backend-config.json').read_text())
           assert backend_config['enabled'] is False, 'Never enable unconfigured Oracle backend'
           assert backend_config['apiOrigin'] is None, 'Never invent a public backend host'
@@ -215,6 +221,11 @@ jobs:
           const theater=atk.window.PublicAttacker.render(ctx);
           if(!theater.includes('attacker')||!theater.includes('Defense')||theater.includes('Live defense run complete'))
               throw Error('Attacker replay invalid');
+          const evidence={window:{}};
+          vm.runInNewContext(fs.readFileSync('assets/story-journey.js','utf8'),evidence);
+          const ev=evidence.window.StoryJourney.renderEvidence(ctx);
+          if(!ev.includes('Case reports')||!ev.includes('Lessons learned')||!ev.includes('synthetic'))
+            throw Error('Evidence and learning landing missing');
           const local = {window:{}};
           vm.runInNewContext(fs.readFileSync('assets/public-local-runner.js','utf8'),local);
           const input=local.window.PublicLocalRunner.template();
