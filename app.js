@@ -217,12 +217,14 @@ function mountEmbeddedArchitecture(){
  // scrollHeight becomes 0 and previously collapsed the entire diagram to 12px.
  const MIN_HEIGHT=1060,MAX_HEIGHT=12000;
  frame.style.minHeight=MIN_HEIGHT+'px';
- let disposed=false,raf=0,currentMain=null,mainResizeObserver=null,bodyMutationObserver=null;
+ let disposed=false,raf=0,currentMain=null,mainResizeObserver=null,bodyMutationObserver=null,observedDoc=null;
  const clean=()=>{
   disposed=true;
   if(raf)cancelAnimationFrame(raf);
   mainResizeObserver?.disconnect();
   bodyMutationObserver?.disconnect();
+  observedDoc?.removeEventListener('input',onPlayerControl);
+  observedDoc?.removeEventListener('change',onPlayerControl);
   frame.removeEventListener('load',onLoad);
  };
  disposeArchitectureEmbed=clean;
@@ -248,9 +250,36 @@ function mountEmbeddedArchitecture(){
   if(frame.style.height!==next+'px')frame.style.height=next+'px';
   frame.style.visibility='visible';
  };
+
+ const syncFromFrame=()=>{
+  if(disposed||!frame.isConnected)return;
+  let doc;
+  try{doc=frame.contentDocument;}catch{return;}
+  const picker=doc?.querySelector('select[aria-label="Recorded scenario"]');
+  const scrub=doc?.querySelector('input[aria-label="Position in the recorded run"]');
+  if(!picker||!scrub)return;
+  const slug=picker.value;
+  const next=Math.max(-1,Number(scrub.value));
+  const known=SCENARIOS.some(s=>s.slug===slug)||state.index.scenarios.some(s=>s.slug===slug);
+  if(known&&slug!==state.scenario){
+   stopPlay();
+   state.scenario=slug;
+   state.architectureCursor=-1;
+   state.eventIndex=0;
+   history.replaceState(null,'',linkView('architecture',slug));
+   refreshWorkflowResults();
+   if(!state.loaded['scenario:'+slug])ensureScenario(slug).then(()=>{if(state.view==='architecture'&&state.scenario===slug)refreshWorkflowResults();});
+  }
+  if(Number.isFinite(next)&&next!==state.architectureCursor){
+   state.architectureCursor=next;
+   state.eventIndex=Math.max(0,next);
+   refreshWorkflowResults();
+  }
+ };
+ const onPlayerControl=()=>schedule();
  const schedule=()=>{
   if(disposed||raf)return;
-  raf=requestAnimationFrame(()=>{raf=0;measure();});
+  raf=requestAnimationFrame(()=>{raf=0;measure();syncFromFrame();});
  };
  function onLoad(){
   if(disposed||!frame.isConnected)return;
@@ -271,8 +300,21 @@ function mountEmbeddedArchitecture(){
      body > div.flex.min-h-screen > div{min-width:0!important;width:100%!important;display:block!important}
      body > div.flex.min-h-screen > div > main{padding:0!important;width:100%!important}
      body > div.flex.min-h-screen > div > main > div{max-width:none!important}
+     /* Keep existing React dataflow, but show scenario + controls first. */
+     .deck{display:flex!important;flex-direction:column!important}
+     .deck > div{order:20}
+     .deck > div:has(select[aria-label="Recorded scenario"]){order:1}
+     .deck > div:has(input[aria-label="Position in the recorded run"]){order:2}
+     .deck > div:has(> .deck-canvas){order:3}
    `;
    doc.head.appendChild(style);
+  }
+  if(observedDoc!==doc){
+   observedDoc?.removeEventListener('input',onPlayerControl);
+   observedDoc?.removeEventListener('change',onPlayerControl);
+   observedDoc=doc;
+   doc.addEventListener('input',onPlayerControl);
+   doc.addEventListener('change',onPlayerControl);
   }
   bodyMutationObserver?.disconnect();
   if(typeof MutationObserver!=='undefined'){
@@ -284,6 +326,7 @@ function mountEmbeddedArchitecture(){
   }
   frame.style.visibility='visible';
   measure();
+  syncFromFrame();
   doc.fonts?.ready.then(schedule).catch(()=>{});
   schedule();
  }
@@ -293,7 +336,7 @@ function mountEmbeddedArchitecture(){
 }
 
 function refreshLinkState(){document.querySelectorAll('[data-view]').forEach(el=>{const selected=el.dataset.view===state.view;el.classList.toggle('active',selected);if(el.closest('nav')){if(selected)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');}});$('#currentCrumb').textContent=VIEW_NAMES[state.view]||'Architecture';}
-function route(view,slug,{push=true}={}){if(view==='monitor'){view='architecture';state.architectureTab='replay';}else if(view==='pool'){view='dashboard';}else if(view==='tickets'){view='submissions';state.submissionTab='history';}else if(view==='newticket'){view='submissions';state.submissionTab='compose';state.submissionMode='request';}else if(view==='redteam'||view==='attacker'){view='personas';state.personaMode='attacker';state.attackerTab='campaign';}else if(view==='architecture'&&state.view!=='architecture'){state.architectureTab='diagram';}if(!(view in VIEW_NAMES))view='overview';stopPlay();state.animateNext=true;state.view=view;state.workbenchTab=({case:'summary',inbound:'pending',governance:'system'})[view]||'summary';if(slug&&SCENARIOS.some(x=>x.slug===slug)||slug&&state.index.scenarios.some(x=>x.slug===slug)){if(slug!==state.scenario){state.scenario=slug;state.eventIndex=0;}}state.search='';state.filter='all';if(push)history.pushState(null,'',linkView(view,state.scenario));refreshLinkState();render();$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');window.scrollTo({top:0,behavior:'auto'});}
+function route(view,slug,{push=true}={}){if(view==='monitor'){view='architecture';state.architectureTab='replay';}else if(view==='pool'){view='dashboard';}else if(view==='tickets'){view='submissions';state.submissionTab='history';}else if(view==='newticket'){view='submissions';state.submissionTab='compose';state.submissionMode='request';}else if(view==='redteam'||view==='attacker'){view='personas';state.personaMode='attacker';state.attackerTab='campaign';}else if(view==='architecture'&&state.view!=='architecture'){state.architectureTab='diagram';state.architectureCursor=-1;}if(!(view in VIEW_NAMES))view='overview';stopPlay();state.animateNext=true;state.view=view;state.workbenchTab=({case:'summary',inbound:'pending',governance:'system'})[view]||'summary';if(slug&&SCENARIOS.some(x=>x.slug===slug)||slug&&state.index.scenarios.some(x=>x.slug===slug)){if(slug!==state.scenario){state.scenario=slug;state.eventIndex=0;}}state.search='';state.filter='all';if(push)history.pushState(null,'',linkView(view,state.scenario));refreshLinkState();render();$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');window.scrollTo({top:0,behavior:'auto'});}
 function notify(message){const el=$('#toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3600);}
 function button(label,action,{kind='',glyph='',disabled=false}={}){return `<button type="button" class="button ${kind}" data-action="${h(action)}" ${disabled?'disabled':''}>${glyph?icon(glyph):''}${h(label)}</button>`;}
 function pageHeader(eyebrow,title,desc,right=''){return `<div class="page-header"><div><div class="eyebrow"><span class="eyebrow-line"></span>${h(eyebrow)}</div><h1 class="page-title">${h(title)}</h1><p class="page-desc">${h(desc)}</p></div>${right?`<div class="page-toolbar">${right}</div>`:''}</div>`;}
@@ -393,7 +436,7 @@ function render(){refreshLinkState();
  };if(!wb){MAIN.innerHTML='<p class="wb-error">The generic workbench module is unavailable.</p>';return;}
  let markup=fn[state.view]();if(state.animateNext){markup=markup.replace('class="wb-page"','class="wb-page enter-animated"').replace('class="page-entrance"','class="page-entrance enter-animated"');state.animateNext=false;}
  disposeArchitectureEmbed();disposeArchitectureEmbed=()=>{};
- MAIN.innerHTML=markup;MAIN.classList.toggle('architecture-active',state.view==='architecture');hydrateIcons();if(state.view==='architecture'&&state.architectureTab==='diagram')mountEmbeddedArchitecture();
+ MAIN.innerHTML=markup;MAIN.classList.toggle('architecture-active',state.view==='architecture');hydrateIcons();if(state.view==='architecture')mountEmbeddedArchitecture();
  if(['architecture','case','ticket','inbound','audit','personas','attacker'].includes(state.view)&&!state.loaded[`scenario:${state.scenario}`]&&!state.errors[`scenario:${state.scenario}`]){const wanted=state.scenario;ensureScenario(wanted).then(d=>{if(d&&wanted===state.scenario)renderIfNeeded();});}
  if(['governance','evidence'].includes(state.view)&&!state.loaded.rules&&!state.errors.rules)ensureData('rules').then(d=>d&&['governance','evidence'].includes(state.view)&&renderIfNeeded());
  if(state.view==='evidence'&&!state.loaded[`scenario:${state.scenario}`]&&!state.errors[`scenario:${state.scenario}`])ensureScenario(state.scenario).then(d=>d&&state.view==='evidence'&&renderIfNeeded());
@@ -406,7 +449,7 @@ function render(){refreshLinkState();
  }
  if(state.view==='integration'&&!state.loaded.integration&&!state.errors.integration)ensureData('integration').then(d=>d&&state.view==='integration'&&renderIfNeeded());
 }
-function renderIfNeeded(){if(!state._renderFrame){state._renderFrame=requestAnimationFrame(()=>{state._renderFrame=0;render();});}}
+function renderIfNeeded(){if(state.view==='architecture'&&document.getElementById('workflow-results')){refreshWorkflowResults();return;}if(!state._renderFrame){state._renderFrame=requestAnimationFrame(()=>{state._renderFrame=0;render();});}}
 function hydrateIcons(){document.querySelectorAll('[data-icon]').forEach(el=>{el.innerHTML=icon(el.dataset.icon)});}
 function setEvent(idx){const es=events();if(!es.length)return;state.eventIndex=Math.max(0,Math.min(idx,es.length-1));const before=document.querySelector('.event-list');const previousScroll=before?.scrollTop||0;render();const list=document.querySelector('.event-list');if(list){list.scrollTop=previousScroll;const item=list.querySelector('.event-row.active');if(item){const rect=item.getBoundingClientRect(),bounds=list.getBoundingClientRect();if(rect.top<bounds.top||rect.bottom>bounds.bottom)item.scrollIntoView({block:'nearest',behavior:'auto'});}}}
 function stopPlay(){if(playTimer)clearInterval(playTimer);playTimer=null;state.playing=false;}
