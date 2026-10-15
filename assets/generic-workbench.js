@@ -97,13 +97,13 @@
   }
   function ticket(ctx){
     const r=selected(ctx),es=events(ctx),collection=es.filter(x=>x.stage==="request"||x.stage==="reminders"||x.stage==="ingest");
-    return `<div class="wb-page">${hero("REQUEST DETAIL","Document collection · "+safe(ctx,r.title),"DAiA request detail layout, populated only from the recorded supplier collection events.",action("tickets","Back to requests")+action("case","Linked case",r.slug))}
+    return `<div class="wb-page">${hero("REQUEST DETAIL","Document collection · "+safe(ctx,r.title),"DAiA request detail layout, populated only from the recorded supplier collection events.",action("submissions","Document collection")+action("case","Linked case",r.slug))}
     ${panel("Request summary",`<dl class="wb-defs"><dt>Scenario reference</dt><dd>${safe(ctx,r.slug)}</dd><dt>Recorded outcome</dt><dd>${stateLabel(ctx,r)}</dd><dt>Human gate reached</dt><dd>${r.reached_human_gate?"Yes":"No"}</dd><dt>Mail transport</dt><dd>Fixture outbox only; no messages delivered</dd></dl>`)}
     ${panel("Collection timeline",collection.length?`<div class="wb-list">${collection.map(e=>`<div class="wb-list-row"><b>${e.seq}</b><span><strong>${safe(ctx,e.label)}</strong><small>${safe(ctx,e.detail)}</small></span></div>`).join("")}</div>`:empty("No recorded collection event","The selected fixture has no matching collection rows in its public trace."))}
     ${notice("Supplier notifications, reviewer assignments and correspondence composer in DAiA require private APIs. This public counterpart shows authentic emitted fixture records instead.")}</div>`;
   }
   function newticket(ctx){
-    return `<div class="wb-page">${hero("REQUEST CREATION · DESIGN-ONLY","Draft document request","This reproduces the DAiA new-ticket form without pretending that a public static portfolio can open live cases.",action("tickets","Existing recorded requests"))}
+    return `<div class="wb-page">${hero("REQUEST CREATION · DESIGN-ONLY","Draft document request","This reproduces the DAiA new-ticket form without pretending that a public static portfolio can open live cases.",action("submissions","Document collection"))}
     ${panel("New supplier request · local preview",`<form id="wb-draft-form" class="wb-form"><label>Supplier reference<input name="supplier" required maxlength="90" placeholder="e.g. Supplier A (example)" autocomplete="off"/></label><label>Document type<select name="document"><option>Invoice</option><option>Service report</option><option>Corrected invoice</option></select></label><label>Review purpose<textarea name="purpose" placeholder="What needs to be checked?" rows="4" maxlength="400"></textarea></label><div class="wb-form-actions"><button type="submit" class="wb-primary">Preview request (no send)</button><span>Local preview only · no submission or storage</span></div></form><div id="wb-draft-preview" class="wb-preview" role="status" aria-live="polite"></div>`)}
     ${hydrateHint()}</div>`;
   }
