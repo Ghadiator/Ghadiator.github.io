@@ -37,13 +37,27 @@ function answer(c,question,persona){
  if(ranking[0]?.score>0)return{message:ranking[0].content,source:ranking[0].source};
  return{message:"I cannot establish a source-backed answer from the currently loaded public evidence. Try a suggested question or inspect the codebase. This interface does not invent missing code or generate new model responses.",source:null};
 }
-function send(c,id,question){
+async function send(c,id,question){
  const q=String(question||"").trim();if(!q)return;
  if(!c.state.personaSessions)c.state.personaSessions={};
  const history=(c.state.personaSessions[id]||[]).slice(-22);
+ const api=window.PublicBackend?.state();
+ let result;
+ if(api?.mode==="backend"){
+  if(api.status!=="online")throw Error("The backend is offline; this message was not delivered.");
+  const response=await window.PublicBackend.askPersona({persona:id,message:q,
+   caseId:id==="hitl"?c.currentCase().slug:null,conversationId:c.state.personaConversations?.[id]||null});
+  if(!response||typeof response.reply!=="string"||!response.reply.trim())throw Error("Backend returned no persona reply");
+  result={message:response.reply,source:response.source||"Authenticated generic validation API"};
+  if(response.conversation_id){
+   if(!c.state.personaConversations)c.state.personaConversations={};
+   c.state.personaConversations[id]=response.conversation_id;
+  }
+ }else result=answer(c,q,id);
  history.push({role:"user",message:q});
- history.push({role:"assistant",...answer(c,q,id)});
+ history.push({role:"assistant",...result});
  c.state.personaSessions[id]=history;
+ return result;
 }
 window.PublicPersonas={render,chat,send,answer};
 })();
