@@ -157,6 +157,7 @@ function renderEmbeddedArchitecture(){return `<div class="page-entrance unified-
  <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular generic validation architecture" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
  <p class="unified-architecture-note">This is the preserved interactive architecture with its source explanations and recorded supplier evidence, displayed inside the unified validation workbench. The public fixture uses scripted AI roles, not live model calls.</p>
  </div>`;}
+let disposeArchitectureEmbed=()=>{};
 function mountEmbeddedArchitecture(){
  const frame=document.getElementById('modularArchitectureFrame');if(!frame)return;
  frame.addEventListener('load',()=>{
@@ -194,11 +195,16 @@ function mountEmbeddedArchitecture(){
   resize();
   if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(schedule);observer.observe(main);frame._architectureResizeObserver=observer;}
   if(typeof MutationObserver!=='undefined'){
-   const observer=new MutationObserver(schedule);observer.observe(main,{childList:true,subtree:true,characterData:true,attributes:true});
+   const observer=new MutationObserver(schedule);observer.observe(main,{childList:true,subtree:true,characterData:true});
    frame._architectureMutationObserver=observer;
   }
   doc.fonts?.ready.then(schedule).catch(()=>{});
-  frame.addEventListener('pagehide',()=>{frame._architectureResizeObserver?.disconnect();frame._architectureMutationObserver?.disconnect();},{once:true});
+  disposeArchitectureEmbed=()=>{
+   frame._architectureResizeObserver?.disconnect();
+   frame._architectureMutationObserver?.disconnect();
+   if(raf)cancelAnimationFrame(raf);
+  };
+  frame.contentWindow?.addEventListener('pagehide',disposeArchitectureEmbed,{once:true});
   schedule();
  });
 }
@@ -282,7 +288,8 @@ function render(){refreshLinkState();const wb=window.GenericWorkbench,ctx=workbe
  login:()=>wb.login(ctx)
  };if(!wb){MAIN.innerHTML='<p class="wb-error">The generic workbench module is unavailable.</p>';return;}
  let markup=fn[state.view]();if(state.animateNext){markup=markup.replace('class="wb-page"','class="wb-page enter-animated"').replace('class="page-entrance"','class="page-entrance enter-animated"');state.animateNext=false;}
- MAIN.innerHTML=markup;hydrateIcons();if(state.view==='architecture')mountEmbeddedArchitecture();
+ disposeArchitectureEmbed();disposeArchitectureEmbed=()=>{};
+ MAIN.innerHTML=markup;MAIN.classList.toggle('architecture-active',state.view==='architecture');hydrateIcons();if(state.view==='architecture')mountEmbeddedArchitecture();
  if(['monitor','case','ticket','inbound','audit'].includes(state.view)&&!state.loaded[`scenario:${state.scenario}`]&&!state.errors[`scenario:${state.scenario}`]){const wanted=state.scenario;ensureScenario(wanted).then(d=>{if(d&&wanted===state.scenario)renderIfNeeded();});}
  if(state.view==='governance'&&!state.loaded.crosswalk&&!state.errors.crosswalk)ensureData('crosswalk').then(d=>d&&state.view==='governance'&&renderIfNeeded());
  if(state.view==='governance'&&!state.loaded.rules&&!state.errors.rules)ensureData('rules').then(d=>d&&state.view==='governance'&&renderIfNeeded());
