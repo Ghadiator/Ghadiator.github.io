@@ -123,7 +123,12 @@ jobs:
           assert 'THE STORY · FIVE STAGES' in html and 'REFERENCE</div>' not in html
           assert '<a data-view="monitor"' not in html, 'Scenario theater belongs inside Architecture'
           assert '<a data-view="pool"' not in html, 'Pool Analytics tab is removed'
-          assert all('data-architecture-tab="'+t+'"' in app for t in ('diagram','replay','io'))
+          assert 'function renderWorkflowResults()' in app, "Recorded workflow results must follow the canvas"
+          assert 'id="workflow-results"' in app and 'syncFromFrame' in app
+          assert 'select[aria-label="Recorded scenario"]' in app
+          assert 'input[aria-label="Position in the recorded run"]' in app
+          assert 'function renderEmbeddedArchitecture()' in app
+          assert 'data-architecture-tab="replay"' not in app[app.index("function renderEmbeddedArchitecture()"):app.index("function recoverArchitectureFrame(")], "Separate replay tab must not return"
           assert 'renderEmbeddedArchitecture' in app and 'mountEmbeddedArchitecture' in app
           assert "if(!main||!main.isConnected||!doc.body?.contains(main))return;" in app
           assert "const MIN_HEIGHT=1060,MAX_HEIGHT=12000;" in app
