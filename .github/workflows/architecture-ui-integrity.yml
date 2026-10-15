@@ -75,7 +75,7 @@ jobs:
           assert 'lg:grid-cols-[1fr_17rem] lg:divide-x' not in html and js
           assert 'page-2d56a5bff821821b.js?v=20261014-workflow-rails-39' in html
           assert '/assets/architecture-explained.js?v=20261014-workflow-rails-39' in html
-          assert '/assets/architecture-explained.css?v=20261014-workflow-rails-39' in html
+          assert '/assets/architecture-explained.css?v=20261016-workbench-polish-51' in html
 
           # Workflow-wide layers surround the detailed stages; token management
           # is inside the committee rather than appearing as an extra verdict.
@@ -104,6 +104,7 @@ jobs:
               assert 'href="'+link+'"' not in html, "Removed link visible in exported HTML: "+link
           assert 'label:"Architecture"' in shell and 'label:"Introduction"' in shell
           assert 'Industry blueprint' in Path('assets/architecture-explained.css').read_text()
+          assert 'Architecture workbench visual refinement' in Path('assets/architecture-explained.css').read_text()
           assert 'Barlow+Condensed' in html
           for leak in ('VC ingest', 'NI clarification', 'reinsurance quota'):
               assert leak not in html, "Underwriting-specific wording leaked: "+leak
