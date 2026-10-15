@@ -110,6 +110,7 @@ try{
  await page.locator('#architecture-detail [data-deck-action="resume"]').click();
  await page.waitForTimeout(100);
  await scrub.press("End");
+ await page.waitForFunction(()=>document.getElementById("workflow-results")?.innerText.includes("Recorded workflow result"),null,{timeout:12000});
  const complete=await page.locator("#workflow-results").innerText();
  assert.ok(complete.includes("Scripted adversarial committee"),"Proponent/Opponent/verification/Judge dialogue must follow the recorded workflow");
  assert.ok(complete.includes("Recorded workflow result"),"Terminal state must appear when the replay reaches its last event");
