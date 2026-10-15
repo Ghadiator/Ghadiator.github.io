@@ -293,3 +293,56 @@ button.wb-list-row:hover{background:#eef6ff}
 
 /* Prevent flashing the legacy Next.js sidebar before embedded-style isolation. */
 .unified-architecture-frame{visibility:hidden}
+
+/* DAiA Industry blueprint parity — the original React shell's steel/neutral
+   tokens and navigation hierarchy, translated into the static public shell. */
+:root{--nav:#fff;--nav2:#f2f2f3;--nav-text:#5d5d60;--bg:#f2f2f3;--card:#fff;--text:#1d1f20;--muted:#5d5d60;--line:#d4d4d7;--line2:#b7b7ba;--primary:#416180;--teal:#5980a6;--green:#416180;--amber:#597ea3;--red:#2b2b2d;--radius:2px;--shadow:none}
+body{font-family:"Barlow",Arial,sans-serif;background:#f2f2f3;color:#1d1f20}
+.sidebar{width:232px;overflow-y:auto;scrollbar-width:thin;background:#fff;border-right:1px solid #d4d4d7;color:#1d1f20}
+.main-wrap{margin-left:232px}
+.brand-wrap{padding:24px 20px 15px}
+.brand{border:1px solid #d4d4d7;padding:10px;min-width:190px}
+.brand-icon{width:28px;height:28px;background:#416180;border:0;border-radius:0;color:#fff;padding:5px}
+.brand-text{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-size:16px;letter-spacing:1px;text-transform:uppercase}
+.brand-sub{color:#5d5d60;font-size:9px;letter-spacing:1px}
+.workspace-switch{margin:8px 12px 14px;padding:9px 10px;background:#f2f2f3;border:1px solid #d4d4d7;border-radius:0;color:#1d1f20}
+.workspace-logo{border-radius:0;background:#416180;color:#fff}
+.workspace-switch small,.sidebar-credit small{color:#5d5d60}
+.workspace-chevron{color:#98989b}
+.sidebar-section-label{color:#98989b;font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-size:11px;letter-spacing:1.3px;margin:0 18px 6px}
+.sidebar-section-label.group-space{margin-top:17px}
+.nav-list{gap:1px;padding:0 10px}
+.nav-list a{height:35px;padding:0 11px;border-radius:0;color:#5d5d60;font-size:12.5px;font-weight:500;border-left:2px solid transparent}
+.nav-list a:hover{color:#1d1f20;background:#eef6ff}
+.nav-list a.active,.sidebar .nav-list a[href="?view=overview"].active,.sidebar .nav-list a[href="?view=architecture"].active{background:#eef6ff;color:#1d2d3d;border-left:2px solid #5980a6;box-shadow:none;font-weight:700}
+.nav-list a.active>span[data-icon]{color:#416180}
+.sidebar-bottom{margin-top:auto}
+.sidebar-scope{margin:14px 12px;background:#f2f2f3;border:1px solid #d4d4d7;border-radius:0;color:#1d1f20}
+.scope-top{color:#416180}.pulsedot,.tiny-dot{background:#5980a6;box-shadow:none}
+.sidebar-scope strong{color:#1d1f20}.sidebar-scope p{color:#5d5d60}.sidebar-scope a{color:#416180}
+.sidebar-credit{padding:14px;border-top:1px solid #d4d4d7;color:#1d1f20}
+.avatar{border-radius:0;background:#d6ebff;color:#416180}
+.more-dots{color:#7a7a7d}
+.topbar{height:52px;padding:0 24px;border-bottom:1px solid #d4d4d7;background:#ffffffeb}
+.environment-chip{border-radius:2px;border:1px solid #d4d4d7;background:#f2f2f3;color:#416180}
+.github-top,.icon-btn{border-radius:2px}
+.wb-panel,.wb-metric,.wb-card,.wb-redteam-card,.wb-agent-select,.wb-chat-card,.wb-notice,.wb-result{border-radius:2px;box-shadow:none}
+.wb-metric,.wb-panel,.wb-card{border-color:#d4d4d7}
+.wb-kicker,.wb-head h1,.wb-panel-head h2{font-family:"Barlow Condensed","Arial Narrow",sans-serif}
+.wb-head h1{letter-spacing:0;font-weight:700}
+.wb-tab{border-radius:0}
+.wb-tab.selected{border-color:#5980a6;background:#eef6ff;color:#1d2d3d}
+.wb-submit-grid .wb-checkbox-row{display:flex;align-items:center;flex-direction:row;gap:10px}
+.wb-submit-grid .wb-checkbox-row input{width:auto;flex:0 0 auto}
+.wb-receipt-card{align-items:flex-start}.wb-receipt-card>div:first-child{min-width:0;flex:1}
+.wb-preflight-details{margin:10px 0;border-top:1px solid #d4d4d7;padding-top:10px}
+.wb-preflight-details summary{cursor:pointer;font-size:11px;font-weight:700;color:#416180}
+.wb-check-grid{display:grid;gap:5px;margin:8px 0}
+.wb-check{display:flex;gap:10px;border-left:2px solid #5980a6;background:#f5f5f8;padding:7px;font-size:11px}
+.wb-check.failed{border-left-color:#2b2b2d;background:#e7e7ea}
+.wb-check small{display:block;font-size:10px;color:#5d5d60;margin-top:4px}
+.backend-status-panel{margin:0 0 20px}
+.wb-backend-state{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.wb-backend-state p{font-size:12px;color:#5d5d60}
+@media(max-width:1250px){.sidebar{width:220px}.main-wrap{margin-left:220px}}
+@media(max-width:770px){.sidebar{width:260px}.main-wrap{margin-left:0}.topbar{padding:0 12px}}
