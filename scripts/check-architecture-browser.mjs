@@ -94,7 +94,15 @@ try{
  const rationale=await page.locator("#architecture-detail").innerText();
  assert.ok(rationale.includes("Why this step"),"The recorded 'Why this step' rationale must be below the architecture");
  assert.ok(rationale.includes("Run suspended for authorised reviewer"),"The reviewer-pause event must be below the architecture");
- assert.ok(rationale.includes("Human review"),"Human gate controls must remain accessible under the diagram");
+ // Scrubbing to a historical gate is inspection, not a real gate pause.
+ // Start playback from the preceding event to exercise actual suspension.
+ await scrub.press("ArrowLeft");
+ await deck.getByRole("button",{name:"Run",exact:true}).click();
+ await page.waitForFunction(()=>document.getElementById("architecture-detail")?.querySelector('[data-deck-action="resume"]'),null,{timeout:10000});
+ const gateControls=await page.locator("#architecture-detail").innerText();
+ assert.ok(gateControls.includes("Human review"),"Live reviewer gate must be accessible underneath");
+ await page.locator('#architecture-detail [data-deck-action="resume"]').click();
+ await page.waitForTimeout(100);
  await scrub.press("End");
  const complete=await page.locator("#workflow-results").innerText();
  assert.ok(complete.includes("Scripted adversarial committee"),"Proponent/Opponent/verification/Judge dialogue must follow the recorded workflow");
