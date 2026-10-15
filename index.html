@@ -4,18 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Barlow+Condensed:wght@500;600;700&amp;display=swap"/>
   <meta name="color-scheme" content="light" />
-  <meta name="frontend-ui-build" content="20261015-unified-navigation-44" />
+  <meta name="frontend-ui-build" content="20261015-story-flow-45" />
   <meta name="description" content="See how supplier invoices are checked: clear rules for facts, AI-style review for unusual cases, and final decisions made by people. A working demonstration with example data." />
   <title>Governance as Code · Assurance Workspace</title>
   <link rel="icon" type="image/svg+xml" href="./assets/logo.svg" />
-  <link rel="stylesheet" href="./styles.css?v=20261015-unified-navigation-44" />
-  <script src="./assets/generic-workbench.js?v=20261015-unified-navigation-44" defer></script>
-  <script src="./assets/public-backend.js?v=20261015-unified-navigation-44" defer></script>
-  <script src="./assets/public-local-runner.js?v=20261015-unified-navigation-44" defer></script>
-  <script src="./assets/public-submissions.js?v=20261015-unified-navigation-44" defer></script>
-  <script src="./assets/public-personas.js?v=20261015-unified-navigation-44" defer></script>
-  <script src="./assets/public-attacker.js?v=20261015-unified-navigation-44" defer></script>
-  <script src="./app.js?v=20261015-unified-navigation-44" defer></script>
+  <link rel="stylesheet" href="./styles.css?v=20261015-story-flow-45" />
+  <script src="./assets/generic-workbench.js?v=20261015-story-flow-45" defer></script>
+  <script src="./assets/public-backend.js?v=20261015-story-flow-45" defer></script>
+  <script src="./assets/public-local-runner.js?v=20261015-story-flow-45" defer></script>
+  <script src="./assets/public-submissions.js?v=20261015-story-flow-45" defer></script>
+  <script src="./assets/public-personas.js?v=20261015-story-flow-45" defer></script>
+  <script src="./assets/public-attacker.js?v=20261015-story-flow-45" defer></script>
+  <script src="./assets/story-journey.js?v=20261015-story-flow-45" defer></script>
+  <script src="./app.js?v=20261015-story-flow-45" defer></script>
 </head>
 <body>
   <div class="app-shell">
@@ -28,32 +29,18 @@
         <button type="button" id="mobileClose" class="mobile-close icon-btn" aria-label="Close navigation">×</button>
       </div>
       <div class="workspace-switch"><span class="workspace-logo">SR</span><span><strong>Supplier Review</strong><small>Reference workspace</small></span><span class="workspace-chevron">⌄</span></div>
-      <div class="sidebar-section-label group-space">START HERE</div>
+      <div class="sidebar-section-label group-space">THE STORY · FIVE STAGES</div>
 <nav class="nav-list">
-<a data-view="overview" href="?view=overview"><span data-icon="book-open"></span> Introduction</a>
-<a data-view="architecture" href="?view=architecture"><span data-icon="workflow"></span> Architecture</a>
+<a data-view="overview" href="?view=overview"><span data-icon="book-open"></span> 01 · Introduction</a>
+<a data-view="architecture" href="?view=architecture"><span data-icon="workflow"></span> 02 · Architecture</a>
+<a data-view="personas" href="?view=personas"><span data-icon="messages-square"></span> 03 · AI personas</a>
+<a data-view="governance" href="?view=governance"><span data-icon="shield-check"></span> 04 · Governance</a>
+<a data-view="evidence" href="?view=evidence"><span data-icon="list-tree"></span> 05 · Evidence & learning</a>
 </nav>
-<div class="sidebar-section-label group-space">OPERATIONS</div>
+<div class="sidebar-section-label group-space">WORK WITH CASES</div>
 <nav class="nav-list">
-<a data-view="dashboard" href="?view=dashboard"><span data-icon="layout-dashboard"></span> Dashboard</a>
 <a data-view="submissions" href="?view=submissions"><span data-icon="upload-cloud"></span> Document collection</a>
-<a data-view="inbound" href="?view=inbound"><span data-icon="download"></span> Supplier intake</a>
-</nav>
-<div class="sidebar-section-label group-space">VALIDATION</div>
-<nav class="nav-list">
-<a data-view="cases" href="?view=cases"><span data-icon="layers"></span> Processed cases</a>
-<a data-view="tokens" href="?view=tokens"><span data-icon="scale"></span> Token economics</a>
-</nav>
-<div class="sidebar-section-label group-space">GOVERNANCE & INSIGHTS</div>
-<nav class="nav-list">
-<a data-view="governance" href="?view=governance"><span data-icon="shield-check"></span> Governance</a>
-<a data-view="attacker" href="?view=attacker"><span data-icon="swords"></span> Red Team attacker</a>
-<a data-view="personas" href="?view=personas"><span data-icon="messages-square"></span> Chat with the code</a>
-</nav>
-<div class="sidebar-section-label group-space">TRACEABILITY & SYSTEM</div>
-<nav class="nav-list">
-<a data-view="audit" href="?view=audit"><span data-icon="list-tree"></span> Process audit</a>
-<a data-view="integration" href="?view=integration"><span data-icon="plug"></span> Integration</a>
+<a data-view="cases" href="?view=cases"><span data-icon="layers"></span> Case workbench</a>
 </nav>
 <div class="sidebar-bottom">
         <div class="sidebar-scope"><span class="scope-top"><span class="pulsedot"></span> REFERENCE ENVIRONMENT</span><strong>Evidence-first. Human-led.</strong><p>Uses example invoices and scripted AI roles. No live AI calls.</p><a href="https://github.com/Ghadiator/Ghadiator.github.io" target="_blank" rel="noopener">View source artifacts <span>↗</span></a></div>
