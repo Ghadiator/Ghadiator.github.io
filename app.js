@@ -190,6 +190,7 @@ function renderEmbeddedArchitecture(){
  return `<div class="page-entrance unified-architecture-view">
   <div class="unified-architecture-context"><span class="section-overline">ARCHITECTURE · SELECT A SCENARIO, THEN RUN</span><span>Modular dataflow · verified handoffs · human decision gate</span></div>
   <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular validation workflow and scenario player" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
+  <section id="architecture-detail" class="architecture-detail-below" aria-label="Architecture explanations and controls"></section>
   <div id="workflow-results" class="architecture-workflow-results">${renderWorkflowResults()}</div>
   <p class="unified-architecture-note">The architecture player and the results below read the same recorded synthetic case. AI roles are scripted and human approvals shown are historical fixture records, not live actions.</p>
  </div>`;
@@ -217,7 +218,7 @@ function mountEmbeddedArchitecture(){
  // scrollHeight becomes 0 and previously collapsed the entire diagram to 12px.
  const MIN_HEIGHT=1060,MAX_HEIGHT=12000;
  frame.style.minHeight=MIN_HEIGHT+'px';
- let disposed=false,raf=0,currentMain=null,mainResizeObserver=null,bodyMutationObserver=null,observedDoc=null;
+ let disposed=false,raf=0,currentMain=null,mainResizeObserver=null,bodyMutationObserver=null,observedDoc=null,lastExplanation="";
  const clean=()=>{
   disposed=true;
   if(raf)cancelAnimationFrame(raf);
@@ -251,6 +252,57 @@ function mountEmbeddedArchitecture(){
   frame.style.visibility='visible';
  };
 
+
+ // Reuse the exact explanatory text and controls produced by the embedded
+ // React deck. Only their presentation moves outside the graph; onClick is
+ // forwarded back to the React-owned source button.
+ const sourcePanels=doc=>{
+  const deck=doc.querySelector('.deck');
+  const scrub=deck?.querySelector('input[aria-label="Position in the recorded run"]');
+  const nodes=deck?Array.from(deck.children):[];
+  const stepPanel=scrub?.parentElement?.nextElementSibling;
+  const looks=nodes.find(el=>Array.from(el.querySelectorAll('span')).some(span=>span.textContent.trim()==='Look inside'));
+  const humanGate=nodes.find(el=>Array.from(el.querySelectorAll('button')).some(b=>/^(Resume|Continue)\s*[—–-]/.test(b.textContent.trim())));
+  const inspector=nodes.find(el=>el.querySelector('section')&&el.textContent.includes('audit ledger'));
+  return {deck,scrub,stepPanel,looks,humanGate,inspector};
+ };
+ const renderExplanation=doc=>{
+  const target=document.getElementById('architecture-detail');
+  if(!target)return;
+  const {deck,scrub,stepPanel,looks,humanGate,inspector}=sourcePanels(doc);
+  if(!deck||!scrub||!stepPanel)return;
+  const running=Number(scrub.value)>=0;
+  const paragraphs=Array.from(stepPanel.querySelectorAll('p')).map(p=>p.textContent.trim()).filter(Boolean);
+  const title=running?'Current workflow step':'Pick a case and step through it';
+  const lines=paragraphs.map((line,i)=>`<p class="architecture-detail-line ${i===0?'architecture-detail-lead':''}">${h(line)}</p>`).join('');
+  const explanation=`<section class="wb-panel architecture-detail-panel"><div class="wb-panel-head"><h2>${title}</h2></div><div class="wb-panel-body">${lines}${!running?'<button type="button" class="wb-button architecture-deck-control" data-deck-action="start">Step through this run →</button>':''}</div></section>`;
+  const drillButtons=looks?Array.from(looks.querySelectorAll('button')).map((b,i)=>`<button class="wb-button architecture-deck-control" type="button" data-deck-action="drill" data-deck-index="${i}">${h(b.textContent.trim())} ↗</button>`).join(''):'';
+  const drill=drillButtons?`<section class="wb-panel architecture-detail-panel"><div class="wb-panel-head"><h2>Look inside · modular components</h2></div><div class="wb-panel-body"><div class="wb-inline-actions">${drillButtons}</div></div></section>`:'';
+  const gateButton=humanGate?.querySelector('button');
+  const gate=gateButton?`<section class="wb-panel architecture-detail-panel" aria-label="Human reviewer pause"><div class="wb-panel-head"><h2>Human review · recorded decision gate</h2></div><div class="wb-panel-body"><p class="architecture-detail-line">${h(humanGate.querySelector('p')?.textContent.trim()||'Workflow suspended for reviewer')}</p><button type="button" class="wb-button architecture-deck-control" data-deck-action="resume">${h(gateButton.textContent.trim())}</button></div></section>`:'';
+  const inspectorSection=inspector?.querySelector('section');
+  const moduleName=inspectorSection?.querySelector('h4')?.textContent.trim();
+  const inspectorText=inspectorSection?.textContent?.replace(/\s+/g,' ').trim()||'';
+  const inspect=moduleName&&inspectorText?`<details class="wb-panel architecture-module-inspector"><summary>Selected module · ${h(moduleName)}</summary><div class="wb-panel-body"><p class="architecture-detail-source">${h(inspectorText)}</p></div></details>`:'';
+  const html=`<div class="wb-page">${explanation}${drill}${gate}${running?inspect:''}</div>`;
+  if(html!==lastExplanation){lastExplanation=html;target.innerHTML=html;}
+ };
+ document.getElementById('architecture-detail')?.addEventListener('click',event=>{
+  const pressed=event.target.closest('[data-deck-action]');
+  if(!pressed)return;
+  event.preventDefault();
+  let doc;
+  try{doc=frame.contentDocument;}catch{return;}
+  if(!doc)return;
+  const {stepPanel,looks,humanGate}=sourcePanels(doc);
+  const action=pressed.dataset.deckAction;
+  if(action==='start')stepPanel?.querySelector('button')?.click();
+  if(action==='resume')humanGate?.querySelector('button')?.click();
+  if(action==='drill'){
+   const index=Number(pressed.dataset.deckIndex);
+   if(Number.isInteger(index)&&index>=0)looks?.querySelectorAll('button')[index]?.click();
+  }
+ });
  const syncFromFrame=()=>{
   if(disposed||!frame.isConnected)return;
   let doc;
@@ -261,7 +313,7 @@ function mountEmbeddedArchitecture(){
   const slug=picker.value;
   const next=Math.max(-1,Number(scrub.value));
   // No outcome badges before the visitor has actually started replaying.
-  doc.querySelector('.deck')?.classList.toggle('deck-not-started',next<0);
+  renderExplanation(doc);
   const known=SCENARIOS.some(s=>s.slug===slug)||state.index.scenarios.some(s=>s.slug===slug);
   if(known&&slug!==state.scenario){
    stopPlay();
@@ -302,18 +354,19 @@ function mountEmbeddedArchitecture(){
      body > div.flex.min-h-screen > div{min-width:0!important;width:100%!important;display:block!important}
      body > div.flex.min-h-screen > div > main{padding:0!important;width:100%!important}
      body > div.flex.min-h-screen > div > main > div{max-width:none!important}
-     /* Keep existing React dataflow, but show scenario + controls first. */
+     /* The embedded panel is only scenario transport plus the original graph.
+        Live step explanations and drill buttons live BELOW the iframe. */
      .deck{display:flex!important;flex-direction:column!important}
-     .deck > div{order:20}
-     .deck > div:has(select[aria-label="Recorded scenario"]){order:1}
-     .deck > div:has(input[aria-label="Position in the recorded run"]){order:2}
-     .deck > div:has(> .deck-canvas){order:3}
+     .deck > *{display:none!important}
+     .deck > div:has(select[aria-label="Recorded scenario"]){display:flex!important;order:1}
+     .deck > div:has(input[aria-label="Position in the recorded run"]){display:flex!important;order:2}
+     .deck > div:has(> .deck-canvas){display:block!important;order:3}
      /* Those sections are already represented by the shared workbench below
         this iframe. In embedded mode they obscure the run's evidence and
         show the completed outcome before replay has begun. Standalone
         architecture keeps the full companion guide unchanged. */
      .ax-story{display:none!important}
-     .deck.deck-not-started > div:has(span.w-full.min-w-0){display:none!important}
+
    `;
    doc.head.appendChild(style);
   }
