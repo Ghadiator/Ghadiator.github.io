@@ -426,7 +426,7 @@ function mountEmbeddedArchitecture(){
 }
 
 function refreshLinkState(){document.querySelectorAll('[data-view]').forEach(el=>{const selected=el.dataset.view===state.view;el.classList.toggle('active',selected);if(el.closest('nav')){if(selected)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');}});$('#currentCrumb').textContent=VIEW_NAMES[state.view]||'Architecture';}
-function route(view,slug,{push=true}={}){if(view==='monitor'){view='architecture';state.architectureTab='replay';}else if(view==='pool'){view='dashboard';}else if(view==='tickets'){view='submissions';state.submissionTab='history';}else if(view==='newticket'){view='submissions';state.submissionTab='compose';state.submissionMode='request';}else if(view==='redteam'||view==='attacker'){view='personas';state.personaMode='attacker';state.attackerTab='campaign';}else if(view==='architecture'&&state.view!=='architecture'){state.architectureTab='diagram';state.architectureCursor=-1;}if(!(view in VIEW_NAMES))view='overview';stopPlay();state.animateNext=true;state.view=view;state.workbenchTab=({case:'summary',inbound:'pending',governance:'system'})[view]||'summary';if(slug&&SCENARIOS.some(x=>x.slug===slug)||slug&&state.index.scenarios.some(x=>x.slug===slug)){if(slug!==state.scenario){state.scenario=slug;state.eventIndex=0;}}state.search='';state.filter='all';if(push)history.pushState(null,'',linkView(view,state.scenario));refreshLinkState();render();closeMobileNav();window.scrollTo({top:0,behavior:'auto'});}
+function route(view,slug,{push=true}={}){if(view==='monitor'){view='architecture';state.architectureTab='replay';}else if(view==='pool'){view='dashboard';}else if(view==='tickets'){view='submissions';state.submissionTab='history';}else if(view==='newticket'){view='submissions';state.submissionTab='compose';state.submissionMode='request';}else if(view==='redteam'||view==='attacker'){view='personas';state.personaMode='attacker';state.attackerTab='campaign';}else if(view==='architecture'&&state.view!=='architecture'){state.architectureTab='diagram';state.architectureCursor=-1;}if(!(view in VIEW_NAMES))view='overview';stopPlay();state.animateNext=true;state.view=view;state.workbenchTab=({case:'summary',inbound:'pending',governance:'system'})[view]||'summary';if(slug&&SCENARIOS.some(x=>x.slug===slug)||slug&&state.index.scenarios.some(x=>x.slug===slug)){if(slug!==state.scenario){state.scenario=slug;state.eventIndex=0;}}state.search='';state.filter='all';if(push)history.pushState(null,'',linkView(view,state.scenario));refreshLinkState();render();const wasMobileDrawerOpen=$('#sidebar').classList.contains('open');closeMobileNav();if(wasMobileDrawerOpen)MAIN.focus({preventScroll:true});window.scrollTo({top:0,behavior:'auto'});}
 function notify(message){const el=$('#toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3600);}
 function button(label,action,{kind='',glyph='',disabled=false}={}){return `<button type="button" class="button ${kind}" data-action="${h(action)}" ${disabled?'disabled':''}>${glyph?icon(glyph):''}${h(label)}</button>`;}
 function pageHeader(eyebrow,title,desc,right=''){return `<div class="page-header"><div><div class="eyebrow"><span class="eyebrow-line"></span>${h(eyebrow)}</div><h1 class="page-title">${h(title)}</h1><p class="page-desc">${h(desc)}</p></div>${right?`<div class="page-toolbar">${right}</div>`:''}</div>`;}
@@ -584,6 +584,7 @@ document.body.addEventListener('click',event=>{const viewlink=event.target.close
 /* Drawer uses the same navigation links as desktop. Focus stays inside while open. */
 function openMobileNav(){
  const sidebar=$('#sidebar');
+ sidebar.removeAttribute('inert');
  sidebar.classList.add('open');
  $('#mobileOverlay').classList.add('visible');
  $('#mobileMenu').setAttribute('aria-expanded','true');
@@ -597,6 +598,7 @@ function closeMobileNav({restoreFocus=false}={}){
  $('#mobileMenu').setAttribute('aria-expanded','false');
  document.body.classList.remove('nav-drawer-open');
  if(restoreFocus&&wasOpen)$('#mobileMenu').focus();
+ if(window.innerWidth<=770)$('#sidebar').setAttribute('inert','');
 }
 $('#mobileMenu').addEventListener('click',openMobileNav);
 $('#mobileClose').addEventListener('click',()=>closeMobileNav({restoreFocus:true}));
@@ -609,9 +611,17 @@ $('#sidebar').addEventListener('keydown',event=>{
  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
 });
-window.addEventListener('resize',()=>{
- if(window.innerWidth>770&&$('#sidebar').classList.contains('open'))closeMobileNav();
-});
+function syncMobileNavMode(){
+ const sidebar=$('#sidebar');
+ if(window.innerWidth>770){
+  if(sidebar.classList.contains('open'))closeMobileNav();
+  sidebar.removeAttribute('inert');
+ }else if(!sidebar.classList.contains('open')){
+  sidebar.setAttribute('inert','');
+ }
+}
+window.addEventListener('resize',syncMobileNavMode);
+syncMobileNavMode();
 MAIN.addEventListener('submit',async event=>{
  if(event.target.id==='public-submission-form'){
   event.preventDefault();const form=event.target,mode=state.submissionMode;
