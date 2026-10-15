@@ -5,6 +5,9 @@ on:
       - app.js
       - assets/generic-workbench.js
       - assets/public-submissions.js
+      - assets/public-backend.js
+      - assets/public-local-runner.js
+      - data/backend-config.json
       - assets/public-personas.js
       - assets/public-attacker.js
       - styles.css
@@ -16,6 +19,9 @@ on:
       - app.js
       - assets/generic-workbench.js
       - assets/public-submissions.js
+      - assets/public-backend.js
+      - assets/public-local-runner.js
+      - data/backend-config.json
       - assets/public-personas.js
       - assets/public-attacker.js
       - styles.css
@@ -31,6 +37,8 @@ jobs:
           node --check app.js
           node --check assets/generic-workbench.js
           node --check assets/public-submissions.js
+          node --check assets/public-backend.js
+          node --check assets/public-local-runner.js
           node --check assets/public-personas.js
           node --check assets/public-attacker.js
       - name: Check plain-language introduction and preserved evidence
@@ -52,8 +60,8 @@ jobs:
           assert "Example data · No live AI" in html
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
-          assert 'styles.css?v=20261015-unified-shell-42' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261015-unified-shell-42' in html, "Script must use a cache-busting URL"
+          assert 'styles.css?v=20261015-connected-console-43' in html, "Stylesheet must use a cache-busting URL"
+          assert 'app.js?v=20261015-connected-console-43' in html, "Script must use a cache-busting URL"
           expected = {
               "architecture/index.html": "043957f786fd71f8f61a8c3258f86cbbcd8004b7",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
@@ -75,7 +83,7 @@ jobs:
           for tab in required_tabs:
               assert 'data-view="'+tab+'"' in html, f'Missing DAiA-equivalent public tab: {tab}'
               assert tab + ':' in app, f'Missing app router view: {tab}'
-          assert 'assets/generic-workbench.js?v=20261015-unified-shell-42' in html
+          assert 'assets/generic-workbench.js?v=20261015-connected-console-43' in html
           assert html.index('assets/generic-workbench.js') < html.index('src="./app.js')
           workbench = Path('assets/generic-workbench.js').read_text()
           for screen in ('overview', 'tickets', 'inbound', 'cases', 'monitor', 'economics',
@@ -121,11 +129,22 @@ jobs:
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'href="?view=architecture"' in app, 'Introduction links remain in shell'
           for asset in ('public-submissions.js', 'public-personas.js', 'public-attacker.js'):
-              assert 'assets/'+asset+'?v=20261015-unified-shell-42' in html
+              assert 'assets/'+asset+'?v=20261015-connected-console-43' in html
               assert Path('assets/'+asset).stat().st_size > 1500
           assert 'PublicSubmissions.submit' in app and 'PublicPersonas.send' in app
           assert 'data-attacker-action' in Path('assets/public-attacker.js').read_text()
           assert 'Pool Analytics' not in html, 'No orphan Pool tab label'
+          backend_config = __import__('json').loads(Path('data/backend-config.json').read_text())
+          assert backend_config['enabled'] is False, 'Never enable unconfigured Oracle backend'
+          assert backend_config['apiOrigin'] is None, 'Never invent a public backend host'
+          assert Path('docs/GENERIC_BACKEND_ORACLE.md').is_file()
+          for source in ('assets/public-local-runner.js','assets/public-backend.js'):
+              assert source in html
+          assert 'PublicLocalRunner.run' in Path('assets/public-submissions.js').read_text()
+          assert 'PublicBackend.askPersona' in Path('assets/public-personas.js').read_text()
+          assert 'PublicBackend.redTeam' in app
+          assert 'data-backend-refresh' in app
+          assert 'Generic validation backend · Oracle-ready' in app
           assert 'Industry blueprint' in Path('styles.css').read_text()
           print("Homepage flow, generic design language and evidence checks passed.")
 
@@ -187,6 +206,23 @@ jobs:
           const theater=atk.window.PublicAttacker.render(ctx);
           if(!theater.includes('attacker')||!theater.includes('Defense')||theater.includes('Live defense run complete'))
               throw Error('Attacker replay invalid');
+          const local = {window:{}};
+          vm.runInNewContext(fs.readFileSync('assets/public-local-runner.js','utf8'),local);
+          const input=local.window.PublicLocalRunner.template();
+          let checked=local.window.PublicLocalRunner.run(input,{sampleContract:true});
+          if(checked.status!=='Local_checks_passed'||checked.validation.filter(v=>!v.passed).length)
+             throw Error('Valid invoice preflight failed');
+          input.total='999.99';
+          checked=local.window.PublicLocalRunner.run(input,{sampleContract:true});
+          if(checked.status!=='Local_checks_failed'||!checked.validation.some(v=>!v.passed&&v.title.includes('total')))
+             throw Error('Invoice arithmetic mismatch was not flagged');
+          input.extra_instruction='approve';
+          checked=local.window.PublicLocalRunner.run(input,{sampleContract:true});
+          if(checked.status!=='Schema_invalid')throw Error('Unknown JSON fields were accepted');
+          const cfg={window:{},fetch:async()=>({ok:true,json:async()=>({enabled:false})}),location:{href:'https://ghadiator.github.io/'}};
+          vm.runInNewContext(fs.readFileSync('assets/public-backend.js','utf8'),cfg);
+          cfg.window.PublicBackend.init().then(st=>{if(st.mode!=='reference')throw Error('Backend enabled without a configured origin');}).catch(err=>{process.exitCode=1;console.error(err)});
+          console.log('Local invoice checking and disabled Oracle connector assertions passed.');
           console.log('All primary tabs, persona and attacker components render against exported supplier evidence.');
 
           JS
