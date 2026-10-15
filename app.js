@@ -79,7 +79,10 @@ const ICONS = {
   arrow:'<path d="M4 12h16m-6-6 6 6-6 6"/>',
   info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7h.01"/>',
   filter:'<path d="M4 5h16l-6.5 7v6l-3 2v-8L4 5Z"/>',
-  'book-open':'<path d="M12 5C7 2 3 4 2 5v14c4-2 8-2 10 0 2-2 6-2 10 0V5c-1-1-5-3-10 0ZM12 5v14"/>'
+  'book-open':'<path d="M12 5C7 2 3 4 2 5v14c4-2 8-2 10 0 2-2 6-2 10 0V5c-1-1-5-3-10 0ZM12 5v14"/>',
+  'upload-cloud':'<path d="M12 16V7m-4 4 4-4 4 4M4 16a5 5 0 0 1 2-9.6A7 7 0 0 1 19 9a4.5 4.5 0 0 1 1 8"/><path d="M7 21h10"/>',
+  'swords':'<path d="m14.5 7.5 5-5 2 2-5 5M9.5 16.5l-5 5-2-2 5-5M12 12l7 7M17 22l5-5M2 7l5-5 7 7M3 11l8 8"/>',
+  'messages-square':'<path d="M15 5h6v12h-4l-3 3v-4M3 3h14v10H8l-5 4V3Z"/><path d="M6 7h8M6 10h5"/>'
 };
 function icon(name, extra=''){return `<svg class="${extra}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]||ICONS.info}</svg>`;}
 function h(v){return String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');}
