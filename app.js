@@ -112,7 +112,7 @@ const DEFAULT_STAGES = ['request','reminders','ingest','memory','checks','contra
 const DISPLAY_STAGES={request:'Request',reminders:'Reminders',ingest:'Intake',memory:'History',checks:'Rule checks',contract:'Contract',exception:'Exception',advisory:'Advisory + CoVe',remediation:'Remediation',review:'Human gate',disposition:'Decision',archive:'Archive'};
 const STAGE_ICONS={request:'file',reminders:'clock',ingest:'download',memory:'database',checks:'check',contract:'book-open',exception:'alert',advisory:'shield-check',remediation:'workflow',review:'user',disposition:'scale',archive:'lock'};
 const VIEW_NAMES={dashboard:'Dashboard',overview:'Introduction',tickets:'Document requests',newticket:'New request',ticket:'Request detail',inbound:'Supplier intake',cases:'Processed cases',case:'Case detail',monitor:'Scenario showcase',tokens:'Token economics',pool:'Pool analytics',governance:'Governance',architecture:'Architecture',integration:'Integration',audit:'Process audit',assurance:'Hazards & controls',redteam:'Control probes',analytics:'Detection analytics',login:'Access & scope'};
-const state={view:'dashboard',workbenchTab:'summary',scenario:'supplier_variance_review',index:{scenarios:SCENARIOS},facts:{facts:FACTS},loaded:{},raw:{},eventIndex:0,playing:false,speed:1150,search:'',filter:'all',selectedObligation:0,selectedHazard:0,loading:{},errors:{},help:false};
+const state={view:'overview',workbenchTab:'summary',scenario:'supplier_variance_review',index:{scenarios:SCENARIOS},facts:{facts:FACTS},loaded:{},raw:{},eventIndex:0,playing:false,speed:1150,search:'',filter:'all',selectedObligation:0,selectedHazard:0,loading:{},errors:{},help:false};
 let playTimer=null,toastTimer=null,loadToken=0;
 const $=x=>document.querySelector(x);
 const MAIN=$('#main');
@@ -147,11 +147,64 @@ function scenarioData(){return state.loaded[`scenario:${state.scenario}`]||null;
 function events(){return scenarioData()?.events||[];}
 function activeEvent(){return events()[state.eventIndex]||null;}
 function encodeScenario(slug){return encodeURIComponent(slug||state.scenario);}
-function linkView(view,scenario){if(view==='architecture')return classicArchitectureUrl(scenario);return `?view=${encodeURIComponent(view)}&scenario=${encodeScenario(scenario)}`;}
-// The original modular Next.js architecture is preserved at /architecture/.
-function classicArchitectureUrl(slug){return `/architecture/?scenario=${encodeScenario(slug)}`;}
+function linkView(view,scenario){return `?view=${encodeURIComponent(view)}&scenario=${encodeScenario(scenario)}`;}
+// The existing architecture artifact remains authoritative and unmodified.
+// Mount only its interactive content in the current workbench; never navigate
+// the parent page to its old Next.js shell.
+function embeddedArchitectureUrl(slug){return `/architecture/?embedded=1&scenario=${encodeScenario(slug)}`;}
+function renderEmbeddedArchitecture(){return `<div class="page-entrance unified-architecture-view">
+ <div class="unified-architecture-context"><span class="section-overline">ARCHITECTURE · INTERACTIVE MODULES</span><span>Orchestration · Committee + CoVe · ProcessEvent · Human decision</span></div>
+ <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular generic validation architecture" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
+ <p class="unified-architecture-note">This is the preserved interactive architecture with its source explanations and recorded supplier evidence, displayed inside the unified validation workbench. The public fixture uses scripted AI roles, not live model calls.</p>
+ </div>`;}
+function mountEmbeddedArchitecture(){
+ const frame=document.getElementById('modularArchitectureFrame');if(!frame)return;
+ frame.addEventListener('load',()=>{
+  // Both documents are served from the same GitHub Pages origin.
+  // Style is injected into the iframe's document; the architecture
+  // React bundle, diagram edges and companion explanations are untouched.
+  let doc;try{doc=frame.contentDocument;}catch{return;}
+  if(!doc||!doc.head||!doc.body)return;
+  const frameStyle=doc.createElement('style');
+  frameStyle.id='unified-workbench-embed-style';
+  frameStyle.textContent=`/* Hide only the legacy site's chrome; preserve architecture content. */
+   html,body{margin:0!important;overflow-x:hidden!important;background:#fff!important}
+   body > div.flex.min-h-screen > aside{display:none!important}
+   body > div.flex.min-h-screen > div > nav[aria-label="Primary"]{display:none!important}
+   body > div.flex.min-h-screen > div > header{display:none!important}
+   body > div.flex.min-h-screen > div > footer{display:none!important}
+   body > div.flex.min-h-screen{min-height:0!important;display:block!important}
+   body > div.flex.min-h-screen > div{min-width:0!important;width:100%!important;display:block!important}
+   body > div.flex.min-h-screen > div > main{padding:0!important;width:100%!important}
+   body > div.flex.min-h-screen > div > main > div{max-width:none!important}
+   `;
+  doc.head.appendChild(frameStyle);
+  const main=doc.querySelector('body > div.flex.min-h-screen > div > main');
+  if(!main){frame.style.minHeight='1400px';return;}
+  // A companion script inserts extra architecture sections asynchronously;
+  // observe actual content so they are not cut off by a fixed-size iframe.
+  let last=0,raf=0;
+  const resize=()=>{
+   if(!frame.isConnected)return;
+   const height=Math.max(main.scrollHeight,main.getBoundingClientRect().height);
+   const next=Math.ceil(height+12);
+   if(next>0&&next!==last){last=next;frame.style.height=next+'px';}
+  };
+  const schedule=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;resize();});};
+  resize();
+  if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(schedule);observer.observe(main);frame._architectureResizeObserver=observer;}
+  if(typeof MutationObserver!=='undefined'){
+   const observer=new MutationObserver(schedule);observer.observe(main,{childList:true,subtree:true,characterData:true,attributes:true});
+   frame._architectureMutationObserver=observer;
+  }
+  doc.fonts?.ready.then(schedule).catch(()=>{});
+  frame.addEventListener('pagehide',()=>{frame._architectureResizeObserver?.disconnect();frame._architectureMutationObserver?.disconnect();},{once:true});
+  schedule();
+ });
+}
+
 function refreshLinkState(){document.querySelectorAll('[data-view]').forEach(el=>{const selected=el.dataset.view===state.view;el.classList.toggle('active',selected);if(el.closest('nav')){if(selected)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');}});$('#currentCrumb').textContent=VIEW_NAMES[state.view]||'Architecture';}
-function route(view,slug,{push=true}={}){if(view==='architecture'){stopPlay();location.assign(classicArchitectureUrl(slug));return;}if(!(view in VIEW_NAMES))view='overview';stopPlay();state.animateNext=true;state.view=view;state.workbenchTab=({case:'summary',inbound:'pending',governance:'controls'})[view]||'summary';if(slug&&SCENARIOS.some(x=>x.slug===slug)||slug&&state.index.scenarios.some(x=>x.slug===slug)){if(slug!==state.scenario){state.scenario=slug;state.eventIndex=0;}}state.search='';state.filter='all';if(push)history.pushState(null,'',linkView(view,state.scenario));refreshLinkState();render();$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');window.scrollTo({top:0,behavior:'auto'});}
+function route(view,slug,{push=true}={}){if(!(view in VIEW_NAMES))view='overview';stopPlay();state.animateNext=true;state.view=view;state.workbenchTab=({case:'summary',inbound:'pending',governance:'controls'})[view]||'summary';if(slug&&SCENARIOS.some(x=>x.slug===slug)||slug&&state.index.scenarios.some(x=>x.slug===slug)){if(slug!==state.scenario){state.scenario=slug;state.eventIndex=0;}}state.search='';state.filter='all';if(push)history.pushState(null,'',linkView(view,state.scenario));refreshLinkState();render();$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');window.scrollTo({top:0,behavior:'auto'});}
 function notify(message){const el=$('#toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3600);}
 function button(label,action,{kind='',glyph='',disabled=false}={}){return `<button type="button" class="button ${kind}" data-action="${h(action)}" ${disabled?'disabled':''}>${glyph?icon(glyph):''}${h(label)}</button>`;}
 function pageHeader(eyebrow,title,desc,right=''){return `<div class="page-header"><div><div class="eyebrow"><span class="eyebrow-line"></span>${h(eyebrow)}</div><h1 class="page-title">${h(title)}</h1><p class="page-desc">${h(desc)}</p></div>${right?`<div class="page-toolbar">${right}</div>`:''}</div>`;}
@@ -164,7 +217,7 @@ function renderOverview(){return `<div class="page-entrance overview-page">
   <h1 id="overview-title">Clear rules for facts.<br><em>AI for unusual cases.</em><br>People make the decisions.</h1>
   <p>An interactive AI governance showcase that combines predictable, rule-based checks with AI-style personas who examine difficult cases from different angles. Evidence stays visible, decisions can be traced, and people keep final authority.</p>
   <div class="overview-cta">
-    <a class="button light-primary" data-view="architecture" href="/architecture/">See the full workflow <span data-icon="arrow"></span></a>
+    <a class="button light-primary" data-view="architecture" href="?view=architecture">See the full workflow <span data-icon="arrow"></span></a>
     <a class="button dark" data-view="cases" href="?view=cases">Explore example cases <span data-icon="layers"></span></a>
   </div>
   <div class="overview-benefits" aria-label="Key values"><span><span data-icon="check"></span> Consistent checks</span><span><span data-icon="layers"></span> AI perspectives</span><span><span data-icon="list-tree"></span> Traceable decisions</span><span><span data-icon="user"></span> Human oversight</span></div>
@@ -179,7 +232,7 @@ function renderOverview(){return `<div class="page-entrance overview-page">
  </div>
 </section>
 <section class="journey-section" aria-labelledby="journey-title">
- <div class="overview-section-heading"><div><span class="section-overline">THE WORKFLOW · SIX SIMPLE STEPS</span><h2 id="journey-title">From an invoice to a decision</h2><p>See the whole process first. Open the detailed architecture when you want to look inside.</p></div><a class="text-arrow" href="/architecture/" data-view="architecture">View all system blocks <span data-icon="arrow"></span></a></div>
+ <div class="overview-section-heading"><div><span class="section-overline">THE WORKFLOW · SIX SIMPLE STEPS</span><h2 id="journey-title">From an invoice to a decision</h2><p>See the whole process first. Open the detailed architecture when you want to look inside.</p></div><a class="text-arrow" href="?view=architecture" data-view="architecture">View all system blocks <span data-icon="arrow"></span></a></div>
  <div class="journey-grid">
   <article class="journey-step"><div class="journey-step-top"><span class="step-num">01</span><span class="journey-icon" data-icon="file"></span></div><h3>Ask for documents</h3><p>Request an invoice and supporting reports. Send reminders if they are missing.</p></article>
   <article class="journey-step"><div class="journey-step-top"><span class="step-num">02</span><span class="journey-icon" data-icon="database"></span></div><h3>Receive the invoice</h3><p>Collect the information and check that the required details are present.</p></article>
@@ -220,7 +273,7 @@ function render(){refreshLinkState();const wb=window.GenericWorkbench,ctx=workbe
  tokens:()=>wb.economics(ctx),
  pool:()=>wb.pool(ctx),
  governance:()=>wb.governanceHub(ctx,renderGovernance),
- architecture:renderArchitecture,
+ architecture:renderEmbeddedArchitecture,
  integration:renderIntegration,
  audit:renderAudit,
  assurance:renderAssurance,
@@ -229,7 +282,7 @@ function render(){refreshLinkState();const wb=window.GenericWorkbench,ctx=workbe
  login:()=>wb.login(ctx)
  };if(!wb){MAIN.innerHTML='<p class="wb-error">The generic workbench module is unavailable.</p>';return;}
  let markup=fn[state.view]();if(state.animateNext){markup=markup.replace('class="wb-page"','class="wb-page enter-animated"').replace('class="page-entrance"','class="page-entrance enter-animated"');state.animateNext=false;}
- MAIN.innerHTML=markup;hydrateIcons();
+ MAIN.innerHTML=markup;hydrateIcons();if(state.view==='architecture')mountEmbeddedArchitecture();
  if(['monitor','case','ticket','inbound','audit'].includes(state.view)&&!state.loaded[`scenario:${state.scenario}`]&&!state.errors[`scenario:${state.scenario}`]){const wanted=state.scenario;ensureScenario(wanted).then(d=>{if(d&&wanted===state.scenario)renderIfNeeded();});}
  if(state.view==='governance'&&!state.loaded.crosswalk&&!state.errors.crosswalk)ensureData('crosswalk').then(d=>d&&state.view==='governance'&&renderIfNeeded());
  if(state.view==='governance'&&!state.loaded.rules&&!state.errors.rules)ensureData('rules').then(d=>d&&state.view==='governance'&&renderIfNeeded());
@@ -254,6 +307,6 @@ $('#mobileClose').addEventListener('click',()=>{$('#sidebar').classList.remove('
 $('#mobileOverlay').addEventListener('click',()=>{$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');});
 MAIN.addEventListener('submit',event=>{if(event.target.id!=='wb-draft-form')return;event.preventDefault();const form=event.target;const data=new FormData(form);const supplier=h(data.get('supplier')||'');const doc=h(data.get('document')||'Invoice');const purpose=h(data.get('purpose')||'');const dest=document.getElementById('wb-draft-preview');if(dest)dest.innerHTML='<div class="wb-notice"><strong>Local preview only — not sent, saved, or submitted.</strong><p>Supplier: '+supplier+' · Requested document: '+doc+'</p><p>'+purpose+'</p></div>';});
 $('#helpButton').addEventListener('click',()=>notify('Read-only evidence viewer · synthetic fixtures · no live-model testing or certification.'));
-window.addEventListener('popstate',()=>{const params=new URLSearchParams(location.search);const s=params.get('scenario');route(params.get('view')||'dashboard',s,{push:false});});
+window.addEventListener('popstate',()=>{const params=new URLSearchParams(location.search);const s=params.get('scenario');route(params.get('view')||'overview',s,{push:false});});
 window.addEventListener('keydown',ev=>{if(ev.target.closest('input,textarea,select')||ev.altKey||ev.ctrlKey||ev.metaKey)return;if(ev.key==='ArrowRight'&&['architecture','audit'].includes(state.view)){stopPlay();setEvent(state.eventIndex+1);}else if(ev.key==='ArrowLeft'&&['architecture','audit'].includes(state.view)){stopPlay();setEvent(state.eventIndex-1);}else if(ev.key==='Escape'){$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');}});
-(async()=>{const params=new URLSearchParams(location.search);state.scenario=SCENARIOS.some(s=>s.slug===params.get('scenario'))?params.get('scenario'):'supplier_variance_review';const requestedView=params.get('view');if(requestedView==='architecture'){location.replace(classicArchitectureUrl(state.scenario));return;}state.view=VIEW_NAMES[requestedView]?requestedView:'dashboard';hydrateIcons();render();const available=await Promise.all([ensureData('index'),ensureData('facts')]);if(available.some(Boolean))renderIfNeeded();})();
+(async()=>{const params=new URLSearchParams(location.search);state.scenario=SCENARIOS.some(s=>s.slug===params.get('scenario'))?params.get('scenario'):'supplier_variance_review';const requestedView=params.get('view');state.view=VIEW_NAMES[requestedView]?requestedView:'overview';hydrateIcons();render();const available=await Promise.all([ensureData('index'),ensureData('facts')]);if(available.some(Boolean))renderIfNeeded();})();
