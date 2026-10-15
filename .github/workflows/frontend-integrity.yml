@@ -64,10 +64,10 @@ jobs:
           assert "Example data · No live AI" in html
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
-          assert 'styles.css?v=20261015-simplified-execution-50' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261015-simplified-execution-50' in html, "Script must use a cache-busting URL"
+          assert 'styles.css?v=20261016-workbench-polish-51' in html, "Stylesheet must use a cache-busting URL"
+          assert 'app.js?v=20261016-workbench-polish-51' in html, "Script must use a cache-busting URL"
           expected = {
-              "architecture/index.html": "043957f786fd71f8f61a8c3258f86cbbcd8004b7",
+              "architecture/index.html": "8b3ed74786fa32b9c8af18a75fc86c6a6041eb55",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
               "data/scenarios/index.json": "f384fc608e6c38bc0df9257cd4af7842f7ca7476"
           }
@@ -117,11 +117,22 @@ jobs:
               assert 'new URL("/?view='+target+'"' in text, 'Broken DAiA route alias: '+alias
               assert 'scenario' in text and 'No live AI' in text
           assert Path('architecture/index.html').read_text().count('data-node="orchestrator"') == 1
-          first_nav = html.index('<nav class="nav-list">')
-          first_two = html[first_nav:html.index('</nav>', first_nav)]
-          assert first_two.index('data-view="overview"') < first_two.index('data-view="architecture"')
-          assert __import__('re').findall(r'data-view="([^"]+)"', first_two) == ['overview','architecture','personas','governance','evidence']
-          assert 'THE STORY · FIVE STAGES' in html and 'REFERENCE</div>' not in html
+          # Public navigation is grouped by visitor goal, not by implementation stage.
+          import re
+          groups = (
+              ('nav-start', ['overview']),
+              ('nav-explore', ['cases', 'submissions', 'architecture']),
+              ('nav-assurance', ['personas', 'governance', 'evidence']),
+          )
+          for group_id, expected_views in groups:
+              nav_start = html.index('<nav class="nav-list" aria-labelledby="' + group_id + '">')
+              nav_content = html[nav_start:html.index('</nav>', nav_start)]
+              assert re.findall(r'data-view="([^"]+)"', nav_content) == expected_views
+          assert 'EXPLORE THE WORKFLOW' in html and 'ASSURANCE & EVIDENCE' in html
+          assert 'skip-link' in html and 'aria-controls="sidebar" aria-expanded="false"' in html
+          assert 'function openMobileNav()' in app and 'function closeMobileNav(' in app
+          assert 'event.key!==\'Tab\'' in app and "ev.key==='Escape'" in app
+          assert 'REFERENCE</div>' not in html
           assert '<a data-view="monitor"' not in html, 'Scenario theater belongs inside Architecture'
           assert '<a data-view="pool"' not in html, 'Pool Analytics tab is removed'
           assert 'function renderWorkflowResults()' in app, "Recorded workflow results must follow the canvas"
