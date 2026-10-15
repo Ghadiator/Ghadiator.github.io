@@ -4,18 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Barlow+Condensed:wght@500;600;700&amp;display=swap"/>
   <meta name="color-scheme" content="light" />
-  <meta name="frontend-ui-build" content="20261015-connected-console-43" />
+  <meta name="frontend-ui-build" content="20261015-unified-navigation-44" />
   <meta name="description" content="See how supplier invoices are checked: clear rules for facts, AI-style review for unusual cases, and final decisions made by people. A working demonstration with example data." />
   <title>Governance as Code · Assurance Workspace</title>
   <link rel="icon" type="image/svg+xml" href="./assets/logo.svg" />
-  <link rel="stylesheet" href="./styles.css?v=20261015-connected-console-43" />
-  <script src="./assets/generic-workbench.js?v=20261015-connected-console-43" defer></script>
-  <script src="./assets/public-backend.js?v=20261015-connected-console-43" defer></script>
-  <script src="./assets/public-local-runner.js?v=20261015-connected-console-43" defer></script>
-  <script src="./assets/public-submissions.js?v=20261015-connected-console-43" defer></script>
-  <script src="./assets/public-personas.js?v=20261015-connected-console-43" defer></script>
-  <script src="./assets/public-attacker.js?v=20261015-connected-console-43" defer></script>
-  <script src="./app.js?v=20261015-connected-console-43" defer></script>
+  <link rel="stylesheet" href="./styles.css?v=20261015-unified-navigation-44" />
+  <script src="./assets/generic-workbench.js?v=20261015-unified-navigation-44" defer></script>
+  <script src="./assets/public-backend.js?v=20261015-unified-navigation-44" defer></script>
+  <script src="./assets/public-local-runner.js?v=20261015-unified-navigation-44" defer></script>
+  <script src="./assets/public-submissions.js?v=20261015-unified-navigation-44" defer></script>
+  <script src="./assets/public-personas.js?v=20261015-unified-navigation-44" defer></script>
+  <script src="./assets/public-attacker.js?v=20261015-unified-navigation-44" defer></script>
+  <script src="./app.js?v=20261015-unified-navigation-44" defer></script>
 </head>
 <body>
   <div class="app-shell">
@@ -36,8 +36,7 @@
 <div class="sidebar-section-label group-space">OPERATIONS</div>
 <nav class="nav-list">
 <a data-view="dashboard" href="?view=dashboard"><span data-icon="layout-dashboard"></span> Dashboard</a>
-<a data-view="tickets" href="?view=tickets"><span data-icon="file"></span> Document requests</a>
-<a data-view="submissions" href="?view=submissions"><span data-icon="upload-cloud"></span> New submissions</a>
+<a data-view="submissions" href="?view=submissions"><span data-icon="upload-cloud"></span> Document collection</a>
 <a data-view="inbound" href="?view=inbound"><span data-icon="download"></span> Supplier intake</a>
 </nav>
 <div class="sidebar-section-label group-space">VALIDATION</div>
@@ -49,7 +48,6 @@
 <nav class="nav-list">
 <a data-view="governance" href="?view=governance"><span data-icon="shield-check"></span> Governance</a>
 <a data-view="attacker" href="?view=attacker"><span data-icon="swords"></span> Red Team attacker</a>
-<a data-view="redteam" href="?view=redteam"><span data-icon="alert"></span> Control probes</a>
 <a data-view="personas" href="?view=personas"><span data-icon="messages-square"></span> Chat with the code</a>
 </nav>
 <div class="sidebar-section-label group-space">TRACEABILITY & SYSTEM</div>
@@ -66,7 +64,7 @@
     <div class="main-wrap">
       <header class="topbar">
         <div class="top-left"><button type="button" id="mobileMenu" class="mobile-menu icon-btn" aria-label="Open navigation"><span data-icon="menu"></span></button><span class="crumb-muted">Supplier Review</span><span class="crumb-divider">/</span><span id="currentCrumb" class="crumb-active">Introduction</span></div>
-        <div class="top-actions"><span class="environment-chip"><span class="tiny-dot"></span> Example data · No live AI</span><a class="github-top" data-view="personas" href="?view=personas" aria-label="Open source-grounded persona chat"><span data-icon="messages-square"></span><span>Chat with code</span></a><button class="icon-btn top-help" id="helpButton" title="About this implementation" aria-label="About this implementation"><span data-icon="circle-help"></span></button><a class="github-top" href="https://github.com/Ghadiator/Ghadiator.github.io" target="_blank" rel="noopener" aria-label="View GitHub repository"><span data-icon="github"></span> <span>GitHub</span> <span data-icon="arrow-up-right"></span></a></div>
+        <div class="top-actions"><span class="environment-chip"><span class="tiny-dot"></span> Example data · No live AI</span><button class="icon-btn top-help" id="helpButton" title="About this implementation" aria-label="About this implementation"><span data-icon="circle-help"></span></button><a class="github-top" href="https://github.com/Ghadiator/Ghadiator.github.io" target="_blank" rel="noopener" aria-label="View GitHub repository"><span data-icon="github"></span> <span>GitHub</span> <span data-icon="arrow-up-right"></span></a></div>
       </header>
       <main id="main" tabindex="-1" aria-live="polite"></main>
       <footer class="site-footer"><span>REFERENCE IMPLEMENTATION · NOT A CERTIFICATION OR LIVE DEPLOYMENT</span><span id="footer-source">Verified against published Git blob IDs · da872d9</span></footer>
