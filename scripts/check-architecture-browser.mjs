@@ -52,8 +52,9 @@ try{
  assert.ok((await picker.locator("option").count())>=10,"The recorded scenarios must be selectable");
  const diagram=deck.locator(".deck-canvas");
  const header=deck.locator(".deck > div").filter({has:deck.locator("span.w-full.min-w-0")}).first();
- const graphRect=await diagram.boundingBox(),summaryRect=await header.boundingBox();
- assert.ok(graphRect&&summaryRect&&graphRect.y<summaryRect.y,"The graph must precede the run result badges");
+ const graphRect=await diagram.boundingBox(),summaryBefore=await header.boundingBox();
+ assert.ok(graphRect,"The modular graph must be visible before the replay begins");
+ assert.equal(summaryBefore,null,"The terminal-state summary must be hidden before a run starts");
  await picker.selectOption("supplier_clean");
  await page.waitForTimeout(1100);
  const selected=await page.evaluate(()=>({
@@ -67,6 +68,8 @@ try{
   const box=document.getElementById("workflow-results");
   return box&&/Event [1-9] of/.test(box.innerText);
  },{timeout:10000});
+ const summaryAfter=await header.boundingBox();
+ assert.ok(summaryAfter&&graphRect.y<summaryAfter.y,"After playback starts, the architecture must precede the run summary");
  const output=await page.locator("#workflow-results").innerText();
  assert.ok(output.includes("Module exchanges and evidence"),"Evidence must be beneath the diagram");
  assert.ok(!output.includes("Recorded workflow result"),"The final outcome must not be shown before the run completes");
