@@ -6,6 +6,7 @@ const allowed=new Set(["cases","requests","submissions","personas","red_team","e
 const enc=s=>encodeURIComponent(String(s));
 function normalize(c){
  if(!c||c.enabled!==true)return {enabled:false};
+ if(typeof c.apiOrigin!=="string"||!c.apiOrigin.trim())throw Error("An explicit HTTPS API origin is required to enable backend mode");
  let origin;
  try{origin=new URL(c.apiOrigin||"",location.href);if(origin.protocol!=="https:"&&!(origin.hostname==="localhost"||origin.hostname==="127.0.0.1")&&origin.protocol==="http:")throw Error("HTTPS required");if(!["https:","http:"].includes(origin.protocol)||origin.username||origin.password||origin.search||origin.hash)throw Error("Invalid API origin");}catch(e){throw Error("Invalid public API origin: "+e.message)}
  if(!/^\/[A-Za-z0-9/_-]*$/.test(c.apiPrefix||"/api/v1")||(c.apiPrefix||"").includes(".."))throw Error("Invalid API prefix");
