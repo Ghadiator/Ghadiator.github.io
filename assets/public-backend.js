@@ -2,7 +2,7 @@
 "use strict";
 let config=null,capabilities={},state={mode:"reference",status:"unconfigured",message:"Static reference mode; no validation backend is configured.",checkedAt:null,capabilities:{}};
 const copy=()=>({...state,capabilities:{...state.capabilities}});
-const allowed=new Set(["cases","submissions","personas","red_team","events","review","health"]);
+const allowed=new Set(["cases","requests","submissions","personas","red_team","events","review","health"]);
 const enc=s=>encodeURIComponent(String(s));
 function normalize(c){
  if(!c||c.enabled!==true)return {enabled:false};
@@ -68,6 +68,12 @@ async function submit({fields,file}){
  if(!result?.submission_id)throw Error("API did not confirm a submission ID.");
  return result;
 }
+async function createRequest(fields){
+ ensure("requests");
+ const r=await request("/requests",{method:"POST",body:fields});
+ if(!r?.request_id)throw Error("API did not confirm a request ID");
+ return r;
+}
 async function askPersona({persona,message,caseId=null,conversationId=null}){
  ensure("personas");
  if(!/^[a-z_]{2,30}$/.test(persona))throw Error("Invalid persona");
@@ -79,5 +85,5 @@ async function redTeam({techniques=[],caseId=null}={}){
  return request("/red-team/campaigns",{method:"POST",body:{techniques,case_id:caseId},timeoutMs:30000});
 }
 async function listCases(){ensure("cases");return request("/cases");}
-window.PublicBackend={init,refresh,state:copy,enabled,request,submit,askPersona,redTeam,listCases};
+window.PublicBackend={init,refresh,state:copy,enabled,request,submit,createRequest,askPersona,redTeam,listCases};
 })();
