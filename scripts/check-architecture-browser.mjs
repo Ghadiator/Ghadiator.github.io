@@ -46,10 +46,30 @@ try{
  assert.equal(after,"true","Clicking the original orchestrator block must activate the React interaction");
  console.log("BAD_RESPONSES",JSON.stringify(responses.slice(0,30)));
  await page.screenshot({path:"architecture-embedded-test.png",fullPage:false});
- const tabs=page.locator("[data-architecture-tab]");
- await tabs.nth(1).click();
- await page.waitForTimeout(400);
- console.log("REPLAY_PROBE",JSON.stringify({text:(await page.locator("#main").innerText()).slice(0,300),selected:await tabs.nth(1).getAttribute("class")}));
- await tabs.nth(2).click();
- console.log("IO_PROBE",(await page.locator("#main").innerText()).slice(0,270));
+ const deck=page.frameLocator("#modularArchitectureFrame");
+ const picker=deck.locator('select[aria-label="Recorded scenario"]');
+ assert.ok(await picker.count(),"Scenario selector must appear in the original modular canvas");
+ assert.ok((await picker.locator("option").count())>=10,"The recorded scenarios must be selectable");
+ const diagram=deck.locator(".deck-canvas");
+ const header=deck.locator(".deck > div").filter({has:deck.locator("span.w-full.min-w-0")}).first();
+ const graphRect=await diagram.boundingBox(),summaryRect=await header.boundingBox();
+ assert.ok(graphRect&&summaryRect&&graphRect.y<summaryRect.y,"The graph must precede the run result badges");
+ await picker.selectOption("supplier_clean");
+ await page.waitForTimeout(1100);
+ const selected=await page.evaluate(()=>({
+  scenario:new URLSearchParams(location.search).get("scenario"),
+  src:document.getElementById("modularArchitectureFrame")?.getAttribute("src")
+ }));
+ assert.equal(selected.scenario,"supplier_clean","Parent and embedded selector must share the selected scenario");
+ const runButton=deck.getByRole("button",{name:"Run",exact:true});
+ await runButton.click();
+ await page.waitForFunction(()=>{
+  const box=document.getElementById("workflow-results");
+  return box&&/Event [1-9] of/.test(box.innerText);
+ },{timeout:10000});
+ const output=await page.locator("#workflow-results").innerText();
+ assert.ok(output.includes("Module exchanges and evidence"),"Evidence must be beneath the diagram");
+ assert.ok(!output.includes("Recorded workflow result"),"The final outcome must not be shown before the run completes");
+ console.log("SCENARIO_REPLAY",JSON.stringify({selected,resultText:output.slice(0,450)}));
+ if(errors.length)throw new Error(errors.slice(0,10).join("\n"));
 }finally{await browser.close();}
