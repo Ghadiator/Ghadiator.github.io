@@ -252,6 +252,15 @@ function renderOverview(){return `<div class="page-entrance overview-page">
   </div>
   <div class="overview-benefits" aria-label="Key values"><span><span data-icon="check"></span> Consistent checks</span><span><span data-icon="layers"></span> AI perspectives</span><span><span data-icon="list-tree"></span> Traceable decisions</span><span><span data-icon="user"></span> Human oversight</span></div>
 </section>
+<section class="problem-pitch" aria-labelledby="challenge-title">
+ <div class="overview-section-heading"><div><span class="section-overline">THE BUSINESS CHALLENGE</span><h2 id="challenge-title">From manual reconciliation to evidence-led review</h2><p>A recurring service invoice starts with a supplier, a purchase order, contractual rates and supporting reports. Someone must reconcile all of them before any payment decision.</p></div></div>
+ <div class="wb-grid">
+  <article class="wb-small-card"><small>ORIGINAL WORKFLOW</small><h3>Chase and reconcile</h3><p>Collect the invoice and supporting records, check totals and approved rates, investigate anomalies, request corrections and preserve a review history.</p></article>
+  <article class="wb-small-card"><small>BUSINESS CHALLENGE</small><h3>Consistency and evidence</h3><p>A mathematically correct invoice can still contain an unapproved rate or missing evidence. Fragmented manual reviews make explanation and traceability harder.</p></article>
+  <article class="wb-small-card"><small>PROPOSED SOLUTION</small><h3>Rules first, AI-assisted exceptions</h3><p>Use repeatable deterministic checks, bounded AI-style perspectives, independent claim verification and a named human decision.</p></article>
+ </div>
+ <p class="wb-file-hint">All public examples are synthetic supplier reference cases, not verified production results or claimed cost savings.</p>
+</section>
 <section class="promise-section" aria-labelledby="promise-title">
  <div class="overview-section-heading"><div><span class="section-overline">WHAT THIS AI GOVERNANCE SHOWCASE DEMONSTRATES</span><h2 id="promise-title">Useful automation. Decisions you can explain.</h2><p>Four ideas help make automated reviews clear, accountable and easier to trust.</p></div></div>
  <div class="promise-grid">
@@ -327,6 +336,8 @@ function render(){refreshLinkState();
  disposeArchitectureEmbed();disposeArchitectureEmbed=()=>{};
  MAIN.innerHTML=markup;MAIN.classList.toggle('architecture-active',state.view==='architecture');hydrateIcons();if(state.view==='architecture'&&state.architectureTab==='diagram')mountEmbeddedArchitecture();
  if(['architecture','case','ticket','inbound','audit','personas','attacker'].includes(state.view)&&!state.loaded[`scenario:${state.scenario}`]&&!state.errors[`scenario:${state.scenario}`]){const wanted=state.scenario;ensureScenario(wanted).then(d=>{if(d&&wanted===state.scenario)renderIfNeeded();});}
+ if(['governance','evidence'].includes(state.view)&&!state.loaded.rules&&!state.errors.rules)ensureData('rules').then(d=>d&&['governance','evidence'].includes(state.view)&&renderIfNeeded());
+ if(state.view==='evidence'&&!state.loaded[`scenario:${state.scenario}`]&&!state.errors[`scenario:${state.scenario}`])ensureScenario(state.scenario).then(d=>d&&state.view==='evidence'&&renderIfNeeded());
  if(state.view==='governance'&&!state.loaded.crosswalk&&!state.errors.crosswalk)ensureData('crosswalk').then(d=>d&&state.view==='governance'&&renderIfNeeded());
  if(state.view==='governance'&&!state.loaded.rules&&!state.errors.rules)ensureData('rules').then(d=>d&&state.view==='governance'&&renderIfNeeded());
  if(state.view==='assurance'&&(!state.loaded.hazards&&!state.errors.hazards||!state.loaded.assurance&&!state.errors.assurance)){Promise.all([ensureData('hazards'),ensureData('assurance')]).then(()=>state.view==='assurance'&&renderIfNeeded());}
