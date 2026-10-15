@@ -59,7 +59,14 @@ try{
  await outsideBefore.locator('[data-deck-action="back"]').click();
  await page.waitForFunction(()=>!document.querySelector('#architecture-detail [data-deck-action="back"]'),null,{timeout:10000});
  console.log("MODULE_DRILL", "React drill-down and return are controlled from beneath the modular canvas");
- const diagram=deck.locator(".deck-canvas");
+ const processEvents=page.locator('#architecture-event-rail [data-replay-seek]');
+ assert.equal(await processEvents.count(),42,"The full 42-event source trace must be shown beside the graph");
+ assert.ok((await page.locator('#architecture-execution-dashboard').innerText()).includes("Execution state by module"),
+   "Execution dashboard must show the 20 module statuses");
+ assert.equal(await page.locator('.ax-module').count(),20,"Display every architecture module, including non-emitting support modules");
+ const initialSnapshot=await page.locator('#architecture-execution-dashboard').innerText();
+ assert.ok(initialSnapshot.includes("0 / 20"),"No module is claimed executed before replay begins");
+  const diagram=deck.locator(".deck-canvas");
  const header=deck.locator(".deck > div").filter({has:deck.locator("span.w-full.min-w-0")}).first();
  const graphRect=await diagram.boundingBox(),summaryBefore=await header.boundingBox();
  assert.ok(graphRect,"The modular graph must be visible before the replay begins");
@@ -115,6 +122,35 @@ try{
  assert.ok(complete.includes("Scripted adversarial committee"),"Proponent/Opponent/verification/Judge dialogue must follow the recorded workflow");
  assert.ok(complete.includes("Recorded workflow result"),"Terminal state must appear when the replay reaches its last event");
  console.log("COMPLETED_REPLAY",JSON.stringify({length:complete.length,hasCommittee:true,hasOutcome:true}));
+ // Rules and cross-check results must come from recorded events, including
+ // a correction case that contains both an earlier FAIL and a later PASS.
+ await picker.selectOption("supplier_rate_correction");
+ await page.waitForTimeout(500);
+ await scrub.focus();
+ await scrub.press("End");
+ await page.waitForFunction(()=>document.querySelector('#architecture-execution-dashboard')?.innerText.includes("Rates match approved rate card — FAIL"),null,{timeout:12000});
+ const ruleDash=await page.locator("#architecture-execution-dashboard").innerText();
+ assert.ok(ruleDash.includes("R1 PASS — Line amounts equal quantity × rate"),"Each deterministic rule must be visible, not just the aggregate");
+ assert.ok(ruleDash.includes("Rates match approved rate card — FAIL"),"Failed contract rule must remain inspectable");
+ assert.ok(ruleDash.includes("Rates match approved rate card — PASS"),"Correction must retain the later passed re-check");
+ assert.equal(await page.locator('.ax-module').count(),20,"All twenty module rows must persist across scenarios");
+ assert.equal(await page.locator('#architecture-event-rail [data-replay-seek]').count(),64,"All 64 correction events must be shown in the rail");
+ assert.ok(await deck.locator('[data-node="crosscheck"].ax-node-failure').count(),"Failed rule should highlight its actual architecture block");
+ assert.ok(await deck.locator('[data-node="rules"].ax-node-executed').count(),"Executed rules should remain marked in the architecture");
+ assert.equal(await deck.locator('[data-node="post_cove"].ax-node-executed').count(),0,"Do not invent a post-Judge CoVe execution");
+ console.log("CHECK_DASHBOARD",JSON.stringify({rateFail:true,correctedPass:true,emitted:64,allModules:20}));
+
+ // The event rail must be an actual navigation control, synchronized to the
+ // source React deck, rather than a second independent fake timeline.
+ await page.locator('#architecture-event-rail [data-replay-seek="23"]').click();
+ await page.waitForFunction(()=>{
+  const f=document.getElementById("modularArchitectureFrame")?.contentDocument;
+  return f?.querySelector('input[aria-label="Position in the recorded run"]')?.value==="23";
+ },null,{timeout:10000});
+ assert.ok(await page.locator('#architecture-event-rail [data-replay-seek="23"].is-current').count(),
+   "Event rail selection and React scrubber must stay in sync");
+ console.log("RAIL_NAVIGATION", "Selected emitted event 24 drives the native React scrubber");
+
 
  // The archived compiled architecture already has a React #418 HTML
  // hydration warning because its SSR markup was customized independently.
