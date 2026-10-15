@@ -4,6 +4,9 @@ on:
     paths:
       - app.js
       - assets/generic-workbench.js
+      - assets/public-submissions.js
+      - assets/public-personas.js
+      - assets/public-attacker.js
       - styles.css
       - index.html
       - .github/workflows/frontend-integrity.yml
@@ -12,6 +15,9 @@ on:
     paths:
       - app.js
       - assets/generic-workbench.js
+      - assets/public-submissions.js
+      - assets/public-personas.js
+      - assets/public-attacker.js
       - styles.css
       - index.html
       - .github/workflows/frontend-integrity.yml
@@ -24,6 +30,9 @@ jobs:
         run: |
           node --check app.js
           node --check assets/generic-workbench.js
+          node --check assets/public-submissions.js
+          node --check assets/public-personas.js
+          node --check assets/public-attacker.js
       - name: Check plain-language introduction and preserved evidence
         run: |
           python3 - <<'PY'
@@ -41,10 +50,10 @@ jobs:
           assert not any(term in overview for term in ("INSIDE STEP 04", "Proponent", "Opponent", "CoVe", "Judge")), "Committee internals belong on the Architecture page"
           assert overview.index("promise-section") < overview.index("journey-section"), "The governance value proposition should come first"
           assert "Example data · No live AI" in html
-          assert 'href="/architecture/"' in html
+          assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
-          assert 'styles.css?v=20261014-complete-workbench-41' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261014-complete-workbench-41' in html, "Script must use a cache-busting URL"
+          assert 'styles.css?v=20261015-unified-shell-42' in html, "Stylesheet must use a cache-busting URL"
+          assert 'app.js?v=20261015-unified-shell-42' in html, "Script must use a cache-busting URL"
           expected = {
               "architecture/index.html": "043957f786fd71f8f61a8c3258f86cbbcd8004b7",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
@@ -59,13 +68,14 @@ jobs:
           assert 'data-view="architecture"' in shell
           assert 'data-view="overview"' in shell
           required_tabs = (
-              'dashboard', 'tickets', 'inbound', 'cases', 'monitor', 'tokens',
-              'pool', 'governance', 'architecture', 'integration', 'audit'
+              'overview', 'architecture', 'dashboard', 'tickets', 'submissions',
+              'inbound', 'cases', 'tokens', 'governance', 'attacker',
+              'redteam', 'personas', 'integration', 'audit'
           )
           for tab in required_tabs:
               assert 'data-view="'+tab+'"' in html, f'Missing DAiA-equivalent public tab: {tab}'
               assert tab + ':' in app, f'Missing app router view: {tab}'
-          assert 'assets/generic-workbench.js?v=20261014-complete-workbench-41' in html
+          assert 'assets/generic-workbench.js?v=20261015-unified-shell-42' in html
           assert html.index('assets/generic-workbench.js') < html.index('src="./app.js')
           workbench = Path('assets/generic-workbench.js').read_text()
           for screen in ('overview', 'tickets', 'inbound', 'cases', 'monitor', 'economics',
@@ -74,8 +84,8 @@ jobs:
           for prohibited in ('VCInput', 'warzone', 'claims-ratio', 'reinsurance quota',
                              'NI clarification', 'underwriting', 'MedicalVC'):
               assert prohibited.lower() not in workbench.lower(), 'Private domain term leaked: '+prohibited
-          assert 'Main orchestrator' not in html, 'The modular Architecture remains a separate preserved page'
-          assert 'data-view="architecture" href="/architecture/"' in html
+          assert 'Main orchestrator' not in html, 'The modular Architecture stays in its original artifact and is integrated in the shared shell'
+          assert 'data-view="architecture" href="?view=architecture"' in html
           for disclaimer in ('No live-model', 'no live-model', 'no live provider usage'):
               if disclaimer.lower() in workbench.lower():
                   break
@@ -96,6 +106,26 @@ jobs:
               assert 'new URL("/?view='+target+'"' in text, 'Broken DAiA route alias: '+alias
               assert 'scenario' in text and 'No live AI' in text
           assert Path('architecture/index.html').read_text().count('data-node="orchestrator"') == 1
+          first_nav = html.index('<nav class="nav-list">')
+          first_two = html[first_nav:html.index('</nav>', first_nav)]
+          assert first_two.index('data-view="overview"') < first_two.index('data-view="architecture"')
+          assert len(__import__('re').findall('data-view=', first_two)) == 2
+          assert 'START HERE' in html and 'REFERENCE</div>' not in html
+          assert '<a data-view="monitor"' not in html, 'Scenario theater belongs inside Architecture'
+          assert '<a data-view="pool"' not in html, 'Pool Analytics tab is removed'
+          assert 'data-architecture-tab="diagram"' in app and 'data-architecture-tab="replay"' in app
+          assert 'renderEmbeddedArchitecture' in app and 'mountEmbeddedArchitecture' in app
+          assert "location.assign(classicArchitectureUrl" not in app
+          assert "location.replace(classicArchitectureUrl" not in app
+          assert "state.view=requestedView==='monitor'?'architecture'" in app
+          assert 'data-view="architecture" href="?view=architecture"' in html
+          assert 'href="?view=architecture"' in app, 'Introduction links remain in shell'
+          for asset in ('public-submissions.js', 'public-personas.js', 'public-attacker.js'):
+              assert 'assets/'+asset+'?v=20261015-unified-shell-42' in html
+              assert Path('assets/'+asset).stat().st_size > 1500
+          assert 'PublicSubmissions.submit' in app and 'PublicPersonas.send' in app
+          assert 'data-attacker-action' in Path('assets/public-attacker.js').read_text()
+          assert 'Pool Analytics' not in html, 'No orphan Pool tab label'
           assert 'Industry blueprint' in Path('styles.css').read_text()
           print("Homepage flow, generic design language and evidence checks passed.")
 
@@ -141,5 +171,22 @@ jobs:
           state.search=untrusted;
           const out=wb.tickets(ctx);
           if (out.includes(untrusted)) throw Error('HTML injection in search value');
-          console.log('All generic frontend views rendered with original supplier fixtures.');
+          const subs = {window:{},localStorage:{getItem:()=>null,setItem:()=>{}}};
+          vm.runInNewContext(fs.readFileSync('assets/public-submissions.js','utf8'),subs);
+          if(!subs.window.PublicSubmissions.render(ctx).includes('Supplier submissions'))
+              throw Error('Submissions page failed');
+          const pers = {window:{}};
+          vm.runInNewContext(fs.readFileSync('assets/public-personas.js','utf8'),pers);
+          if(!pers.window.PublicPersonas.render(ctx).includes('Chat with the code'))
+              throw Error('Persona UI failed');
+          if(!pers.window.PublicPersonas.answer(ctx,'How many scenarios?', 'benchmark').source)
+              throw Error('Persona benchmark not source-grounded');
+          const atk = {window:{PublicPersonas:pers.window.PublicPersonas}};
+          state.attackerTab='campaign';state.attackerRevealed=2;state.loaded.redteam=JSON.parse(fs.readFileSync('data/red_team.json','utf8'));
+          vm.runInNewContext(fs.readFileSync('assets/public-attacker.js','utf8'),atk);
+          const theater=atk.window.PublicAttacker.render(ctx);
+          if(!theater.includes('attacker')||!theater.includes('Defense')||theater.includes('Live defense run complete'))
+              throw Error('Attacker replay invalid');
+          console.log('All primary tabs, persona and attacker components render against exported supplier evidence.');
+
           JS
