@@ -12,6 +12,7 @@ function run(input,{sampleContract=false}={}){
  const validation=[],events=[];let seq=0;
  const log=(stage,kind,label,detail)=>events.push({seq:++seq,stage,kind,label,detail,actor:"browser-local",source:"public-local-runner.js"});
  const check=(group,title,passed,detail)=>{const item={group,title,passed:Boolean(passed),detail};validation.push(item);log(group,"local.check",`${title} — ${passed?"PASS":"FAIL"}`,detail||"");return item.passed};
+ const unchecked=(group,title,detail)=>{validation.push({group,title,passed:null,detail});log(group,"local.not_evaluated",`${title} — NOT EVALUATED`,detail);};
  log("intake","local.received","Untrusted file entered browser preflight","No network submission; no private engine execution");
  if(!input||typeof input!=="object"||Array.isArray(input)){
   log("intake","local.rejected","Submission must be a JSON object","");
@@ -48,9 +49,10 @@ function run(input,{sampleContract=false}={}){
  ["R3: Service period is ordered",checkDateWindow(input.period_start,input.period_end)],
  ["R4: Invoice date follows service period",input.invoice_date>=input.period_end],
  ["R5: Service codes are unique",new Set(lines.map(x=>x.service_code)).size===lines.length],
- ["R6: Required service reports are attached",contract?contract.required_documents.every(d=>(input.documents||[]).includes(d)):true]
  ];
- deterministic.forEach(([label,ok],i)=>check("rules",label,ok,i===5&&!contract?"No contract supplied; document completeness is NOT verified":undefined));
+ deterministic.forEach(([label,ok])=>check("rules",label,ok));
+ if(contract)check("rules","R6: Required service reports are attached",contract.required_documents.every(d=>(input.documents||[]).includes(d)));
+ else unchecked("rules","R6: Required service reports are attached","No approved contract document requirements available");
  if(contract){
   const matches=[
    ["C1: Supplier matches contract",input.supplier_id===contract.supplier_id],
@@ -59,16 +61,16 @@ function run(input,{sampleContract=false}={}){
    ["C4: Contract currency matches",input.currency===contract.currency],
    ["C5: Service period within contract",input.period_start>=contract.valid_from&&input.period_end<=contract.valid_to],
    ["C6: Rates match approved rate card",lines.every(r=>contract.rates[r.service_code]!==undefined&&cents(r.unit_rate)===cents(contract.rates[r.service_code]))],
-   ["C7: Total within spending limit",cents(input.total)<=cents(contract.spending_limit)],
-   ["C8: Invoice not previously approved",true]
+   ["C7: Total within spending limit",cents(input.total)<=cents(contract.spending_limit)]
   ];
-  matches.forEach(([label,ok],i)=>check("contract",label,ok,i===7?"Demo has no authoritative approved-invoice register; duplicate status unverified":undefined));
+  matches.forEach(([label,ok])=>check("contract",label,ok));
+  unchecked("contract","C8: Invoice not previously approved","No authoritative approved-invoice register available in this browser");
   const prior=cents(contract.prior_period_total),cur=cents(input.total),pct=prior>0n?Number((cur-prior)*10000n/prior)/100:0;
   if(pct>20)log("advisory","local.variance","Service-volume exception candidate",`${pct.toFixed(1)}% compared with synthetic prior period; no AI persona called`);
  }else{log("contract","local.not_evaluated","No trusted contract snapshot connected","Contract/rates/limit/duplicate checks cannot be completed");}
- const failures=validation.filter(x=>!x.passed),unverified=validation.filter(x=>x.detail&&/not verified|NOT verified/.test(x.detail));
+ const failures=validation.filter(x=>x.passed===false),unverified=validation.filter(x=>x.passed===null);
  log("review","local.awaiting_engine","Browser preflight completed; backend and human review still required",`${failures.length} failed local check(s), ${unverified.length} explicitly unverified`);
- return {status:failures.length?"Local_checks_failed":contract?"Local_checks_passed":"Local_checks_partial",validation,events,sampleContract,limitations:["Not an execution of the Python reference workflow","No live proposal personas, case state changes or reviewer authorization","Sample contract is synthetic and only used when expressly selected"]};
+ return {status:failures.length?"Local_checks_failed":"Local_checks_partial",validation,events,sampleContract,limitations:["Not an execution of the Python reference workflow","No live proposal personas, case state changes or reviewer authorization","Sample contract is synthetic and only used when expressly selected"]};
 }
 window.PublicLocalRunner={run,template:()=>JSON.parse(JSON.stringify(SAMPLE_SUBMISSION)),sampleContract:()=>JSON.parse(JSON.stringify(SAMPLE_CONTRACT))};
 })();

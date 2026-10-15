@@ -346,3 +346,5 @@ body{font-family:"Barlow",Arial,sans-serif;background:#f2f2f3;color:#1d1f20}
 .wb-backend-state p{font-size:12px;color:#5d5d60}
 @media(max-width:1250px){.sidebar{width:220px}.main-wrap{margin-left:220px}}
 @media(max-width:770px){.sidebar{width:260px}.main-wrap{margin-left:0}.topbar{padding:0 12px}}
+
+.wb-check.unchecked{border-left-color:#98989b;background:#fafafa;color:#5d5d60}

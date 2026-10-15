@@ -210,7 +210,7 @@ jobs:
           vm.runInNewContext(fs.readFileSync('assets/public-local-runner.js','utf8'),local);
           const input=local.window.PublicLocalRunner.template();
           let checked=local.window.PublicLocalRunner.run(input,{sampleContract:true});
-          if(checked.status!=='Local_checks_passed'||checked.validation.filter(v=>!v.passed).length)
+          if(checked.status!=='Local_checks_partial'||checked.validation.filter(v=>v.passed===false).length!==0||checked.validation.filter(v=>v.passed===null).length===0)
              throw Error('Valid invoice preflight failed');
           input.total='999.99';
           checked=local.window.PublicLocalRunner.run(input,{sampleContract:true});
