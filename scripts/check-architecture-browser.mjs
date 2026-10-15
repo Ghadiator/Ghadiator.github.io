@@ -157,6 +157,7 @@ try{
   const f=document.getElementById("modularArchitectureFrame")?.contentDocument;
   return f?.querySelector('input[aria-label="Position in the recorded run"]')?.value==="23";
  },null,{timeout:10000});
+ await page.waitForFunction(()=>document.querySelector('#architecture-event-rail [data-replay-seek="23"]')?.classList.contains('is-current'),null,{timeout:10000});
  assert.ok(await page.locator('#architecture-event-rail [data-replay-seek="23"].is-current').count(),
    "Event rail selection and React scrubber must stay in sync");
  console.log("RAIL_NAVIGATION", "Selected emitted event 24 drives the native React scrubber");
