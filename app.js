@@ -260,6 +260,8 @@ function mountEmbeddedArchitecture(){
   if(!picker||!scrub)return;
   const slug=picker.value;
   const next=Math.max(-1,Number(scrub.value));
+  // No outcome badges before the visitor has actually started replaying.
+  doc.querySelector('.deck')?.classList.toggle('deck-not-started',next<0);
   const known=SCENARIOS.some(s=>s.slug===slug)||state.index.scenarios.some(s=>s.slug===slug);
   if(known&&slug!==state.scenario){
    stopPlay();
@@ -311,6 +313,7 @@ function mountEmbeddedArchitecture(){
         show the completed outcome before replay has begun. Standalone
         architecture keeps the full companion guide unchanged. */
      .ax-story{display:none!important}
+     .deck.deck-not-started > div:has(span.w-full.min-w-0){display:none!important}
    `;
    doc.head.appendChild(style);
   }
