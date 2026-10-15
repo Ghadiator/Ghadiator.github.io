@@ -44,9 +44,13 @@ All responses should be JSON (except permitted SSE/file downloads). The first ca
 | GET | `/api/v1/red-team/campaigns/{campaign_id}` | `red_team` | campaign status, per-attempt evidence and verified defender outcomes |
 | POST | `/api/v1/cases/{case_id}/review` | `review` | server-authorized decision; never initiated in offline UI |
 
-### Mapping from DAiA backend
+### Backend ownership — generic engine only
 
-The existing DAiA FastAPI defines `/api/tickets`, `/api/tickets/{ticket_id}/submissions`, `/api/cases`, `/api/monitor/chat/personas`, `/api/monitor/chat/{persona}/open`, `/api/monitor/chat/{session}/send`, and `/api/monitor/redteam/run-live`. These are **not** the public generic API. An Oracle-hosted BFF must map domain types, authorization, session identities, and event schemas to the new `/api/v1` contract. No automatic compatibility is implied; do not turn `enabled` on until the actual proxy passes integration tests.
+**The only permitted execution backend is the generic validation agent.** The DAiA backend remains entirely unchanged and must **not** be used as a fallback, proxy target, deployment dependency, test target or Oracle image. We reuse DAiA's frontend source and interaction designs only.
+
+Any temporary `/api/v1/ui/*` interface used by copied React components is a **frontend compatibility contract** that the **generic validation backend** must implement against its own supplier models, authorization rules, events and modular workflow. It is not a tunnel or route into DAiA's server. Unknown routes fail closed. The generic native API `/api/v1/*` remains authoritative.
+
+A backend deployment must preserve its own independent lifecycle and infrastructure. No existing or future DAiA Oracle image is assumed to be reusable. Wait for the separately provided image metadata before adding an environment-specific deployment manifest.
 
 ### Security / human oversight acceptance gates
 
@@ -61,11 +65,11 @@ The existing DAiA FastAPI defines `/api/tickets`, `/api/tickets/{ticket_id}/subm
 
 ## Oracle preparation
 
-The user expects an Oracle-hosted image later; its actual image registry, image type, runtime, domain, authentication, ingress and storage have **not** been supplied. The adapter therefore remains **runtime-neutral** (OCI Container Instances / VM / Kubernetes all plausible). When image information is available, configure a reverse proxy to:
+The generic validation agent will have its **own deployment image**, whose registry, digest, runtime, host, ingress and storage configuration will be provided separately. Do **not** reuse the DAiA image or infer an Oracle runtime. Until the user supplies image details, the adapter stays disabled and runtime-neutral. Once confirmed, the generic deployment can:
 
 - serve native generic React frontend at `/`, with SPA/Next routing and caching;
 - serve the original modular architecture artifact at `/reference-architecture/`;
-- route `/api/v1/*` to an authenticated generic BFF, and translate to the agent's internal API;
+- route `/api/v1/*` exclusively to the authenticated **generic validation agent** API (including any generic UI compatibility endpoints), never to DAiA;
 - use persistent secrets in Oracle Vault or equivalent; store nothing sensitive in client JS;
 - verify CORS, TLS, session affinity where needed, upload limits, SSE WebSocket upgrades, health probes and persistence.
 

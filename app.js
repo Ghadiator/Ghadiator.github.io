@@ -234,7 +234,7 @@ function mountEmbeddedArchitecture(){
 }
 
 function refreshLinkState(){document.querySelectorAll('[data-view]').forEach(el=>{const selected=el.dataset.view===state.view;el.classList.toggle('active',selected);if(el.closest('nav')){if(selected)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');}});$('#currentCrumb').textContent=VIEW_NAMES[state.view]||'Architecture';}
-function route(view,slug,{push=true}={}){if(view==='monitor'){view='architecture';state.architectureTab='replay';}else if(view==='pool'){view='dashboard';}else if(view==='newticket'){view='submissions';}else if(view==='architecture'&&state.view!=='architecture'){state.architectureTab='diagram';}if(!(view in VIEW_NAMES))view='overview';stopPlay();state.animateNext=true;state.view=view;state.workbenchTab=({case:'summary',inbound:'pending',governance:'controls'})[view]||'summary';if(slug&&SCENARIOS.some(x=>x.slug===slug)||slug&&state.index.scenarios.some(x=>x.slug===slug)){if(slug!==state.scenario){state.scenario=slug;state.eventIndex=0;}}state.search='';state.filter='all';if(push)history.pushState(null,'',linkView(view,state.scenario));refreshLinkState();render();$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');window.scrollTo({top:0,behavior:'auto'});}
+function route(view,slug,{push=true}={}){if(view==='monitor'){view='architecture';state.architectureTab='replay';}else if(view==='pool'){view='dashboard';}else if(view==='tickets'){view='submissions';state.submissionTab='history';}else if(view==='newticket'){view='submissions';state.submissionTab='compose';state.submissionMode='request';}else if(view==='redteam'){view='attacker';state.attackerTab='campaign';}else if(view==='architecture'&&state.view!=='architecture'){state.architectureTab='diagram';}if(!(view in VIEW_NAMES))view='overview';stopPlay();state.animateNext=true;state.view=view;state.workbenchTab=({case:'summary',inbound:'pending',governance:'controls'})[view]||'summary';if(slug&&SCENARIOS.some(x=>x.slug===slug)||slug&&state.index.scenarios.some(x=>x.slug===slug)){if(slug!==state.scenario){state.scenario=slug;state.eventIndex=0;}}state.search='';state.filter='all';if(push)history.pushState(null,'',linkView(view,state.scenario));refreshLinkState();render();$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');window.scrollTo({top:0,behavior:'auto'});}
 function notify(message){const el=$('#toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3600);}
 function button(label,action,{kind='',glyph='',disabled=false}={}){return `<button type="button" class="button ${kind}" data-action="${h(action)}" ${disabled?'disabled':''}>${glyph?icon(glyph):''}${h(label)}</button>`;}
 function pageHeader(eyebrow,title,desc,right=''){return `<div class="page-header"><div><div class="eyebrow"><span class="eyebrow-line"></span>${h(eyebrow)}</div><h1 class="page-title">${h(title)}</h1><p class="page-desc">${h(desc)}</p></div>${right?`<div class="page-toolbar">${right}</div>`:''}</div>`;}
@@ -302,7 +302,7 @@ function render(){refreshLinkState();
  const wb=window.GenericWorkbench,ctx=workbenchContext();const fn={
  overview:renderOverview,
  dashboard:()=>wb.overview(ctx),
- tickets:()=>wb.tickets(ctx),
+ tickets:()=>window.PublicSubmissions.render(ctx),
  newticket:()=>window.PublicSubmissions.render(ctx),
  submissions:()=>window.PublicSubmissions.render(ctx),
  ticket:()=>wb.ticket(ctx),
@@ -318,7 +318,7 @@ function render(){refreshLinkState();
  integration:renderIntegration,
  audit:renderAudit,
  assurance:renderAssurance,
- redteam:renderRedTeam,
+ redteam:()=>window.PublicAttacker.render(ctx),
  analytics:()=>wb.analytics(ctx),
  login:()=>wb.login(ctx)
  };if(!wb){MAIN.innerHTML='<p class="wb-error">The generic workbench module is unavailable.</p>';return;}
@@ -395,4 +395,4 @@ MAIN.addEventListener('submit',async event=>{
 $('#helpButton').addEventListener('click',()=>notify('Read-only evidence viewer · synthetic fixtures · no live-model testing or certification.'));
 window.addEventListener('popstate',()=>{const params=new URLSearchParams(location.search);const s=params.get('scenario');route(params.get('view')||'overview',s,{push:false});});
 window.addEventListener('keydown',ev=>{if(ev.target.closest('input,textarea,select')||ev.altKey||ev.ctrlKey||ev.metaKey)return;if(ev.key==='ArrowRight'&&['architecture','audit'].includes(state.view)){stopPlay();setEvent(state.eventIndex+1);}else if(ev.key==='ArrowLeft'&&['architecture','audit'].includes(state.view)){stopPlay();setEvent(state.eventIndex-1);}else if(ev.key==='Escape'){$('#sidebar').classList.remove('open');$('#mobileOverlay').classList.remove('visible');}});
-(async()=>{window.PublicBackend?.init().then(()=>{renderIfNeeded();}).catch(()=>{});const params=new URLSearchParams(location.search);state.scenario=SCENARIOS.some(s=>s.slug===params.get('scenario'))?params.get('scenario'):'supplier_variance_review';const requestedView=params.get('view');if(requestedView==='monitor')state.architectureTab='replay';state.view=requestedView==='monitor'?'architecture':requestedView==='pool'?'dashboard':requestedView==='newticket'?'submissions':VIEW_NAMES[requestedView]?requestedView:'overview';hydrateIcons();render();const available=await Promise.all([ensureData('index'),ensureData('facts')]);if(available.some(Boolean))renderIfNeeded();})();
+(async()=>{window.PublicBackend?.init().then(()=>{renderIfNeeded();}).catch(()=>{});const params=new URLSearchParams(location.search);state.scenario=SCENARIOS.some(s=>s.slug===params.get('scenario'))?params.get('scenario'):'supplier_variance_review';const requestedView=params.get('view');if(requestedView==='monitor')state.architectureTab='replay';if(requestedView==='tickets')state.submissionTab='history';if(requestedView==='newticket'){state.submissionTab='compose';state.submissionMode='request';}if(requestedView==='redteam')state.attackerTab='campaign';state.view=requestedView==='monitor'?'architecture':requestedView==='pool'?'dashboard':['tickets','newticket'].includes(requestedView)?'submissions':requestedView==='redteam'?'attacker':VIEW_NAMES[requestedView]?requestedView:'overview';hydrateIcons();render();const available=await Promise.all([ensureData('index'),ensureData('facts')]);if(available.some(Boolean))renderIfNeeded();})();

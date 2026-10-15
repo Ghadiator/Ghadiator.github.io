@@ -39,7 +39,7 @@
   function inbound(ctx){
     const es=events(ctx),received=es.filter(e=>e.kind==="intake.received"||e.kind==="intake.rejected"||e.kind==="collection.reminder");
     const isPending=ctx.state.workbenchTab!=="unmatched";
-    return `<div class="wb-page">${hero("INTAKE & CORRESPONDENCE","Inbound intake","DAiA's inbound review pools adapted to the supplier workflow. Only recorded fixture events are shown.",action("tickets","Document requests"))}${ctx.renderCaseSelector()}
+    return `<div class="wb-page">${hero("INTAKE & CORRESPONDENCE","Inbound intake","DAiA's inbound review pools adapted to the supplier workflow. Only recorded fixture events are shown.",action("submissions","Document collection"))}${ctx.renderCaseSelector()}
     ${pills([["pending","Case-bound intake"],["unmatched","Unmatched correspondence"]],isPending?"pending":"unmatched","inbound")}
     ${isPending?panel("Recorded intake / collection activity",received.length?`<div class="wb-list">${received.map(e=>`<button type="button" class="wb-list-row" data-event="${es.indexOf(e)}"><b>${String(e.seq).padStart(2,"0")}</b><span><strong>${safe(ctx,e.label)}</strong><small>${safe(ctx,e.detail||"No detail recorded")}</small></span><em>${safe(ctx,e.actor)}</em></button>`).join("")}</div>`:empty("No intake events","Select a fixture with intake or reminders.")):panel("Unmatched supplier mail",empty("No unmatched-mail records are published","The supplier fixture does not emit an unmatched-email pool. A blank live inbox cannot be inferred from this synthetic trace."))}
     ${hydrateHint()}</div>`;
@@ -97,20 +97,20 @@
   }
   function ticket(ctx){
     const r=selected(ctx),es=events(ctx),collection=es.filter(x=>x.stage==="request"||x.stage==="reminders"||x.stage==="ingest");
-    return `<div class="wb-page">${hero("REQUEST DETAIL","Document collection · "+safe(ctx,r.title),"DAiA request detail layout, populated only from the recorded supplier collection events.",action("tickets","Back to requests")+action("case","Linked case",r.slug))}
+    return `<div class="wb-page">${hero("REQUEST DETAIL","Document collection · "+safe(ctx,r.title),"DAiA request detail layout, populated only from the recorded supplier collection events.",action("submissions","Document collection")+action("case","Linked case",r.slug))}
     ${panel("Request summary",`<dl class="wb-defs"><dt>Scenario reference</dt><dd>${safe(ctx,r.slug)}</dd><dt>Recorded outcome</dt><dd>${stateLabel(ctx,r)}</dd><dt>Human gate reached</dt><dd>${r.reached_human_gate?"Yes":"No"}</dd><dt>Mail transport</dt><dd>Fixture outbox only; no messages delivered</dd></dl>`)}
     ${panel("Collection timeline",collection.length?`<div class="wb-list">${collection.map(e=>`<div class="wb-list-row"><b>${e.seq}</b><span><strong>${safe(ctx,e.label)}</strong><small>${safe(ctx,e.detail)}</small></span></div>`).join("")}</div>`:empty("No recorded collection event","The selected fixture has no matching collection rows in its public trace."))}
     ${notice("Supplier notifications, reviewer assignments and correspondence composer in DAiA require private APIs. This public counterpart shows authentic emitted fixture records instead.")}</div>`;
   }
   function newticket(ctx){
-    return `<div class="wb-page">${hero("REQUEST CREATION · DESIGN-ONLY","Draft document request","This reproduces the DAiA new-ticket form without pretending that a public static portfolio can open live cases.",action("tickets","Existing recorded requests"))}
+    return `<div class="wb-page">${hero("REQUEST CREATION · DESIGN-ONLY","Draft document request","This reproduces the DAiA new-ticket form without pretending that a public static portfolio can open live cases.",action("submissions","Document collection"))}
     ${panel("New supplier request · local preview",`<form id="wb-draft-form" class="wb-form"><label>Supplier reference<input name="supplier" required maxlength="90" placeholder="e.g. Supplier A (example)" autocomplete="off"/></label><label>Document type<select name="document"><option>Invoice</option><option>Service report</option><option>Corrected invoice</option></select></label><label>Review purpose<textarea name="purpose" placeholder="What needs to be checked?" rows="4" maxlength="400"></textarea></label><div class="wb-form-actions"><button type="submit" class="wb-primary">Preview request (no send)</button><span>Local preview only · no submission or storage</span></div></form><div id="wb-draft-preview" class="wb-preview" role="status" aria-live="polite"></div>`)}
     ${hydrateHint()}</div>`;
   }
   function governanceHub(ctx,renderOriginal){
     const k=ctx.state.workbenchTab||"controls";const r=ctx.state.loaded.rules?.rules||[];
     const orig=renderOriginal();
-    return `<div class="wb-page">${hero("AI ASSURANCE · GOVERNANCE","Governance","DAiA's governance area translated to verifiable controls and honest deployment boundaries.",action("redteam","Control probes"))}
+    return `<div class="wb-page">${hero("AI ASSURANCE · GOVERNANCE","Governance","DAiA's governance area translated to verifiable controls and honest deployment boundaries.",action("attacker","Red Team controls"))}
     ${pills([["controls","Control mapping"],["rules","Ruleset registry"],["lessons","Lessons learned"],["incidents","Incident channel"],["system","System card"]],k,"gov")}
     ${k==="controls"?orig:k==="rules"?panel("Reference rule catalog",r.length?`<div class="wb-grid">${r.map(x=>`<article class="wb-small-card"><small>${safe(ctx,x.mechanism_type)}</small><h3>${safe(ctx,x.title)}</h3><p>${safe(ctx,x.principle)}</p><code>${safe(ctx,x.evidence_ref)}</code></article>`).join("")}</div>`:empty("Ruleset file is not loaded","The verified original rule catalogue has not been fetched.")):k==="system"?panel("Public system card",`<dl class="wb-defs"><dt>Intended purpose</dt><dd>Reference supplier-invoice checks and human-gated decisions</dd><dt>Model deployment</dt><dd>No live LLM in public fixtures</dd><dt>Human oversight</dt><dd>Named reviewer retains final authority</dd><dt>Audit</dt><dd>Fixture event list; no durable production log</dd><dt>Legal scope</dt><dd>Conceptual mapping, not a claim of EU AI Act conformity</dd></dl>`):panel(k==="lessons"?"Lessons-learned ledger":"Incident channel",empty(k==="lessons"?"No production learning ledger is published":"No production incident inbox is published","The DAiA write-enabled service is not available in the public reference. Recorded control probes and emitted events can be inspected without inventing entries."))}
     ${hydrateHint()}</div>`;
