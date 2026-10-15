@@ -185,11 +185,38 @@ function renderWorkflowResults(){
 function refreshWorkflowResults(){
  const target=document.getElementById('workflow-results');
  if(target)target.innerHTML=renderWorkflowResults();
+ const execution=window.ArchitectureExecution;
+ if(!execution)return;
+ const timeline=events();
+ const cursor=Number.isInteger(state.architectureCursor)?state.architectureCursor:-1;
+ const dashboard=document.getElementById('architecture-execution-dashboard');
+ if(dashboard)dashboard.innerHTML=execution.renderDashboard(timeline,cursor);
+ const rail=document.getElementById('architecture-event-rail');
+ if(rail){
+  const previous=rail.querySelector('.ax-rail-list')?.scrollTop??0;
+  rail.innerHTML=execution.renderRail(timeline,cursor);
+  const list=rail.querySelector('.ax-rail-list');
+  if(list){
+   list.scrollTop=previous;
+   const active=list.querySelector('.is-current');
+   if(active&&cursor>=0){
+    const bounds=list.getBoundingClientRect(),rect=active.getBoundingClientRect();
+    if(rect.bottom>bounds.bottom-40||rect.top<bounds.top+20)active.scrollIntoView({block:'nearest',behavior:'auto'});
+   }
+  }
+ }
 }
 function renderEmbeddedArchitecture(){
  return `<div class="page-entrance unified-architecture-view">
   <div class="unified-architecture-context"><span class="section-overline">ARCHITECTURE · SELECT A SCENARIO, THEN RUN</span><span>Modular dataflow · verified handoffs · human decision gate</span></div>
-  <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular validation workflow and scenario player" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
+  <div class="architecture-live-layout">
+   <div class="architecture-main-canvas">
+    <div class="architecture-canvas-hint"><strong>Module execution replay</strong><span>Blocks highlight as their recorded work runs. Executed blocks retain markers; routes animate in the original React canvas.</span></div>
+    <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular validation workflow and scenario player" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
+   </div>
+   <aside id="architecture-event-rail" class="architecture-event-rail" aria-label="Emitted workflow events">${window.ArchitectureExecution?.renderRail(events(),Number.isInteger(state.architectureCursor)?state.architectureCursor:-1)||''}</aside>
+  </div>
+  <section id="architecture-execution-dashboard" class="architecture-execution-dashboard" aria-label="Execution checks and AI committee results">${window.ArchitectureExecution?.renderDashboard(events(),Number.isInteger(state.architectureCursor)?state.architectureCursor:-1)||''}</section>
   <section id="architecture-detail" class="architecture-detail-below" aria-label="Architecture explanations and controls"></section>
   <div id="workflow-results" class="architecture-workflow-results">${renderWorkflowResults()}</div>
   <p class="unified-architecture-note">The architecture player and the results below read the same recorded synthetic case. AI roles are scripted and human approvals shown are historical fixture records, not live actions.</p>
@@ -315,8 +342,9 @@ function mountEmbeddedArchitecture(){
   if(!picker||!scrub)return;
   const slug=picker.value;
   const next=Math.max(-1,Number(scrub.value));
-  // No outcome badges before the visitor has actually started replaying.
+  // The same React cursor drives in-graph highlights, event stream and results.
   renderExplanation(doc);
+  window.ArchitectureExecution?.decorateGraph(doc,events(),Number.isInteger(state.architectureCursor)?state.architectureCursor:-1);
   const known=SCENARIOS.some(s=>s.slug===slug)||state.index.scenarios.some(s=>s.slug===slug);
   if(known&&slug!==state.scenario){
    stopPlay();
@@ -331,6 +359,7 @@ function mountEmbeddedArchitecture(){
    state.architectureCursor=next;
    state.eventIndex=Math.max(0,next);
    refreshWorkflowResults();
+   window.ArchitectureExecution?.decorateGraph(doc,events(),next);
   }
  };
  const onPlayerControl=()=>schedule();
@@ -364,6 +393,13 @@ function mountEmbeddedArchitecture(){
      .deck > div:has(select[aria-label="Recorded scenario"]){display:flex!important;order:1}
      .deck > div:has(input[aria-label="Position in the recorded run"]){display:flex!important;order:2}
      .deck > div:has(> .deck-canvas){display:block!important;order:3}
+     /* Trace-derived markers supplement React's native edge animations. */
+     .deck [data-node].ax-node-executed{box-shadow:inset 0 -3px 0 #16866b55!important}
+     .deck [data-node].ax-node-current{outline:3px solid #1479d2!important;outline-offset:2px!important;z-index:12!important;animation:ax-current-pulse 1.4s ease-in-out infinite}
+     .deck [data-node].ax-node-failure{box-shadow:inset 0 -4px 0 #c25050!important}
+     .deck [data-node][data-trace-count]::after{content:attr(data-trace-count) " events";position:absolute;right:3px;bottom:2px;font:700 8px/1.2 monospace;color:#126c60;background:#e5f7f0;padding:2px 4px;border-radius:4px;pointer-events:none}
+     @keyframes ax-current-pulse{50%{outline-color:#2ea5e17a}}
+     @media(prefers-reduced-motion:reduce){.deck [data-node].ax-node-current{animation:none}}
      /* Those sections are already represented by the shared workbench below
         this iframe. In embedded mode they obscure the run's evidence and
         show the completed outcome before replay has begun. Standalone
@@ -522,6 +558,13 @@ function downloadRaw(){const key=`scenario:${state.scenario}`;const raw=state.ra
 async function copyEvent(){const e=activeEvent();if(!e)return;try{await navigator.clipboard.writeText(JSON.stringify(e,null,2));notify('Exact event JSON copied.');}catch{notify('Copy blocked by browser permissions.');}}
 function clickAction(action){if(action.startsWith('goto:'))return route(action.slice(5),state.scenario);switch(action){case 'toggle-play':togglePlay();break;case 'next':stopPlay();setEvent(state.eventIndex+1);break;case 'prev':stopPlay();setEvent(state.eventIndex-1);break;case 'reset':stopPlay();setEvent(0);break;case 'copy-event':copyEvent();break;case 'download-trace':downloadRaw();break;case 'source-repo':window.open('https://github.com/Ghadiator/Ghadiator.github.io','_blank','noopener');break;}}
 MAIN.addEventListener('click',event=>{
+const architectureSeek=event.target.closest('[data-replay-seek]');
+if(architectureSeek){
+ event.preventDefault();
+ const frame=document.getElementById('modularArchitectureFrame');
+ if(frame)window.ArchitectureExecution?.seek(frame.contentDocument,Number(architectureSeek.dataset.replaySeek));
+ return;
+}
 const archtab=event.target.closest('[data-architecture-tab]');if(archtab){event.preventDefault();stopPlay();state.architectureTab=archtab.dataset.architectureTab;render();return;}
 const subtab=event.target.closest('[data-submission-tab]');if(subtab){state.submissionTab=subtab.dataset.submissionTab;render();return;}
 const submode=event.target.closest('[data-submission-mode]');if(submode){state.submissionMode=submode.dataset.submissionMode;render();return;}
