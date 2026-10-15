@@ -161,7 +161,7 @@ function renderEmbeddedArchitecture(){
  return `<div class="page-entrance unified-architecture-view">
  <div class="unified-architecture-context"><span class="section-overline">ARCHITECTURE · INTERACTIVE SYSTEM</span><span>Orchestration · Committee + CoVe · ProcessEvent · Human decision</span></div>
  <div class="wb-tabs unified-architecture-tabs" role="group" aria-label="Architecture sections">
-  <button type="button" class="wb-tab ${!isReplay?'selected':''}" data-architecture-tab="diagram" aria-pressed="${!isReplay}">01 · Modular architecture</button>
+  <button type="button" class="wb-tab ${(!isReplay&&!isIO)?'selected':''}" data-architecture-tab="diagram" aria-pressed="${(!isReplay&&!isIO)}">01 · Modular architecture</button>
   <button type="button" class="wb-tab ${isReplay?'selected':''}" data-architecture-tab="replay" aria-pressed="${isReplay}">02 · Recorded data flow</button>
   <button type="button" class="wb-tab ${isIO?'selected':''}" data-architecture-tab="io" aria-pressed="${isIO}">03 · Inputs & outputs</button>
  </div>
@@ -185,54 +185,86 @@ function recoverArchitectureFrame(frame){
 }
 let disposeArchitectureEmbed=()=>{};
 function mountEmbeddedArchitecture(){
- const frame=document.getElementById('modularArchitectureFrame');if(!frame)return;
- frame.addEventListener('load',()=>{
-  // Both documents are served from the same GitHub Pages origin.
-  // Style is injected into the iframe's document; the architecture
-  // React bundle, diagram edges and companion explanations are untouched.
-  let doc;try{doc=frame.contentDocument;}catch{recoverArchitectureFrame(frame);return;}
-  if(!doc||!doc.head||!doc.body){recoverArchitectureFrame(frame);return;}
-  const frameStyle=doc.createElement('style');
-  frameStyle.id='unified-workbench-embed-style';
-  frameStyle.textContent=`/* Hide only the legacy site's chrome; preserve architecture content. */
-   html,body{margin:0!important;overflow-x:hidden!important;background:#fff!important}
-   body > div.flex.min-h-screen > aside{display:none!important}
-   body > div.flex.min-h-screen > div > nav[aria-label="Primary"]{display:none!important}
-   body > div.flex.min-h-screen > div > header{display:none!important}
-   body > div.flex.min-h-screen > div > footer{display:none!important}
-   body > div.flex.min-h-screen{min-height:0!important;display:block!important}
-   body > div.flex.min-h-screen > div{min-width:0!important;width:100%!important;display:block!important}
-   body > div.flex.min-h-screen > div > main{padding:0!important;width:100%!important}
-   body > div.flex.min-h-screen > div > main > div{max-width:none!important}
-   `;
-  doc.head.appendChild(frameStyle);
-  const main=doc.querySelector('body > div.flex.min-h-screen > div > main');
-  if(!main){recoverArchitectureFrame(frame);return;}
-  // A companion script inserts extra architecture sections asynchronously;
-  // observe actual content so they are not cut off by a fixed-size iframe.
-  let last=0,raf=0;
-  const resize=()=>{
-   if(!frame.isConnected)return;
-   const height=Math.max(main.scrollHeight,main.getBoundingClientRect().height);
-   const next=Math.ceil(height+12);
-   if(next>0&&next!==last){last=next;frame.style.height=next+'px';}
-  };
-  const schedule=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;resize();});};
-  resize();frame.style.visibility='visible';
-  if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(schedule);observer.observe(main);frame._architectureResizeObserver=observer;}
-  if(typeof MutationObserver!=='undefined'){
-   const observer=new MutationObserver(schedule);observer.observe(main,{childList:true,subtree:true,characterData:true});
-   frame._architectureMutationObserver=observer;
+ const frame=document.getElementById('modularArchitectureFrame');
+ if(!frame)return;
+ // The original Next.js page hydrates after its iframe load event. During that
+ // hydration React can replace <main>. Never measure a detached old <main>:
+ // scrollHeight becomes 0 and previously collapsed the entire diagram to 12px.
+ const MIN_HEIGHT=1060,MAX_HEIGHT=12000;
+ frame.style.minHeight=MIN_HEIGHT+'px';
+ let disposed=false,raf=0,currentMain=null,mainResizeObserver=null,bodyMutationObserver=null;
+ const clean=()=>{
+  disposed=true;
+  if(raf)cancelAnimationFrame(raf);
+  mainResizeObserver?.disconnect();
+  bodyMutationObserver?.disconnect();
+  frame.removeEventListener('load',onLoad);
+ };
+ disposeArchitectureEmbed=clean;
+ const measure=()=>{
+  if(disposed||!frame.isConnected)return;
+  let doc;
+  try{doc=frame.contentDocument;}catch{return;}
+  const main=doc?.querySelector('body > div.flex.min-h-screen > div > main');
+  // React may briefly detach a whole subtree: keep the previous size rather
+  // than measuring a stale element or an empty document.
+  if(!main||!main.isConnected||!doc.body?.contains(main))return;
+  if(currentMain!==main){
+   currentMain=main;
+   mainResizeObserver?.disconnect();
+   if(typeof ResizeObserver!=='undefined'){
+    mainResizeObserver=new ResizeObserver(schedule);
+    mainResizeObserver.observe(main);
+   }
   }
+  const height=Math.max(main.scrollHeight,main.getBoundingClientRect().height);
+  if(!Number.isFinite(height)||height<100)return;
+  const next=Math.min(MAX_HEIGHT,Math.max(MIN_HEIGHT,Math.ceil(height+36)));
+  if(frame.style.height!==next+'px')frame.style.height=next+'px';
+  frame.style.visibility='visible';
+ };
+ const schedule=()=>{
+  if(disposed||raf)return;
+  raf=requestAnimationFrame(()=>{raf=0;measure();});
+ };
+ function onLoad(){
+  if(disposed||!frame.isConnected)return;
+  let doc;
+  try{doc=frame.contentDocument;}catch{recoverArchitectureFrame(frame);return;}
+  if(!doc?.head||!doc.body){recoverArchitectureFrame(frame);return;}
+  if(!doc.getElementById('unified-workbench-embed-style')){
+   const style=doc.createElement('style');
+   style.id='unified-workbench-embed-style';
+   style.textContent=`/* Hide only the old navigation; the original interactive
+      20-node diagram and its explanation remain unmodified. */
+     html,body{margin:0!important;overflow-x:hidden!important;background:#fff!important}
+     body > div.flex.min-h-screen > aside{display:none!important}
+     body > div.flex.min-h-screen > div > nav[aria-label="Primary"],
+     body > div.flex.min-h-screen > div > header,
+     body > div.flex.min-h-screen > div > footer{display:none!important}
+     body > div.flex.min-h-screen{min-height:0!important;display:block!important}
+     body > div.flex.min-h-screen > div{min-width:0!important;width:100%!important;display:block!important}
+     body > div.flex.min-h-screen > div > main{padding:0!important;width:100%!important}
+     body > div.flex.min-h-screen > div > main > div{max-width:none!important}
+   `;
+   doc.head.appendChild(style);
+  }
+  bodyMutationObserver?.disconnect();
+  if(typeof MutationObserver!=='undefined'){
+   // Observe the stable BODY, not Next.js' replaceable <main> reference.
+   // This detects hydration tree replacement, scenario changes and
+   // dynamically inserted explanations.
+   bodyMutationObserver=new MutationObserver(schedule);
+   bodyMutationObserver.observe(doc.body,{childList:true,subtree:true,characterData:true});
+  }
+  frame.style.visibility='visible';
+  measure();
   doc.fonts?.ready.then(schedule).catch(()=>{});
-  disposeArchitectureEmbed=()=>{
-   frame._architectureResizeObserver?.disconnect();
-   frame._architectureMutationObserver?.disconnect();
-   if(raf)cancelAnimationFrame(raf);
-  };
-  frame.contentWindow?.addEventListener('pagehide',disposeArchitectureEmbed,{once:true});
   schedule();
- });
+ }
+ frame.addEventListener('load',onLoad);
+ // A cached iframe can finish loading before a callback is attached.
+ try{if(frame.contentDocument?.readyState==='complete')onLoad();}catch{}
 }
 
 function refreshLinkState(){document.querySelectorAll('[data-view]').forEach(el=>{const selected=el.dataset.view===state.view;el.classList.toggle('active',selected);if(el.closest('nav')){if(selected)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');}});$('#currentCrumb').textContent=VIEW_NAMES[state.view]||'Architecture';}
