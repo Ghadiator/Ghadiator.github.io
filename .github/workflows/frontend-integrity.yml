@@ -60,8 +60,8 @@ jobs:
           assert "Example data · No live AI" in html
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
-          assert 'styles.css?v=20261015-connected-console-43' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261015-connected-console-43' in html, "Script must use a cache-busting URL"
+          assert 'styles.css?v=20261015-unified-navigation-44' in html, "Stylesheet must use a cache-busting URL"
+          assert 'app.js?v=20261015-unified-navigation-44' in html, "Script must use a cache-busting URL"
           expected = {
               "architecture/index.html": "043957f786fd71f8f61a8c3258f86cbbcd8004b7",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
@@ -76,14 +76,14 @@ jobs:
           assert 'data-view="architecture"' in shell
           assert 'data-view="overview"' in shell
           required_tabs = (
-              'overview', 'architecture', 'dashboard', 'tickets', 'submissions',
+              'overview', 'architecture', 'dashboard', 'submissions',
               'inbound', 'cases', 'tokens', 'governance', 'attacker',
-              'redteam', 'personas', 'integration', 'audit'
+              'personas', 'integration', 'audit'
           )
           for tab in required_tabs:
               assert 'data-view="'+tab+'"' in html, f'Missing DAiA-equivalent public tab: {tab}'
               assert tab + ':' in app, f'Missing app router view: {tab}'
-          assert 'assets/generic-workbench.js?v=20261015-connected-console-43' in html
+          assert 'assets/generic-workbench.js?v=20261015-unified-navigation-44' in html
           assert html.index('assets/generic-workbench.js') < html.index('src="./app.js')
           workbench = Path('assets/generic-workbench.js').read_text()
           for screen in ('overview', 'tickets', 'inbound', 'cases', 'monitor', 'economics',
@@ -129,11 +129,20 @@ jobs:
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'href="?view=architecture"' in app, 'Introduction links remain in shell'
           for asset in ('public-submissions.js', 'public-personas.js', 'public-attacker.js'):
-              assert 'assets/'+asset+'?v=20261015-connected-console-43' in html
+              assert 'assets/'+asset+'?v=20261015-unified-navigation-44' in html
               assert Path('assets/'+asset).stat().st_size > 1500
           assert 'PublicSubmissions.submit' in app and 'PublicPersonas.send' in app
           assert 'data-attacker-action' in Path('assets/public-attacker.js').read_text()
           assert 'Pool Analytics' not in html, 'No orphan Pool tab label'
+          assert html.count('data-view="personas"') == 1, 'There must be only one Chat with the code entry'
+          assert 'data-view="tickets" href=' not in html, 'Document requests must be one destination'
+          assert 'data-view="redteam" href=' not in html, 'Control probes must be inside Red Team'
+          assert html.count('data-view="submissions" href=') == 1
+          assert 'data-attacker-tab="persona"' not in Path('assets/public-attacker.js').read_text()
+          assert 'PublicPersonas.chat' not in Path('assets/public-attacker.js').read_text()
+          assert "view==='tickets';" not in app
+          assert "else if(view==='tickets'){view='submissions'" in app
+          assert "else if(view==='redteam'){view='attacker'" in app
           backend_config = __import__('json').loads(Path('data/backend-config.json').read_text())
           assert backend_config['enabled'] is False, 'Never enable unconfigured Oracle backend'
           assert backend_config['apiOrigin'] is None, 'Never invent a public backend host'
