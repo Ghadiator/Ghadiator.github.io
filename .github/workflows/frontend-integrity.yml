@@ -37,6 +37,7 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check app.js
+          node --check assets/architecture-execution.js
           node --check assets/generic-workbench.js
           node --check assets/public-submissions.js
           node --check assets/public-backend.js
@@ -63,8 +64,8 @@ jobs:
           assert "Example data · No live AI" in html
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
-          assert 'styles.css?v=20261015-architecture-details-below-48' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261015-architecture-details-below-48' in html, "Script must use a cache-busting URL"
+          assert 'styles.css?v=20261015-architecture-execution-49' in html, "Stylesheet must use a cache-busting URL"
+          assert 'app.js?v=20261015-architecture-execution-49' in html, "Script must use a cache-busting URL"
           expected = {
               "architecture/index.html": "043957f786fd71f8f61a8c3258f86cbbcd8004b7",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
@@ -125,6 +126,19 @@ jobs:
           assert '<a data-view="pool"' not in html, 'Pool Analytics tab is removed'
           assert 'function renderWorkflowResults()' in app, "Recorded workflow results must follow the canvas"
           assert 'id="workflow-results"' in app and 'syncFromFrame' in app
+          assert 'id="architecture-event-rail"' in app and 'id="architecture-execution-dashboard"' in app
+          assert 'decorateGraph' in app and 'refreshWorkflowResults' in app
+          assert 'assets/architecture-execution.js?v=20261015-architecture-execution-49' in html
+          assert html.index('assets/architecture-execution.js') < html.index('src="./app.js')
+          engine = Path('assets/architecture-execution.js').read_text()
+          for feature in ('renderRail','renderDashboard','decorateGraph','renderCheckPanel',
+                          'renderCommittee','verification.result','checks.rule','contract.check',
+                          'committee.proponent.argument','committee.opponent.argument',
+                          'committee.judge.argument','hitl.resumed'):
+              assert feature in engine, 'Missing source-grounded execution feature: '+feature
+          assert 'post_cove' in engine and 'no separate Post-Judge CoVe event' in engine
+          assert 'const visible=seenAt(all,cursor)' in engine, 'No future events may be rendered as completed checks'
+          assert '.architecture-live-layout' in Path('styles.css').read_text()
           assert 'select[aria-label="Recorded scenario"]' in app
           assert 'input[aria-label="Position in the recorded run"]' in app
           assert 'function renderEmbeddedArchitecture()' in app
