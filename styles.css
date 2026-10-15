@@ -233,3 +233,60 @@ button.wb-list-row:hover{background:#eef6ff}
 @media(max-width:760px){.wb-two{grid-template-columns:1fr}.wb-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.wb-stage-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.wb-resource{grid-template-columns:1fr}.wb-head-actions{width:100%}.wb-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.wb-committee-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:470px){.wb-metrics,.wb-steps,.wb-grid,.wb-form,.wb-committee-grid{grid-template-columns:1fr}.wb-form label:has(textarea),.wb-form-actions{grid-column:auto}.wb-stage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.wb-quick{grid-template-columns:1fr}.wb-bar-row{grid-template-columns:minmax(95px,1.4fr) 2fr 24px}}
 @media(prefers-reduced-motion:reduce){.wb-page{animation:none}.wb-track span{transition:none}}
+
+/* Unified Introduction + Architecture tabs, no legacy shell or navigation. */
+#main.architecture-active{max-width:none;padding:20px 24px 36px;overflow:hidden}
+.unified-architecture-view{margin:0 auto;max-width:1700px;min-width:0}
+.unified-architecture-context{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin:3px 0 12px;padding:0 2px;font-size:11px;color:#5d5d60}
+.unified-architecture-context .section-overline{font:700 11px/1.5 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.16em;color:#416180}
+.unified-architecture-frame{display:block;width:100%;height:1620px;border:1px solid #e1e1e3;background:#fff;border-radius:0;min-width:0;overflow:hidden}
+.unified-architecture-note{font-size:11px;line-height:1.7;color:#5d5d60;margin:14px 3px 0}
+.sidebar .nav-list a[href="?view=overview"],.sidebar .nav-list a[href="?view=architecture"]{font-weight:700}
+.sidebar .nav-list a[href="?view=overview"].active,.sidebar .nav-list a[href="?view=architecture"].active{box-shadow:inset 3px 0 0 #9ce2d5}
+@media(max-width:770px){#main.architecture-active{padding:12px 10px 25px}.unified-architecture-context{padding:0 3px;font-size:10px}}
+/* Submission / persona / red-team experiences */
+.wb-submission-modes{display:flex;gap:6px;flex-wrap:wrap}
+.wb-submit-section{display:grid;gap:17px}
+.wb-submit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.wb-submit-grid label,.wb-agent-controls label{display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:650}
+.wb-submit-grid input,.wb-submit-grid textarea,.wb-submit-grid select,.wb-agent-controls select,.wb-agent-controls textarea,.wb-chat-compose input{border:1px solid #cdd1d6;background:#fff;padding:10px 12px;font:inherit;font-size:12px;width:100%;border-radius:2px}
+.wb-submit-grid label.wide{grid-column:1/-1}
+.wb-local-rows{display:grid;gap:8px}
+.wb-local-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid #e1e4e8;padding:11px 14px}
+.wb-local-row strong{font-size:12px}
+.wb-local-row small{display:block;color:#697581;font-size:10px;margin-top:3px}
+.wb-inline-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.wb-inline-actions button,.wb-inline-actions a,.wb-chat-compose button{padding:9px 12px;background:#fff;border:1px solid #9daeba;color:#284965;cursor:pointer;font-size:11px;font-weight:650;text-decoration:none}
+.wb-inline-actions button.wb-primary,.wb-chat-compose .wb-primary{background:#416180;color:#fff}
+.wb-result{padding:12px;background:#eef6ff;border-left:3px solid #416180;font-size:11.5px;line-height:1.65}
+.wb-result.error{background:#fff2ee;border-left-color:#b35b43}
+.wb-agent-layout{display:grid;grid-template-columns:minmax(170px,230px) minmax(0,1fr);gap:13px}
+.wb-agent-list{display:grid;align-content:start;gap:6px}
+.wb-agent-select{border:1px solid #d2d4d6;background:#f7f8f9;text-align:left;padding:11px;cursor:pointer;display:grid;gap:3px}
+.wb-agent-select.selected{border:2px solid #416180;background:#eaf2fa}
+.wb-agent-select strong{font-size:12px}
+.wb-agent-select small{font-size:10px;color:#697581}
+.wb-chat-card{border:1px solid #d4d4d7;display:flex;flex-direction:column;min-height:390px;max-width:100%;min-width:0}
+.wb-chat-head{padding:12px 15px;border-bottom:1px solid #e1e1e3;display:grid;gap:3px}
+.wb-chat-head strong{font-size:13px}.wb-chat-head small{font-size:11px;color:#697581}
+.wb-chat-log{padding:13px;display:flex;flex-direction:column;gap:10px;flex:1;max-height:480px;overflow-y:auto;scrollbar-width:thin}
+.wb-chat-bubble{max-width:95%;padding:10px 13px;border:1px solid #d4d4d7;background:#f7f8f9;font-size:11.5px;line-height:1.65;overflow-wrap:anywhere}
+.wb-chat-bubble.user{align-self:flex-end;background:#eaf2fa;border-color:#bdcddc}
+.wb-chat-bubble small{display:block;margin-bottom:4px;font-size:10px;font-weight:700;color:#416180}
+.wb-chat-bubble p{white-space:pre-wrap;margin:0}
+.wb-chat-compose{border-top:1px solid #e1e1e3;display:flex;gap:8px;padding:12px}
+.wb-chat-compose input{flex:1;min-width:0}
+.wb-agent-shortcuts{display:flex;gap:5px;flex-wrap:wrap;padding:0 12px 12px}
+.wb-agent-shortcuts button{border:1px solid #d4d4d7;background:#fff;padding:6px 8px;font-size:10px;cursor:pointer}
+.wb-redteam-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.wb-redteam-card{border:1px solid #d4d4d7;padding:16px;display:grid;gap:12px;align-content:start}
+.wb-redteam-card h3{margin:0;font-size:14px}
+.wb-redteam-card small{font-size:10px;color:#697581}
+.wb-redteam-bubble{padding:11px;background:#f3f4f6;border-left:3px solid #414c57;display:grid;gap:7px;font-size:11px;overflow-wrap:anywhere;white-space:pre-wrap}
+.wb-redteam-bubble.defender{border-left-color:#416180;background:#edf5fc}
+.wb-redteam-bubble strong{font-size:11px}
+.wb-redteam-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.wb-agent-controls{display:grid;grid-template-columns:1fr 2fr;gap:13px}
+.wb-file-hint{font-size:10.5px;line-height:1.65;color:#5b6672}
+@media(max-width:800px){.wb-redteam-grid,.wb-agent-layout,.wb-agent-controls{grid-template-columns:1fr}}
+@media(max-width:550px){.wb-submit-grid{grid-template-columns:1fr}.wb-submit-grid label.wide{grid-column:auto}}
