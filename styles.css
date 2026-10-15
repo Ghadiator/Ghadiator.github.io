@@ -239,7 +239,7 @@ button.wb-list-row:hover{background:#eef6ff}
 .unified-architecture-view{margin:0 auto;max-width:1700px;min-width:0}
 .unified-architecture-context{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin:3px 0 12px;padding:0 2px;font-size:11px;color:#5d5d60}
 .unified-architecture-context .section-overline{font:700 11px/1.5 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.16em;color:#416180}
-.unified-architecture-frame{display:block;width:100%;height:1620px;border:1px solid #e1e1e3;background:#fff;border-radius:0;min-width:0;overflow:hidden}
+.unified-architecture-frame{display:block;width:100%;height:1620px;min-height:1060px;border:1px solid #e1e1e3;background:#fff;border-radius:0;min-width:0;overflow:hidden}
 .unified-architecture-note{font-size:11px;line-height:1.7;color:#5d5d60;margin:14px 3px 0}
 .sidebar .nav-list a[href="?view=overview"],.sidebar .nav-list a[href="?view=architecture"]{font-weight:700}
 .sidebar .nav-list a[href="?view=overview"].active,.sidebar .nav-list a[href="?view=architecture"].active{box-shadow:inset 3px 0 0 #9ce2d5}
