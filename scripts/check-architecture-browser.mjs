@@ -82,7 +82,7 @@ try{
  await runButton.click();
  await page.waitForFunction(()=>{
   const box=document.getElementById("workflow-results");
-  return box&&/Event [1-9] of/.test(box.innerText);
+  return box&&/Event [1-9] of/.test(document.getElementById("architecture-execution-dashboard")?.innerText||"");
  },{timeout:10000});
  const summaryAfter=await header.boundingBox();
  assert.equal(summaryAfter,null,"Run narrative must never appear inside the graph section");
@@ -91,9 +91,15 @@ try{
  const outsideRect=await outside.boundingBox(),frameRect=await page.locator("#modularArchitectureFrame").boundingBox();
  assert.ok(outsideRect&&frameRect&&outsideRect.y>=frameRect.y+frameRect.height-1,"Step explanations must be OUTSIDE and UNDER the architecture iframe");
  const output=await page.locator("#workflow-results").innerText();
- assert.ok(output.includes("Module exchanges and evidence"),"Evidence must be beneath the diagram");
+ assert.equal(output.trim(),"","No duplicated evidence navigator or committee panels before completion");
+ const dashboardText=await page.locator("#architecture-execution-dashboard").innerText();
+ assert.ok(dashboardText.includes("Workflow execution dashboard"),"The execution dashboard remains active beneath the graph");
+ const visiblePage=await page.locator("#main").innerText();
+ for(const duplicate of ["Current evidence","Trace navigator","Scripted adversarial committee"]){
+  assert.ok(!visiblePage.includes(duplicate),"Remove duplicate panel from Architecture: "+duplicate);
+ }
  assert.ok(!output.includes("Recorded workflow result"),"The final outcome must not be shown before the run completes");
- console.log("SCENARIO_REPLAY",JSON.stringify({selected,resultText:output.slice(0,450)}));
+ console.log("SCENARIO_REPLAY",JSON.stringify({selected,dashboardText:dashboardText.slice(0,450)}));
  // The final verdict and AI-role exchanges must appear only when selected
  // replay events include them, never as a premature banner.
  await picker.selectOption("supplier_variance_review");
@@ -119,9 +125,13 @@ try{
  await scrub.press("End");
  await page.waitForFunction(()=>document.getElementById("workflow-results")?.innerText.includes("Recorded workflow result"),null,{timeout:12000});
  const complete=await page.locator("#workflow-results").innerText();
- assert.ok(complete.includes("Scripted adversarial committee"),"Proponent/Opponent/verification/Judge dialogue must follow the recorded workflow");
  assert.ok(complete.includes("Recorded workflow result"),"Terminal state must appear when the replay reaches its last event");
- console.log("COMPLETED_REPLAY",JSON.stringify({length:complete.length,hasCommittee:true,hasOutcome:true}));
+ const committeeInDashboard=await page.locator("#architecture-execution-dashboard").innerText();
+ assert.ok(committeeInDashboard.includes("Proponent · Opponent · CoVe · Judge"),"Keep the nonduplicated committee results in the execution dashboard");
+ for(const duplicate of ["Current evidence","Trace navigator","Scripted adversarial committee"]){
+  assert.ok(!(await page.locator("#main").innerText()).includes(duplicate),"Duplicated panel must remain deleted: "+duplicate);
+ }
+ console.log("COMPLETED_REPLAY",JSON.stringify({length:complete.length,committeeInDashboard:true,hasOutcome:true}));
  // Rules and cross-check results must come from recorded events, including
  // a correction case that contains both an earlier FAIL and a later PASS.
  await picker.selectOption("supplier_rate_correction");
@@ -147,6 +157,7 @@ try{
   const f=document.getElementById("modularArchitectureFrame")?.contentDocument;
   return f?.querySelector('input[aria-label="Position in the recorded run"]')?.value==="23";
  },null,{timeout:10000});
+ await page.waitForFunction(()=>document.querySelector('#architecture-event-rail [data-replay-seek="23"]')?.classList.contains('is-current'),null,{timeout:10000});
  assert.ok(await page.locator('#architecture-event-rail [data-replay-seek="23"].is-current').count(),
    "Event rail selection and React scrubber must stay in sync");
  console.log("RAIL_NAVIGATION", "Selected emitted event 24 drives the native React scrubber");

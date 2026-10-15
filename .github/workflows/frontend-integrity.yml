@@ -64,8 +64,8 @@ jobs:
           assert "Example data · No live AI" in html
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
-          assert 'styles.css?v=20261015-architecture-execution-49' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261015-architecture-execution-49' in html, "Script must use a cache-busting URL"
+          assert 'styles.css?v=20261015-simplified-execution-50' in html, "Stylesheet must use a cache-busting URL"
+          assert 'app.js?v=20261015-simplified-execution-50' in html, "Script must use a cache-busting URL"
           expected = {
               "architecture/index.html": "043957f786fd71f8f61a8c3258f86cbbcd8004b7",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
@@ -125,10 +125,14 @@ jobs:
           assert '<a data-view="monitor"' not in html, 'Scenario theater belongs inside Architecture'
           assert '<a data-view="pool"' not in html, 'Pool Analytics tab is removed'
           assert 'function renderWorkflowResults()' in app, "Recorded workflow results must follow the canvas"
+          replay_section = app[app.index('function renderWorkflowResults()'):app.index('function refreshWorkflowResults()')]
+          assert 'GenericWorkbench.monitor' not in replay_section, "Do not reintroduce duplicate monitor panels"
+          assert "querySelector('.wb-two')" not in replay_section and "querySelector('.wb-committee')" not in replay_section
+          assert 'Recorded workflow result' in replay_section, "Terminal outcome must be retained"
           assert 'id="workflow-results"' in app and 'syncFromFrame' in app
           assert 'id="architecture-event-rail"' in app and 'id="architecture-execution-dashboard"' in app
           assert 'decorateGraph' in app and 'refreshWorkflowResults' in app
-          assert 'assets/architecture-execution.js?v=20261015-architecture-execution-49' in html
+          assert 'assets/architecture-execution.js?v=20261015-simplified-execution-50' in html
           assert html.index('assets/architecture-execution.js') < html.index('src="./app.js')
           engine = Path('assets/architecture-execution.js').read_text()
           for feature in ('renderRail','renderDashboard','decorateGraph','renderCheckPanel',
