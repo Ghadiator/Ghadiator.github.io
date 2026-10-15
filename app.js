@@ -169,7 +169,7 @@ function renderWorkflowResults(){
  }
  const visible=all.slice(0,cursor+1),current=all[cursor],done=cursor===all.length-1;
  const ledger='<div class="event-list">'+visible.slice(-12).map(ev=>
-  `<div class="event-row ${ev===current?'active':''}"><span class="event-seq">${String(ev.seq).padStart(2,'0')}</span><span class="event-bullet ${ev.actor==='human'?'human':ev.actor==='system'?'':'scripted'}"></span><span><strong>${h(ev.label)}</strong><small>${h(ev.kind)} · ${h(ev.actor)} · ${h(ev.stage)}</small></span></div>»
+  `<div class="event-row ${ev===current?'active':''}"><span class="event-seq">${String(ev.seq).padStart(2,'0')}</span><span class="event-bullet ${ev.actor==='human'?'human':ev.actor==='system'?'':'scripted'}"></span><span><strong>${h(ev.label)}</strong><small>${h(ev.kind)} · ${h(ev.actor)} · ${h(ev.stage)}</small></span></div>`
  ).join('')+'</div>';
  // Reuse the existing DAiA-adapted evidence and committee panels, driven by
  // the SAME ordinal cursor as the interactive modular graph above.
@@ -179,8 +179,8 @@ function renderWorkflowResults(){
  const evidence=holder.content.querySelector('.wb-two')?.outerHTML||'';
  const committee=visible.some(ev=>ev.kind.startsWith('committee.')||ev.kind==='verification.result')
   ?holder.content.querySelector('.wb-committee')?.outerHTML||'':'';
- const outcome=done?`<section class="wb-panel"><div class="wb-panel-head"><h2>Recorded workflow result</h2></div><div class="wb-panel-body"><div class="wb-inline-actions">${fmtStatus(currentCase().terminal_state)}<span class="count-chip">${all.length} recorded events</span></div><p class="wb-foot">This is the outcome of an executed synthetic reference fixture. The animation did not execute a new review or issue a human decision.</p></div></section>»:'';
- return `<section class="wb-page workflow-results" aria-label="Workflow outputs and exchange"><div class="wb-head"><div><span class="wb-kicker">WORKFLOW OUTPUT · FROM THE RECORDED EXECUTION</span><h2>Module exchanges and evidence</h2><p>Event ${cursor+1} of ${all.length} · ${h(currentCase().title)}. The record below follows the same playback position as the modular architecture.</p></div></div>${evidence}${committee}${outcome}</section>»;
+ const outcome=done?`<section class="wb-panel"><div class="wb-panel-head"><h2>Recorded workflow result</h2></div><div class="wb-panel-body"><div class="wb-inline-actions">${fmtStatus(currentCase().terminal_state)}<span class="count-chip">${all.length} recorded events</span></div><p class="wb-foot">This is the outcome of an executed synthetic reference fixture. The animation did not execute a new review or issue a human decision.</p></div></section>`:'';
+ return `<section class="wb-page workflow-results" aria-label="Workflow outputs and exchange"><div class="wb-head"><div><span class="wb-kicker">WORKFLOW OUTPUT · FROM THE RECORDED EXECUTION</span><h2>Module exchanges and evidence</h2><p>Event ${cursor+1} of ${all.length} · ${h(currentCase().title)}. The record below follows the same playback position as the modular architecture.</p></div></div>${evidence}${committee}${outcome}</section>`;
 }
 function refreshWorkflowResults(){
  const target=document.getElementById('workflow-results');
@@ -192,7 +192,7 @@ function renderEmbeddedArchitecture(){
   <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular validation workflow and scenario player" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
   <div id="workflow-results" class="architecture-workflow-results">${renderWorkflowResults()}</div>
   <p class="unified-architecture-note">The architecture player and the results below read the same recorded synthetic case. AI roles are scripted and human approvals shown are historical fixture records, not live actions.</p>
- </div>»;
+ </div>`;
 }
 function recoverArchitectureFrame(frame){
  if(frame.dataset.recoveryTried==='1'){
