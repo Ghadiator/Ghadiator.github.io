@@ -1,5 +1,5 @@
 import { chromium } from "playwright-core";
-import fs from "node:fs";
+import assert from "node:assert/strict";
 
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH||"/usr/bin/google-chrome",args:["--no-sandbox"]});
 const page=await browser.newPage({viewport:{width:1440,height:1000}});
@@ -9,7 +9,7 @@ page.on("pageerror",e=>errors.push("PAGEERROR "+e.message.slice(0,300)));
 page.on("console",m=>{if(m.type()==="error")errors.push("CONSOLE "+m.text().slice(0,300));});
 page.on("response",r=>{if(r.status()>=400)responses.push(r.status()+" "+r.url().slice(0,170));});
 try{
- await page.goto("https://ghadiator.github.io/?view=architecture",{waitUntil:"domcontentloaded",timeout:60000});
+ await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+"/?view=architecture",{waitUntil:"domcontentloaded",timeout:60000});
  await page.waitForTimeout(4500);
  const state=await page.evaluate(()=>{
   const iframe=document.getElementById("modularArchitectureFrame");
@@ -32,6 +32,18 @@ try{
  });
  console.log("EMBED_PROBE",JSON.stringify(state));
  console.log("ERRORS",JSON.stringify(errors.slice(0,20)));
+ assert.equal(state.parentView,"Architecture");
+ assert.equal(state.nodeCount,20,"The original 20-node architecture must be rendered");
+ assert.ok(state.mainExists,"The source Architecture main must be present");
+ assert.ok(state.frameHeight>=1000,"Modular architecture frame must remain at least 1000px tall after Next hydration");
+ assert.ok((state.iframeTextSize||0)>2000,"Architecture content must be visible");
+ const orchestration=page.frameLocator("#modularArchitectureFrame").locator('[data-node="orchestrator"]');
+ const before=await orchestration.getAttribute("aria-pressed");
+ await orchestration.evaluate(el=>el.click());
+ await page.waitForTimeout(500);
+ const after=await orchestration.getAttribute("aria-pressed");
+ console.log("NODE_INTERACTION",JSON.stringify({before,after}));
+ assert.equal(after,"true","Clicking the original orchestrator block must activate the React interaction");
  console.log("BAD_RESPONSES",JSON.stringify(responses.slice(0,30)));
  await page.screenshot({path:"architecture-embedded-test.png",fullPage:false});
  const tabs=page.locator("[data-architecture-tab]");
