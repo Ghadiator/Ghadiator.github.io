@@ -167,6 +167,20 @@ function renderEmbeddedArchitecture(){
  <p class="unified-architecture-note">The modular architecture and scenario replay share this one tab. Recorded supplier traces use scripted AI roles, not live model calls; the diagram, CoVe checks, event inspection and governance boundaries remain visible.</p>
  </div>`;
 }
+function recoverArchitectureFrame(frame){
+ if(frame.dataset.recoveryTried==='1'){
+  frame.style.visibility='visible';
+  frame.replaceWith(Object.assign(document.createElement('div'),{
+   className:'wb-notice',textContent:'The archived modular diagram could not be embedded. The original architecture remains available at /architecture/.'
+  }));
+  return;
+ }
+ frame.dataset.recoveryTried='1';
+ fetch('/architecture/',{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('Unable to load published architecture');return r.text();}).then(html=>{
+  const fallbackHead='<base href="/architecture/"><style>body > div.flex.min-h-screen > aside,body > div.flex.min-h-screen > div > nav[aria-label="Primary"],body > div.flex.min-h-screen > div > header,body > div.flex.min-h-screen > div > footer{display:none!important}</style>';
+  frame.srcdoc=html.replace('</head>',fallbackHead+'</head>');
+ }).catch(()=>{frame.style.visibility='visible';frame.replaceWith(Object.assign(document.createElement('div'),{className:'wb-notice',textContent:'The published modular architecture could not be loaded inside the workbench.'}));});
+}
 let disposeArchitectureEmbed=()=>{};
 function mountEmbeddedArchitecture(){
  const frame=document.getElementById('modularArchitectureFrame');if(!frame)return;
@@ -175,7 +189,7 @@ function mountEmbeddedArchitecture(){
   // Style is injected into the iframe's document; the architecture
   // React bundle, diagram edges and companion explanations are untouched.
   let doc;try{doc=frame.contentDocument;}catch{return;}
-  if(!doc||!doc.head||!doc.body)return;
+  if(!doc||!doc.head||!doc.body){recoverArchitectureFrame(frame);return;}
   const frameStyle=doc.createElement('style');
   frameStyle.id='unified-workbench-embed-style';
   frameStyle.textContent=`/* Hide only the legacy site's chrome; preserve architecture content. */
@@ -191,7 +205,7 @@ function mountEmbeddedArchitecture(){
    `;
   doc.head.appendChild(frameStyle);
   const main=doc.querySelector('body > div.flex.min-h-screen > div > main');
-  if(!main){frame.style.minHeight='1400px';return;}
+  if(!main){recoverArchitectureFrame(frame);return;}
   // A companion script inserts extra architecture sections asynchronously;
   // observe actual content so they are not cut off by a fixed-size iframe.
   let last=0,raf=0;
@@ -202,7 +216,7 @@ function mountEmbeddedArchitecture(){
    if(next>0&&next!==last){last=next;frame.style.height=next+'px';}
   };
   const schedule=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;resize();});};
-  resize();
+  resize();frame.style.visibility='visible';
   if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(schedule);observer.observe(main);frame._architectureResizeObserver=observer;}
   if(typeof MutationObserver!=='undefined'){
    const observer=new MutationObserver(schedule);observer.observe(main,{childList:true,subtree:true,characterData:true});
