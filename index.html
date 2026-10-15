@@ -10,6 +10,9 @@
   <link rel="icon" type="image/svg+xml" href="./assets/logo.svg" />
   <link rel="stylesheet" href="./styles.css?v=20261015-unified-shell-42" />
   <script src="./assets/generic-workbench.js?v=20261015-unified-shell-42" defer></script>
+  <script src="./assets/public-submissions.js?v=20261015-unified-shell-42" defer></script>
+  <script src="./assets/public-personas.js?v=20261015-unified-shell-42" defer></script>
+  <script src="./assets/public-attacker.js?v=20261015-unified-shell-42" defer></script>
   <script src="./app.js?v=20261015-unified-shell-42" defer></script>
 </head>
 <body>
@@ -32,18 +35,20 @@
 <nav class="nav-list">
 <a data-view="dashboard" href="?view=dashboard"><span data-icon="layout-dashboard"></span> Dashboard</a>
 <a data-view="tickets" href="?view=tickets"><span data-icon="file"></span> Document requests</a>
+<a data-view="submissions" href="?view=submissions"><span data-icon="upload-cloud"></span> New submissions</a>
 <a data-view="inbound" href="?view=inbound"><span data-icon="download"></span> Supplier intake</a>
 </nav>
 <div class="sidebar-section-label group-space">VALIDATION</div>
 <nav class="nav-list">
 <a data-view="cases" href="?view=cases"><span data-icon="layers"></span> Processed cases</a>
-<a data-view="monitor" href="?view=monitor"><span data-icon="activity"></span> Scenario showcase</a>
 <a data-view="tokens" href="?view=tokens"><span data-icon="scale"></span> Token economics</a>
 </nav>
 <div class="sidebar-section-label group-space">GOVERNANCE & INSIGHTS</div>
 <nav class="nav-list">
 <a data-view="governance" href="?view=governance"><span data-icon="shield-check"></span> Governance</a>
+<a data-view="attacker" href="?view=attacker"><span data-icon="swords"></span> Red Team attacker</a>
 <a data-view="redteam" href="?view=redteam"><span data-icon="alert"></span> Control probes</a>
+<a data-view="personas" href="?view=personas"><span data-icon="messages-square"></span> Chat with the code</a>
 <a data-view="pool" href="?view=pool"><span data-icon="database"></span> Pool analytics</a>
 </nav>
 <div class="sidebar-section-label group-space">TRACEABILITY & SYSTEM</div>
@@ -60,7 +65,7 @@
     <div class="main-wrap">
       <header class="topbar">
         <div class="top-left"><button type="button" id="mobileMenu" class="mobile-menu icon-btn" aria-label="Open navigation"><span data-icon="menu"></span></button><span class="crumb-muted">Supplier Review</span><span class="crumb-divider">/</span><span id="currentCrumb" class="crumb-active">Introduction</span></div>
-        <div class="top-actions"><span class="environment-chip"><span class="tiny-dot"></span> Example data · No live AI</span><button class="icon-btn top-help" id="helpButton" title="About this implementation" aria-label="About this implementation"><span data-icon="circle-help"></span></button><a class="github-top" href="https://github.com/Ghadiator/Ghadiator.github.io" target="_blank" rel="noopener" aria-label="View GitHub repository"><span data-icon="github"></span> <span>GitHub</span> <span data-icon="arrow-up-right"></span></a></div>
+        <div class="top-actions"><span class="environment-chip"><span class="tiny-dot"></span> Example data · No live AI</span><a class="github-top" data-view="personas" href="?view=personas" aria-label="Open source-grounded persona chat"><span data-icon="messages-square"></span><span>Chat with code</span></a><button class="icon-btn top-help" id="helpButton" title="About this implementation" aria-label="About this implementation"><span data-icon="circle-help"></span></button><a class="github-top" href="https://github.com/Ghadiator/Ghadiator.github.io" target="_blank" rel="noopener" aria-label="View GitHub repository"><span data-icon="github"></span> <span>GitHub</span> <span data-icon="arrow-up-right"></span></a></div>
       </header>
       <main id="main" tabindex="-1" aria-live="polite"></main>
       <footer class="site-footer"><span>REFERENCE IMPLEMENTATION · NOT A CERTIFICATION OR LIVE DEPLOYMENT</span><span id="footer-source">Verified against published Git blob IDs · da872d9</span></footer>
