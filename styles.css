@@ -290,3 +290,6 @@ button.wb-list-row:hover{background:#eef6ff}
 .wb-file-hint{font-size:10.5px;line-height:1.65;color:#5b6672}
 @media(max-width:800px){.wb-redteam-grid,.wb-agent-layout,.wb-agent-controls{grid-template-columns:1fr}}
 @media(max-width:550px){.wb-submit-grid{grid-template-columns:1fr}.wb-submit-grid label.wide{grid-column:auto}}
+
+/* Prevent flashing the legacy Next.js sidebar before embedded-style isolation. */
+.unified-architecture-frame{visibility:hidden}
