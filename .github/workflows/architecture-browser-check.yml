@@ -1,7 +1,7 @@
 name: Modular architecture browser smoke
 on:
   push:
-    branches: [fix/modular-architecture-embedded-view]
+    branches: [main, fix/modular-architecture-embedded-view]
   pull_request:
     paths:
       - 'app.js'
