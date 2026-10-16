@@ -1,3 +1,5 @@
+/* Guided workflow controls retained; hypothetical toggle lab removed. */
+.intro-panel-kicker{color:#57748b;font-size:10px;font-weight:780;text-transform:uppercase;letter-spacing:1.15px}
 /* Existing cards stay intact; focused stage receives a non-invasive outline. */
 .journey-section .journey-step { transition: border-color .18s, box-shadow .18s, transform .18s; }
 .journey-section .journey-step.intro-step-active {
