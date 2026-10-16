@@ -7,6 +7,9 @@ on:
       - 'app.js'
       - 'assets/architecture-embed.css'
       - 'scripts/check-architecture-browser.mjs'
+      - 'assets/architecture-execution.js'
+      - 'assets/architecture-module-map.css'
+      - 'index.html'
       - 'architecture-embed/**'
       - '.github/workflows/architecture-browser-check.yml'
 jobs:
