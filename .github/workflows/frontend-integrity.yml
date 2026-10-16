@@ -64,8 +64,8 @@ jobs:
           assert "Example data · No live AI" in html
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
-          assert 'styles.css?v=20261016-workbench-polish-51' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261016-workbench-polish-51' in html, "Script must use a cache-busting URL"
+          assert 'styles.css?v=20261016-run-journey-52' in html, "Stylesheet must use a cache-busting URL"
+          assert 'app.js?v=20261016-run-journey-52' in html, "Script must use a cache-busting URL"
           expected = {
               "architecture/index.html": "8b3ed74786fa32b9c8af18a75fc86c6a6041eb55",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
@@ -86,7 +86,7 @@ jobs:
           for tab in required_tabs:
               assert 'data-view="'+tab+'"' in html, f'Missing DAiA-equivalent public tab: {tab}'
               assert tab + ':' in app, f'Missing app router view: {tab}'
-          assert 'assets/generic-workbench.js?v=20261015-modular-architecture-fix-46' in html
+          assert 'assets/generic-workbench.js?v=20261016-run-journey-52' in html
           assert html.index('assets/generic-workbench.js') < html.index('src="./app.js')
           workbench = Path('assets/generic-workbench.js').read_text()
           for screen in ('overview', 'tickets', 'inbound', 'cases', 'monitor', 'economics',
@@ -200,7 +200,19 @@ jobs:
           assert 'data-backend-refresh' in app
           assert 'Generic validation backend · Oracle-ready' in app
           assert 'Industry blueprint' in Path('styles.css').read_text()
-          print("Homepage flow, generic design language and evidence checks passed.")
+          journey = Path("assets/generic-workbench.js").read_text()
+          evidence = Path("assets/story-journey.js").read_text()
+          style = Path("styles.css").read_text()
+          assert 'assets/story-journey.js?v=20261016-run-journey-52' in html
+          for fragment in ('function readJourneyQuery(params)', 'case_filter=', 'case_search=',
+                           'data-journey-trace', 'data-clear-case-filters',
+                           "state.caseSearch=event.target.value", 'state.evidenceTab='):
+              assert fragment in app, f"Broken selected-run navigation: {fragment}"
+          assert 'run-journey' in journey and 'run-journey' in evidence and 'run-journey' in app
+          assert 'data-scenario="${e(r.slug)}"' in evidence, "Case links must identify the target scenario"
+          assert 'data-scenario="${safe(ctx,r.slug)}"' in journey, "Case detail must keep its selected scenario"
+          assert 'run-journey-links' in style and 'wb-clear-filters' in style
+          print("Homepage, recorded-run navigation and source integrity checks passed.")
 
           PY
       - name: Smoke-test all ported views against actual supplier fixtures
@@ -238,8 +250,17 @@ jobs:
           }
           for (const tab of ['summary','committee','timeline','human']) {
              state.workbenchTab=tab;
-             if (!wb.detail(ctx).includes('Case review')) throw Error('case detail '+tab+' failed');
+             const detail=wb.detail(ctx);
+             if (!detail.includes('Case review') || !detail.includes('Selected run journey')
+                 || !detail.includes('data-journey-trace')) throw Error('case journey '+tab+' failed');
           }
+          state.caseSearch='not-a-recorded-run';
+          state.caseFilter='Approved';
+          const filtered=wb.cases(ctx);
+          if(!filtered.includes('No matching runs')||!filtered.includes('data-clear-case-filters'))
+              throw Error('Case search/filter empty state failed');
+          state.caseSearch='';
+          state.caseFilter='all';
           const untrusted='<img src=x onerror=alert(1)>';
           state.search=untrusted;
           const out=wb.tickets(ctx);
