@@ -11,7 +11,7 @@
   ["proponent","Proponent"],["opponent","Opponent"],["firewall","Pre-Judge CoVe"],
   ["judge","Judge"],["post_cove","Post-Judge CoVe"],["token_economics","Committee orchestration — token economics"],
   ["advisory","Review package"],["remediation","Supplier correction"],["disposition","Human-in-the-loop (HITL)"],
-  ["archive","Evidence archive"],["process_semantics","Process semantics pool / ProcessEvent stream"]
+  ["archive","Evidence archive"],["process_semantics","DAiA ProcessEvent pool (architecture reference)"]
  ];
  const labels=Object.fromEntries(NODES);
 
@@ -28,11 +28,11 @@
   {key:"checks",code:"02",title:"Deterministic verification",note:"Invoice checks + contract comparisons · approved contract as reference input",ids:["rules","crosscheck","external"]},
   {key:"review",code:"03",title:"Bounded exception review",note:"Sanitise → Proponent & Opponent → pre-Judge CoVe → Judge → post-Judge CoVe · token guard",ids:["sanitiser","proponent","opponent","firewall","judge","post_cove","token_economics"]},
   {key:"decision",code:"04",title:"Human decision & outcome",note:"Review package → human gate → corrections if needed / archive",ids:["advisory","disposition","remediation","archive"]},
-  {key:"semantics",code:"S",title:"Process semantics & audit",note:"Workflow-wide ProcessEvent stream · broader validation source",rail:true,ids:["process_semantics"]}
+  {key:"semantics",code:"S",title:"Audit evidence & ProcessEvent design",note:"Supplier state changes are recorded; the separate DAiA ProcessEvent pool is not run by this fixture",rail:true,ids:["process_semantics"]}
  ];
  const SCOPE_NOTES={
   orchestrator:"Broader LangGraph design; this supplier fixture runs a separate Python state machine.",
-  process_semantics:"Broader ProcessEvent pool; this supplier fixture uses in-memory event records.",
+  process_semantics:"Supplier audit transitions and human decisions are recorded in this fixture. The separate DAiA ProcessEvent emitter is not part of this run.",
   post_cove:"The supplier fixture has no separately emitted post-Judge CoVe event.",
   token_economics:"No live model token usage in these scripted supplier scenarios.",
   external:"Approved contract is reference input; no separate event may be emitted.",
@@ -95,16 +95,24 @@
  function renderModules(visible,current,all,cursor){
   // Full-run coverage and playback-to-date are independent measurements.
   const tally=counts(visible),whole=counts(all);
+  const auditTotal=all.filter(e=>e.kind==="audit.row_appended").length;
+  const auditSeen=visible.filter(e=>e.kind==="audit.row_appended").length;
+  const humanTotal=all.filter(e=>e.kind==="hitl.opened"||e.kind==="hitl.resumed").length;
+  const humanSeen=visible.filter(e=>e.kind==="hitl.opened"||e.kind==="hitl.resumed").length;
   const failed=new Set(visible.filter(e=>status(e)==="fail").map(e=>normalize(e.node)));
   const totalObserved=NODES.filter(item=>whole.has(item[0])).length;
   const visited=NODES.filter(item=>tally.has(item[0])).length;
   const renderCard=id=>{
    const name=labels[id]||id;
    const n=tally.get(id)||0,full=whole.get(id)||0;
-   const kind=id===current&&n?"active":failed.has(id)?"fail":n?"done":full?"queued":"unobserved";
-   const stateText=n?"Reached in replay":full?"Later in replay":"No direct event";
-   const countText=n?n+" / "+full+" events":full?full+" in full run":"None in this run";
-   const note=n?n+" recorded event(s) reached at this playback position"
+   // The generic ProcessEvent pool is a reference architecture component,
+   // not a stage in the supplier fixture. Show the real supplier audit trail
+   // without assigning any audit event to this separate module.
+   const reference=id==="process_semantics";
+   const kind=reference?"reference":id===current&&n?"active":failed.has(id)?"fail":n?"done":full?"queued":"unobserved";
+   const stateText=reference?"Separate pool not executed":n?"Reached in replay":full?"Later in replay":"No direct event";
+   const countText=reference?auditSeen+" / "+auditTotal+" audit transitions · "+humanSeen+" / "+humanTotal+" human-gate events":n?n+" / "+full+" events":full?full+" in full run":"None in this run";
+   const note=reference?SCOPE_NOTES[id]:n?n+" recorded event(s) reached at this playback position"
     :full?"Recorded in the selected case, but not reached by playback"
     :(SCOPE_NOTES[id]||"No event is directly attributed to this block in the selected fixture.");
    return '<button type="button" class="ax-module ax-module-'+kind+'" data-architecture-module="'+escape(id)+'" data-module-status="'+escape(id)+'" aria-label="Inspect '+escape(name)+' in the original architecture. '+escape(note)+'" title="Inspect in the original diagram">'
@@ -116,10 +124,13 @@
   const content=MODULE_GROUPS.map(group=>{
    const reached=group.ids.filter(id=>tally.has(id)).length;
    const recorded=group.ids.filter(id=>whole.has(id)).length;
+   const groupCount=group.key==="semantics"
+    ?'<span class="ax-phase-count">Supplier trace: '+auditSeen+' / '+auditTotal+' audit transitions · '+humanSeen+' / '+humanTotal+' human-gate events <span>· Separate DAiA pool not executed</span></span>'
+    :'<span class="ax-phase-count">'+reached+' reached <span>· '+recorded+'/'+group.ids.length+' in full run</span></span>';
    return '<section class="ax-module-group '+(group.rail?'ax-module-group-rail':'')+'" data-architecture-stage="'+group.key+'" aria-label="'+escape(group.title)+'">'
     +'<div class="ax-module-group-head"><span class="ax-phase-number">'+escape(group.code)+'</span>'
     +'<span class="ax-phase-heading"><strong>'+escape(group.title)+'</strong><small>'+escape(group.note)+'</small></span>'
-    +'<span class="ax-phase-count">'+reached+' reached <span>· '+recorded+'/'+group.ids.length+' in full run</span></span></div>'
+    +groupCount+'</div>'
     +'<div class="ax-modules-grid">'+group.ids.map(renderCard).join('')+'</div></section>';
   }).join('');
   const cursorStatus=cursor<0?"Replay not started":cursor>=all.length-1?"At the final recorded event":"Replay in progress";
@@ -134,7 +145,7 @@
    +'<span><i class="ax-legend-dot ax-legend-queued"></i>Later in trace</span>'
    +'<span><i class="ax-legend-dot ax-legend-quiet"></i>No direct event</span></div></div>'
    +'<div class="ax-module-map">'+content+'</div>'
-   +'<p class="ax-dash-foot"><strong>Reading the map:</strong> Counts use actual emitted events from the selected synthetic supplier run. The broader LangGraph, token controls and ProcessEvent pool are architecture design—not executed supplier components. No dedicated event does not establish that an input boundary was absent. Click a block to inspect it in the original diagram.</p>'
+   +'<p class="ax-dash-foot"><strong>Reading the map:</strong> Module reach counts are based on directly attributed fixture events. The supplier audit trail includes state transitions and human-gate events, but it is not the separate DAiA ProcessEvent stream. That pool, the broader LangGraph and live token metering are architectural references, not executed supplier components. Click a block to inspect the original diagram.</p>'
    +'</section>';
  }
  function renderDashboard(all,cursor){

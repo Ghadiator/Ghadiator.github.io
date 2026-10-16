@@ -36,7 +36,10 @@ assert.match(initial,/0 of 20 reached so far/,'Cursor begins before the first re
 assert.match(initial,/Replay not started/);
 assert.match(block(initial,'request'),/ax-module-queued/,'First step exists later in the trace');
 assert.match(block(initial,'orchestrator'),/ax-module-unobserved/,'LangGraph controller is NOT an executed supplier component');
-assert.match(block(initial,'process_semantics'),/ax-module-unobserved/,'Broader ProcessEvent stream is not supplier fixture telemetry');
+assert.match(block(initial,'process_semantics'),/ax-module-reference/,'Generic ProcessEvent pool must be shown as architecture reference');
+assert.match(block(initial,'process_semantics'),/Separate pool not executed/,'Reference status must not imply a supplier workflow failure');
+assert.match(block(initial,'process_semantics'),/0 \/ 8 audit transitions · 0 \/ 2 human-gate events/,'Supplier audit coverage must be visible even before playback');
+assert.doesNotMatch(initial.match(/<section[^>]*data-architecture-stage="semantics"[\s\S]*?<\/section>/)[0],/0 reached/,'Reference-only rail must not say zero reached');
 assert.match(block(initial,'post_cove'),/ax-module-unobserved/,'Post-Judge CoVe has no separate fixture event');
 assert.match(block(initial,'token_economics'),/ax-module-unobserved/,'Scripted personas have no live token accounting');
 assert.match(mid,/1 of 20 reached so far/,'First event reaches only its source module');
@@ -45,6 +48,10 @@ assert.match(complete,/14 of 20 reached so far/,'The complete run reaches exactl
 assert.match(block(complete,'archive'),/ax-module-active/,'Final archive event is current');
 assert.match(block(complete,'disposition'),/ax-module-done/,'Prior human gate remains reached');
 assert.match(block(complete,'orchestrator'),/ax-module-unobserved/,'Do not fabricate LangGraph execution');
+assert.match(block(complete,'process_semantics'),/ax-module-reference/,'Generic ProcessEvent pool is never marked executed');
+assert.match(block(complete,'process_semantics'),/8 \/ 8 audit transitions · 2 \/ 2 human-gate events/,'Trace must show all actual supplier audit evidence');
+assert.match(complete,/Supplier trace: 8 \/ 8 audit transitions · 2 \/ 2 human-gate events/,'Audit evidence rail must report source-backed counts');
+assert.match(complete,/Separate DAiA pool not executed/,'Keep generic ProcessEvent pool scope explicit');
 assert.match(complete,/42<small> \/ 42<\/small>/,'Do not fabricate extra emitted events');
 assert.equal(JSON.stringify(events),snapshot,'Rendering must not mutate verified source events');
 const corrected=JSON.parse(fs.readFileSync('data/scenarios/supplier_rate_correction.json','utf8'));
@@ -52,5 +59,6 @@ const correctedHtml=engine.renderDashboard(corrected.events,corrected.events.len
 assertStructure(correctedHtml);
 assert.equal((correctedHtml.match(/data-module-status="/g)||[]).length,20);
 assert.ok(correctedHtml.includes('Rate')||correctedHtml.includes('rate'),'Correction run remains visible');
+assert.match(block(correctedHtml,'process_semantics'),/12 \/ 12 audit transitions · 4 \/ 4 human-gate events/,'Correction-loop evidence count must remain sourced from fixture, not hard-coded');
 assertStructure(engine.renderDashboard([], -1));
 console.log('Architecture module map: phase grouping, 20-node identity, replay-vs-run coverage and source integrity passed.');

@@ -148,6 +148,15 @@ try{
  assert.ok(ruleDash.includes("Rates match approved rate card — FAIL"),"Failed contract rule must remain inspectable");
  assert.ok(ruleDash.includes("Rates match approved rate card — PASS"),"Correction must retain the later passed re-check");
  assert.equal(await page.locator('.ax-module').count(),20,"All twenty module rows must persist across scenarios");
+ const auditRail=page.locator('[data-architecture-stage="semantics"]');
+ const auditText=await auditRail.innerText();
+ assert.ok(auditText.includes("Supplier trace: 12 / 12 audit transitions"),"Show all recorded supplier state changes");
+ assert.ok(auditText.includes("4 / 4 human-gate events"),"Show human review evidence on correction runs");
+ assert.ok(auditText.includes("Separate DAiA pool not executed"),"Do not present the generic ProcessEvent pool as an unmet workflow step");
+ assert.ok(!auditText.includes("0 reached"),"Do not show the misleading zero-reached indicator for architecture-only rail");
+ assert.ok(await auditRail.locator('[data-module-status="process_semantics"].ax-module-reference').count(),
+   "Keep the generic-only module available in the original diagram without marking it executed");
+
  assert.equal(await page.locator('#architecture-event-rail [data-replay-seek]').count(),64,"All 64 correction events must be shown in the rail");
  assert.ok(await deck.locator('[data-node="crosscheck"].ax-node-failure').count(),"Failed rule should highlight its actual architecture block");
  assert.ok(await deck.locator('[data-node="rules"].ax-node-executed').count(),"Executed rules should remain marked in the architecture");
