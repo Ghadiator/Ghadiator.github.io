@@ -150,9 +150,13 @@ jobs:
           assert 'id="workflow-results"' in app and 'syncFromFrame' in app
           assert 'id="architecture-event-rail"' in app and 'id="architecture-execution-dashboard"' in app
           assert 'decorateGraph' in app and 'refreshWorkflowResults' in app
-          assert 'assets/architecture-execution.js?v=20261016-module-map-56' in html
+          assert 'assets/architecture-execution.js?v=20261016-audit-scope-58' in html
           assert html.index('assets/architecture-execution.js') < html.index('src="./app.js')
           engine = Path('assets/architecture-execution.js').read_text()
+          assert 'assets/architecture-module-map.css?v=20261016-audit-scope-58' in html
+          assert 'Separate pool not executed' in engine
+          assert 'Supplier trace:' in engine and 'DAiA pool not executed' in engine
+          assert 'const auditTotal=all.filter' in engine and 'const humanTotal=all.filter' in engine
           for feature in ('renderRail','renderDashboard','decorateGraph','renderCheckPanel',
                           'renderCommittee','verification.result','checks.rule','contract.check',
                           'committee.proponent.argument','committee.opponent.argument',
