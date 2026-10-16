@@ -64,8 +64,8 @@ jobs:
           assert "Example data · No live AI" in html
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
-          assert 'styles.css?v=20261016-run-journey-52' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261016-run-journey-52' in html, "Script must use a cache-busting URL"
+          assert 'styles.css?v=20261016-design-system-53' in html, "Stylesheet must use a cache-busting URL"
+          assert 'app.js?v=20261016-design-system-53' in html, "Script must use a cache-busting URL"
           expected = {
               "architecture/index.html": "8b3ed74786fa32b9c8af18a75fc86c6a6041eb55",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
@@ -86,7 +86,7 @@ jobs:
           for tab in required_tabs:
               assert 'data-view="'+tab+'"' in html, f'Missing DAiA-equivalent public tab: {tab}'
               assert tab + ':' in app, f'Missing app router view: {tab}'
-          assert 'assets/generic-workbench.js?v=20261016-run-journey-52' in html
+          assert 'assets/generic-workbench.js?v=20261016-design-system-53' in html
           assert html.index('assets/generic-workbench.js') < html.index('src="./app.js')
           workbench = Path('assets/generic-workbench.js').read_text()
           for screen in ('overview', 'tickets', 'inbound', 'cases', 'monitor', 'economics',
@@ -203,7 +203,7 @@ jobs:
           journey = Path("assets/generic-workbench.js").read_text()
           evidence = Path("assets/story-journey.js").read_text()
           style = Path("styles.css").read_text()
-          assert 'assets/story-journey.js?v=20261016-run-journey-52' in html
+          assert 'assets/story-journey.js?v=20261016-design-system-53' in html
           for fragment in ('function readJourneyQuery(params)', 'case_filter=', 'case_search=',
                            'data-journey-trace', 'data-clear-case-filters',
                            "state.caseSearch=event.target.value", 'state.evidenceTab='):
@@ -212,7 +212,16 @@ jobs:
           assert 'data-scenario="${e(r.slug)}"' in evidence, "Case links must identify the target scenario"
           assert 'data-scenario="${safe(ctx,r.slug)}"' in journey, "Case detail must keep its selected scenario"
           assert 'run-journey-links' in style and 'wb-clear-filters' in style
-          print("Homepage, recorded-run navigation and source integrity checks passed.")
+          # Public design system and evidence-first case views.
+          assert '<span class="brand-text">Governance' in html
+          assert 'featured-run' in overview and 'featured-run-facts' in overview
+          assert 'architecture-entry' in app and 'control-proof' in app
+          assert 'governance:\'controls\'' in app and "state.workbenchTab='controls'" in app
+          assert 'case-detail-facts' in journey and 'case-review-evidence' in journey
+          assert 'case-register-summary' in journey and 'case-run-id' in journey
+          for selector in ('.featured-run{', '.case-detail-facts{', '.control-proof{', '.architecture-entry{', '.wb-table{'):
+              assert selector in style, f"Missing coherent design system: {selector}"
+          print("Homepage, design system, recorded-run navigation and source integrity checks passed.")
 
           PY
       - name: Smoke-test all ported views against actual supplier fixtures
@@ -248,7 +257,7 @@ jobs:
              const out=wb.governanceHub(ctx,()=>'<article>source mapping</article>');
              if (!out.includes('wb-page')) throw Error('governance '+tab+' failed');
           }
-          for (const tab of ['summary','committee','timeline','human']) {
+          for (const tab of ['summary','submission','committee','timeline','human']) {
              state.workbenchTab=tab;
              const detail=wb.detail(ctx);
              if (!detail.includes('Case review') || !detail.includes('Selected run journey')
