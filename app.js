@@ -481,17 +481,38 @@ function pageHeader(eyebrow,title,desc,right=''){return `<div class="page-header
 function strip(text){return `<div class="info-strip">${icon('info')}<span>${text}</span></div>`;}
 function metrics(){const facts=state.facts?.facts||FACTS;const wanted=['supplier_scenarios','deterministic_checks','control_probes','workflow_states'];const defaults={supplier_scenarios:['Example invoice reviews','layers','Run with made-up documents, not real supplier data'],deterministic_checks:['Automatic checks','check','Check totals, dates, prices and contract details'],control_probes:['Safety-control tests','shield-check','Check whether important safeguards work in this example'],workflow_states:['Internal workflow statuses','workflow','Technical steps that track what happens next']};return `<div class="top-kpis">${wanted.map(id=>{const fact=facts.find(f=>f.id===id);const [fallback,glyph,note]=defaults[id];return `<div class="kpi"><div class="kpi-top"><span>${h(fallback)}</span><span class="kpi-icon">${icon(glyph)}</span></div><div class="kpi-number">${h(fact?.display??fact?.value??'—')}</div><div class="kpi-foot">${h(note)}</div></div>`;}).join('')}</div>`;}
 function outcomeMeta(s){return `<div class="minimetric"><span>Case status</span>${fmtStatus(s.terminal_state)}</div><div class="minimetric"><span>Recorded events</span><strong>${Number(s.event_count)||0}</strong></div><div class="minimetric"><span>Human gate reached</span><strong>${s.reached_human_gate?'Yes':'No'}</strong></div>`;}
-function renderOverview(){return `<div class="page-entrance overview-page">
+function renderOverview(){
+ const featured=state.index.scenarios.find(r=>r.slug==='supplier_variance_review')||state.index.scenarios[0];
+ const featuredCard=featured?`<section class="featured-run" aria-labelledby="featured-run-heading">
+  <div class="featured-run-story"><span class="section-overline">A TWO-MINUTE GUIDED EXAMPLE</span>
+   <h2 id="featured-run-heading">See one real execution trace—not just a system diagram.</h2>
+   <p>${h(featured.one_liner)} Follow the recorded checks into verification, the human gate and the evidence behind the outcome.</p>
+   <div class="featured-run-actions">
+    <a class="button dark" data-view="case" data-scenario="${h(featured.slug)}" href="${linkView('case',featured.slug)}">Explore this recorded run ${icon('arrow-right')}</a>
+    <a class="button" data-view="governance" href="${linkView('governance',featured.slug)}">Inspect governance controls ${icon('shield-check')}</a>
+   </div>
+  </div>
+  <div class="featured-run-facts" aria-label="Reference run facts">
+   <span class="featured-facts-label">RECORDED REFERENCE RUN</span>
+   <strong>${h(featured.title)}</strong>
+   <dl><dt>Run ID</dt><dd class="mono">${h(featured.slug)}</dd>
+    <dt>Recorded outcome</dt><dd>${fmtStatus(featured.terminal_state)}</dd>
+    <dt>Human gate</dt><dd>${featured.reached_human_gate?'Reached':'Not reached'}</dd>
+    <dt>Event records</dt><dd>${Number(featured.event_count)||0}</dd></dl>
+   <small>Synthetic fixture · read-only replay · no live model calls</small>
+  </div></section>`:'';
+ return `<div class="page-entrance overview-page">
 <section class="overview-hero" aria-labelledby="overview-title">
   <div class="eyebrow"><span class="eyebrow-line"></span>AI GOVERNANCE · INTERACTIVE SHOWCASE</div>
   <h1 id="overview-title">Clear rules for facts.<br><em>AI for unusual cases.</em><br>People make the decisions.</h1>
   <p>An interactive AI governance showcase that combines predictable, rule-based checks with AI-style personas who examine difficult cases from different angles. Evidence stays visible, decisions can be traced, and people keep final authority.</p>
   <div class="overview-cta">
-    <a class="button light-primary" data-view="architecture" href="?view=architecture">See the full workflow <span data-icon="arrow"></span></a>
-    <a class="button dark" data-view="cases" href="?view=cases">Explore example cases <span data-icon="layers"></span></a>
+    <a class="button light-primary" data-view="cases" href="?view=cases">Explore recorded runs <span data-icon="layers"></span></a>
+    <a class="button dark" data-view="architecture" href="?view=architecture">Inspect architecture <span data-icon="arrow"></span></a>
   </div>
   <div class="overview-benefits" aria-label="Key values"><span><span data-icon="check"></span> Consistent checks</span><span><span data-icon="layers"></span> AI perspectives</span><span><span data-icon="list-tree"></span> Traceable decisions</span><span><span data-icon="user"></span> Human oversight</span></div>
 </section>
+${featuredCard}
 <section class="problem-pitch" aria-labelledby="challenge-title">
  <div class="overview-section-heading"><div><span class="section-overline">THE BUSINESS CHALLENGE</span><h2 id="challenge-title">From manual reconciliation to evidence-led review</h2><p>A recurring service invoice starts with a supplier, a purchase order, contractual rates and supporting reports. Someone must reconcile all of them before any payment decision.</p></div></div>
  <div class="wb-grid">
@@ -522,6 +543,7 @@ function renderOverview(){return `<div class="page-entrance overview-page">
  </div>
 </section>
 <section class="balance-banner" aria-label="The best of both approaches"><div class="balance-icon"><span data-icon="workflow"></span></div><div><span class="section-overline">THE BEST OF BOTH WORLDS</span><h2>As rule-driven as possible. As AI-assisted as useful.</h2><p>Use fixed checks for what can be verified, different review perspectives to find what needs attention, and a clear record and human review to keep decisions accountable.</p></div></section>
+<section class="overview-scope" aria-label="Implementation boundaries"><strong>Implementation boundary</strong><p>These are synthetic supplier invoice runs and scripted AI-style proposals; they demonstrate controls and inspection, not a live supplier-review deployment, certification or measured business outcome.</p><a data-view="evidence" href="?view=evidence">Examine the published evidence →</a></section>
 </div>`;}
 function renderCaseSelector(){const entries=state.index.scenarios;const opt=entries.map(s=>`<option value="${h(s.slug)}" ${s.slug===state.scenario?'selected':''}>${h(s.title)}</option>`).join('');return `<div class="scenario-switcher"><label for="scenarioSelect">RECORDED SCENARIO</label><select class="select" id="scenarioSelect" aria-label="Select recorded scenario">${opt}</select>${fmtStatus(currentCase().terminal_state)}<span class="count-chip">${currentCase().event_count} events</span></div>`;}
 function renderFlowNodes(){const list=scenarioData()?.stages||DEFAULT_STAGES;const ev=events();const selected=activeEvent()?.stage;const completed=selected?list.indexOf(selected):-1;return `<div class="flow-lanes">${list.map((st,i)=>{const count=ev.filter(e=>e.stage===st).length;const cls=st===selected?'active':completed>i?'complete':'';return `<button type="button" class="flow-node ${cls}" data-stage="${h(st)}" aria-pressed="${st===selected}"><div class="node-num"><span>${String(i+1).padStart(2,'0')}</span><span class="node-icon">${icon(STAGE_ICONS[st]||'workflow')}</span></div><span class="node-label">${h(DISPLAY_STAGES[st]||st)}</span><span class="node-count">${ev.length?`${count} event${count===1?'':'s'}`:'Recorded stage'}</span></button>`;}).join('')}</div>`;}
