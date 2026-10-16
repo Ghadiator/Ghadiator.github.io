@@ -4,20 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" /><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Barlow+Condensed:wght@500;600;700&amp;display=swap"/>
   <meta name="color-scheme" content="light" />
-  <meta name="frontend-ui-build" content="20261016-run-journey-52" />
+  <meta name="frontend-ui-build" content="20261016-design-system-53" />
   <meta name="description" content="See how supplier invoices are checked: clear rules for facts, AI-style review for unusual cases, and final decisions made by people. A working demonstration with example data." />
   <title>Governance as Code · Assurance Workspace</title>
   <link rel="icon" type="image/svg+xml" href="./assets/logo.svg" />
-  <link rel="stylesheet" href="./styles.css?v=20261016-run-journey-52" />
-  <script src="./assets/generic-workbench.js?v=20261016-run-journey-52" defer></script>
+  <link rel="stylesheet" href="./styles.css?v=20261016-design-system-53" />
+  <script src="./assets/generic-workbench.js?v=20261016-design-system-53" defer></script>
   <script src="./assets/public-backend.js?v=20261015-modular-architecture-fix-46" defer></script>
   <script src="./assets/public-local-runner.js?v=20261015-modular-architecture-fix-46" defer></script>
   <script src="./assets/public-submissions.js?v=20261015-modular-architecture-fix-46" defer></script>
   <script src="./assets/public-personas.js?v=20261015-modular-architecture-fix-46" defer></script>
   <script src="./assets/public-attacker.js?v=20261015-modular-architecture-fix-46" defer></script>
-  <script src="./assets/story-journey.js?v=20261016-run-journey-52" defer></script>
+  <script src="./assets/story-journey.js?v=20261016-design-system-53" defer></script>
   <script src="./assets/architecture-execution.js?v=20261015-simplified-execution-50" defer></script>
-  <script src="./app.js?v=20261016-run-journey-52" defer></script>
+  <script src="./app.js?v=20261016-design-system-53" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to main content</a>
@@ -26,20 +26,20 @@
       <div class="brand-wrap">
         <a class="brand" href="?view=overview" data-view="overview" aria-label="Governance as Code home">
           <span class="brand-icon"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 3 27 9v13L16 29 5 22V9L16 3Z" stroke="currentColor" stroke-width="1.55"/><path d="m11 16 3.2 3.1L21 12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span class="brand-text">Aegis<span class="brand-sub">GOVERNANCE AS CODE</span></span>
+          <span class="brand-text">Governance<span class="brand-sub">AS CODE · SUPPLIER REVIEW</span></span>
         </a>
         <button type="button" id="mobileClose" class="mobile-close icon-btn" aria-label="Close navigation">×</button>
       </div>
-      <div class="workspace-switch"><span class="workspace-logo">SR</span><span><strong>Supplier Review</strong><small>Reference workspace</small></span></div>
+      <div class="workspace-switch" aria-label="Active reference workflow"><span class="workspace-logo">SR</span><span><strong>Supplier review</strong><small>Recorded reference workflow</small></span></div>
       <div class="sidebar-section-label group-space" id="nav-start">START HERE</div>
 <nav class="nav-list" aria-labelledby="nav-start">
 <a data-view="overview" href="?view=overview"><span data-icon="book-open"></span> Introduction</a>
 </nav>
 <div class="sidebar-section-label group-space" id="nav-explore">EXPLORE THE WORKFLOW</div>
 <nav class="nav-list" aria-labelledby="nav-explore">
+<a data-view="architecture" href="?view=architecture"><span data-icon="workflow"></span> Architecture explorer</a>
 <a data-view="cases" href="?view=cases"><span data-icon="layers"></span> Recorded cases</a>
 <a data-view="submissions" href="?view=submissions"><span data-icon="upload-cloud"></span> Document collection</a>
-<a data-view="architecture" href="?view=architecture"><span data-icon="workflow"></span> Architecture explorer</a>
 </nav>
 <div class="sidebar-section-label group-space" id="nav-assurance">ASSURANCE & EVIDENCE</div>
 <nav class="nav-list" aria-labelledby="nav-assurance">
@@ -49,13 +49,13 @@
 </nav>
 <div class="sidebar-bottom">
         <div class="sidebar-scope"><span class="scope-top"><span class="pulsedot"></span> REFERENCE ENVIRONMENT</span><strong>Evidence-first. Human-led.</strong><p>Uses example invoices and scripted AI roles. No live AI calls.</p><a href="https://github.com/Ghadiator/Ghadiator.github.io" target="_blank" rel="noopener">View source artifacts <span>↗</span></a></div>
-        <div class="sidebar-credit"><span class="avatar">G</span><div><strong>Governance Lab</strong><small>Public technical demonstration</small></div><span class="more-dots">···</span></div>
+        <div class="sidebar-credit"><span class="avatar">G</span><div><strong>Governance Lab</strong><small>Public technical demonstration</small></div></div>
       </div>
     </aside>
     <div id="mobileOverlay" class="mobile-overlay" aria-hidden="true"></div>
     <div class="main-wrap">
       <header class="topbar">
-        <div class="top-left"><button type="button" id="mobileMenu" class="mobile-menu icon-btn" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false"><span data-icon="menu"></span></button><span class="crumb-muted">Supplier Review</span><span class="crumb-divider">/</span><span id="currentCrumb" class="crumb-active">Introduction</span></div>
+        <div class="top-left"><button type="button" id="mobileMenu" class="mobile-menu icon-btn" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false"><span data-icon="menu"></span></button><span class="crumb-muted">Governance as Code</span><span class="crumb-divider">/</span><span id="currentCrumb" class="crumb-active">Introduction</span></div>
         <div class="top-actions"><span class="environment-chip"><span class="tiny-dot"></span> Example data · No live AI</span><button class="icon-btn top-help" id="helpButton" title="About this implementation" aria-label="About this implementation"><span data-icon="circle-help"></span></button><a class="github-top" href="https://github.com/Ghadiator/Ghadiator.github.io" target="_blank" rel="noopener" aria-label="View GitHub repository"><span data-icon="github"></span> <span>GitHub</span> <span data-icon="arrow-up-right"></span></a></div>
       </header>
       <main id="main" tabindex="-1" aria-live="polite"></main>
