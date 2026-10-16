@@ -121,7 +121,7 @@ jobs:
           import re
           groups = (
               ('nav-start', ['overview']),
-              ('nav-explore', ['cases', 'submissions', 'architecture']),
+              ('nav-explore', ['architecture', 'cases', 'submissions']),
               ('nav-assurance', ['personas', 'governance', 'evidence']),
           )
           for group_id, expected_views in groups:
@@ -215,6 +215,10 @@ jobs:
           # Public design system and evidence-first case views.
           assert '<span class="brand-text">Governance' in html
           assert 'featured-run' in overview and 'featured-run-facts' in overview
+          assert 'original-workflow-title' in overview, "Original review flow must appear in Introduction"
+          assert overview.count('class="original-step-number"') == 7, "All seven representative manual stages must be shown"
+          assert overview.index('original-workflow-title') < overview.index('journey-section'), "Original process should precede automated journey"
+          assert '.original-workflow-list{' in Path('styles.css').read_text(), "Manual workflow needs responsive styling"
           assert 'architecture-entry' in app and 'control-proof' in app
           assert 'governance:\'controls\'' in app and "state.workbenchTab='controls'" in app
           assert 'case-detail-facts' in journey and 'case-review-evidence' in journey
