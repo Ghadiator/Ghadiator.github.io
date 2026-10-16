@@ -15,23 +15,40 @@ function render(c){
  const rows=read(),sm=c.state.submissionMode||"request",tab=c.state.submissionTab||"compose",api=mode();
  const desc=api.mode==="backend"?(api.status==="online"?"Backend connected: submissions require the authenticated API's capability and validation authority.":"Backend configured but unavailable. New submissions are blocked rather than silently stored as if sent."):"Reference mode: requests and file metadata remain in your own browser. JSON invoice files can undergo a deterministic local schema/rule check. No server-side submission or review occurs.";
  const formFile=sm==="upload"?`<label class="wide">Upload workbook or invoice<input name="attachment" type="file" accept=".json,.csv,.pdf,.xlsx" required></label>
- <label class="wide wb-checkbox-row"><input name="demoContract" type="checkbox"> Use an expressly synthetic sample contract (EUR / SUP-014) for a more complete browser check</label>
+ <label class="wide wb-checkbox-row"><input name="demoContract" type="checkbox"> Compare against the expressly synthetic SUP-014 / EUR example contract (additional rate, document and spending-limit checks)</label>
  <div class="wb-inline-actions"><button type="button" data-submission-action="template">Download synthetic JSON template</button></div>
- <p class="wb-file-hint">PDF/XLSX files are not parsed locally; only filename/size are kept in reference mode. A configured backend can handle them.</p>`:
+ <p class="wb-file-hint">XLSX workbooks matching the generated Invoice / LineItems template are parsed and checked locally. JSON invoices also support local checks; CSV/PDF remain structure/metadata only. No spreadsheet is sent to a server in reference mode.</p>`:
  `<label class="wide">Document requested<select name="document"><option>Invoice and service report</option><option>Corrected invoice</option><option>Contract / rate card</option><option>Supplier clarification</option></select></label>`;
  return `<div class="wb-page"><div class="wb-head"><div><span class="wb-kicker">OPERATIONS · DOCUMENT COLLECTION</span><h1>Supplier submissions</h1><p>Create supplier document requests and submit new documents. Source-faithful validation controls are represented separately from local preview checks.</p></div><a data-view="integration" href="?view=integration" class="wb-button">Backend readiness ↗</a></div>
  <div class="wb-metrics"><div class="wb-metric"><span class="wb-metric-label">Browser receipts</span><strong>${rows.length}</strong><small>Stored on this device</small></div><div class="wb-metric"><span class="wb-metric-label">JSON preflight reports</span><strong>${rows.filter(x=>x.clientCheck).length}</strong><small>Browser checks only</small></div><div class="wb-metric"><span class="wb-metric-label">Backend-acknowledged submissions</span><strong>${rows.filter(x=>x.remoteId).length}</strong><small>Returned by live API</small></div><div class="wb-metric"><span class="wb-metric-label">Connection mode</span><strong style="font-size:15px">${api.mode==="backend"?esc(c,api.status):"Reference"}</strong><small>Never assume server processing</small></div></div>
- <div class="wb-notice"><strong>${api.mode==="backend"?"Backend connection":"Local reference"}:</strong> ${esc(c,desc)} Avoid confidential uploads until the production privacy and security configuration is deployed.</div>
+ <div class="wb-notice"><strong>${api.mode==="backend"?"Backend connection":"Local reference"}:</strong> ${esc(c,desc)} Use synthetic data only; do not upload private supplier records to this public demonstration.</div>
+ <section class="wb-panel wb-generator" aria-labelledby="wb-generator-title">
+  <div class="wb-panel-head"><h2 id="wb-generator-title">Generate a synthetic Excel case</h2><span class="wb-generator-tag">EDITABLE .XLSX · NO SERVER</span></div>
+  <div class="wb-panel-body"><p>Create an example supplier invoice workbook, edit values in Excel if desired, then upload it here to inspect deterministic browser checks. Based on the public supplier fixture schema; this is not the insurer VC generator from DAiA or a Python workflow run.</p>
+   <div class="wb-generator-controls"><label for="supplierCaseType">Choose a scenario
+    <select id="supplierCaseType">${window.PublicSupplierWorkbook.variants.map(v=>`<option value="${esc(c,v.id)}">${esc(c,v.label)}</option>`).join("")}</select>
+   </label><button type="button" class="wb-primary" data-submission-action="generate">Download Excel case ↓</button></div>
+   <div class="wb-generator-steps"><span><strong>01</strong> Generate workbook</span><span aria-hidden="true">→</span><span><strong>02</strong> Upload under File submission</span><span aria-hidden="true">→</span><span><strong>03</strong> Inspect local checks</span></div>
+   <p class="wb-file-hint">The example contract is optional. Select it on upload to exercise contract, rate and document checks. Final decisions remain human-led and require a real backend.</p>
+  </div>
+ </section>
  <div class="wb-tabs"><button class="wb-tab ${tab==="compose"?"selected":""}" data-submission-tab="compose">New request / upload</button><button class="wb-tab ${tab==="history"?"selected":""}" data-submission-tab="history">Submission register</button></div>
  ${tab==="history"?`<section class="wb-panel"><div class="wb-panel-head"><h2>Receipts & verification</h2></div><div class="wb-panel-body wb-local-rows">${history(c,rows)}</div></section>`:
  `<section class="wb-panel"><div class="wb-panel-head"><h2>Create a request or upload</h2></div><div class="wb-panel-body wb-submit-section"><div class="wb-submission-modes"><button type="button" class="wb-tab ${sm==="request"?"selected":""}" data-submission-mode="request">01 · Document request</button><button type="button" class="wb-tab ${sm==="upload"?"selected":""}" data-submission-mode="upload">02 · File submission</button></div>
- <form id="public-submission-form" class="wb-submit-section"><div class="wb-submit-grid"><label>Supplier ID<input name="supplier" maxlength="120" required placeholder="SUP-014"></label><label>Invoice / reference ID<input name="reference" maxlength="120" required placeholder="INV-2026-082"></label><label>Reviewer contact<input name="reviewer" maxlength="120" placeholder="Procurement reviewer"></label><label>Due date<input name="due" type="date"></label>${formFile}<label class="wide">Review context<textarea name="notes" rows="4" maxlength="600" placeholder="Context only, not trusted instructions"></textarea></label></div><div class="wb-inline-actions"><button type="submit" class="wb-primary">${api.mode==="backend"?"Send to configured backend":sm==="upload"?"Perform local preflight and save":"Save request in browser"}</button><small>${api.mode==="backend"?"Requires server capability and authentication":"No email or network processing"}</small></div></form><div id="submission-result" class="wb-result" hidden role="status"></div></div></section>`}
+ <form id="public-submission-form" class="wb-submit-section"><div class="wb-submit-grid"><label>Supplier ID ${sm==="upload"?"(read from workbook if blank)":""}<input name="supplier" maxlength="120" ${sm==="upload"?"":"required"} placeholder="SUP-014"></label><label>Invoice / reference ID ${sm==="upload"?"(read from workbook if blank)":""}<input name="reference" maxlength="120" ${sm==="upload"?"":"required"} placeholder="INV-2026-082"></label><label>Reviewer contact<input name="reviewer" maxlength="120" placeholder="Procurement reviewer"></label><label>Due date<input name="due" type="date"></label>${formFile}<label class="wide">Review context<textarea name="notes" rows="4" maxlength="600" placeholder="Context only, not trusted instructions"></textarea></label></div><div class="wb-inline-actions"><button type="submit" class="wb-primary">${api.mode==="backend"?"Send to configured backend":sm==="upload"?"Perform local preflight and save":"Save request in browser"}</button><small>${api.mode==="backend"?"Requires server capability and authentication":"No email or network processing"}</small></div></form><div id="submission-result" class="wb-result" hidden role="status"></div></div></section>`}
  <div class="wb-notice"><strong>Decision boundary:</strong> Neither a passing browser check nor a remote intake receipt constitutes approval. Full generic validation, case evidence, independent review and archive must be delivered by the backend.</div></div>`;
 }
 async function submit(form,kind){
- const d=new FormData(form),supplier=String(d.get("supplier")||"").trim(),reference=String(d.get("reference")||"").trim(),api=mode();
- if(!supplier||!reference)throw Error("Supplier and invoice identifiers are mandatory");
+ const d=new FormData(form);let supplier=String(d.get("supplier")||"").trim(),reference=String(d.get("reference")||"").trim();const api=mode();
  const file=d.get("attachment"),existing=read();
+ let parsed=null;
+ if(kind==="upload"&&api.mode!=="backend"&&file&&/\.xlsx$/i.test(file.name)){
+   parsed=await window.PublicSupplierWorkbook.read(file);
+   if(supplier&&supplier!==parsed.supplier_id)throw Error("Supplier ID differs from the Excel file. Correct the form or leave it blank.");
+   if(reference&&reference!==parsed.invoice_id)throw Error("Invoice reference differs from the Excel file. Correct the form or leave it blank.");
+   supplier=supplier||parsed.supplier_id;reference=reference||parsed.invoice_id;
+ }
+ if(!supplier||!reference)throw Error("Supplier and invoice identifiers are mandatory (or supply them in a supported Excel workbook)");
  const entry={id:"LOCAL-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7),supplier,reference,kind:kind==="upload"?"upload":"request",status:"Local draft",reviewer:String(d.get("reviewer")||""),due:String(d.get("due")||""),document:String(d.get("document")||""),fileName:file?.name||"",size:kind==="upload"?file.size:0,createdAt:new Date().toISOString(),preflight:"Not run"};
  if(kind==="upload"){
   if(!file||!file.name)throw Error("Select a document");
@@ -54,6 +71,10 @@ async function submit(form,kind){
    let record;try{record=JSON.parse(await file.text())}catch{throw Error("JSON syntax invalid. No receipt created");}
    entry.clientCheck=window.PublicLocalRunner.run(record,{sampleContract:d.has("demoContract")});
    entry.preflight=entry.clientCheck.status+" · local deterministic preflight only";
+   entry.status=entry.clientCheck.status;
+  }else if(kind==="upload"&&/\.xlsx$/i.test(file.name)){
+   entry.clientCheck=window.PublicLocalRunner.run(parsed,{sampleContract:d.has("demoContract")});
+   entry.preflight=entry.clientCheck.status+" · parsed Invoice / LineItems XLSX, local deterministic preflight only";
    entry.status=entry.clientCheck.status;
   }else if(kind==="upload"&&/\.csv$/i.test(file.name)){
    const rows=(await file.text()).trim().split(/\r?\n/).filter(Boolean);entry.preflight=rows.length>=2?`CSV rows: ${rows.length-1} (header detected; invoice schema not evaluated)`:"CSV requires a header and a data row";entry.status="Structure-only preview";
