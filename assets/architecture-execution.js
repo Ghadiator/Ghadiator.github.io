@@ -5,15 +5,41 @@
  "use strict";
  const escape=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");
  const NODES=[
-  ["orchestrator","Main orchestrator"],["request","Collection request"],["reminders","Deadline reminders"],
-  ["intake","Supplier intake"],["memory","Case history"],["rules","Invoice rules"],
+  ["orchestrator","Main orchestrator — LangGraph"],["request","Collection request"],["reminders","Deadline reminders"],
+  ["intake","Supplier intake"],["memory","Case history"],["rules","Invoice checks"],
   ["crosscheck","Contract cross-check"],["external","Approved contract"],["sanitiser","Input sanitiser"],
   ["proponent","Proponent"],["opponent","Opponent"],["firewall","Pre-Judge CoVe"],
-  ["judge","Judge"],["post_cove","Post-Judge CoVe"],["token_economics","Token controls"],
-  ["advisory","Review package"],["remediation","Supplier correction"],["disposition","Human review / decision"],
-  ["archive","Evidence archive"],["process_semantics","ProcessEvent pool"]
+  ["judge","Judge"],["post_cove","Post-Judge CoVe"],["token_economics","Committee orchestration — token economics"],
+  ["advisory","Review package"],["remediation","Supplier correction"],["disposition","Human-in-the-loop (HITL)"],
+  ["archive","Evidence archive"],["process_semantics","Process semantics pool / ProcessEvent stream"]
  ];
  const labels=Object.fromEntries(NODES);
+
+ // Mirrors the actual numbered nodes and cross-cutting rails in the React graph.
+ const MODULE_NUMBERS={
+  request:"01",reminders:"02",intake:"03",memory:"04",rules:"05",
+  crosscheck:"06",sanitiser:"07",proponent:"08",opponent:"09",firewall:"10",
+  judge:"11",post_cove:"11b",advisory:"12",disposition:"13",archive:"14",
+  external:"A",remediation:"C",orchestrator:"D",process_semantics:"S",token_economics:"T"
+ };
+ const MODULE_GROUPS=[
+  {key:"orchestration",code:"D",title:"Workflow orchestration",note:"Workflow-wide LangGraph source · different from the supplier fixture",rail:true,ids:["orchestrator"]},
+  {key:"collection",code:"01",title:"Request & receive",note:"Collection request → reminders → intake → case history",ids:["request","reminders","intake","memory"]},
+  {key:"checks",code:"02",title:"Deterministic verification",note:"Invoice checks + contract comparisons · approved contract as reference input",ids:["rules","crosscheck","external"]},
+  {key:"review",code:"03",title:"Bounded exception review",note:"Sanitise → Proponent & Opponent → pre-Judge CoVe → Judge → post-Judge CoVe · token guard",ids:["sanitiser","proponent","opponent","firewall","judge","post_cove","token_economics"]},
+  {key:"decision",code:"04",title:"Human decision & outcome",note:"Review package → human gate → corrections if needed / archive",ids:["advisory","disposition","remediation","archive"]},
+  {key:"semantics",code:"S",title:"Process semantics & audit",note:"Workflow-wide ProcessEvent stream · broader validation source",rail:true,ids:["process_semantics"]}
+ ];
+ const SCOPE_NOTES={
+  orchestrator:"Broader LangGraph design; this supplier fixture runs a separate Python state machine.",
+  process_semantics:"Broader ProcessEvent pool; this supplier fixture uses in-memory event records.",
+  post_cove:"The supplier fixture has no separately emitted post-Judge CoVe event.",
+  token_economics:"No live model token usage in these scripted supplier scenarios.",
+  external:"Approved contract is reference input; no separate event may be emitted.",
+  sanitiser:"Input boundary may be applied without a dedicated fixture event.",
+  remediation:"Correction is a branch: not every scenario requires it."
+ };
+
  const normalize=n=>n==="gate"?"disposition":n;
  const status=e=>/\bFAIL(?:ED)?\b/i.test(e.label)?"fail":/\bPASS(?:ED)?\b/i.test(e.label)?"pass":"record";
  const seenAt=(all,cursor)=>cursor<0?[]:all.slice(0,Math.min(cursor+1,all.length));
@@ -66,23 +92,57 @@
     ${forfeits.map(e=>`<p class="ax-forfeit">${escape(e.label)} — ${escape(e.detail||'Proposals forfeited by the runner.')}</p>`).join("")}
     <p class="ax-dash-foot">Only emitted claims and verification results are shown. The broader source architecture contains Post-Judge CoVe, but the supplier fixture has no separate Post-Judge CoVe event.</p></section>`;
  }
- function renderModules(visible,current){
-  const count=counts(visible),failed=new Set(visible.filter(e=>status(e)==='fail').map(e=>normalize(e.node)));
-  const rows=NODES.map(([id,name])=>{
-   const n=count.get(id)||0;
-   let kind=id===current?'active':failed.has(id)?'fail':n?'done':'idle';
-   return `<div class="ax-module ax-module-${kind}" data-module-status="${id}"><span class="ax-module-dot"></span><span class="ax-module-name">${escape(name)}</span><span class="ax-module-n">${n? n+' events': '—'}</span></div>`;
-  });
-  return `<section class="ax-dash-panel ax-modules"><div class="ax-panel-head"><div><span class="ax-overline">20-BLOCK MODULAR ARCHITECTURE</span><h3>Execution state by module</h3></div><span class="ax-module-key">${count.size} modules emitted events</span></div>
-  <div class="ax-modules-grid">${rows.join("")}</div>
-  <p class="ax-dash-foot">Active = latest recorded event; executed = an event was emitted by that module. Blank modules remain part of the architecture but are not claimed to have executed. Supporting boundaries may have no dedicated fixture event.</p></section>`;
+ function renderModules(visible,current,all,cursor){
+  // Full-run coverage and playback-to-date are independent measurements.
+  const tally=counts(visible),whole=counts(all);
+  const failed=new Set(visible.filter(e=>status(e)==="fail").map(e=>normalize(e.node)));
+  const totalObserved=NODES.filter(item=>whole.has(item[0])).length;
+  const visited=NODES.filter(item=>tally.has(item[0])).length;
+  const renderCard=id=>{
+   const name=labels[id]||id;
+   const n=tally.get(id)||0,full=whole.get(id)||0;
+   const kind=id===current&&n?"active":failed.has(id)?"fail":n?"done":full?"queued":"unobserved";
+   const stateText=n?"Reached in replay":full?"Later in replay":"No direct event";
+   const countText=n?n+" / "+full+" events":full?full+" in full run":"None in this run";
+   const note=n?n+" recorded event(s) reached at this playback position"
+    :full?"Recorded in the selected case, but not reached by playback"
+    :(SCOPE_NOTES[id]||"No event is directly attributed to this block in the selected fixture.");
+   return '<button type="button" class="ax-module ax-module-'+kind+'" data-architecture-module="'+escape(id)+'" data-module-status="'+escape(id)+'" aria-label="Inspect '+escape(name)+' in the original architecture. '+escape(note)+'" title="Inspect in the original diagram">'
+    +'<span class="ax-module-number">'+escape(MODULE_NUMBERS[id])+'</span>'
+    +'<span class="ax-module-copy"><strong class="ax-module-name">'+escape(name)+'</strong><small class="ax-module-scope">'+escape(note)+'</small></span>'
+    +'<span class="ax-module-metrics"><span class="ax-module-state"><i class="ax-module-dot" aria-hidden="true"></i>'+escape(stateText)+'</span><span class="ax-module-n">'+escape(countText)+'</span></span>'
+    +'</button>';
+  };
+  const content=MODULE_GROUPS.map(group=>{
+   const reached=group.ids.filter(id=>tally.has(id)).length;
+   const recorded=group.ids.filter(id=>whole.has(id)).length;
+   return '<section class="ax-module-group '+(group.rail?'ax-module-group-rail':'')+'" data-architecture-stage="'+group.key+'" aria-label="'+escape(group.title)+'">'
+    +'<div class="ax-module-group-head"><span class="ax-phase-number">'+escape(group.code)+'</span>'
+    +'<span class="ax-phase-heading"><strong>'+escape(group.title)+'</strong><small>'+escape(group.note)+'</small></span>'
+    +'<span class="ax-phase-count">'+reached+' reached <span>· '+recorded+'/'+group.ids.length+' in full run</span></span></div>'
+    +'<div class="ax-modules-grid">'+group.ids.map(renderCard).join('')+'</div></section>';
+  }).join('');
+  const cursorStatus=cursor<0?"Replay not started":cursor>=all.length-1?"At the final recorded event":"Replay in progress";
+  return '<section class="ax-dash-panel ax-modules" aria-labelledby="ax-modules-title">'
+   +'<div class="ax-panel-head ax-modules-head"><div><span class="ax-overline">20-BLOCK MODULAR ARCHITECTURE</span><h3 id="ax-modules-title">Execution state by module</h3>'
+   +'<p class="ax-module-subtitle">Organised by the diagram’s workflow stages, supporting branches and cross-cutting rails.</p></div>'
+   +'<div class="ax-module-summary"><strong>'+totalObserved+'<span> / 20</span></strong><small>Blocks with an event in the full recorded case</small></div></div>'
+   +'<div class="ax-modules-progress"><span class="ax-module-key"><strong>'+visited+' of 20 reached so far</strong> · '+cursorStatus+'</span>'
+   +'<div class="ax-module-legend" aria-label="Replay status legend">'
+   +'<span><i class="ax-legend-dot ax-legend-current"></i>Current event</span>'
+   +'<span><i class="ax-legend-dot ax-legend-reached"></i>Reached</span>'
+   +'<span><i class="ax-legend-dot ax-legend-queued"></i>Later in trace</span>'
+   +'<span><i class="ax-legend-dot ax-legend-quiet"></i>No direct event</span></div></div>'
+   +'<div class="ax-module-map">'+content+'</div>'
+   +'<p class="ax-dash-foot"><strong>Reading the map:</strong> Counts use actual emitted events from the selected synthetic supplier run. The broader LangGraph, token controls and ProcessEvent pool are architecture design—not executed supplier components. No dedicated event does not establish that an input boundary was absent. Click a block to inspect it in the original diagram.</p>'
+   +'</section>';
  }
  function renderDashboard(all,cursor){
   const visible=seenAt(all,cursor),current=runningNode(all,cursor);
   const checks=visible.filter(e=>e.kind==='checks.rule'||e.kind==='contract.check');
   const failures=checks.filter(e=>status(e)==='fail').length;
   const amount=checks.filter(e=>status(e)==='pass').length;
-  const moduleCount=counts(visible).size;
+  const moduleCount=NODES.filter(item=>counts(visible).has(item[0])).length;
   const resume=visible.filter(e=>e.kind==="hitl.resumed");
   const hitl=visible.filter(e=>e.kind==="hitl.opened");
   const packaged=visible.filter(e=>e.kind==='review.package');
@@ -93,12 +153,12 @@
     <div class="ax-dashboard-heading"><div><span class="ax-overline">MODULE EXECUTION · CONTROLS · EVIDENCE</span><h2>Workflow execution dashboard</h2><p>${progress}</p></div><span class="ax-ref-note">Original verified trace · replay only</span></div>
     <div class="ax-stat-row">
       <div class="ax-stat"><span>Emitted events</span><strong>${visible.length}<small> / ${all.length||'—'}</small></strong></div>
-      <div class="ax-stat"><span>Modules with events</span><strong>${moduleCount}<small> / 20</small></strong></div>
+      <div class="ax-stat"><span>Blocks reached in replay</span><strong>${moduleCount}<small> / 20</small></strong></div>
       <div class="ax-stat"><span>Checks passed</span><strong>${amount}</strong></div>
       <div class="ax-stat ${failures?'ax-stat-fail':''}"><span>Checks failed</span><strong>${failures}</strong></div>
       <div class="ax-stat"><span>Human gate opened</span><strong>${hitl.length}</strong></div>
     </div>
-    ${renderModules(visible,current)}
+    ${renderModules(visible,current,all,cursor)}
     <div class="ax-validation-grid">${renderCheckPanel('checks.rule','Invoice rule checks',visible)}${renderCheckPanel('contract.check','Contract checks',visible)}</div>
     ${renderCommittee(visible)}
     <section class="ax-dash-panel"><div class="ax-panel-head"><div><span class="ax-overline">REVIEWER AUTHORITY &amp; OUTPUT</span><h3>Handover and recorded decisions</h3></div></div>
@@ -134,6 +194,24 @@
   scrub.dispatchEvent(new doc.defaultView.Event('input',{bubbles:true}));
   scrub.dispatchEvent(new doc.defaultView.Event('change',{bubbles:true}));
   return true;
+ }
+ // Clicking a module opens its real React graph block; it never executes a run.
+ if(typeof document!=="undefined"){
+  document.addEventListener("click",event=>{
+   const trigger=event.target?.closest?.("[data-architecture-module]");
+   if(!trigger||!document.getElementById("architecture-execution-dashboard")?.contains(trigger))return;
+   const frame=document.getElementById("modularArchitectureFrame");
+   let doc;
+   try{doc=frame?.contentDocument;}catch{return;}
+   const id=trigger.dataset.architectureModule;
+   const node=Array.from(doc?.querySelectorAll(".deck [data-node]")||[]).find(el=>el.dataset.node===id);
+   if(!node)return;
+   node.click();
+   if(frame?.scrollIntoView){
+    const reduced=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    frame.scrollIntoView({block:"start",behavior:reduced?"auto":"smooth"});
+   }
+  });
  }
  window.ArchitectureExecution={renderRail,renderDashboard,decorateGraph,seek};
 })();

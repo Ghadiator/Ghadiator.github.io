@@ -11,6 +11,9 @@ on:
       - assets/public-personas.js
       - assets/public-attacker.js
       - assets/story-journey.js
+      - assets/architecture-execution.js
+      - assets/architecture-module-map.css
+      - scripts/check-architecture-module-map.cjs
       - styles.css
       - index.html
       - .github/workflows/frontend-integrity.yml
@@ -45,6 +48,8 @@ jobs:
           node --check assets/public-personas.js
           node --check assets/public-attacker.js
           node --check assets/story-journey.js
+      - name: Test architecture state against source fixtures
+        run: node scripts/check-architecture-module-map.cjs
       - name: Check plain-language introduction and preserved evidence
         run: |
           python3 - <<'PY'
@@ -143,7 +148,7 @@ jobs:
           assert 'id="workflow-results"' in app and 'syncFromFrame' in app
           assert 'id="architecture-event-rail"' in app and 'id="architecture-execution-dashboard"' in app
           assert 'decorateGraph' in app and 'refreshWorkflowResults' in app
-          assert 'assets/architecture-execution.js?v=20261015-simplified-execution-50' in html
+          assert 'assets/architecture-execution.js?v=20261016-module-map-56' in html
           assert html.index('assets/architecture-execution.js') < html.index('src="./app.js')
           engine = Path('assets/architecture-execution.js').read_text()
           for feature in ('renderRail','renderDashboard','decorateGraph','renderCheckPanel',
