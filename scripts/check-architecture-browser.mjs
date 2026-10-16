@@ -163,6 +163,44 @@ try{
  console.log("RAIL_NAVIGATION", "Selected emitted event 24 drives the native React scrubber");
 
 
+ // Exercise the public run journey, including direct URL state and browser history.
+ await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+
+   "/?view=cases&scenario=supplier_clean&case_filter=Approved&case_search=Matching",
+   {waitUntil:"domcontentloaded",timeout:60000});
+ await page.waitForSelector('.wb-table a[data-view="case"]',{timeout:15000});
+ assert.equal(await page.locator("#caseSearch").inputValue(),"Matching");
+ assert.equal(await page.locator("#caseFilter").inputValue(),"Approved");
+ assert.equal(await page.locator('.wb-table a[data-view="case"]').count(),1,
+   "The deep-link case filters must be applied, not just shown");
+ await page.locator('.wb-table a[data-view="case"]').click();
+ await page.waitForFunction(()=>new URLSearchParams(location.search).get("view")==="case",null,{timeout:10000});
+ assert.equal(new URL(page.url()).searchParams.get("scenario"),"supplier_clean",
+   "Case-link click must preserve its own selected scenario");
+ assert.ok(await page.locator('.run-journey[aria-label="Selected run journey"]').count(),
+   "Case detail must display the recorded-run journey");
+ await page.goBack({waitUntil:"domcontentloaded"});
+ await page.waitForFunction(()=>new URLSearchParams(location.search).get("view")==="cases",null,{timeout:10000});
+ assert.equal(await page.locator("#caseSearch").inputValue(),"Matching",
+   "Returning to Cases must restore its search");
+ assert.equal(await page.locator("#caseFilter").inputValue(),"Approved",
+   "Returning to Cases must restore its outcome filter");
+ await page.locator('.wb-table a[data-view="case"]').click();
+ await page.locator('.run-journey-links a[data-view="architecture"]').click();
+ await page.waitForFunction(()=>new URLSearchParams(location.search).get("view")==="architecture",null,{timeout:10000});
+ assert.equal(new URL(page.url()).searchParams.get("scenario"),"supplier_clean");
+ await page.locator('.run-journey-links a[data-journey-trace]').click();
+ await page.waitForFunction(()=>new URLSearchParams(location.search).get("view")==="evidence",null,{timeout:10000});
+ assert.equal(new URL(page.url()).searchParams.get("tab"),"trace",
+   "Run evidence links must open the Decision trace tab");
+ assert.equal(new URL(page.url()).searchParams.get("scenario"),"supplier_clean");
+ await page.waitForSelector('.wb-tabs [data-evidence-tab="trace"].selected',{timeout:10000});
+ assert.ok((await page.locator(".run-journey-id").innerText()).includes("supplier_clean"));
+ await page.reload({waitUntil:"domcontentloaded"});
+ await page.waitForSelector('.wb-tabs [data-evidence-tab="trace"].selected',{timeout:15000});
+ assert.equal(new URL(page.url()).searchParams.get("scenario"),"supplier_clean",
+   "Evidence deep link must survive browser reload");
+ console.log("RUN_JOURNEY", "Case filters, Back, case → Architecture → evidence, and reload passed");
+
  // The archived compiled architecture already has a React #418 HTML
  // hydration warning because its SSR markup was customized independently.
  // This PR intentionally does not edit the integrity-pinned compiled artifact.
