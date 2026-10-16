@@ -211,6 +211,28 @@ try{
    "Featured reference run must come from the published scenario catalogue");
  assert.ok(await page.locator('.overview-scope').count(),
    "Introduction must identify implementation boundaries");
+ const manualCards=page.locator('.original-workflow-list > .original-flow-card');
+ assert.equal(await manualCards.count(),7,"Manual workflow must have seven distinct blocks");
+ assert.equal(await page.locator('.original-workflow-list .original-step-icon svg').count(),7,
+   "Each original workflow block must render an SVG pictogram");
+ const flowGeometry=await page.evaluate(()=>{
+   const cards=[...document.querySelectorAll('.original-workflow-list > li')];
+   const bounds=cards.map(card=>card.getBoundingClientRect());
+   const connector=getComputedStyle(cards[0],'::after');
+   return {ordered:bounds.every((box,i)=>i===0||box.top>bounds[i-1].bottom),
+           connectorHeight:parseFloat(connector.height),
+           fitsPhone:bounds.every(box=>box.left>=0&&box.right<=innerWidth)};
+ });
+ assert.ok(flowGeometry.ordered&&flowGeometry.connectorHeight>=16&&flowGeometry.fitsPhone,
+   "Flow arrows and ordered cards must remain visible without horizontal overflow on mobile");
+ await page.setViewportSize({width:1440,height:900});
+ const desktopFlow=await page.evaluate(()=>{
+   const boxes=[...document.querySelectorAll('.original-workflow-list > li')].map(el=>el.getBoundingClientRect());
+   return boxes.every((box,i)=>i===0||box.top>boxes[i-1].bottom);
+ });
+ assert.ok(desktopFlow,"Desktop manual workflow must retain its top-to-bottom sequence");
+ await page.setViewportSize({width:375,height:812});
+
  const menu=page.locator("#mobileMenu");
  assert.ok(await menu.isVisible(),"Mobile menu must remain visible");
  await menu.click();
