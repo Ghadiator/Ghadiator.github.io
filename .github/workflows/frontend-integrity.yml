@@ -177,7 +177,8 @@ jobs:
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'href="?view=architecture"' in app, 'Introduction links remain in shell'
           for asset in ('public-submissions.js', 'public-personas.js', 'public-attacker.js'):
-              assert 'assets/'+asset+'?v=20261015-modular-architecture-fix-46' in html
+              version = '20261016-excel-lab-57' if asset == 'public-submissions.js' else '20261015-modular-architecture-fix-46'
+              assert 'assets/'+asset+'?v='+version in html
               assert Path('assets/'+asset).stat().st_size > 1500
           assert 'PublicSubmissions.submit' in app and 'PublicPersonas.send' in app
           assert 'data-attacker-action' in Path('assets/public-attacker.js').read_text()
