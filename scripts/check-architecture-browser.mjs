@@ -303,7 +303,10 @@ try{
  await page.locator('input[name="attachment"]').setInputFiles(await download.path());
  await page.locator('input[name="demoContract"]').check();
  await page.locator('#public-submission-form button[type="submit"]').click();
- await page.waitForSelector('.wb-receipt-card',{timeout:16000});
+ await page.waitForFunction(()=>Boolean(document.querySelector('.wb-receipt-card'))||Boolean(document.querySelector('#submission-result:not([hidden])')),null,{timeout:12000});
+ const submissionError=await page.locator('#submission-result:not([hidden])').allTextContents();
+ assert.equal(submissionError.length,0,"XLSX upload error: "+submissionError.join("; "));
+ await page.waitForSelector('.wb-receipt-card',{timeout:8000});
  const receipt=await page.locator('.wb-receipt-card').first().innerText();
  assert.ok(receipt.includes("Local_checks_failed")&&receipt.includes("parsed Invoice / LineItems XLSX"),
    "Uploaded workbook must receive a genuine local validation report, not a metadata-only receipt");
