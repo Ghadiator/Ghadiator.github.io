@@ -276,13 +276,20 @@ try{
    "Each governance control must expose an evidence pointer");
  console.log("DESIGN_SYSTEM", "Mobile navigation, featured run, case authority and governance source mappings passed");
 
- // Removed hypothetical invoice toggles, retained the six-stage tour.
+ // Keep the original seven-stage manual workflow; remove the duplicate guided tour.
  await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+"/?view=overview",
    {waitUntil:"domcontentloaded",timeout:60000});
- await page.waitForSelector("#intro-guided-tour",{timeout:12000});
- assert.equal(await page.locator(".intro-lab").count(),0,"Illustrative invoice toggle lab must be removed");
- assert.ok(!(await page.locator("#main").innerText()).includes("What stops an invoice from moving forward?"),
-   "Removed illustrative section must not appear in Introduction");
+ await page.waitForSelector(".original-workflow-list .original-flow-card",{timeout:12000});
+ assert.equal(await page.locator(".original-workflow-list .original-flow-card").count(),7,
+   "The original manual workflow must retain all seven stages");
+ assert.ok((await page.locator("#original-workflow-title").innerText()).includes("original supplier-invoice review workflow"));
+ assert.ok((await page.locator(".original-workflow-heading").innerText()).includes("WORKFLOW VIEW"),
+   "Manual process must be identified as the workflow view");
+ assert.equal(await page.locator("#intro-guided-tour").count(),0,
+   "Remove the redundant interactive walkthrough");
+ assert.equal(await page.locator(".intro-step-trigger").count(),0,
+   "No guided-tour buttons should be appended to the workflow cards");
+ assert.equal(await page.locator(".intro-lab").count(),0,"Illustrative invoice toggle lab remains removed");
 
  // Generate, download, parse and run the same deterministic local checks.
  await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+"/?view=submissions",
