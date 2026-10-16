@@ -1,5 +1,6 @@
 import { chromium } from "playwright-core";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH||"/usr/bin/google-chrome",args:["--no-sandbox"]});
 const page=await browser.newPage({viewport:{width:1440,height:1000}});
@@ -265,6 +266,55 @@ try{
  assert.ok(await page.locator('.control-proof').first().innerText().then(x=>x.toLowerCase().includes("evidence pointer")),
    "Each governance control must expose an evidence pointer");
  console.log("DESIGN_SYSTEM", "Mobile navigation, featured run, case authority and governance source mappings passed");
+
+ // Removed hypothetical invoice toggles, retained the six-stage tour.
+ await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+"/?view=overview",
+   {waitUntil:"domcontentloaded",timeout:60000});
+ await page.waitForSelector("#intro-guided-tour",{timeout:12000});
+ assert.equal(await page.locator(".intro-lab").count(),0,"Illustrative invoice toggle lab must be removed");
+ assert.ok(!(await page.locator("#main").innerText()).includes("What stops an invoice from moving forward?"),
+   "Removed illustrative section must not appear in Introduction");
+
+ // Generate, download, parse and run the same deterministic local checks.
+ await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+"/?view=submissions",
+   {waitUntil:"domcontentloaded",timeout:60000});
+ await page.waitForSelector('[data-submission-action="generate"]',{timeout:12000});
+ const variants=await page.evaluate(async()=>{
+   const types=["clean","total","rate","missing","limit","currency"];
+   const checks={};
+   for(const type of types){
+     const data=PublicSupplierWorkbook.sample(type),binary=PublicSupplierWorkbook.build(data);
+     const parsed=await PublicSupplierWorkbook.read(new File([binary],"supplier.xlsx",{type:binary.type}));
+     if(parsed.invoice_id!==data.invoice_id||parsed.lines.length!==data.lines.length)
+       throw Error("Excel round-trip changed the supplier invoice input");
+     const report=PublicLocalRunner.run(parsed,{sampleContract:true});
+     checks[type]={status:report.status,failures:report.validation.filter(x=>x.passed===false).map(x=>x.title)};
+   }
+   return checks;
+ });
+ assert.equal(variants.clean.status,"Local_checks_partial","Clean workbook must pass evaluated local rules");
+ for(const [kind,check] of [["total","R2"],["rate","C6"],["missing","R6"],["limit","C7"],["currency","C4"]])
+   assert.ok(variants[kind].failures.some(x=>x.startsWith(check)),kind+" workbook should fail "+check);
+ await page.locator("#supplierCaseType").selectOption("rate");
+ const [download]=await Promise.all([
+   page.waitForEvent("download",{timeout:12000}),
+   page.locator('[data-submission-action="generate"]').click()
+ ]);
+ assert.ok(download.suggestedFilename().endsWith(".xlsx"),"Generator must download a real XLSX");
+ await page.locator('input[name="attachment"]').setInputFiles({name:download.suggestedFilename(),mimeType:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",buffer:await readFile(await download.path())});
+ await page.locator('input[name="demoContract"]').check();
+ await page.locator('#public-submission-form button[type="submit"]').click();
+ await page.waitForFunction(()=>Boolean(document.querySelector('.wb-receipt-card'))||Boolean(document.querySelector('#submission-result:not([hidden])')),null,{timeout:12000});
+ const submissionError=await page.locator('#submission-result:not([hidden])').allTextContents();
+ assert.equal(submissionError.length,0,"XLSX upload error: "+submissionError.join("; "));
+ await page.waitForSelector('.wb-receipt-card',{timeout:8000});
+ const receipt=await page.locator('.wb-receipt-card').first().innerText();
+ assert.ok(receipt.includes("Local_checks_failed")&&receipt.includes("parsed Invoice / LineItems XLSX"),
+   "Uploaded workbook must receive a genuine local validation report, not a metadata-only receipt");
+ await page.locator('.wb-receipt-card details summary').first().click();
+ assert.ok((await page.locator('.wb-receipt-card details').first().innerText()).includes("C6: Rates match approved rate card"),
+   "Report must surface the failing contract-rate check");
+ console.log("EXCEL_ROUND_TRIP","Six generator scenarios, editable Excel download, upload and local rule report passed");
  // The archived compiled architecture already has a React #418 HTML
  // hydration warning because its SSR markup was customized independently.
  // This PR intentionally does not edit the integrity-pinned compiled artifact.

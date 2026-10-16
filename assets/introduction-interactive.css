@@ -1,204 +1,5 @@
-/* Interactive Introduction: restrained blueprint/workbench styling.
-   Scoped to the existing overview so Architecture and evidence pages are unaffected. */
-
-.intro-lab {
-  margin: 30px 0 34px;
-  padding: 28px;
-  background: linear-gradient(138deg,#f3f8fc 0%,#ecf4f8 100%);
-  border: 1px solid #d8e6ef;
-  border-radius: 13px;
-  box-shadow: 0 6px 24px rgba(32,66,88,.035);
-}
-.intro-lab-heading {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 22px;
-  margin-bottom: 22px;
-}
-.intro-lab-heading h2 {
-  margin: 7px 0 9px;
-  color: #213f56;
-  font-size: clamp(22px,2.3vw,30px);
-  line-height: 1.18;
-  letter-spacing: -.035em;
-}
-.intro-lab-heading p {
-  max-width: 720px;
-  margin: 0;
-  color: #607588;
-  line-height: 1.65;
-  font-size: 13.5px;
-}
-.intro-reset {
-  flex-shrink: 0;
-  border: 1px solid #cfdfea;
-  background: #fff;
-  border-radius: 8px;
-  padding: 10px 13px;
-  color: #3b6076;
-  font-size: 12px;
-  font-weight: 700;
-  transition: background .18s, border-color .18s;
-}
-.intro-reset:hover { background: #eaf3f7; border-color: #a9c4d2; }
-.intro-lab-grid {
-  display: grid;
-  grid-template-columns: minmax(0,.95fr) minmax(0,1.05fr);
-  gap: 17px;
-}
-.intro-lab-inputs, .intro-lab-result {
-  border: 1px solid #dde6ed;
-  border-radius: 11px;
-  background: white;
-  padding: 23px;
-  min-width: 0;
-}
-.intro-panel-kicker {
-  color: #57748b;
-  font-size: 10px;
-  font-weight: 780;
-  text-transform: uppercase;
-  letter-spacing: 1.15px;
-}
-.intro-input-stack { display: grid; gap: 9px; margin-top: 20px; }
-.intro-control {
-  position: relative;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 14px;
-  background: #f8fafc;
-  border: 1px solid #e4ebf1;
-  border-radius: 9px;
-  transition: border-color .2s, background .2s, box-shadow .2s;
-  cursor: pointer;
-}
-.intro-control:hover { border-color: #b4cddd; }
-.intro-control.intro-checked { background: #f4faf8; border-color: #c8e2da; }
-.intro-control:focus-within { outline: 3px solid #8b9cf4; outline-offset: 2px; }
-.intro-control input {
-  position: absolute;
-  opacity: 0;
-  width: 25px;
-  height: 25px;
-  top: 13px;
-  left: 12px;
-  cursor: pointer;
-}
-.intro-control-check {
-  position: relative;
-  display: grid;
-  place-items: center;
-  flex: 0 0 23px;
-  height: 23px;
-  border-radius: 6px;
-  border: 1.5px solid #aac0cf;
-  background: #fff;
-  margin-top: 2px;
-}
-.intro-control.intro-checked .intro-control-check {
-  background: #167a69;
-  border-color: #167a69;
-}
-.intro-control.intro-checked .intro-control-check::after {
-  content: "";
-  width: 10px;
-  height: 6px;
-  border: 2px solid white;
-  border-top: 0;
-  border-right: 0;
-  transform: translateY(-2px) rotate(-45deg);
-}
-.intro-control-copy { display: flex; flex-direction: column; min-width: 0; gap: 4px; }
-.intro-control-group {
-  font-size: 9.5px;
-  font-weight: 750;
-  color: #6b879b;
-  letter-spacing: .65px;
-  text-transform: uppercase;
-}
-.intro-control-copy strong { color: #264357; font-size: 13px; font-weight: 730; line-height: 1.4; }
-.intro-control-copy small { color: #75889a; font-size: 11.5px; line-height: 1.5; }
-.intro-lab-caption {
-  color: #7890a0;
-  font-size: 11px;
-  line-height: 1.6;
-  margin: 15px 0 0;
-}
-.intro-control-path { margin: 23px 0 20px 9px; }
-.intro-path-node {
-  display: grid;
-  grid-template-columns: 44px minmax(0,1fr);
-  gap: 12px;
-  position: relative;
-  min-height: 81px;
-}
-.intro-path-node:not(:last-child)::before {
-  content: "";
-  position: absolute;
-  left: 18px;
-  top: 39px;
-  bottom: -3px;
-  border-left: 2px dashed #c8d7e1;
-}
-.intro-node-symbol {
-  display: grid;
-  place-items: center;
-  position: relative;
-  z-index: 1;
-  border: 1px solid #c6d6e2;
-  background: #f1f6f9;
-  color: #64849a;
-  border-radius: 11px;
-  width: 38px;
-  height: 38px;
-  font-size: 11px;
-  font-weight: 800;
-}
-.intro-path-node[data-status="pass"] .intro-node-symbol {
-  background: #e8f7f0;
-  border-color: #a6d6bd;
-  color: #137450;
-}
-.intro-path-node[data-status="hold"] .intro-node-symbol {
-  background: #fff2e6;
-  border-color: #e9c9a7;
-  color: #9e6530;
-}
-.intro-path-node[data-status="pending"] .intro-node-symbol {
-  background: #eef2fc;
-  border-color: #becceb;
-  color: #556cad;
-}
-.intro-path-node > span:nth-child(2) { padding: 1px 0 13px; }
-.intro-path-node strong { display: block; font-size: 13px; color: #304c61; line-height: 1.45; }
-.intro-path-node small { display: block; margin-top: 5px; font-size: 11.5px; line-height: 1.5; color: #7890a0; }
-.intro-decision {
-  padding: 20px;
-  border: 1px solid #e8cdae;
-  background: #fff8ee;
-  border-radius: 10px;
-  transition: background .18s, border-color .18s;
-}
-.intro-decision[data-status="pending"] { background: #f1f5ff; border-color: #cdd9f1; }
-.intro-decision[data-status="pass"] { background: #ecf8f2; border-color: #b8dfcb; }
-.intro-decision-label { display: block; color: #7d8998; font-size: 9.5px; font-weight: 790; letter-spacing: 1px; margin-bottom: 8px; }
-.intro-decision strong { display: block; font-size: 19px; letter-spacing: -.025em; color: #73552d; }
-.intro-decision[data-status="pending"] strong { color: #405e9d; }
-.intro-decision[data-status="pass"] strong { color: #187653; }
-.intro-decision p { font-size: 12.5px; line-height: 1.65; color: #5c7180; margin: 9px 0 0; }
-.intro-trace-link {
-  margin-top: 17px;
-  display: inline-flex;
-  gap: 10px;
-  align-items: center;
-  color: #346b7e;
-  font-size: 12px;
-  font-weight: 760;
-}
-.intro-trace-link:hover { text-decoration: underline; text-underline-offset: 3px; }
-
+/* Guided workflow controls retained; hypothetical toggle lab removed. */
+.intro-panel-kicker{color:#57748b;font-size:10px;font-weight:780;text-transform:uppercase;letter-spacing:1.15px}
 /* Existing cards stay intact; focused stage receives a non-invasive outline. */
 .journey-section .journey-step { transition: border-color .18s, box-shadow .18s, transform .18s; }
 .journey-section .journey-step.intro-step-active {
@@ -294,16 +95,12 @@
 .intro-tour-actions > a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 @media (max-width: 1050px) {
-  .intro-lab { padding: 22px; }
-  .intro-lab-grid { grid-template-columns: 1fr; }
   .intro-input-stack { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .intro-control-path { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; margin: 18px 0; }
   .intro-path-node { grid-template-columns: 1fr; min-height: 0; gap: 8px; }
   .intro-path-node:not(:last-child)::before { border-left: 0; border-top: 2px dashed #c8d7e1; left: 48px; top: 19px; bottom: auto; right: -8px; }
 }
 @media (max-width: 650px) {
-  .intro-lab { padding: 17px; margin: 25px 0; }
-  .intro-lab-heading { flex-direction: column; gap: 13px; }
   .intro-lab-inputs,.intro-lab-result { padding: 16px; }
   .intro-input-stack { grid-template-columns: 1fr; }
   .intro-control-path { display: block; margin: 19px 0 10px 4px; }
@@ -314,5 +111,5 @@
   .intro-tour-actions { align-items: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .intro-tour-progress span, .intro-control, .intro-decision, .journey-section .journey-step { transition: none; }
+  .intro-tour-progress span, .journey-section .journey-step { transition: none; }
 }
