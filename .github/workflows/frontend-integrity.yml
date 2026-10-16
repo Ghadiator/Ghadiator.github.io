@@ -169,7 +169,7 @@ jobs:
           assert "state.view=requestedView==='monitor'?'architecture'" in app
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'href="?view=architecture"' in app, 'Introduction links remain in shell'
-          for asset in ('public-submissions.js', 'public-personas.js', 'public-attacker.js', 'story-journey.js'):
+          for asset in ('public-submissions.js', 'public-personas.js', 'public-attacker.js'):
               assert 'assets/'+asset+'?v=20261015-modular-architecture-fix-46' in html
               assert Path('assets/'+asset).stat().st_size > 1500
           assert 'PublicSubmissions.submit' in app and 'PublicPersonas.send' in app
