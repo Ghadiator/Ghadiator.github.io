@@ -5,7 +5,7 @@
   const empty=(title,message)=>`<div class="wb-empty"><strong>${title}</strong><p>${message}</p></div>`;
   const notice=(text)=>`<div class="wb-notice">${text}</div>`;
   const hero=(kicker,title,summary,actions="")=>`<div class="wb-head"><div><span class="wb-kicker">${kicker}</span><h1>${title}</h1><p>${summary}</p></div><div class="wb-head-actions">${actions}</div></div>`;
-  const action=(v,label,scenario)=>`<a class="wb-button" data-view="${v}" href="${goto(v,scenario)}">${label} <span aria-hidden="true">↗</span></a>`;
+  const action=(v,label,scenario)=>`<a class="wb-button" data-view="${v}" ${scenario?`data-scenario="${encodeURIComponent(scenario)}"`:""} href="${goto(v,scenario)}">${label} <span aria-hidden="true">↗</span></a>`;
   const panel=(title,children,extra="")=>`<section class="wb-panel"><div class="wb-panel-head"><h2>${title}</h2>${extra}</div><div class="wb-panel-body">${children}</div></section>`;
   const chips=(items)=>`<div class="wb-chip-row">${items.map(x=>`<span class="wb-chip">${x}</span>`).join("")}</div>`;
   const pills=(list,selected,prefix)=>`<div class="wb-tabs" role="group" aria-label="View selection">${list.map(([key,label])=>`<button type="button" class="wb-tab ${selected===key?"selected":""}" data-wb-tab="${prefix}:${key}" aria-pressed="${selected===key}">${label}</button>`).join("")}</div>`;
@@ -45,12 +45,12 @@
     ${hydrateHint()}</div>`;
   }
   function cases(ctx){
-    const rows=all(ctx),filter=ctx.state.filter||"all",query=ctx.state.search.toLowerCase();
+    const rows=all(ctx),filter=ctx.state.caseFilter??ctx.state.filter??"all",query=(ctx.state.caseSearch??ctx.state.search??"").toLowerCase();
     const items=rows.filter(r=>(filter==="all"||r.terminal_state===filter)&&`${r.title} ${r.one_liner} ${r.group}`.toLowerCase().includes(query));
     return `<div class="wb-page">${hero("VALIDATION · CASE WORKBENCH","Processed cases","One review surface per executed supplier scenario. DAiA's real-case layout is grounded in synthetic supplier fixtures.",action("architecture","Open scenario theater"))}
     <div class="wb-metrics">${card(rows.length,"Scenario records","All published fixture runs")}${card(rows.filter(r=>r.reached_human_gate).length,"Human gate reached","From scenario index")}${card(rows.filter(r=>r.terminal_state==="Rejected").length,"Recorded rejections","Not production decisions")}${card(0,"Production cases","No real supplier cases shown")}</div>
-    <div class="wb-toolbar"><input id="caseSearch" type="search" value="${safe(ctx,ctx.state.search)}" placeholder="Search cases, outcomes, controls" aria-label="Search cases"/><select id="caseFilter" aria-label="Case status"><option value="all">All outcomes</option>${[...new Set(rows.map(r=>r.terminal_state))].map(s=>`<option value="${safe(ctx,s)}" ${s===filter?"selected":""}>${safe(ctx,s).replaceAll("_"," ")}</option>`).join("")}</select></div>
-    ${panel("Case register",`<div class="wb-table-wrap"><table class="wb-table"><thead><tr><th>Case / recorded scenario</th><th>Group</th><th>Outcome</th><th>HITL reached</th><th></th></tr></thead><tbody>${items.map(r=>`<tr><td><strong>${safe(ctx,r.title)}</strong><small>${safe(ctx,r.one_liner)}</small></td><td>${safe(ctx,r.group)}</td><td>${stateLabel(ctx,r)}</td><td>${r.reached_human_gate?"Yes":"No"}</td><td><a data-view="case" data-scenario="${safe(ctx,r.slug)}" href="${goto("case",r.slug)}">Inspect →</a></td></tr>`).join("")}</tbody></table></div>`)}
+    <div class="wb-toolbar"><input id="caseSearch" type="search" value="${safe(ctx,ctx.state.caseSearch??ctx.state.search)}" placeholder="Search cases, outcomes, controls" aria-label="Search cases"/><select id="caseFilter" aria-label="Case status"><option value="all">All outcomes</option>${[...new Set(rows.map(r=>r.terminal_state))].map(s=>`<option value="${safe(ctx,s)}" ${s===filter?"selected":""}>${safe(ctx,s).replaceAll("_"," ")}</option>`).join("")}</select>${filter!=="all"||query?`<button type="button" class="wb-clear-filters" data-clear-case-filters>Clear filters</button>`:""}</div>
+    ${panel(`Case register · ${items.length} of ${rows.length} recorded runs`,`<div class="wb-table-wrap"><table class="wb-table"><thead><tr><th>Case / recorded scenario</th><th>Group</th><th>Outcome</th><th>HITL reached</th><th></th></tr></thead><tbody>${items.map(r=>`<tr><td><strong>${safe(ctx,r.title)}</strong><small>${safe(ctx,r.one_liner)}</small></td><td>${safe(ctx,r.group)}</td><td>${stateLabel(ctx,r)}</td><td>${r.reached_human_gate?"Yes":"No"}</td><td><a data-view="case" data-scenario="${safe(ctx,r.slug)}" href="${goto("case",r.slug)}">Inspect →</a></td></tr>`).join("")}</tbody></table>${items.length?"":empty("No matching runs","Adjust the search or use Clear filters to see all recorded scenarios.")}</div>`)}
     ${hydrateHint()}</div>`;
   }
   function committee(ctx){
@@ -89,7 +89,16 @@
   function detail(ctx){
     const r=selected(ctx),es=events(ctx),d=docs(ctx);
     const rev=es.filter(x=>x.actor==="human");
-    return `<div class="wb-page">${hero("CASE WORKBENCH","Case review · "+safe(ctx,r.title),safe(ctx,r.one_liner),action("cases","Back to cases")+action("architecture","Open theater",r.slug))}
+    return `<div class="wb-page">
+    <nav class="run-journey" aria-label="Selected run journey">
+      <div class="run-journey-id"><span class="run-journey-eyebrow">RECORDED RUN · ${safe(ctx,r.slug)}</span><strong>${safe(ctx,r.title)}</strong><span class="run-journey-note">Synthetic reference execution · ${safe(ctx,r.terminal_state.replaceAll("_"," "))}</span></div>
+      <div class="run-journey-links">
+        <span class="active" aria-current="step">1 · Case detail</span>
+        <a data-view="architecture" data-scenario="${safe(ctx,r.slug)}" href="${goto("architecture",r.slug)}">2 · Architecture →</a>
+        <a data-journey-trace data-scenario="${safe(ctx,r.slug)}" href="?view=evidence&amp;scenario=${encodeURIComponent(r.slug)}&amp;tab=trace">3 · Decision evidence →</a>
+      </div>
+    </nav>
+    ${hero("CASE WORKBENCH","Case review · "+safe(ctx,r.title),safe(ctx,r.one_liner),action("cases","Back to cases"))}
     <div class="wb-metrics">${card(safe(ctx,r.terminal_state).replaceAll("_"," "),"Recorded outcome","Result of executed fixture")}${card(es.length||r.event_count,"Recorded events","Ordered reference stream")}${card(r.reached_human_gate?"Reached":"Not reached","Human decision gate","Recorded route")}${card("0","Live model calls","Scripted AI-style roles")}</div>
     ${pills([["summary","Case summary"],["committee","Committee & CoVe"],["timeline","Audit evidence"],["human","Human gate"]],ctx.state.workbenchTab||"summary","case")}
     ${(ctx.state.workbenchTab==="committee")?committee(ctx):ctx.state.workbenchTab==="timeline"?panel("Complete event log",ctx.renderTimeline()):ctx.state.workbenchTab==="human"?panel("Human-review evidence",rev.length?`<div class="wb-list">${rev.map(e=>`<div class="wb-list-row"><b>${e.seq}</b><span><strong>${safe(ctx,e.label)}</strong><small>${safe(ctx,e.detail)}</small></span></div>`).join("")}</div>`:empty("No human event","This fixture did not emit a human decision event.")):panel("Case summary",`<p>${safe(ctx,r.one_liner)}</p><dl class="wb-defs"><dt>Recorded group</dt><dd>${safe(ctx,r.group)}</dd><dt>Evidence source</dt><dd>data/scenarios/${safe(ctx,r.slug)}.json</dd><dt>Scenario provenance</dt><dd>${safe(ctx,d?.provenance?.derivation??"Recorded in supplier reference runner.")}</dd></dl>`)}
