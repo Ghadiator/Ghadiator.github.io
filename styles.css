@@ -581,3 +581,44 @@ body.nav-drawer-open{overflow:hidden}
  .page-entrance.enter-animated,.wb-page{animation:none}
  .nav-list a,.button,.wb-button{transition:none}
 }
+
+/* Recorded-run journey · case → architecture → decision evidence.
+   Navigation only: the underlying fixture, decisions and replay stay unchanged. */
+.run-journey{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+  gap:18px 28px;margin:0 0 22px;padding:18px 20px;
+  background:#fff;border:1px solid #dce5ec;border-radius:9px;
+  box-shadow:0 1px 3px rgba(29,49,64,.025)
+}
+.run-journey-id{display:flex;flex:1 1 260px;min-width:0;flex-direction:column;gap:4px}
+.run-journey-eyebrow{font-family:monospace;font-size:11px;font-weight:650;letter-spacing:.015em;color:#557186;overflow-wrap:anywhere}
+.run-journey-id strong{font-size:16px;line-height:1.4;font-weight:720;color:#253f52}
+.run-journey-note{color:#647585;font-size:12px;line-height:1.5}
+.run-journey-links{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.run-journey-links>a,.run-journey-links>span{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:42px;max-width:100%;padding:9px 12px;
+  color:#44637a;font-size:12px;font-weight:680;
+  border:1px solid transparent;border-radius:6px;text-decoration:none;
+  line-height:1.45;white-space:normal
+}
+.run-journey-links>a:hover{background:#f0f5f8;border-color:#dce5ec;color:#1f4661}
+.run-journey-links>.active{background:#eaf2f8;border-color:#cadde9;color:#254a64}
+.run-journey-links>.active::before{content:"";display:inline-block;margin-right:8px;width:5px;height:5px;border-radius:50%;background:#3a6b89}
+.wb-clear-filters{
+  display:inline-flex;align-items:center;justify-content:center;min-height:42px;
+  padding:8px 14px;border:1px solid #ccdbe5;border-radius:7px;background:#fff;
+  color:#345d75;font:inherit;font-size:12px;font-weight:700;cursor:pointer
+}
+.wb-clear-filters:hover{background:#edf4f8}
+@media(max-width:1050px){
+ .run-journey{align-items:flex-start}
+ .run-journey-links{width:100%}
+ .run-journey-links>a,.run-journey-links>span{flex:1 1 140px}
+}
+@media(max-width:550px){
+ .run-journey{padding:15px;gap:12px}
+ .run-journey-id strong{font-size:15px}
+ .run-journey-links{display:grid;grid-template-columns:minmax(0,1fr)}
+ .run-journey-links>a,.run-journey-links>span{justify-content:flex-start}
+}
