@@ -517,16 +517,36 @@ ${featuredCard}
  <div class="overview-section-heading"><div><span class="section-overline">THE BUSINESS CHALLENGE</span><h2 id="challenge-title">From manual reconciliation to evidence-led review</h2><p>A recurring service invoice starts with a supplier, a purchase order, contractual rates and supporting reports. Someone must reconcile all of them before any payment decision.</p></div></div>
  <section class="original-workflow" aria-labelledby="original-workflow-title">
   <div class="original-workflow-heading"><div><span class="section-overline">BEFORE THE REFERENCE AUTOMATION</span><h3 id="original-workflow-title">The original supplier-invoice review workflow</h3><p>The business process addressed by this project, presented as a representative manual sequence—not as measured observations of a production team.</p></div><span class="original-workflow-label">Manual review · 7 stages</span></div>
-  <ol class="original-workflow-list">
-   <li><span class="original-step-number">01</span><div><strong>Request the supplier's documents</strong><p>Ask for the invoice, service report and other agreed supporting records.</p></div></li>
-   <li><span class="original-step-number">02</span><div><strong>Receive and check completeness</strong><p>Register the submission, identify missing information and follow up with reminders or clarification requests.</p></div></li>
-   <li><span class="original-step-number">03</span><div><strong>Check invoice details and calculations</strong><p>Reconcile dates, service periods, line items, quantities, rates, taxes and totals for internal consistency.</p></div></li>
-   <li><span class="original-step-number">04</span><div><strong>Verify against authoritative records</strong><p>Compare the invoice with the contract, purchase order, approved rates, spending limits and relevant service evidence.</p></div></li>
-   <li><span class="original-step-number">05</span><div><strong>Investigate exceptions and corrections</strong><p>Review unusual changes or unsupported claims; request explanations or revised documents and check them again.</p></div></li>
-   <li><span class="original-step-number">06</span><div><strong>Obtain the authorised human decision</strong><p>Present the reconciled evidence so an authorised reviewer can approve, reject or request changes.</p></div></li>
-   <li><span class="original-step-number">07</span><div><strong>Record the outcome and evidence</strong><p>Preserve the decision, rationale, document references and review history for later inspection.</p></div></li>
-  </ol>
- </section>
+  <ol class="original-workflow-list" aria-label="Seven stages of the original manual workflow">
+   <li class="original-flow-card">
+    <span class="original-step-icon" data-icon="file" aria-hidden="true"></span>
+    <div class="original-step-copy"><span class="original-step-number">STEP 01</span><strong>Request the supplier's documents</strong><p>Ask for the invoice, service report and other agreed supporting records.</p></div>
+   </li>
+   <li class="original-flow-card">
+    <span class="original-step-icon" data-icon="download" aria-hidden="true"></span>
+    <div class="original-step-copy"><span class="original-step-number">STEP 02</span><strong>Receive and check completeness</strong><p>Register the submission, identify missing information and follow up with reminders or clarification requests.</p></div>
+   </li>
+   <li class="original-flow-card">
+    <span class="original-step-icon" data-icon="check" aria-hidden="true"></span>
+    <div class="original-step-copy"><span class="original-step-number">STEP 03</span><strong>Check invoice details and calculations</strong><p>Reconcile dates, service periods, line items, quantities, rates, taxes and totals for internal consistency.</p></div>
+   </li>
+   <li class="original-flow-card">
+    <span class="original-step-icon" data-icon="book-open" aria-hidden="true"></span>
+    <div class="original-step-copy"><span class="original-step-number">STEP 04</span><strong>Verify against authoritative records</strong><p>Compare the invoice with the contract, purchase order, approved rates, spending limits and relevant service evidence.</p></div>
+   </li>
+   <li class="original-flow-card">
+    <span class="original-step-icon" data-icon="alert" aria-hidden="true"></span>
+    <div class="original-step-copy"><span class="original-step-number">STEP 05</span><strong>Investigate exceptions and corrections</strong><p>Review unusual changes or unsupported claims; request explanations or revised documents and check them again.</p></div>
+   </li>
+   <li class="original-flow-card">
+    <span class="original-step-icon" data-icon="user" aria-hidden="true"></span>
+    <div class="original-step-copy"><span class="original-step-number">STEP 06</span><strong>Obtain the authorised human decision</strong><p>Present the reconciled evidence so an authorised reviewer can approve, reject or request changes.</p></div>
+   </li>
+   <li class="original-flow-card">
+    <span class="original-step-icon" data-icon="lock" aria-hidden="true"></span>
+    <div class="original-step-copy"><span class="original-step-number">STEP 07</span><strong>Record the outcome and evidence</strong><p>Preserve the decision, rationale, document references and review history for later inspection.</p></div>
+   </li>
+  </ol></section>
  <div class="wb-grid original-context-cards">
   <article class="wb-small-card"><small>BUSINESS CHALLENGE</small><h3>Consistency and traceability</h3><p>An invoice may add up correctly yet still use an unapproved rate or lack service evidence. Email-based follow-ups and separated records make exceptions harder to explain.</p></article>
   <article class="wb-small-card"><small>WHAT THE REFERENCE SYSTEM SUPPORTS</small><h3>Rules for facts; people for decisions</h3><p>Automated checks, scripted proposal and verification stages, a recorded human decision gate and inspectable events support this process. Document exchange and long-term archiving are not live integrations in this showcase.</p></article>
