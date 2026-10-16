@@ -66,6 +66,9 @@ try{
  assert.equal(await page.locator('.ax-module').count(),20,"Display every architecture module, including non-emitting support modules");
  const initialSnapshot=await page.locator('#architecture-execution-dashboard').innerText();
  assert.ok(initialSnapshot.includes("0 / 20"),"No module is claimed executed before replay begins");
+ assert.ok(initialSnapshot.includes("14 / 20"),"The full 42-event fixture must show 14 observed architecture blocks even before replay starts");
+ assert.equal(await page.locator("[data-architecture-stage]").count(),6,"Group modules by architecture lanes and workflow-wide rails");
+ assert.equal(await page.locator("[data-architecture-module]").count(),20,"Each original diagram block must have an inspection action");
   const diagram=deck.locator(".deck-canvas");
  const header=deck.locator(".deck > div").filter({has:deck.locator("span.w-full.min-w-0")}).first();
  const graphRect=await diagram.boundingBox(),summaryBefore=await header.boundingBox();
@@ -161,6 +164,14 @@ try{
  assert.ok(await page.locator('#architecture-event-rail [data-replay-seek="23"].is-current').count(),
    "Event rail selection and React scrubber must stay in sync");
  console.log("RAIL_NAVIGATION", "Selected emitted event 24 drives the native React scrubber");
+ // Module-status cards must interact with the original 20-node React diagram.
+ await page.locator('[data-architecture-module="rules"]').click();
+ await page.waitForFunction(()=>{
+   const doc=document.getElementById('modularArchitectureFrame')?.contentDocument;
+   return doc?.querySelector('[data-node="rules"]')?.getAttribute('aria-pressed')==="true";
+ },null,{timeout:10000});
+ console.log("ARCHITECTURE_MODULE_MAP","Grouped 20-node coverage and click-through to original diagram passed");
+
 
 
  // Exercise the public run journey, including direct URL state and browser history.
