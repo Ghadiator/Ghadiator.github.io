@@ -262,6 +262,7 @@ function mountEmbeddedArchitecture(){
  const MIN_HEIGHT=1060,MAX_HEIGHT=12000;
  frame.style.minHeight=MIN_HEIGHT+'px';
  let disposed=false,raf=0,currentMain=null,mainResizeObserver=null,bodyMutationObserver=null,observedDoc=null,lastExplanation="";
+ let childPickerChanged=false,restoringParentPicker=false;
  const clean=()=>{
   disposed=true;
   if(raf)cancelAnimationFrame(raf);
@@ -363,6 +364,23 @@ function mountEmbeddedArchitecture(){
   window.ArchitectureExecution?.decorateGraph(doc,events(),Number.isInteger(state.architectureCursor)?state.architectureCursor:-1);
   const known=SCENARIOS.some(s=>s.slug===slug)||state.index.scenarios.some(s=>s.slug===slug);
   if(known&&slug!==state.scenario){
+   // The exported React iframe can start on its default fixture before it
+   // consumes the parent deep link. Do not let that startup value overwrite
+   // the run the visitor selected on the Case page.
+   if(!childPickerChanged){
+    const desired=state.scenario;
+    if(Array.from(picker.options).some(opt=>opt.value===desired)){
+     restoringParentPicker=true;
+     try{
+      const setter=Object.getOwnPropertyDescriptor(doc.defaultView.HTMLSelectElement.prototype,'value')?.set;
+      if(setter)setter.call(picker,desired);else picker.value=desired;
+      picker.dispatchEvent(new doc.defaultView.Event('change',{bubbles:true}));
+     }finally{restoringParentPicker=false;}
+     schedule();
+    }
+    return;
+   }
+   childPickerChanged=false;
    stopPlay();
    state.scenario=slug;
    state.architectureCursor=-1;
@@ -371,6 +389,7 @@ function mountEmbeddedArchitecture(){
    refreshWorkflowResults();
    if(!state.loaded['scenario:'+slug])ensureScenario(slug).then(()=>{if(state.view==='architecture'&&state.scenario===slug)refreshWorkflowResults();});
   }
+  if(slug===state.scenario)childPickerChanged=false;
   if(Number.isFinite(next)&&next!==state.architectureCursor){
    state.architectureCursor=next;
    state.eventIndex=Math.max(0,next);
@@ -378,7 +397,10 @@ function mountEmbeddedArchitecture(){
    window.ArchitectureExecution?.decorateGraph(doc,events(),next);
   }
  };
- const onPlayerControl=()=>schedule();
+ const onPlayerControl=event=>{
+  if(event.type==='change'&&event.target?.matches?.('select[aria-label="Recorded scenario"]')&&!restoringParentPicker)childPickerChanged=true;
+  schedule();
+ };
  const schedule=()=>{
   if(disposed||raf)return;
   raf=requestAnimationFrame(()=>{raf=0;measure();syncFromFrame();});
