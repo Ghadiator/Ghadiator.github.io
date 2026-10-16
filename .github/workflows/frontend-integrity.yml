@@ -43,6 +43,8 @@ jobs:
           node --check assets/architecture-execution.js
           node --check assets/generic-workbench.js
           node --check assets/public-submissions.js
+          node --check assets/supplier-workbook.js
+          node --check assets/introduction-interactive.js
           node --check assets/public-backend.js
           node --check assets/public-local-runner.js
           node --check assets/public-personas.js
@@ -200,6 +202,15 @@ jobs:
           for source in ('assets/public-local-runner.js','assets/public-backend.js'):
               assert source in html
           assert 'PublicLocalRunner.run' in Path('assets/public-submissions.js').read_text()
+          assert 'PublicSupplierWorkbook.read' in Path('assets/public-submissions.js').read_text()
+          assert 'PublicSupplierWorkbook.download' in app
+          assert 'assets/supplier-workbook.js?v=20261016-excel-lab-57' in html
+          assert html.index('assets/public-local-runner.js') < html.index('assets/supplier-workbook.js') < html.index('assets/public-submissions.js')
+          intro = Path('assets/introduction-interactive.js').read_text()
+          assert 'intro-governance-lab' not in intro and 'buildLab(' not in intro, "Remove meaningless hypothetical toggle lab"
+          assert 'buildTour(journey)' in intro, "Retain the interactive step walkthrough"
+          assert 'Try it yourself' not in intro and 'What stops an invoice' not in intro
+          assert 'wb-generator-controls' in Path('styles.css').read_text()
           assert 'PublicBackend.askPersona' in Path('assets/public-personas.js').read_text()
           assert 'PublicBackend.redTeam' in app
           assert 'data-backend-refresh' in app
@@ -292,8 +303,9 @@ jobs:
           state.search=untrusted;
           const out=wb.tickets(ctx);
           if (out.includes(untrusted)) throw Error('HTML injection in search value');
-          const subs = {window:{},localStorage:{getItem:()=>null,setItem:()=>{}}};
+          const subs = {window:{PublicSupplierWorkbook:{variants:[{id:'clean',label:'Matching invoice'}]}},localStorage:{getItem:()=>null,setItem:()=>{}}};
           vm.runInNewContext(fs.readFileSync('assets/public-submissions.js','utf8'),subs);
+          if(!subs.window.PublicSubmissions.render(ctx).includes('Download Excel case'))throw Error('Excel case generator missing');
           if(!subs.window.PublicSubmissions.render(ctx).includes('Supplier submissions'))
               throw Error('Submissions page failed');
           const pers = {window:{}};
