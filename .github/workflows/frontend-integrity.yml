@@ -64,8 +64,8 @@ jobs:
           assert "Example data · No live AI" in html
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
-          assert 'styles.css?v=20261016-design-system-53' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261016-design-system-53' in html, "Script must use a cache-busting URL"
+          assert 'styles.css?v=20261016-manual-flow-54' in html, "Stylesheet must use a cache-busting URL"
+          assert 'app.js?v=20261016-manual-flow-54' in html, "Script must use a cache-busting URL"
           expected = {
               "architecture/index.html": "8b3ed74786fa32b9c8af18a75fc86c6a6041eb55",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
@@ -86,7 +86,7 @@ jobs:
           for tab in required_tabs:
               assert 'data-view="'+tab+'"' in html, f'Missing DAiA-equivalent public tab: {tab}'
               assert tab + ':' in app, f'Missing app router view: {tab}'
-          assert 'assets/generic-workbench.js?v=20261016-design-system-53' in html
+          assert 'assets/generic-workbench.js?v=20261016-manual-flow-54' in html
           assert html.index('assets/generic-workbench.js') < html.index('src="./app.js')
           workbench = Path('assets/generic-workbench.js').read_text()
           for screen in ('overview', 'tickets', 'inbound', 'cases', 'monitor', 'economics',
@@ -203,7 +203,7 @@ jobs:
           journey = Path("assets/generic-workbench.js").read_text()
           evidence = Path("assets/story-journey.js").read_text()
           style = Path("styles.css").read_text()
-          assert 'assets/story-journey.js?v=20261016-design-system-53' in html
+          assert 'assets/story-journey.js?v=20261016-manual-flow-54' in html
           for fragment in ('function readJourneyQuery(params)', 'case_filter=', 'case_search=',
                            'data-journey-trace', 'data-clear-case-filters',
                            "state.caseSearch=event.target.value", 'state.evidenceTab='):
@@ -217,8 +217,17 @@ jobs:
           assert 'featured-run' in overview and 'featured-run-facts' in overview
           assert 'original-workflow-title' in overview, "Original review flow must appear in Introduction"
           assert overview.count('class="original-step-number"') == 7, "All seven representative manual stages must be shown"
+          assert overview.count('class="original-flow-card"') == 7, "Manual stages must be separate connected cards"
+          assert overview.count('class="original-step-icon" data-icon=') == 7, "Each stage needs a distinct pictogram"
+          for symbol in ('file', 'download', 'check', 'book-open', 'alert', 'user', 'lock'):
+              assert f'data-icon="{symbol}"' in overview, f"Missing original-workflow symbol: {symbol}"
           assert overview.index('original-workflow-title') < overview.index('journey-section'), "Original process should precede automated journey"
           assert '.original-workflow-list{' in Path('styles.css').read_text(), "Manual workflow needs responsive styling"
+          style = Path('styles.css').read_text()
+          assert ".original-workflow-list>li:not(:last-child)::after" in style, "Workflow connector lines missing"
+          assert ".original-workflow-list>li:not(:last-child)::before" in style, "Workflow directional arrows missing"
+          assert ".original-step-icon svg{" in style, "Stage SVG symbols need styling"
+          assert "@media(max-width:500px)" in style, "Manual flow must remain readable on phones"
           assert 'architecture-entry' in app and 'control-proof' in app
           assert 'governance:\'controls\'' in app and "state.workbenchTab='controls'" in app
           assert 'case-detail-facts' in journey and 'case-review-evidence' in journey
