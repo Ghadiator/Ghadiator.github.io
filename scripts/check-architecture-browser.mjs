@@ -201,6 +201,37 @@ try{
    "Evidence deep link must survive browser reload");
  console.log("RUN_JOURNEY", "Case filters, Back, case → Architecture → evidence, and reload passed");
 
+
+ // The full design system keeps its hierarchy and mobile navigation functional.
+ await page.setViewportSize({width:375,height:812});
+ await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+"/?view=overview",
+   {waitUntil:"domcontentloaded",timeout:60000});
+ await page.waitForSelector('.featured-run-facts',{timeout:12000});
+ assert.ok((await page.locator('.featured-run-facts').innerText()).includes("supplier_variance_review"),
+   "Featured reference run must come from the published scenario catalogue");
+ assert.ok(await page.locator('.overview-scope').count(),
+   "Introduction must identify implementation boundaries");
+ const menu=page.locator("#mobileMenu");
+ assert.ok(await menu.isVisible(),"Mobile menu must remain visible");
+ await menu.click();
+ assert.equal(await menu.getAttribute("aria-expanded"),"true");
+ await page.keyboard.press("Escape");
+ assert.equal(await menu.getAttribute("aria-expanded"),"false",
+   "Escape must close the mobile drawer");
+ await page.locator('.featured-run-actions [data-view="case"]').click();
+ await page.waitForFunction(()=>new URLSearchParams(location.search).get("view")==="case",null,{timeout:10000});
+ assert.ok(await page.locator('.case-detail-facts').count(),
+   "Case detail must show outcome and human authority before the event tabs");
+ assert.ok(await page.locator('.case-review-evidence').count(),
+   "Case summary must contain grounded human decision evidence");
+ await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+"/?view=governance",
+   {waitUntil:"domcontentloaded",timeout:60000});
+ await page.waitForSelector('.control-proof',{timeout:18000});
+ assert.ok(await page.locator('.wb-tab.selected').innerText().then(x=>x.includes("Obligation mappings")),
+   "Governance deep links must open the control mapping, not an empty tab");
+ assert.ok(await page.locator('.control-proof').first().innerText().then(x=>x.includes("Evidence pointer")),
+   "Each governance control must expose an evidence pointer");
+ console.log("DESIGN_SYSTEM", "Mobile navigation, featured run, case authority and governance source mappings passed");
  // The archived compiled architecture already has a React #418 HTML
  // hydration warning because its SSR markup was customized independently.
  // This PR intentionally does not edit the integrity-pinned compiled artifact.
