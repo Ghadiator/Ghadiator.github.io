@@ -44,7 +44,6 @@ jobs:
           node --check assets/generic-workbench.js
           node --check assets/public-submissions.js
           node --check assets/supplier-workbook.js
-          node --check assets/introduction-interactive.js
           node --check assets/public-backend.js
           node --check assets/public-local-runner.js
           node --check assets/public-personas.js
@@ -211,10 +210,9 @@ jobs:
           assert 'PublicSupplierWorkbook.download' in app
           assert 'assets/supplier-workbook.js?v=20261016-excel-lab-57' in html
           assert html.index('assets/public-local-runner.js') < html.index('assets/supplier-workbook.js') < html.index('assets/public-submissions.js')
-          intro = Path('assets/introduction-interactive.js').read_text()
-          assert 'intro-governance-lab' not in intro and 'buildLab(' not in intro, "Remove meaningless hypothetical toggle lab"
-          assert 'buildTour(journey)' in intro, "Retain the interactive step walkthrough"
-          assert 'Try it yourself' not in intro and 'What stops an invoice' not in intro
+          assert 'introduction-interactive.js' not in html and 'introduction-interactive.css' not in html, "Removed walkthrough assets must not load"
+          assert 'WORKFLOW VIEW · ORIGINAL MANUAL PROCESS' in overview, "Retain the named manual workflow view"
+          assert 'intro-governance-lab' not in html, "Do not reinstate hypothetical toggle lab"
           assert 'wb-generator-controls' in Path('styles.css').read_text()
           assert 'PublicBackend.askPersona' in Path('assets/public-personas.js').read_text()
           assert 'PublicBackend.redTeam' in app
