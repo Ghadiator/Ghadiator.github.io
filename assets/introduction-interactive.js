@@ -50,103 +50,6 @@
     }
   ];
 
-  const controls = [
-    { key: 'total', title: 'Invoice total reconciles', detail: 'Arithmetic agrees with the line items.', checked: true, group: 'Rule check' },
-    { key: 'rate', title: 'Contract rate is approved', detail: 'The billed rate matches the approved record.', checked: false, group: 'Rule check' },
-    { key: 'support', title: 'Service evidence is present', detail: 'The supporting report can be examined.', checked: true, group: 'Evidence check' },
-    { key: 'human', title: 'Human review is recorded', detail: 'An authorised person completed the review.', checked: false, group: 'Human gate' }
-  ];
-
-  function buildLab() {
-    const section = document.createElement('section');
-    section.className = 'intro-lab';
-    section.id = 'intro-governance-lab';
-    section.setAttribute('aria-labelledby', 'intro-lab-heading');
-    section.innerHTML =
-      '<div class="intro-lab-heading">' +
-        '<div><span class="section-overline">TRY IT YOURSELF · AN ILLUSTRATIVE EXAMPLE</span>' +
-        '<h2 id="intro-lab-heading">What stops an invoice from moving forward?</h2>' +
-        '<p>Change the input conditions and watch the governance gates respond. The rules remain consistent; a person retains the decision.</p></div>' +
-        '<button type="button" class="intro-reset" data-intro-reset>↺ Reset example</button>' +
-      '</div>' +
-      '<div class="intro-lab-grid">' +
-        '<div class="intro-lab-inputs"><div class="intro-panel-kicker">01 · CHANGE THE CONDITIONS</div>' +
-          '<div class="intro-input-stack">' + controls.map(function (item) {
-            return '<label class="intro-control">' +
-              '<input type="checkbox" data-intro-control="' + item.key + '"' + (item.checked ? ' checked' : '') + '>' +
-              '<span class="intro-control-check" aria-hidden="true"></span>' +
-              '<span class="intro-control-copy"><span class="intro-control-group">' + item.group + '</span><strong>' + item.title + '</strong><small>' + item.detail + '</small></span>' +
-            '</label>';
-          }).join('') + '</div>' +
-          '<p class="intro-lab-caption">These switches describe a hypothetical invoice, not a recorded execution or a live compliance assessment.</p>' +
-        '</div>' +
-        '<div class="intro-lab-result" aria-live="polite" aria-atomic="true">' +
-          '<div class="intro-panel-kicker">02 · FOLLOW THE CONTROL PATH</div>' +
-          '<div class="intro-control-path" aria-label="Illustrative governance stages">' +
-            '<div class="intro-path-node" data-intro-node="rules"><span class="intro-node-symbol">01</span><span><strong>Deterministic rules</strong><small data-intro-note="rules"></small></span></div>' +
-            '<div class="intro-path-node" data-intro-node="evidence"><span class="intro-node-symbol">02</span><span><strong>Supporting evidence</strong><small data-intro-note="evidence"></small></span></div>' +
-            '<div class="intro-path-node" data-intro-node="review"><span class="intro-node-symbol">03</span><span><strong>Human decision gate</strong><small data-intro-note="review"></small></span></div>' +
-          '</div>' +
-          '<div class="intro-decision" data-intro-decision>' +
-            '<span class="intro-decision-label">ILLUSTRATIVE NEXT STEP</span>' +
-            '<strong data-intro-verdict></strong><p data-intro-explanation></p>' +
-          '</div>' +
-          '<a class="intro-trace-link" href="?view=cases" data-view="cases">Compare with actual recorded example cases <span aria-hidden="true">↗</span></a>' +
-        '</div>' +
-      '</div>';
-    section.addEventListener('change', function (event) {
-      if (event.target.matches('[data-intro-control]')) updateLab(section);
-    });
-    section.addEventListener('click', function (event) {
-      if (!event.target.closest('[data-intro-reset]')) return;
-      controls.forEach(function (item) {
-        section.querySelector('[data-intro-control="' + item.key + '"]').checked = item.checked;
-      });
-      updateLab(section);
-    });
-    updateLab(section);
-    return section;
-  }
-
-  function updateLab(section) {
-    const checked = function (key) {
-      return section.querySelector('[data-intro-control="' + key + '"]').checked;
-    };
-    const validRules = checked('total') && checked('rate');
-    const evidence = checked('support');
-    const human = checked('human');
-    const factsReady = validRules && evidence;
-    const nodes = {
-      rules: { status: validRules ? 'pass' : 'hold', note: validRules ? 'Both factual checks meet the example conditions' : 'One or more factual checks need correction' },
-      evidence: { status: evidence ? 'pass' : 'hold', note: evidence ? 'The supporting record is available' : 'Supporting evidence is missing' },
-      review: { status: !factsReady ? 'blocked' : human ? 'pass' : 'pending', note: !factsReady ? 'Upstream issues must be resolved first' : human ? 'The authorised review is recorded' : 'An authorised review is still required' }
-    };
-    Object.keys(nodes).forEach(function (key) {
-      const node = section.querySelector('[data-intro-node="' + key + '"]');
-      node.dataset.status = nodes[key].status;
-      section.querySelector('[data-intro-note="' + key + '"]').textContent = nodes[key].note;
-    });
-    const decision = section.querySelector('[data-intro-decision]');
-    const verdict = section.querySelector('[data-intro-verdict]');
-    const explanation = section.querySelector('[data-intro-explanation]');
-    if (!validRules || !evidence) {
-      decision.dataset.status = 'hold';
-      verdict.textContent = 'Hold for correction';
-      explanation.textContent = 'A rule or evidence condition failed. Resolve the discrepancy before this example can proceed to its decision gate. Ticking human review cannot bypass failed checks.';
-    } else if (!human) {
-      decision.dataset.status = 'pending';
-      verdict.textContent = 'Awaiting a person';
-      explanation.textContent = 'Checks are satisfied, but automated checks are not an approval. An authorised human must still review the case.';
-    } else {
-      decision.dataset.status = 'pass';
-      verdict.textContent = 'Ready to record the disposition';
-      explanation.textContent = 'The example has sufficient inputs and a documented reviewer step. Its final approval or rejection is a human decision, not a verdict produced by these switches.';
-    }
-    section.querySelectorAll('.intro-control').forEach(function (label) {
-      label.classList.toggle('intro-checked', label.querySelector('input').checked);
-    });
-  }
-
   function buildTour(section) {
     const grid = section.querySelector('.journey-grid');
     if (!grid) return;
@@ -223,11 +126,9 @@
   function enhanceIntroduction() {
     const overview = document.querySelector('#main .overview-page');
     if (!overview || overview.dataset.introEnhanced === 'true') return;
-    const promise = overview.querySelector('.promise-section');
     const journey = overview.querySelector('.journey-section');
-    if (!promise || !journey) return;
+    if (!journey) return;
     overview.dataset.introEnhanced = 'true';
-    promise.insertAdjacentElement('afterend', buildLab());
     buildTour(journey);
   }
 
