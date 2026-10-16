@@ -1,5 +1,6 @@
 import { chromium } from "playwright-core";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH||"/usr/bin/google-chrome",args:["--no-sandbox"]});
 const page=await browser.newPage({viewport:{width:1440,height:1000}});
@@ -300,7 +301,7 @@ try{
    page.locator('[data-submission-action="generate"]').click()
  ]);
  assert.ok(download.suggestedFilename().endsWith(".xlsx"),"Generator must download a real XLSX");
- await page.locator('input[name="attachment"]').setInputFiles(await download.path());
+ await page.locator('input[name="attachment"]').setInputFiles({name:download.suggestedFilename(),mimeType:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",buffer:await readFile(await download.path())});
  await page.locator('input[name="demoContract"]').check();
  await page.locator('#public-submission-form button[type="submit"]').click();
  await page.waitForFunction(()=>Boolean(document.querySelector('.wb-receipt-card'))||Boolean(document.querySelector('#submission-result:not([hidden])')),null,{timeout:12000});
