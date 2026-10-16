@@ -807,3 +807,31 @@ body{font-family:"Barlow",Arial,sans-serif;font-size:15px;line-height:1.65}
  .original-workflow-list strong{font-size:14px}
  .original-workflow-list p{font-size:12.5px}
 }
+
+/* Synthetic invoice Excel generator – paired download/upload journey */
+.wb-generator{overflow:hidden;margin:0 0 22px;border:1px solid #cbdde6;background:#fff;border-radius:9px}
+.wb-generator .wb-panel-head{display:flex;align-items:center;flex-wrap:wrap;gap:12px;background:#f3f8fb}
+.wb-generator .wb-panel-head h2{font-size:18px;letter-spacing:-.02em}
+.wb-generator-tag{border:1px solid #bed3df;background:#fff;color:#3d6780;letter-spacing:.055em;font-size:10px;font-weight:750;padding:7px 10px;border-radius:5px}
+.wb-generator .wb-panel-body{display:block;padding:23px}
+.wb-generator .wb-panel-body>p:first-child{font-size:14px;line-height:1.7;color:#5b7181;max-width:780px;margin:0 0 18px}
+.wb-generator-controls{display:flex;gap:13px;align-items:end;flex-wrap:wrap;margin:17px 0 22px}
+.wb-generator-controls>label{display:flex;flex:1 1 340px;max-width:550px;min-width:0;flex-direction:column;gap:7px;color:#39586d;font-size:12.5px;font-weight:700}
+.wb-generator-controls select{border:1px solid #bfced9;min-height:46px;max-width:100%;padding:11px 12px;border-radius:7px;background:#fff;color:#203d52;font-size:13px}
+.wb-generator-controls button{min-height:46px;padding:10px 20px;border-radius:7px;font-weight:700;font-size:13px;white-space:normal}
+.wb-generator-controls button:hover{filter:brightness(.95)}
+.wb-generator-steps{display:flex;flex-wrap:wrap;align-items:center;gap:9px;color:#5d7281;margin:5px 0 14px;font-size:12.5px}
+.wb-generator-steps span:not([aria-hidden]){display:inline-flex;align-items:center;gap:7px;border:1px solid #dee8ee;border-radius:6px;padding:9px 11px;background:#f9fbfc}
+.wb-generator-steps strong{font-size:11px;font-family:ui-monospace,Consolas,monospace;color:#3f6b83}
+.wb-generator .wb-file-hint{margin:0;font-size:12px;color:#627889;line-height:1.7}
+.wb-generator+.wb-tabs{margin-top:6px}
+.wb-submit-grid input[type="file"]{width:100%;max-width:100%;font-size:13px}
+.wb-preflight-details summary{cursor:pointer;min-height:36px;display:flex;align-items:center}
+@media(max-width:640px){
+ .wb-generator .wb-panel-body{padding:17px}
+ .wb-generator-controls{align-items:stretch}
+ .wb-generator-controls>label{flex-basis:100%}
+ .wb-generator-controls button{width:100%}
+ .wb-generator-steps>span[aria-hidden]{display:none}
+ .wb-generator-steps span:not([aria-hidden]){flex:1 1 100%}
+}
