@@ -229,7 +229,7 @@ try{
  await page.waitForSelector('.control-proof',{timeout:18000});
  assert.ok(await page.locator('.wb-tab.selected').innerText().then(x=>x.includes("Obligation mappings")),
    "Governance deep links must open the control mapping, not an empty tab");
- assert.ok(await page.locator('.control-proof').first().innerText().then(x=>x.includes("Evidence pointer")),
+ assert.ok(await page.locator('.control-proof').first().innerText().then(x=>x.toLowerCase().includes("evidence pointer")),
    "Each governance control must expose an evidence pointer");
  console.log("DESIGN_SYSTEM", "Mobile navigation, featured run, case authority and governance source mappings passed");
  // The archived compiled architecture already has a React #418 HTML
