@@ -516,7 +516,7 @@ ${featuredCard}
 <section class="problem-pitch" aria-labelledby="challenge-title">
  <div class="overview-section-heading"><div><span class="section-overline">THE BUSINESS CHALLENGE</span><h2 id="challenge-title">From manual reconciliation to evidence-led review</h2><p>A recurring service invoice starts with a supplier, a purchase order, contractual rates and supporting reports. Someone must reconcile all of them before any payment decision.</p></div></div>
  <section class="original-workflow" aria-labelledby="original-workflow-title">
-  <div class="original-workflow-heading"><div><span class="section-overline">BEFORE THE REFERENCE AUTOMATION</span><h3 id="original-workflow-title">The original supplier-invoice review workflow</h3><p>The business process addressed by this project, presented as a representative manual sequence—not as measured observations of a production team.</p></div><span class="original-workflow-label">Manual review · 7 stages</span></div>
+  <div class="original-workflow-heading"><div><span class="section-overline">WORKFLOW VIEW · ORIGINAL MANUAL PROCESS</span><h3 id="original-workflow-title">The original supplier-invoice review workflow</h3><p>The business process addressed by this project, presented as a representative manual sequence—not as measured observations of a production team.</p></div><span class="original-workflow-label">Manual review · 7 stages</span></div>
   <ol class="original-workflow-list" aria-label="Seven stages of the original manual workflow">
    <li class="original-flow-card">
     <span class="original-step-icon" data-icon="file" aria-hidden="true"></span>
