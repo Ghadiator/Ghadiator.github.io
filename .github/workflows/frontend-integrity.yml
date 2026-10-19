@@ -64,15 +64,16 @@ jobs:
           app = Path("app.js").read_text()
           html = Path("index.html").read_text()
           assert app.count('<article class="journey-step') == 6, "The opening must show exactly six workflow stages"
-          assert 'assets/overview-agentic-flow.css?v=20261019-flow-map-60' in html, "Agentic workflow map must load on the overview"
-          for landmark in ('agentic-flow-board','agentic-flow-top','agentic-flow-routes','af-route-standard',
-                           'af-flow-merge','agentic-flow-finish','af-flow-loop'):
-              assert landmark in app, f"High-level agentic workflow missing: {landmark}"
-          assert app.count('data-flow-module=') == 6, "The abstract map must contain six real overview modules"
-          assert app.count('class="af-flow-arrow') == 3, "Visible arrows must connect the core workflow modules"
-          assert 'no advisory committee required' in app, "Routine route must bypass optional AI advice"
-          assert 'Scripted AI-style roles' in app and 'authorised reviewer' in app, "Show scripted review and human-only authority"
-          assert 'revised invoice returns' in app, "Show correction loop back to intake"
+          assert 'assets/overview-agentic-flow.css?v=20261019-linear-flow-63' in html, "Linear overview CSS must load"
+          assert 'agentic-flow-sequence' in app, "Render a single connected sequence"
+          assert app.count('class="af-sequence-item"') == 6, "Exactly six sequential modules"
+          assert app.count('data-flow-module=') == 6, "Preserve the six authentic overview stages"
+          assert app.count('class="af-sequence-number"') == 6, "Show each stage number"
+          assert 'agentic-flow-routes' not in app and 'af-flow-merge' not in app and 'af-route-standard' not in app, "Remove fork and merge visuals"
+          assert 'af-flow-loop' not in app and 'class="af-flow-arrow' not in app, "No confusing extra routes or arrows"
+          assert 'Routine cases skip this step' in app, "Label AI-style advisory as optional"
+          assert 'An authorised reviewer' in app and 'A corrected invoice' in app, "Preserve final human authority and correction explanation"
+          assert 'content:"↓"' in Path('assets/overview-agentic-flow.css').read_text(), "Join stages with simple downward arrows"
           assert 'intro-guided-tour' not in app, "Do not reinstate the removed interactive walkthrough"
           overview = app[app.index("function renderOverview()"):app.index("function renderCaseSelector()")]
           assert "overview-measures" not in overview and "demo-note" not in overview, "Remove the requested disclaimer and statistics sections from the homepage"
@@ -86,7 +87,7 @@ jobs:
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
           assert 'styles.css?v=20261016-manual-flow-54' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261019-touch-scroll-62' in html, "Script must use a cache-busting URL"
+          assert 'app.js?v=20261019-linear-flow-63' in html, "Script must use a cache-busting URL"
           expected = {
               "architecture/index.html": "8b3ed74786fa32b9c8af18a75fc86c6a6041eb55",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
