@@ -278,42 +278,40 @@ try{
    'Desktop Governance brand must occupy the visible sidebar footer after navigation and reference context: '+JSON.stringify(footerBrandPosition));
 
 
- // The new simple agentic flow is separate from the original manual workflow.
+ // The agentic overview must read as ONE connected vertical sequence, with no
+ // branches. It remains separate from the original seven-stage manual workflow.
  const overviewMap=page.locator('.journey-section .agentic-flow-board');
- assert.equal(await overviewMap.locator('.af-flow-node').count(),6,
-   "Agentic overview must show the same six numbered modules");
- assert.equal(await overviewMap.locator('.af-flow-arrow').count(),3,
-   "Core modules must have visible connecting arrows");
- assert.equal(await overviewMap.locator('.agentic-flow-routes > *').count(),2,
-   "Deterministic results must branch to routine or AI-style exception paths");
- assert.ok((await overviewMap.innerText()).includes("Both paths"),
-   "Paths must converge at the evidence-backed human review package");
- assert.ok((await overviewMap.innerText()).includes("Correction requested?"),
-   "Human correction path must visibly loop back to intake");
+ const sequence=overviewMap.locator('.agentic-flow-sequence > .af-sequence-item');
+ assert.equal(await sequence.count(),6,"Show all six modules in a single sequence");
+ assert.equal(await overviewMap.locator('.af-flow-node').count(),6,"Exactly six original overview modules");
+ assert.equal(await overviewMap.locator('.agentic-flow-routes,.af-route-standard,.af-flow-merge,.af-flow-loop').count(),0,
+   "No branches, split panels, merging arrows or visible correction-loop graphic");
+ assert.ok((await overviewMap.innerText()).includes("Routine cases skip this step."),
+   "AI-style stage must be explicitly optional");
+ assert.ok((await overviewMap.innerText()).includes("authorised reviewer"),
+   "A person retains final authority");
  assert.equal(await page.locator('#intro-guided-tour').count(),0,
    "The removed interactive walkthrough must not reappear");
- const desktopMap=await page.evaluate(()=>{
-   const nodes=[...document.querySelectorAll('.agentic-flow-top .af-flow-node')].map(e=>e.getBoundingClientRect());
-   const arrows=[...document.querySelectorAll('.agentic-flow-top .af-flow-arrow')].map(e=>e.getBoundingClientRect());
-   return nodes.length===3&&arrows.length===2
-     &&nodes.every((b,i)=>i===0||b.left>nodes[i-1].right)
-     &&arrows[0].left>=nodes[0].right&&arrows[0].right<=nodes[1].left
-     &&arrows[1].left>=nodes[1].right&&arrows[1].right<=nodes[2].left;
+ const linearGeometry=async()=>page.evaluate(()=>{
+   const items=[...document.querySelectorAll('.agentic-flow-sequence > .af-sequence-item')];
+   const cards=items.map(li=>li.querySelector('.af-flow-node').getBoundingClientRect());
+   const viewWidth=innerWidth;
+   return {
+     six:cards.length===6,
+     ordered:cards.every((r,i)=>i===0||r.top>cards[i-1].bottom),
+     aligned:cards.every(r=>Math.abs(r.left-cards[0].left)<2),
+     arrows:items.slice(0,-1).every(li=>getComputedStyle(li,'::after').content.includes('↓')),
+     visible:cards.every(r=>r.width>0&&r.left>=-1&&r.right<=viewWidth+1)
+   };
  });
- assert.ok(desktopMap,"Large-screen agentic modules should form a visible left-to-right sequence");
+ const desktopLinear=await linearGeometry();
+ assert.ok(Object.values(desktopLinear).every(Boolean),
+   "Desktop must render one connected top-to-bottom flow: "+JSON.stringify(desktopLinear));
 
  await page.setViewportSize({width:375,height:812});
- const mobileMap=await page.evaluate(()=>{
-   const board=document.querySelector(".agentic-flow-board");
-   const boxes=[...board.querySelectorAll(".af-flow-node")].map(e=>e.getBoundingClientRect());
-   const grid=getComputedStyle(board.querySelector(".agentic-flow-routes")).gridTemplateColumns;
-   const viewWidth=innerWidth;
-   return boxes.length===6
-     &&boxes.every(r=>r.width>0&&r.left>=-1&&r.right<=viewWidth+1)
-     &&getComputedStyle(board.querySelector(".agentic-flow-top")).flexDirection==="column"
-     &&grid.trim().split(" ").length===1;
- });
- assert.ok(mobileMap,"Phone view must connect modules vertically, branch to one column and avoid clipped cards");
+ const phoneLinear=await linearGeometry();
+ assert.ok(Object.values(phoneLinear).every(Boolean),
+   "Phone must retain the same single readable flow without clipping: "+JSON.stringify(phoneLinear));
 
  const menu=page.locator("#mobileMenu");
  assert.ok(await menu.isVisible(),"Mobile menu must remain visible");
