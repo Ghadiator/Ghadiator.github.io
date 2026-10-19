@@ -171,7 +171,7 @@ jobs:
           assert 'id="workflow-results"' in app and 'syncFromFrame' in app
           assert 'id="architecture-event-rail"' in app and 'id="architecture-execution-dashboard"' in app
           assert 'decorateGraph' in app and 'refreshWorkflowResults' in app
-          assert 'assets/architecture-execution.js?v=20261016-audit-scope-58' in html
+          assert 'assets/architecture-execution.js?v=20261019-module-io-64' in html
           assert html.index('assets/architecture-execution.js') < html.index('src="./app.js')
           engine = Path('assets/architecture-execution.js').read_text()
           assert 'assets/architecture-module-map.css?v=20261016-audit-scope-58' in html
