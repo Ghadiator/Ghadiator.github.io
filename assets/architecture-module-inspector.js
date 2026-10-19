@@ -1,0 +1,108 @@
+/* Selected-architecture-block inspector. Reads only the public synthetic trace
+ * supplied by the parent workbench; no inference of unrecorded model I/O. */
+(function(){
+  "use strict";
+  const safe=value=>String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");
+  // Canonical public architecture nodes, not invented supplier-run components.
+  const SPEC={
+    orchestrator:["Main orchestrator — LangGraph","Coordinates the broader source architecture's graph, routing and pauses.","Workflow graph state, task state and control decisions.","Next graph node and updated coordination state.",[]],
+    request:["Collection request","Opens the supplier review and prepares a document request.","Case identifier, supplier and requested billing evidence.","A collection request and a recorded requested state.",[]],
+    reminders:["Deadline reminders","Prepares reminders leading up to the supplier submission deadline.","Collection request and its due date.","Reminder records in the fixture outbox; no real email.",["request"]],
+    intake:["Supplier intake","Receives the submitted workbook and validates the required structure.","Invoice workbook and supporting submission.","Parsed and versioned supplier billing input, or an intake rejection.",["reminders","request"]],
+    memory:["Case history","Attaches prior submission versions while excluding untrusted free text from decision inputs.","Parsed invoice, previous version and supplier notes.","Case-version context and an input-boundary record.",["intake"]],
+    rules:["Invoice checks","Applies repeatable invoice validation rules: arithmetic, dates, uniqueness and required reports.","Parsed invoice fields, service lines and attachments.","Individual deterministic pass/fail check results.",["intake","memory"]],
+    crosscheck:["Contract cross-check","Compares the invoice with the approved contract, PO, rate card and limits.","Validated invoice and approved contract snapshot.","Contract-matching pass/fail results and baseline status.",["rules","intake"]],
+    external:["Approved contract","Supplies the reference contract and approved commercial terms used for verification.","Approved contract, purchase-order and rate-card information.","Reference facts for contract cross-check; not necessarily its own trace event.",[]],
+    sanitiser:["Input sanitiser","Defines the trusted-input boundary for supplier text before optional exception review.","Untrusted supplier text and already-validated case facts.","Restricted review input without supplier instructions being treated as authority.",["memory","crosscheck"]],
+    proponent:["Proponent","Produces the supportive perspective in a bounded, scripted exception review.","Checked contract facts and case evidence when exception review is invoked.","A recorded supporting argument; not a payment approval.",["crosscheck","sanitiser"]],
+    opponent:["Opponent","Challenges the submission and identifies possible unsupported or exceptional claims.","Checked case evidence and the review context.","A challenge or proposed finding requiring verification.",["proponent","crosscheck"]],
+    firewall:["Pre-Judge CoVe","Checks proposed findings against supporting evidence before the Judge can use them.","Proponent and Opponent claims plus deterministic case facts.","Verified, revised or rejected claims based on evidence.",["opponent","proponent"]],
+    judge:["Judge","Summarises verified findings for an authorised reviewer; cannot approve invoices.","Evidence-filtered findings and review context.","A scripted reviewer-facing summary of verified findings.",["firewall","opponent"]],
+    post_cove:["Post-Judge CoVe","Represents a further post-Judge verification layer in the broader architecture.","Judge output and the reference evidence.","A further verification result in designs that execute this layer.",["judge"]],
+    token_economics:["Committee orchestration — token economics","Defines limits or budgets for review participation in the broader architecture.","Committee workload and allocation limits.","A bounded committee execution or budget outcome; no live token metering in these fixtures.",["proponent","opponent"]],
+    advisory:["Review package","Collects deterministic results and any supported exception findings for the human gate.","Invoice/contract checks and verified exception findings, when present.","A review package with counted failed checks and verified findings.",["judge","crosscheck"]],
+    remediation:["Supplier correction","Prepares supplier clarification or correction requests when the review calls for one.","Findings and missing or inconsistent supporting evidence.","A drafted clarification/correction notice and review status.",["advisory","judge"]],
+    disposition:["Human-in-the-loop (HITL)","Places final approval, rejection or correction authority with a named human reviewer.","Review package, supporting evidence and the reviewer's response.","Human gate events and a recorded terminal disposition.",["advisory","remediation"]],
+    archive:["Evidence archive","Retains the recorded case outcome and audit evidence for inspection.","Recorded decision, rule results and event history.","An archive event; persistence is fixture memory, not a production repository.",["disposition"]],
+    process_semantics:["DAiA ProcessEvent pool (architecture reference)","Describes a separate generic ProcessEvent semantics layer, distinct from the supplier fixture audit.","General workflow event semantics in the broader design.","A generic ProcessEvent stream if that separate source is run.",[]]
+  };
+  const DESIGN_ONLY=new Set(["orchestrator","post_cove","token_economics","process_semantics"]);
+  const norm=n=>n==="gate"?"disposition":n;
+  let scenario="",all=[],cursor=-1,selected="";
+  const target=()=>document.getElementById("architecture-module-inspector");
+  const eventLabel=(e,index)=>{
+    const ref=(Array.isArray(e.refs)&&e.refs[0])?e.refs[0]:"Published synthetic fixture";
+    return '<li class="ami-event"><button type="button" data-replay-seek="'+index+'" aria-label="Jump to recorded event '+safe(e.seq)+'">'
+      +'<span class="ami-seq">#'+safe(e.seq)+'</span><span class="ami-event-copy"><b>'+safe(e.label)+'</b>'
+      +(e.detail?'<span>'+safe(e.detail)+'</span>':'')
+      +'<small>'+safe(e.kind)+' · '+safe(ref)+'</small></span><span aria-hidden="true">↗</span></button></li>';
+  };
+  function render(){
+    const el=target();if(!el||!selected||!SPEC[selected])return;
+    const [title,purpose,input,output,sources]=SPEC[selected];
+    const active=all.map((e,i)=>({e,i})).filter(({e})=>norm(e.node)===selected);
+    const first=active[0]?.i??-1;
+    const relevant=sources.map(source=>{
+      if(first<0)return null;
+      return all.map((e,i)=>({e,i})).filter(({e,i})=>i<first&&norm(e.node)===source&&!String(e.kind).startsWith("audit.")).at(-1);
+    }).filter(Boolean);
+    const unique=[...new Map(relevant.map(v=>[v.i,v])).values()].sort((a,b)=>a.i-b.i);
+    const loaded=all.length>0;
+    const matched=active.length>0;
+    const reached=active.filter(({i})=>i<=cursor).length;
+    const runState=!loaded?"Case events are loading":!matched?"No directly attributed event in this case":
+      reached?reached+" of "+active.length+" module events reached in replay":
+      active.length+" module events recorded · later in replay";
+    const context=matched
+      ?unique.length?'<ol class="ami-event-list">'+unique.slice(-3).map(({e,i})=>eventLabel(e,i)).join("")+'</ol>':
+        '<p class="ami-empty">No relevant upstream event is documented before this block’s first recorded event.</p>'
+      :'<p class="ami-empty">No scenario-specific module input is recorded for this block.</p>';
+    const outputs=matched
+      ?'<ol class="ami-event-list">'+active.slice(0,5).map(({e,i})=>eventLabel(e,i)).join("")+'</ol>'
+        +(active.length>5?'<details class="ami-more"><summary>Show '+(active.length-5)+' more recorded events</summary><ol class="ami-event-list">'+active.slice(5).map(({e,i})=>eventLabel(e,i)).join("")+'</ol></details>':'')
+      :'<p class="ami-empty">No module output is directly emitted in this selected synthetic case. This does not establish that a separate source component ran or failed.</p>';
+    const special=selected==="process_semantics"
+      ?'<p class="ami-provenance">The supplier audit stream is not the separate generic DAiA ProcessEvent pool.</p>'
+      :selected==="external"
+      ?'<p class="ami-provenance">Approved contract details may appear inside contract cross-check events, not as events attributed to this reference-input block.</p>'
+      :DESIGN_ONLY.has(selected)
+      ?'<p class="ami-provenance">This source-architecture concept is not evidenced as executing in this supplier fixture.</p>':'';
+    el.hidden=false;
+    el.innerHTML='<div class="ami-header"><span class="ami-eyebrow">SELECTED ARCHITECTURE BLOCK</span>'
+      +'<button type="button" class="ami-close" data-module-inspector-close aria-label="Close block details">×</button>'
+      +'<h2>'+safe(title)+'</h2><p>'+safe(purpose)+'</p></div>'
+      +'<div class="ami-content"><section class="ami-design" aria-label="Module contract">'
+      +'<h3>What the block does</h3><dl><dt>Expected input · architecture</dt><dd>'+safe(input)+'</dd>'
+      +'<dt>Expected output · architecture</dt><dd>'+safe(output)+'</dd></dl></section>'
+      +'<section class="ami-trace" aria-label="Recorded input and output">'
+      +'<h3>In the selected scenario</h3><p class="ami-case">'+safe(scenario||"Scenario loading")+'</p>'
+      +'<span class="ami-status">'+safe(runState)+'</span>'
+      +'<h4>Input context in the recorded trace</h4>'
+      +'<p class="ami-explain">Upstream events that precede this block. These are <strong>not</strong> captured function-call arguments.</p>'
+      +context+'<h4>Recorded output from this block</h4>'
+      +'<p class="ami-explain">Directly attributed fixture events, including their published details and source reference.</p>'
+      +outputs+special+'</section>'
+      +'<p class="ami-footer">Read-only synthetic scenario · scripted AI-style roles · no live model invocation or payment action.</p></div>';
+    el.dataset.selectedModule=selected;
+  }
+  function select(id){
+    if(!Object.hasOwn(SPEC,id))return false;
+    selected=id;render();return true;
+  }
+  function setScenario(nextScenario,events,nextCursor){
+    scenario=String(nextScenario||"");
+    all=Array.isArray(events)?events:[];
+    cursor=Number.isInteger(nextCursor)?nextCursor:-1;
+    if(selected)render();
+  }
+  function close(){
+    selected="";
+    const el=target();
+    if(el){el.hidden=true;el.innerHTML="";delete el.dataset.selectedModule;}
+  }
+  document.addEventListener("click",ev=>{
+    if(ev.target?.closest?.("[data-module-inspector-close]")){close();return;}
+  });
+  document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&selected)close();});
+  window.ArchitectureModuleInspector={select,setScenario,close,definitions:SPEC};
+})();
