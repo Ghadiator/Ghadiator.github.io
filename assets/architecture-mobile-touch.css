@@ -1,0 +1,47 @@
+/* Safe mobile navigation for the 20-block embedded React diagram.
+   Leave the source canvas untouched: its touch-action:none is for panning.
+   When not deliberately exploring, this *parent-document* layer catches touch
+   events over the canvas and allows the browser to scroll the page. */
+.architecture-main-canvas{position:relative}
+.architecture-touch-toggle,.architecture-touch-exit{display:none}
+.architecture-touch-guard[hidden],.architecture-touch-exit[hidden]{display:none!important}
+@media (pointer:coarse){
+ .architecture-main-canvas .architecture-canvas-hint{align-items:center}
+ .architecture-touch-toggle{
+  display:inline-flex;align-items:center;justify-content:center;
+  margin-left:auto;padding:9px 13px;min-height:40px;
+  background:#244f6d;border:1px solid #244f6d;border-radius:7px;
+  font:700 12px/1.35 "Barlow",Arial,sans-serif;color:white;
+  cursor:pointer;white-space:normal
+ }
+ .architecture-touch-toggle[aria-pressed="true"]{background:#e8f2fb;border-color:#a9c5de;color:#315b7d}
+ .architecture-touch-toggle:focus-visible,.architecture-touch-exit:focus-visible{
+  outline:3px solid #80aff4;outline-offset:3px
+ }
+ .architecture-touch-guard{
+  position:absolute;display:block;z-index:5;
+  background:transparent;
+  touch-action:auto;overscroll-behavior:auto;
+  cursor:default
+ }
+ .architecture-touch-guard>span{
+  display:inline-block;margin:12px;max-width:calc(100% - 24px);
+  padding:9px 12px;background:rgba(238,247,253,.97);
+  color:#355b74;font:600 11px/1.55 "Barlow",Arial,sans-serif;
+  border:1px solid #c5dbe8;border-radius:7px;
+  box-shadow:0 3px 12px rgba(18,49,71,.06);
+  pointer-events:none
+ }
+ .architecture-touch-exit{
+  display:inline-flex;position:fixed;z-index:150;
+  bottom:max(18px,env(safe-area-inset-bottom));right:max(16px,env(safe-area-inset-right));
+  align-items:center;justify-content:center;
+  max-width:calc(100vw - 32px);min-height:48px;padding:12px 18px;
+  background:#244f6d;color:white;border:2px solid white;border-radius:25px;
+  box-shadow:0 5px 22px rgba(20,49,69,.24);
+  font:750 13px/1.35 "Barlow",Arial,sans-serif;cursor:pointer
+ }
+}
+@media (prefers-reduced-motion:reduce){
+ .architecture-touch-toggle,.architecture-touch-exit{transition:none}
+}

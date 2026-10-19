@@ -399,6 +399,77 @@ try{
  assert.ok((await page.locator('.wb-receipt-card details').first().innerText()).includes("C6: Rates match approved rate card"),
    "Report must surface the failing contract-rate check");
  console.log("EXCEL_ROUND_TRIP","Six generator scenarios, editable Excel download, upload and local rule report passed");
+
+ // Reproduce a PHONE finger-swipe over the real iframe canvas. In normal
+ // browsing mode the parent page must move; the old touch-action:none canvas
+ // trapped this gesture and never passed it to the page.
+ const mobileContext=await browser.newContext({
+   viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true
+ });
+ try{
+   const mobile=await mobileContext.newPage();
+   mobile.on("pageerror",e=>errors.push("MOBILE PAGEERROR "+e.message.slice(0,300)));
+   await mobile.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+"/?view=architecture",
+     {waitUntil:"domcontentloaded",timeout:60000});
+   await mobile.waitForFunction(()=>{
+     const guard=document.getElementById("architectureTouchGuard");
+     return matchMedia("(pointer: coarse)").matches && guard && !guard.hidden &&
+       guard.getBoundingClientRect().height>500;
+   },null,{timeout:25000});
+   assert.equal(await mobile.locator("#architectureTouchToggle").getAttribute("aria-pressed"),"false",
+     "Mobile must start with parent-page scrolling, not trapped diagram panning");
+   const firstPosition=await mobile.evaluate(()=>{
+     const guard=document.getElementById("architectureTouchGuard");
+     const rect=guard.getBoundingClientRect();
+     window.scrollTo({top:window.scrollY+rect.top-140,behavior:"instant"});
+     return window.scrollY;
+   });
+   await mobile.waitForTimeout(200);
+   const guardRect=await mobile.locator("#architectureTouchGuard").boundingBox();
+   assert.ok(guardRect&&guardRect.y<300&&guardRect.y+guardRect.height>650,
+     "The touch guard must cover the visible diagram without covering its selector");
+   const touchX=Math.round(guardRect.x+Math.min(130,guardRect.width/2));
+   const scrollBefore=await mobile.evaluate(()=>document.scrollingElement.scrollTop);
+   const client=await mobileContext.newCDPSession(mobile);
+   const swipe=async (startY,endY)=>{
+     await client.send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x:touchX,y:startY}]});
+     for(let i=1;i<=12;i++){
+       const y=Math.round(startY+(endY-startY)*i/12);
+       await client.send("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{x:touchX,y}]});
+       await mobile.waitForTimeout(22);
+     }
+     await client.send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+     await mobile.waitForTimeout(550);
+   };
+   await swipe(560,245);
+   const scrollAfter=await mobile.evaluate(()=>document.scrollingElement.scrollTop);
+   assert.ok(scrollAfter>scrollBefore+60,
+     "Swiping UP on the embedded diagram must scroll the outer page DOWN (before "+scrollBefore+" after "+scrollAfter+")");
+   // Reposition under the finger and verify reverse scrolling as well.
+   await mobile.evaluate(()=>{
+     const box=document.getElementById("architectureTouchGuard").getBoundingClientRect();
+     window.scrollBy({top:box.top-130,behavior:"instant"});
+   });
+   await mobile.waitForTimeout(180);
+   const reverseBefore=await mobile.evaluate(()=>document.scrollingElement.scrollTop);
+   await swipe(285,555);
+   const reverseAfter=await mobile.evaluate(()=>document.scrollingElement.scrollTop);
+   assert.ok(reverseAfter<reverseBefore-40,
+     "Swiping DOWN over the diagram must scroll the outer page UP (before "+reverseBefore+" after "+reverseAfter+")");
+   // Explicit interaction mode must still allow selecting a real React node.
+   await mobile.locator("#architectureTouchToggle").click();
+   assert.equal(await mobile.locator("#architectureTouchToggle").getAttribute("aria-pressed"),"true");
+   assert.ok(await mobile.locator("#architectureTouchGuard").isHidden(),"Uncover original React canvas for touch");
+   assert.ok(await mobile.locator("#architectureTouchExit").isVisible(),"Fixed exit must stay accessible");
+   await mobile.frameLocator("#modularArchitectureFrame").locator('[data-node="request"]').click();
+   assert.equal(await mobile.frameLocator("#modularArchitectureFrame").locator('[data-node="request"]').getAttribute("aria-pressed"),"true");
+   await mobile.locator("#architectureTouchExit").click();
+   assert.equal(await mobile.locator("#architectureTouchToggle").getAttribute("aria-pressed"),"false");
+   assert.ok(await mobile.locator("#architectureTouchGuard").isVisible(),
+     "Exiting exploration must restore normal page swipe scrolling");
+   console.log("MOBILE_DIAGRAM_SCROLL","Native upward/downward page swipes, explicit React interaction and one-tap exit passed");
+ }finally{await mobileContext.close();}
+
  // The archived compiled architecture already has a React #418 HTML
  // hydration warning because its SSR markup was customized independently.
  // This PR intentionally does not edit the integrity-pinned compiled artifact.
