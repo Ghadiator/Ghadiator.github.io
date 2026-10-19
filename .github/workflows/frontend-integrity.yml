@@ -14,6 +14,9 @@ on:
       - assets/overview-agentic-flow.css
       - assets/architecture-execution.js
       - assets/architecture-module-map.css
+      - assets/architecture-module-inspector.js
+      - assets/architecture-module-inspector.css
+      - scripts/check-architecture-module-inspector.cjs
       - assets/architecture-mobile-touch.css
       - scripts/check-architecture-module-map.cjs
       - styles.css
@@ -46,6 +49,7 @@ jobs:
         run: |
           node --check app.js
           node --check assets/architecture-execution.js
+          node --check assets/architecture-module-inspector.js
           node --check assets/generic-workbench.js
           node --check assets/public-submissions.js
           node --check assets/supplier-workbook.js
@@ -56,6 +60,8 @@ jobs:
           node --check assets/story-journey.js
       - name: Test architecture state against source fixtures
         run: node scripts/check-architecture-module-map.cjs
+      - name: Check module definitions and recorded scenario inputs and outputs
+        run: node scripts/check-architecture-module-inspector.cjs
       - name: Check plain-language introduction and preserved evidence
         run: |
           python3 - <<'PY'
@@ -87,7 +93,7 @@ jobs:
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
           assert 'styles.css?v=20261016-manual-flow-54' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261019-linear-flow-63' in html, "Script must use a cache-busting URL"
+          assert 'app.js?v=20261019-module-io-64' in html, "Script must use a cache-busting URL"
           expected = {
               "architecture/index.html": "8b3ed74786fa32b9c8af18a75fc86c6a6041eb55",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
@@ -252,6 +258,15 @@ jobs:
           assert 'run-journey-links' in style and 'wb-clear-filters' in style
           # Public design system and evidence-first case views.
           assert '<span class="brand-text">Governance' in html
+          for source in ('assets/architecture-module-inspector.js?v=20261019-module-io-64',
+                         'assets/architecture-module-inspector.css?v=20261019-module-io-64',
+                         'assets/architecture-execution.js?v=20261019-module-io-64'):
+              assert source in html, "Block inspector assets must load: "+source
+          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261019-module-io-64'), "Scenario inspector must load before parent workflow"
+          assert 'id="architecture-module-inspector"' in app, "Selected block drawer must exist inside Architecture Explorer"
+          assert 'onFrameModuleClick' in app and 'onFrameEscape' in app, "Original React nodes must open selected block details"
+          assert 'ArchitectureModuleInspector?.setScenario' in app, "Selected fixture must drive block input and output evidence"
+
           # Exactly one website identity, located after the safety context at the bottom.
           assert html.count('class="brand"') == 1, "Keep exactly one clickable Governance brand"
           assert html.count('class="brand-icon"') == 1, "Keep exactly one website emblem"
