@@ -16,6 +16,7 @@ on:
       - assets/architecture-module-map.css
       - scripts/check-architecture-module-map.cjs
       - styles.css
+      - assets/sidebar-brand-footer.css
       - index.html
       - .github/workflows/frontend-integrity.yml
   push:
@@ -32,6 +33,7 @@ on:
       - assets/story-journey.js
       - assets/overview-agentic-flow.css
       - styles.css
+      - assets/sidebar-brand-footer.css
       - index.html
       - .github/workflows/frontend-integrity.yml
 jobs:
@@ -245,6 +247,18 @@ jobs:
           assert 'run-journey-links' in style and 'wb-clear-filters' in style
           # Public design system and evidence-first case views.
           assert '<span class="brand-text">Governance' in html
+          # Exactly one website identity, located after the safety context at the bottom.
+          assert html.count('class="brand"') == 1, "Keep exactly one clickable Governance brand"
+          assert html.count('class="brand-icon"') == 1, "Keep exactly one website emblem"
+          assert 'workspace-switch' not in html and 'workspace-logo' not in html, "Remove duplicate SR workspace identity"
+          assert 'sidebar-credit' not in html and 'class="avatar"' not in html, "Remove duplicate Governance Lab identity"
+          assert 'sidebar-brand-footer' in html, "Keep the single website brand in the sidebar footer"
+          assert html.index('sidebar-brand-footer"') > html.index('class="sidebar-scope"'), "Brand must follow the reference environment at bottom"
+          assert html.index('class="brand"') > html.index('data-view="evidence"'), "Brand must follow all navigation sections"
+          assert html.count('id="mobileClose"') == 1 and 'sidebar-mobile-header' in html, "Keep the mobile drawer close control at top"
+          assert 'assets/sidebar-brand-footer.css?v=20261019-brand-footer-61' in html, "Load footer-only branding stylesheet"
+          assert 'sidebar-brand-footer .brand' in Path('assets/sidebar-brand-footer.css').read_text(), "Style the footer identity"
+
           assert 'featured-run' in overview and 'featured-run-facts' in overview
           assert 'original-workflow-title' in overview, "Original review flow must appear in Introduction"
           assert overview.count('class="original-step-number"') == 7, "All seven representative manual stages must be shown"
