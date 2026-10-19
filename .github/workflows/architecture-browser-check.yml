@@ -10,6 +10,7 @@ on:
       - 'assets/architecture-execution.js'
       - 'assets/architecture-module-map.css'
       - 'index.html'
+      - 'assets/sidebar-brand-footer.css'
       - 'architecture-embed/**'
       - '.github/workflows/architecture-browser-check.yml'
 jobs:
