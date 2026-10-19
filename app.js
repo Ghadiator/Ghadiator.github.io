@@ -611,72 +611,53 @@ ${featuredCard}
  </div>
 </section>
 <section class="journey-section" aria-labelledby="journey-title">
- <div class="overview-section-heading"><div><span class="section-overline">AGENTIC WORKFLOW · SIX MODULES</span><h2 id="journey-title">From an invoice to a decision</h2><p>A simple map of how documents move through rules, an optional AI-style review and a human decision. Follow the arrows; the detailed Architecture Explorer shows all 20 blocks.</p></div><a class="text-arrow" href="?view=architecture" data-view="architecture">View all system blocks <span data-icon="arrow"></span></a></div>
- <div class="agentic-flow-board" aria-label="High-level supplier review agentic workflow">
-  <div class="agentic-flow-legend" aria-label="Workflow module types">
-   <span><i class="af-legend-marker af-legend-input"></i>Collection</span>
-   <span><i class="af-legend-marker af-legend-rules"></i>Fixed rules</span>
-   <span><i class="af-legend-marker af-legend-ai"></i>AI-style advice, if needed</span>
-   <span><i class="af-legend-marker af-legend-human"></i>Human authority</span>
-  </div>
-  <div class="agentic-flow-top" aria-label="Collection and deterministic checking">
-   <article class="journey-step af-flow-node af-node-input" data-flow-module="request">
-    <div class="journey-step-top"><span class="step-num">01 · REQUEST</span><span class="journey-icon" data-icon="file"></span></div>
-    <h3>Ask for documents</h3><p>Open a supplier case, request the invoice and prepare reminders.</p>
-    <span class="af-node-kind">Collection</span>
-   </article>
-   <span class="af-flow-arrow af-arrow-forward" aria-hidden="true"></span>
-   <article class="journey-step af-flow-node af-node-input" data-flow-module="intake">
-    <div class="journey-step-top"><span class="step-num">02 · INTAKE</span><span class="journey-icon" data-icon="database"></span></div>
-    <h3>Receive the invoice</h3><p>Validate the submitted fields and retain the case version.</p>
-    <span class="af-node-kind">Structured input</span>
-   </article>
-   <span class="af-flow-arrow af-arrow-forward" aria-hidden="true"></span>
-   <article class="journey-step step-rules af-flow-node af-node-rules" data-flow-module="checks">
-    <div class="journey-step-top"><span class="step-num">03 · VERIFY</span><span class="journey-icon" data-icon="check"></span></div>
-    <h3>Check the facts</h3><p>Calculate totals and compare rates, documents and contract terms.</p>
-    <span class="af-node-kind">Deterministic checks</span>
-   </article>
-  </div>
-  <div class="af-flow-junction" aria-label="Select review route from the rule results">
-   <span class="af-flow-down" aria-hidden="true"></span>
-   <span class="af-junction-label">What do the checks find?</span>
-  </div>
-  <div class="agentic-flow-routes" aria-label="Routine and exception review paths">
-   <div class="af-route-standard">
-    <span class="af-route-eyebrow"><i class="af-route-dot"></i>ROUTINE PATH</span>
-    <strong>Checks are consistent</strong>
-    <p>Send the documented results straight to the review package—no advisory committee required.</p>
-    <span class="af-route-trail">Rules → review package <span aria-hidden="true">↘</span></span>
-   </div>
-   <article class="journey-step step-ai af-flow-node af-node-ai" data-flow-module="advisory">
-    <div class="journey-step-top"><span class="step-num">04 · EXCEPTION PATH</span><span class="journey-icon" data-icon="shield-check"></span></div>
-    <h3>Review unusual cases</h3><p>Scripted AI-style roles challenge the case; evidence verification filters their findings.</p>
-    <span class="af-node-kind">Advisory only · not a decision</span>
-   </article>
-  </div>
-  <div class="af-flow-merge">
-   <span class="af-flow-down" aria-hidden="true"></span>
-   <span><strong>Both paths</strong> produce a review package for a person</span>
-  </div>
-  <div class="agentic-flow-finish" aria-label="Human decision and recorded outcome">
-   <article class="journey-step step-human af-flow-node af-node-human" data-flow-module="human">
-    <div class="journey-step-top"><span class="step-num">05 · HUMAN GATE</span><span class="journey-icon" data-icon="user"></span></div>
-    <h3>A person decides</h3><p>An authorised reviewer approves, rejects or requests a corrected invoice.</p>
-    <span class="af-node-kind">Final authority stays with a person</span>
-   </article>
-   <span class="af-flow-arrow af-arrow-forward" aria-hidden="true"></span>
-   <article class="journey-step af-flow-node af-node-record" data-flow-module="archive">
-    <div class="journey-step-top"><span class="step-num">06 · EVIDENCE</span><span class="journey-icon" data-icon="lock"></span></div>
-    <h3>Keep the record</h3><p>Preserve the checks, the reviewer outcome and the ordered case events.</p>
-    <span class="af-node-kind">Inspect the evidence</span>
-   </article>
-  </div>
-  <div class="af-flow-loop" aria-label="Supplier correction loop">
-   <span class="af-loop-icon" aria-hidden="true">↶</span>
-   <span><strong>Correction requested?</strong> A revised invoice returns to <b>intake (02)</b> and passes through the checks again before a new review.</span>
-  </div>
-  <p class="agentic-flow-scope">A conceptual view of the published synthetic supplier workflow. The AI-style roles are scripted stand-ins, not live AI agents; automated checks never approve an invoice.</p>
+ <div class="overview-section-heading"><div><span class="section-overline">SIX STEPS · ONE CLEAR FLOW</span><h2 id="journey-title">From an invoice to a decision</h2><p>Follow the process from top to bottom. For a closer look at the individual components, open the Architecture Explorer.</p></div><a class="text-arrow" href="?view=architecture" data-view="architecture">View all system blocks <span data-icon="arrow"></span></a></div>
+ <div class="agentic-flow-board" aria-label="Six steps from invoice request to recorded decision">
+  <ol class="agentic-flow-sequence" aria-label="Invoice-to-decision sequence">
+   <li class="af-sequence-item">
+    <article class="journey-step af-flow-node af-node-input" data-flow-module="request">
+     <span class="af-sequence-number">01</span>
+     <span class="journey-icon" data-icon="file"></span>
+     <div class="af-sequence-copy"><h3>Ask for documents</h3><p>Request the invoice and supporting reports.</p></div>
+    </article>
+   </li>
+   <li class="af-sequence-item">
+    <article class="journey-step af-flow-node af-node-input" data-flow-module="intake">
+     <span class="af-sequence-number">02</span>
+     <span class="journey-icon" data-icon="database"></span>
+     <div class="af-sequence-copy"><h3>Receive the invoice</h3><p>Collect the documents and check that the required details are present.</p></div>
+    </article>
+   </li>
+   <li class="af-sequence-item">
+    <article class="journey-step step-rules af-flow-node af-node-rules" data-flow-module="checks">
+     <span class="af-sequence-number">03</span>
+     <span class="journey-icon" data-icon="check"></span>
+     <div class="af-sequence-copy"><h3>Check the facts</h3><p>Use fixed rules to check totals, dates, prices and contract terms.</p></div>
+    </article>
+   </li>
+   <li class="af-sequence-item">
+    <article class="journey-step step-ai af-flow-node af-node-ai" data-flow-module="advisory">
+     <span class="af-sequence-number">04</span>
+     <span class="journey-icon" data-icon="shield-check"></span>
+     <div class="af-sequence-copy"><h3>Review unusual cases <span class="af-optional">If needed</span></h3><p>Scripted AI-style reviewers examine exceptions. Routine cases skip this step.</p></div>
+    </article>
+   </li>
+   <li class="af-sequence-item">
+    <article class="journey-step step-human af-flow-node af-node-human" data-flow-module="human">
+     <span class="af-sequence-number">05</span>
+     <span class="journey-icon" data-icon="user"></span>
+     <div class="af-sequence-copy"><h3>A person decides</h3><p>An authorised reviewer approves, rejects or requests a correction. A corrected invoice goes back through the checks.</p></div>
+    </article>
+   </li>
+   <li class="af-sequence-item">
+    <article class="journey-step af-flow-node af-node-record" data-flow-module="archive">
+     <span class="af-sequence-number">06</span>
+     <span class="journey-icon" data-icon="lock"></span>
+     <div class="af-sequence-copy"><h3>Keep the record</h3><p>Preserve the checks, evidence and final human decision.</p></div>
+    </article>
+   </li>
+  </ol>
+  <p class="agentic-flow-scope">A simplified view of the synthetic reference workflow—not a live AI service. The AI-style review is optional, and automated checks never approve an invoice.</p>
  </div>
 </section>
 <section class="balance-banner" aria-label="The best of both approaches"><div class="balance-icon"><span data-icon="workflow"></span></div><div><span class="section-overline">THE BEST OF BOTH WORLDS</span><h2>As rule-driven as possible. As AI-assisted as useful.</h2><p>Use fixed checks for what can be verified, different review perspectives to find what needs attention, and a clear record and human review to keep decisions accountable.</p></div></section>
