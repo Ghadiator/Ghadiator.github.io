@@ -227,8 +227,10 @@ function renderEmbeddedArchitecture(){
   <header class="architecture-entry"><div><span class="section-overline">SYSTEM · MODULES · EVIDENCE</span><h1>Architecture explorer</h1><p>Select a recorded scenario to inspect the original 20-module workflow, emitted events and human-decision boundary. Playback never executes a new supplier review.</p></div><span class="architecture-entry-status">Recorded execution only</span></header><div class="unified-architecture-context"><span class="section-overline">EXPLORE THE RECORDED RUN</span><span>20 connected modules · original interactive diagram</span></div>
   <div class="architecture-live-layout">
    <div class="architecture-main-canvas">
-    <div class="architecture-canvas-hint"><strong>Module execution replay</strong><span>Blocks highlight as their recorded work runs. Executed blocks retain markers; routes animate in the original React canvas.</span></div>
+    <div class="architecture-canvas-hint"><strong>Module execution replay</strong><span>Blocks highlight as their recorded work runs. Executed blocks retain markers; routes animate in the original React canvas.</span><button type="button" class="architecture-touch-toggle" id="architectureTouchToggle" aria-pressed="false" aria-controls="modularArchitectureFrame">Explore diagram</button></div>
     <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular validation workflow and scenario player" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
+    <div id="architectureTouchGuard" class="architecture-touch-guard" aria-hidden="true" hidden><span>Swipe to scroll the page · Choose “Explore diagram” to move the blocks</span></div>
+    <button type="button" id="architectureTouchExit" class="architecture-touch-exit" hidden>Done exploring · Scroll page</button>
    </div>
    <aside id="architecture-event-rail" class="architecture-event-rail" aria-label="Emitted workflow events">${window.ArchitectureExecution?.renderRail(events(),Number.isInteger(state.architectureCursor)?state.architectureCursor:-1)||''}</aside>
   </div>
@@ -261,6 +263,47 @@ function mountEmbeddedArchitecture(){
  // scrollHeight becomes 0 and previously collapsed the entire diagram to 12px.
  const MIN_HEIGHT=1060,MAX_HEIGHT=12000;
  frame.style.minHeight=MIN_HEIGHT+'px';
+ // On touch devices the original Next.js canvas owns every pointer gesture
+ // (touch-action:none). A same-document guard covers ONLY that canvas while
+ // the visitor is scrolling; entering inspection mode reveals the actual
+ // React canvas, and a fixed Exit button restores normal page scrolling.
+ const canvasWrap=frame.closest('.architecture-main-canvas');
+ const touchToggle=canvasWrap?.querySelector('#architectureTouchToggle');
+ const touchGuard=canvasWrap?.querySelector('#architectureTouchGuard');
+ const touchExit=canvasWrap?.querySelector('#architectureTouchExit');
+ const touchQuery=window.matchMedia?.('(pointer: coarse)');
+ let touchInteractive=false;
+ const alignTouchGuard=doc=>{
+  if(!touchGuard||!touchToggle||!touchExit||!canvasWrap)return;
+  const touchEnabled=Boolean(touchQuery?.matches);
+  touchToggle.setAttribute('aria-pressed',String(touchInteractive));
+  touchToggle.textContent=touchInteractive?'Return to page scroll':'Explore diagram';
+  touchExit.hidden=!touchEnabled||!touchInteractive;
+  const canvas=doc?.querySelector('.deck-canvas');
+  if(!touchEnabled||touchInteractive||!canvas){touchGuard.hidden=true;return;}
+  const box=canvas.getBoundingClientRect(),outer=canvasWrap.getBoundingClientRect(),iframeBox=frame.getBoundingClientRect();
+  // Geometry is measured after React hydration, and again when the diagram
+  // or the viewport changes. Keep the scenario picker and scrubber uncovered.
+  if(box.width<50||box.height<50){touchGuard.hidden=true;return;}
+  touchGuard.style.left=Math.max(0,iframeBox.left-outer.left+box.left)+'px';
+  touchGuard.style.top=Math.max(0,iframeBox.top-outer.top+box.top)+'px';
+  touchGuard.style.width=Math.min(box.width,iframeBox.width)+'px';
+  touchGuard.style.height=Math.min(box.height,Math.max(0,iframeBox.bottom-iframeBox.top-box.top))+'px';
+  touchGuard.hidden=false;
+ };
+ const setTouchInteractive=enabled=>{
+  touchInteractive=Boolean(enabled);
+  let doc;try{doc=frame.contentDocument;}catch{}
+  alignTouchGuard(doc);
+ };
+ const onTouchToggle=()=>setTouchInteractive(!touchInteractive);
+ const onTouchExit=()=>setTouchInteractive(false);
+ const onTouchEscape=event=>{if(event.key==='Escape'&&touchInteractive)setTouchInteractive(false);};
+ touchToggle?.addEventListener('click',onTouchToggle);
+ touchExit?.addEventListener('click',onTouchExit);
+ document.addEventListener('keydown',onTouchEscape);
+ window.addEventListener('resize',onHostResize);
+ function onHostResize(){schedule();}
  let disposed=false,raf=0,currentMain=null,mainResizeObserver=null,bodyMutationObserver=null,observedDoc=null,lastExplanation="";
  let childPickerChanged=false,restoringParentPicker=false;
  const clean=()=>{
@@ -271,6 +314,10 @@ function mountEmbeddedArchitecture(){
   observedDoc?.removeEventListener('input',onPlayerControl);
   observedDoc?.removeEventListener('change',onPlayerControl);
   frame.removeEventListener('load',onLoad);
+  touchToggle?.removeEventListener('click',onTouchToggle);
+  touchExit?.removeEventListener('click',onTouchExit);
+  document.removeEventListener('keydown',onTouchEscape);
+  window.removeEventListener('resize',onHostResize);
  };
  disposeArchitectureEmbed=clean;
  const measure=()=>{
@@ -294,6 +341,7 @@ function mountEmbeddedArchitecture(){
   const next=Math.min(MAX_HEIGHT,Math.max(MIN_HEIGHT,Math.ceil(height+36)));
   if(frame.style.height!==next+'px')frame.style.height=next+'px';
   frame.style.visibility='visible';
+  alignTouchGuard(doc);
  };
 
 
