@@ -252,6 +252,31 @@ try{
    return boxes.every((box,i)=>i===0||box.top>boxes[i-1].bottom);
  });
  assert.ok(desktopFlow,"Desktop manual workflow must retain its top-to-bottom sequence");
+ // The sidebar presents only one website identity, at the very bottom.
+ assert.equal(await page.locator('#sidebar .brand').count(),1,
+   "One Governance as Code home brand must remain");
+ assert.equal(await page.locator('#sidebar .workspace-switch,#sidebar .sidebar-credit').count(),0,
+   "Duplicate SR workspace and Governance Lab profiles must be removed");
+ const footerBrandPosition=await page.evaluate(()=>{
+   const sidebar=document.getElementById('sidebar');
+   const footer=sidebar.querySelector('.sidebar-brand-footer');
+   const identity=footer?.querySelector('a.brand');
+   const context=sidebar.querySelector('.sidebar-scope');
+   const lastNav=sidebar.querySelector('nav.nav-list:last-of-type');
+   const sidebarRect=sidebar.getBoundingClientRect();
+   const box=footer?.getBoundingClientRect();
+   return {
+     isLastSidebarChild:footer?.parentElement===sidebar.querySelector('.sidebar-bottom')&&
+       footer===footer.parentElement.lastElementChild,
+     afterContext:Boolean(box&&context&&box.top>=context.getBoundingClientRect().bottom-2),
+     afterNavigation:Boolean(box&&lastNav&&box.top>lastNav.getBoundingClientRect().bottom),
+     insideViewport:Boolean(box&&box.bottom<=sidebarRect.bottom+2),
+     logoVisible:Boolean(identity&&identity.getClientRects().length)
+   };
+ });
+ assert.ok(Object.values(footerBrandPosition).every(Boolean),
+   'Desktop Governance brand must occupy the visible sidebar footer after navigation and reference context: '+JSON.stringify(footerBrandPosition));
+
 
  // The new simple agentic flow is separate from the original manual workflow.
  const overviewMap=page.locator('.journey-section .agentic-flow-board');
@@ -297,6 +322,13 @@ try{
  await page.keyboard.press("Escape");
  assert.equal(await menu.getAttribute("aria-expanded"),"false",
    "Escape must close the mobile drawer");
+ await menu.click();
+ assert.ok(await page.locator('#mobileClose').isVisible(),"Keep a top-of-drawer mobile close button");
+ await page.locator('#sidebar .sidebar-brand-footer a.brand').click();
+ await page.waitForFunction(()=>new URLSearchParams(location.search).get('view')==='overview',null,{timeout:10000});
+ assert.equal(await menu.getAttribute('aria-expanded'),'false',
+   'Footer brand must navigate home and close the mobile drawer');
+
  await page.locator('.featured-run-actions [data-view="case"]').click();
  await page.waitForFunction(()=>new URLSearchParams(location.search).get("view")==="case",null,{timeout:10000});
  assert.ok(await page.locator('.case-detail-facts').count(),
