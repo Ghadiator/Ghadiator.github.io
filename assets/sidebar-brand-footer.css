@@ -1,0 +1,81 @@
+/* Single, intentional website identity: one Governance as Code home link
+   at the very bottom of the navigation sidebar. No duplicate workspace/avatar. */
+#sidebar #nav-start { margin-top: 30px; }
+#sidebar .sidebar-mobile-header { display: none; }
+
+#sidebar .sidebar-bottom {
+  margin-top: auto;
+  flex: 0 0 auto;
+}
+#sidebar .sidebar-brand-footer {
+  border-top: 1px solid #dce5ec;
+  background: linear-gradient(180deg, #fcfdfe 0%, #f4f8fa 100%);
+  padding: 14px 13px 19px;
+}
+#sidebar .sidebar-brand-footer .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  width: 100%;
+  padding: 9px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #253f52;
+  transition: background-color .18s ease, border-color .18s ease;
+}
+#sidebar .sidebar-brand-footer .brand:hover,
+#sidebar .sidebar-brand-footer .brand:focus-visible {
+  background: #eaf3f8;
+  border-color: #ccdde7;
+}
+#sidebar .sidebar-brand-footer .brand-icon {
+  width: 35px;
+  height: 35px;
+  min-width: 35px;
+  padding: 7px;
+  background: #e3eef4;
+  border-radius: 9px;
+  color: #325e79;
+}
+#sidebar .sidebar-brand-footer .brand-text {
+  min-width: 0;
+  flex: 1;
+  font-size: 19px;
+  font-weight: 760;
+  line-height: 1.03;
+  letter-spacing: -.018em;
+  color: #233f55;
+}
+#sidebar .sidebar-brand-footer .brand-sub {
+  display: block;
+  margin-top: 6px;
+  color: #637b8d;
+  font: 750 8px/1.45 "Barlow",Arial,sans-serif;
+  letter-spacing: .075em;
+  white-space: nowrap;
+}
+@media (max-width: 770px) {
+  #sidebar .sidebar-mobile-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 8px 12px;
+    min-height: 62px;
+    border-bottom: 1px solid #e3ebef;
+  }
+  #sidebar .sidebar-mobile-header .mobile-close {
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    color: #405c70;
+  }
+  #sidebar #nav-start { margin-top: 10px; }
+  #sidebar .sidebar-brand-footer {
+    padding-bottom: max(19px, env(safe-area-inset-bottom));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #sidebar .sidebar-brand-footer .brand { transition: none; }
+}
