@@ -45,6 +45,35 @@ try{
  const after=await orchestration.getAttribute("aria-pressed");
  console.log("NODE_INTERACTION",JSON.stringify({before,after}));
  assert.equal(after,"true","Clicking the original orchestrator block must activate the React interaction");
+ const blockDetails=page.locator('#architecture-module-inspector');
+ await page.waitForFunction(()=>document.getElementById('architecture-module-inspector')?.dataset.selectedModule==='orchestrator',
+   null,{timeout:10000});
+ assert.ok(await blockDetails.isVisible(),"Clicking a source-architecture block must immediately show its explanation");
+ let detailText=await blockDetails.innerText();
+ for(const phrase of ["Main orchestrator","Expected input","Expected output","No directly attributed event"]){
+   assert.ok(detailText.includes(phrase),"Module description must explain purpose, I/O and evidence limits: "+phrase);
+ }
+ assert.ok(detailText.includes("not evidenced as executing"),
+   "Source-only LangGraph orchestrator must not be described as an executed supplier block");
+ const inspectPosition=await blockDetails.boundingBox();
+ assert.ok(inspectPosition&&inspectPosition.x>500&&inspectPosition.y>=0,
+   "Selected module details must be visible beside the diagram without scrolling beneath it");
+
+ // Clicking React's actual Proponent node must use the real selected fixture.
+ const proposalNode=page.frameLocator("#modularArchitectureFrame").locator('[data-node="proponent"]');
+ await proposalNode.evaluate(el=>el.click());
+ await page.waitForFunction(()=>document.getElementById('architecture-module-inspector')?.dataset.selectedModule==='proponent',
+   null,{timeout:10000});
+ detailText=await blockDetails.innerText();
+ assert.ok(detailText.includes("Proponent: contractual checks passed"),
+   "Recorded scenario output must show directly attributed source events before replay begins");
+ assert.ok(detailText.includes("Invoice is not already approved"),
+   "Scenario input should display the earlier, published cross-check evidence");
+ assert.ok(detailText.includes("not captured function-call arguments"),
+   "Do not imply upstream trace context is a structured function argument");
+ assert.ok(await blockDetails.locator('[data-replay-seek="28"]').count(),
+   "Recorded module output must link to its exact fixture event index");
+
  console.log("BAD_RESPONSES",JSON.stringify(responses.slice(0,30)));
  await page.screenshot({path:"architecture-embedded-test.png",fullPage:false});
  const deck=page.frameLocator("#modularArchitectureFrame");
@@ -70,12 +99,32 @@ try{
  assert.ok(initialSnapshot.includes("14 / 20"),"The full 42-event fixture must show 14 observed architecture blocks even before replay starts");
  assert.equal(await page.locator("[data-architecture-stage]").count(),6,"Group modules by architecture lanes and workflow-wide rails");
  assert.equal(await page.locator("[data-architecture-module]").count(),20,"Each original diagram block must have an inspection action");
+ // Clicking the 20-block status cards must open that SAME inspector.
+ await page.locator('[data-architecture-module="rules"]').click();
+ await page.waitForFunction(()=>document.getElementById('architecture-module-inspector')?.dataset.selectedModule==='rules',
+   null,{timeout:10000});
+ assert.ok((await blockDetails.innerText()).includes("R1 PASS"),
+   "Dashboard card must reveal the deterministic rule's recorded outputs");
+ // Retain this selection through scenario switching; its evidence must refresh.
+ await proposalNode.evaluate(el=>el.click());
+
   const diagram=deck.locator(".deck-canvas");
  const header=deck.locator(".deck > div").filter({has:deck.locator("span.w-full.min-w-0")}).first();
  const graphRect=await diagram.boundingBox(),summaryBefore=await header.boundingBox();
  assert.ok(graphRect,"The modular graph must be visible before the replay begins");
  assert.equal(summaryBefore,null,"The terminal-state summary must be hidden before a run starts");
  await picker.selectOption("supplier_clean");
+ await page.waitForFunction(()=>{
+   const el=document.getElementById('architecture-module-inspector');
+   return el?.dataset.selectedModule==='proponent' &&
+     el.innerText.includes("No directly attributed event in this case") &&
+     !el.innerText.includes("Proponent: contractual checks passed");
+ },null,{timeout:12000});
+ assert.ok((await blockDetails.innerText()).includes("supplier_clean"),
+   "Selected module details must follow the chosen scenario rather than leaking another case");
+ await blockDetails.locator('[data-module-inspector-close]').click();
+ assert.ok(await blockDetails.isHidden(),"Block details must be dismissible");
+
  await page.waitForTimeout(1100);
  const selected=await page.evaluate(()=>({
   scenario:new URLSearchParams(location.search).get("scenario"),
