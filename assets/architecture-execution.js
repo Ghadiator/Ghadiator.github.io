@@ -213,8 +213,9 @@
    if(!trigger||!document.getElementById("architecture-execution-dashboard")?.contains(trigger))return;
    const frame=document.getElementById("modularArchitectureFrame");
    let doc;
-   try{doc=frame?.contentDocument;}catch{return;}
+   try{doc=frame?.contentDocument;}catch{}
    const id=trigger.dataset.architectureModule;
+   window.ArchitectureModuleInspector?.select(id);
    const node=Array.from(doc?.querySelectorAll(".deck [data-node]")||[]).find(el=>el.dataset.node===id);
    if(!node)return;
    node.click();

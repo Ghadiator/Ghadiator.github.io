@@ -196,6 +196,7 @@ function refreshWorkflowResults(){
  if(!execution)return;
  const timeline=events();
  const cursor=Number.isInteger(state.architectureCursor)?state.architectureCursor:-1;
+ window.ArchitectureModuleInspector?.setScenario(state.scenario,timeline,cursor);
  const dashboard=document.getElementById('architecture-execution-dashboard');
  if(dashboard)dashboard.innerHTML=execution.renderDashboard(timeline,cursor);
  const rail=document.getElementById('architecture-event-rail');
@@ -228,6 +229,7 @@ function renderEmbeddedArchitecture(){
   <div class="architecture-live-layout">
    <div class="architecture-main-canvas">
     <div class="architecture-canvas-hint"><strong>Module execution replay</strong><span>Blocks highlight as their recorded work runs. Executed blocks retain markers; routes animate in the original React canvas.</span><button type="button" class="architecture-touch-toggle" id="architectureTouchToggle" aria-pressed="false" aria-controls="modularArchitectureFrame">Explore diagram</button></div>
+    <section id="architecture-module-inspector" class="architecture-module-inspector" role="region" aria-label="Selected module definition and recorded input and output" aria-live="polite" hidden></section>
     <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular validation workflow and scenario player" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
     <div id="architectureTouchGuard" class="architecture-touch-guard" aria-hidden="true" hidden><span>Swipe to scroll the page · Choose “Explore diagram” to move the blocks</span></div>
     <button type="button" id="architectureTouchExit" class="architecture-touch-exit" hidden>Done exploring · Scroll page</button>
@@ -258,6 +260,7 @@ let disposeArchitectureEmbed=()=>{};
 function mountEmbeddedArchitecture(){
  const frame=document.getElementById('modularArchitectureFrame');
  if(!frame)return;
+ window.ArchitectureModuleInspector?.setScenario(state.scenario,events(),Number.isInteger(state.architectureCursor)?state.architectureCursor:-1);
  // The original Next.js page hydrates after its iframe load event. During that
  // hydration React can replace <main>. Never measure a detached old <main>:
  // scrollHeight becomes 0 and previously collapsed the entire diagram to 12px.
@@ -305,6 +308,13 @@ function mountEmbeddedArchitecture(){
  window.addEventListener('resize',onHostResize);
  function onHostResize(){schedule();}
  let disposed=false,raf=0,currentMain=null,mainResizeObserver=null,bodyMutationObserver=null,observedDoc=null,lastExplanation="";
+ const onFrameModuleClick=event=>{
+  const module=event.target?.closest?.('.deck [data-node]');
+  if(module?.dataset.node)window.ArchitectureModuleInspector?.select(module.dataset.node);
+ };
+ const onFrameEscape=event=>{
+  if(event.key==='Escape')window.ArchitectureModuleInspector?.close();
+ };
  let childPickerChanged=false,restoringParentPicker=false;
  const clean=()=>{
   disposed=true;
@@ -313,6 +323,8 @@ function mountEmbeddedArchitecture(){
   bodyMutationObserver?.disconnect();
   observedDoc?.removeEventListener('input',onPlayerControl);
   observedDoc?.removeEventListener('change',onPlayerControl);
+  observedDoc?.removeEventListener('click',onFrameModuleClick,true);
+  observedDoc?.removeEventListener('keydown',onFrameEscape);
   frame.removeEventListener('load',onLoad);
   touchToggle?.removeEventListener('click',onTouchToggle);
   touchExit?.removeEventListener('click',onTouchExit);
@@ -498,9 +510,13 @@ function mountEmbeddedArchitecture(){
   if(observedDoc!==doc){
    observedDoc?.removeEventListener('input',onPlayerControl);
    observedDoc?.removeEventListener('change',onPlayerControl);
+   observedDoc?.removeEventListener('click',onFrameModuleClick,true);
+   observedDoc?.removeEventListener('keydown',onFrameEscape);
    observedDoc=doc;
    doc.addEventListener('input',onPlayerControl);
    doc.addEventListener('change',onPlayerControl);
+   doc.addEventListener('click',onFrameModuleClick,true);
+   doc.addEventListener('keydown',onFrameEscape);
   }
   bodyMutationObserver?.disconnect();
   if(typeof MutationObserver!=='undefined'){
