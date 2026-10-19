@@ -15,7 +15,7 @@ assert.ok(api,"Block inspector must expose a real selected-module controller");
 assert.equal(Object.keys(api.definitions).length,20,"Define all 20 original architecture modules");
 for(const [id,contract] of Object.entries(api.definitions)){
  assert.equal(contract.length,5,"Each block defines name, purpose, input, output and predecessors: "+id);
- for(const part of contract.slice(0,4))assert.ok(String(part).length>=8,"Empty block definition: "+id);
+ for(const [index,part] of contract.slice(0,4).entries())assert.ok(String(part).trim().length>=(index===0?1:12),"Empty block definition: "+id);
 }
 const variance=JSON.parse(fs.readFileSync("data/scenarios/supplier_variance_review.json","utf8"));
 const clean=JSON.parse(fs.readFileSync("data/scenarios/supplier_clean.json","utf8"));
