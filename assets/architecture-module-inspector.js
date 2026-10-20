@@ -119,15 +119,15 @@
       +'<p class="ami-footer">Read-only synthetic scenario · scripted AI-style roles · no live model invocation or payment action.</p></div>';
     el.dataset.selectedModule=selected;
     const content=el.querySelector?.(".ami-content");
-    if(content)content.scrollTop=scroll;
     for(const d of el.querySelectorAll?.("details")??[])if(open.includes(d.className))d.open=true;
+    if(content)content.scrollTop=scroll;
     if(focused)el.querySelector?.("#"+focused)?.focus({preventScroll:true});
     position();
   }
   function select(id){
     if(!Object.hasOwn(SPEC,id))return false;
-    if(!selected){
-      const active=document.activeElement;
+    const active=document.activeElement;
+    if(!target()?.contains?.(active)){
       returnFocus=active?.tagName==="IFRAME"?active.contentDocument?.activeElement:active;
     }
     selected=id;

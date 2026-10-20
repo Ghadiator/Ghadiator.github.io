@@ -107,7 +107,7 @@ jobs:
           # Preserve the existing modular architecture through presentation changes.
           protected_architecture = {
               'assets/architecture-execution.js': 'f38288cfd797d364355b0d3db8d482fbc66f9e96',
-              'assets/architecture-module-inspector.js': 'e36e3215e545e7e192ecc93c7b305790ad960df2',
+              'assets/architecture-module-inspector.js': '1aa298ca20aec040e8ec6114d4da85c083bb1344',
               'assets/architecture-module-map.css': '9146175310277cff91970b62aac0ab1870ca59bb',
               'assets/architecture-module-inspector.css': '1c2e3051e18015d19423fd21f35d8912b3fc4e43',
               'assets/architecture-mobile-touch.css': 'ef5def1e0004ff6f47cb843cd60b5ebf5f473448',
@@ -284,6 +284,8 @@ jobs:
                          'assets/architecture-execution.js?v=20261019-module-io-64'):
               assert source in html, "Block inspector assets must load: "+source
           assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261020-assurance-65'), "Scenario inspector must load before parent workflow"
+          assert 'assets/architecture-governance.js?v=20261020-governance-67' in html
+          assert html.index('assets/architecture-governance.js') < html.index('assets/architecture-module-inspector.js'), "Governance mappings must load before block details"
           assert 'id="architecture-module-inspector"' in app, "Selected block drawer must exist inside Architecture Explorer"
           assert 'onFrameModuleClick' in app and 'onFrameEscape' in app, "Original React nodes must open selected block details"
           assert 'ArchitectureModuleInspector?.setScenario' in app, "Selected fixture must drive block input and output evidence"

@@ -74,6 +74,14 @@ try{
  await blockDetails.locator('[data-module-section="ami-governance"]').click();
  assert.ok(await blockDetails.locator('#ami-governance-title').isVisible());
  assert.ok(await blockDetails.locator('.ami-content').evaluate(el=>el.scrollTop)>0,"Governance navigation must scroll inside the popup");
+ await blockDetails.locator('.ami-scope summary').click();
+ await blockDetails.locator('[data-module-section="ami-governance"]').click();
+ const detailScroll=await blockDetails.locator('.ami-content').evaluate(el=>el.scrollTop);
+ const recordedFixture=JSON.parse(await readFile('data/scenarios/supplier_variance_review.json','utf8'));
+ await page.evaluate(fixture=>window.ArchitectureModuleInspector.setScenario(fixture.slug,fixture.events,0),recordedFixture);
+ assert.ok(await blockDetails.locator('.ami-scope').evaluate(el=>el.open),"Keep expanded assurance scope during replay updates");
+ assert.ok(Math.abs((await blockDetails.locator('.ami-content').evaluate(el=>el.scrollTop))-detailScroll)<2,"Keep reading position during replay updates");
+ assert.equal(await page.evaluate(()=>document.activeElement.id),'ami-nav-governance',"Keep keyboard focus during evidence updates");
  await page.keyboard.press('Escape');
  assert.ok(await blockDetails.isHidden(),"Escape must close the detail view");
 
