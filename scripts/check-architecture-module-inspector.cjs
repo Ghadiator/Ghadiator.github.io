@@ -9,6 +9,7 @@ const document={
  addEventListener(name,fn){registered[name]=fn;}
 };
 const window={};
+vm.runInNewContext(fs.readFileSync("assets/architecture-governance.js","utf8"),{window});
 vm.runInNewContext(fs.readFileSync("assets/architecture-module-inspector.js","utf8"),{window,document});
 const api=window.ArchitectureModuleInspector;
 assert.ok(api,"Block inspector must expose a real selected-module controller");
@@ -17,6 +18,21 @@ for(const [id,contract] of Object.entries(api.definitions)){
  assert.equal(contract.length,5,"Each block defines name, purpose, input, output and predecessors: "+id);
  for(const [index,part] of contract.slice(0,4).entries())assert.ok(String(part).trim().length>=(index===0?1:12),"Empty block definition: "+id);
 }
+assert.deepEqual(Object.keys(window.ArchitectureGovernance.modules).sort(),Object.keys(api.definitions).sort(),"Governance must cover exactly the original 20 blocks");
+for(const id of Object.keys(api.definitions)){
+ api.select(id);
+ for(const phrase of ["EU AI Act relevance","What this does not establish","Scope of this mapping","01 · Input / output","03 · Evidence"]){
+  assert.ok(el.innerHTML.includes(phrase),id+" is missing "+phrase);
+ }
+ const mapping=window.ArchitectureGovernance.modules[id];
+ assert.equal(mapping.length,4);
+ for(const n of mapping[3])assert.ok(el.innerHTML.includes("https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-"+n));
+}
+api.select("external");
+assert.ok(el.innerHTML.includes("does not establish Article 10"),"Operational reference inputs must not be sold as training-data compliance");
+api.select("token_economics");
+assert.ok(el.innerHTML.includes("No direct article obligation mapped"),"Do not invent a mandatory token budget");
+api.close();
 const variance=JSON.parse(fs.readFileSync("data/scenarios/supplier_variance_review.json","utf8"));
 const clean=JSON.parse(fs.readFileSync("data/scenarios/supplier_clean.json","utf8"));
 api.setScenario(variance.slug,variance.events,-1);

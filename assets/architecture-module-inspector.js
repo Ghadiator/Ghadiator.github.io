@@ -28,8 +28,30 @@
   };
   const DESIGN_ONLY=new Set(["orchestrator","post_cove","token_economics","process_semantics"]);
   const norm=n=>n==="gate"?"disposition":n;
-  let scenario="",all=[],cursor=-1,selected="";
+  let scenario="",all=[],cursor=-1,selected="",returnFocus=null;
   const target=()=>document.getElementById("architecture-module-inspector");
+  function position(){
+    const el=target(),canvas=el?.closest?.(".architecture-main-canvas");
+    if(!selected||!canvas||window.innerWidth<=770)return;
+    const rect=canvas.getBoundingClientRect();
+    const width=Math.min(500,rect.width-32,window.innerWidth-32);
+    el.style.setProperty("--ami-left",Math.max(16,Math.min(rect.right-width-16,window.innerWidth-width-16))+"px");
+    el.style.setProperty("--ami-top",Math.max(72,Math.min(rect.top+16,window.innerHeight-300))+"px");
+    el.style.setProperty("--ami-width",width+"px");
+  }
+  function governance(){
+    const g=window.ArchitectureGovernance,m=g?.modules[selected];
+    if(!m)return "";
+    const [control,contribution,gap,articles]=m;
+    const links=articles.map(n=>'<a href="'+g.source+n+'" target="_blank" rel="noopener noreferrer">Article '+n+' · '+safe(g.articles[n])+' <span aria-hidden="true">↗</span></a>').join("");
+    return '<section id="ami-governance" class="ami-governance" aria-labelledby="ami-governance-title">'
+      +'<span class="ami-section-number">02 / GOVERNANCE</span><h3 id="ami-governance-title">EU AI Act relevance</h3>'
+      +'<p class="ami-mapping-label">Architectural support · partial mapping, not compliance certification</p><p class="ami-control">'+safe(control)+'</p><p class="ami-contribution">'+safe(contribution)+'</p>'
+      +'<div class="ami-article-links">'+(links||'<span>No direct article obligation mapped</span>')+'</div>'
+      +'<div class="ami-assurance"><h4>What this does not establish</h4><p>'+safe(gap)+'</p></div>'
+      +'<details class="ami-scope"><summary>Scope of this mapping</summary><p>'+safe(g.scope)+'</p>'
+      +'<p>Article links: European Commission AI Act Service Desk. The connection to this block is an architectural interpretation, not an official assessment.</p></details></section>';
+  }
   const eventLabel=(e,index)=>{
     const ref=(Array.isArray(e.refs)&&e.refs[0])?e.refs[0]:"Published synthetic fixture";
     return '<li class="ami-event"><button type="button" data-replay-seek="'+index+'" aria-label="Jump to recorded event '+safe(e.seq)+'">'
@@ -39,6 +61,10 @@
   };
   function render(){
     const el=target();if(!el||!selected||!SPEC[selected])return;
+    const same=el.dataset.selectedModule===selected;
+    const scroll=same?(el.querySelector?.(".ami-content")?.scrollTop??0):0;
+    const open=same?[...(el.querySelectorAll?.("details[open]")??[])].map(d=>d.className):[];
+    const focused=el.contains?.(document.activeElement)?document.activeElement?.id:null;
     const [title,purpose,input,output,sources]=SPEC[selected];
     const active=all.map((e,i)=>({e,i})).filter(({e})=>norm(e.node)===selected);
     const first=active[0]?.i??-1;
@@ -68,14 +94,22 @@
       :DESIGN_ONLY.has(selected)
       ?'<p class="ami-provenance">This source-architecture concept is not evidenced as executing in this supplier fixture.</p>':'';
     el.hidden=false;
-    el.innerHTML='<div class="ami-header"><span class="ami-eyebrow">SELECTED ARCHITECTURE BLOCK</span>'
-      +'<button type="button" class="ami-close" data-module-inspector-close aria-label="Close block details">×</button>'
-      +'<h2>'+safe(title)+'</h2><p>'+safe(purpose)+'</p></div>'
-      +'<div class="ami-content"><section class="ami-design" aria-label="Module contract">'
-      +'<h3>What the block does</h3><dl><dt>Expected input · architecture</dt><dd>'+safe(input)+'</dd>'
-      +'<dt>Expected output · architecture</dt><dd>'+safe(output)+'</dd></dl></section>'
-      +'<section class="ami-trace" aria-label="Recorded input and output">'
-      +'<h3>In the selected scenario</h3><p class="ami-case">'+safe(scenario||"Scenario loading")+'</p>'
+    el.setAttribute?.("role","dialog");
+    el.setAttribute?.("aria-modal","false");
+    el.setAttribute?.("aria-labelledby","ami-title");
+    el.removeAttribute?.("aria-live");
+    el.innerHTML='<div class="ami-header"><span class="ami-eyebrow">SELECTED BLOCK · 20-MODULE ARCHITECTURE</span>'
+      +'<button id="ami-close" type="button" class="ami-close" data-module-inspector-close aria-label="Close block details">×</button>'
+      +'<h2 id="ami-title" tabindex="-1">'+safe(title)+'</h2><p>'+safe(purpose)+'</p>'
+      +'<nav class="ami-nav" aria-label="Block detail sections"><button id="ami-nav-contract" type="button" data-module-section="ami-contract">01 · Input / output</button>'
+      +'<button id="ami-nav-governance" type="button" data-module-section="ami-governance">02 · Governance</button>'
+      +'<button id="ami-nav-trace" type="button" data-module-section="ami-trace">03 · Evidence</button></nav></div>'
+      +'<div class="ami-content"><section id="ami-contract" class="ami-design" aria-label="Module contract">'
+      +'<span class="ami-section-number">01 / MODULE CONTRACT</span><h3>What the block does</h3>'
+      +'<dl><div><dt>Expected input · architecture</dt><dd>'+safe(input)+'</dd></div>'
+      +'<div><dt>Expected output · architecture</dt><dd>'+safe(output)+'</dd></div></dl></section>'
+      +governance()+'<section id="ami-trace" class="ami-trace" aria-label="Recorded input and output">'
+      +'<span class="ami-section-number">03 / RECORDED EVIDENCE</span><h3>In the selected scenario</h3><p class="ami-case">'+safe(scenario||"Scenario loading")+'</p>'
       +'<span class="ami-status">'+safe(runState)+'</span>'
       +'<h4>Input context in the recorded trace</h4>'
       +'<p class="ami-explain">Upstream events that precede this block. These are <strong>not</strong> captured function-call arguments.</p>'
@@ -84,10 +118,22 @@
       +outputs+special+'</section>'
       +'<p class="ami-footer">Read-only synthetic scenario · scripted AI-style roles · no live model invocation or payment action.</p></div>';
     el.dataset.selectedModule=selected;
+    const content=el.querySelector?.(".ami-content");
+    if(content)content.scrollTop=scroll;
+    for(const d of el.querySelectorAll?.("details")??[])if(open.includes(d.className))d.open=true;
+    if(focused)el.querySelector?.("#"+focused)?.focus({preventScroll:true});
+    position();
   }
   function select(id){
     if(!Object.hasOwn(SPEC,id))return false;
-    selected=id;render();return true;
+    if(!selected){
+      const active=document.activeElement;
+      returnFocus=active?.tagName==="IFRAME"?active.contentDocument?.activeElement:active;
+    }
+    selected=id;
+    const canvas=target()?.closest?.(".architecture-main-canvas");
+    if(canvas&&canvas.getBoundingClientRect().bottom<160)canvas.scrollIntoView({block:"start",behavior:"auto"});
+    render();target()?.querySelector?.("#ami-title")?.focus({preventScroll:true});return true;
   }
   function setScenario(nextScenario,events,nextCursor){
     scenario=String(nextScenario||"");
@@ -99,10 +145,19 @@
     selected="";
     const el=target();
     if(el){el.hidden=true;el.innerHTML="";delete el.dataset.selectedModule;}
+    if(returnFocus?.isConnected)returnFocus.focus?.({preventScroll:true});
+    returnFocus=null;
   }
   document.addEventListener("click",ev=>{
     if(ev.target?.closest?.("[data-module-inspector-close]")){close();return;}
+    const jump=ev.target?.closest?.("[data-module-section]");
+    if(jump){
+      const section=document.getElementById(jump.dataset.moduleSection),content=target()?.querySelector(".ami-content");
+      if(section&&content)content.scrollTop+=section.getBoundingClientRect().top-content.getBoundingClientRect().top-8;
+    }
   });
   document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&selected)close();});
+  window.addEventListener?.("resize",position);
+  window.addEventListener?.("scroll",position,{passive:true});
   window.ArchitectureModuleInspector={select,setScenario,close,definitions:SPEC};
 })();

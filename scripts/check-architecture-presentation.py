@@ -10,7 +10,7 @@ def git_blob(data):
 BASELINES = {
     'app.js': '83cd8dfe680240c67fa790a48b8c41166be0f26b',
     'assets/architecture-execution.js': 'f38288cfd797d364355b0d3db8d482fbc66f9e96',
-    'assets/architecture-module-inspector.js': '399af498c28ad1744fca4c0567bc82c88846cfdd',
+    'assets/architecture-module-inspector.js': 'e36e3215e545e7e192ecc93c7b305790ad960df2',
     'assets/architecture-explained.js': 'bcc29b5824c0e01513fa55509d990c416df805aa',
     '_next/static/chunks/app/architecture/page-2d56a5bff821821b.js': '5caa4722a597ef2ace16415e5aae8b1596faa19d',
     '_next/static/chunks/app/layout-00714e284e207e0e.js': '1e182c9d8081413b88611163515e350ed3ac48ee',

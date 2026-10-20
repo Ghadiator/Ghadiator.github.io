@@ -59,6 +59,24 @@ try{
  assert.ok(inspectPosition&&inspectPosition.x>500&&inspectPosition.y>=0,
    "Selected module details must be visible beside the diagram without scrolling beneath it");
 
+ // Every canonical source block must open its own complete governance detail.
+ const nodeIds=await page.frameLocator("#modularArchitectureFrame").locator('.deck [data-node]').evaluateAll(nodes=>nodes.map(n=>n.dataset.node));
+ assert.equal(new Set(nodeIds).size,20);
+ for(const id of nodeIds){
+   await page.frameLocator("#modularArchitectureFrame").locator('[data-node="'+id+'"]').evaluate(el=>el.click());
+   assert.equal(await blockDetails.getAttribute('data-selected-module'),id);
+   for(const phrase of ['Expected input','Expected output','EU AI Act relevance','What this does not establish','Scope of this mapping']){
+     assert.ok((await blockDetails.innerText()).includes(phrase),id+" must explain "+phrase);
+   }
+ }
+ assert.equal(await blockDetails.getAttribute('role'),'dialog');
+ assert.equal(await blockDetails.getAttribute('aria-modal'),'false',"Keep the graph available for further selection");
+ await blockDetails.locator('[data-module-section="ami-governance"]').click();
+ assert.ok(await blockDetails.locator('#ami-governance-title').isVisible());
+ assert.ok(await blockDetails.locator('.ami-content').evaluate(el=>el.scrollTop)>0,"Governance navigation must scroll inside the popup");
+ await page.keyboard.press('Escape');
+ assert.ok(await blockDetails.isHidden(),"Escape must close the detail view");
+
  // Clicking React's actual Proponent node must use the real selected fixture.
  const proposalNode=page.frameLocator("#modularArchitectureFrame").locator('[data-node="proponent"]');
  await proposalNode.evaluate(el=>el.click());
