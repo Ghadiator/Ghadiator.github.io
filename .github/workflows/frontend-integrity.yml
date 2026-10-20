@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - app.js
+      - assets/assurance-design.css
       - assets/generic-workbench.js
       - assets/public-submissions.js
       - assets/public-backend.js
@@ -27,6 +28,7 @@ on:
     branches: [main]
     paths:
       - app.js
+      - assets/assurance-design.css
       - assets/generic-workbench.js
       - assets/public-submissions.js
       - assets/public-backend.js
@@ -93,7 +95,19 @@ jobs:
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
           assert 'styles.css?v=20261016-manual-flow-54' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261019-module-io-64' in html, "Script must use a cache-busting URL"
+          assert 'app.js?v=20261020-assurance-65' in html, "Script must use a cache-busting URL"
+          # Preserve the existing modular architecture through presentation changes.
+          protected_architecture = {
+              'assets/architecture-execution.js': 'f38288cfd797d364355b0d3db8d482fbc66f9e96',
+              'assets/architecture-module-inspector.js': '399af498c28ad1744fca4c0567bc82c88846cfdd',
+              'assets/architecture-module-map.css': '9146175310277cff91970b62aac0ab1870ca59bb',
+              'assets/architecture-module-inspector.css': 'ff300f33ef891adb987f4f6c9f1bae19fb92053a',
+              'assets/architecture-mobile-touch.css': 'ef5def1e0004ff6f47cb843cd60b5ebf5f473448',
+              'assets/architecture-explained.js': 'bcc29b5824c0e01513fa55509d990c416df805aa',
+              'assets/architecture-explained.css': '0917ad5b7a65d054a4ecbb60a72ce3080fa774a6',
+          }
+          for path, sha in protected_architecture.items():
+              assert subprocess.check_output(["git", "hash-object", path], text=True).strip() == sha, f"Protected architecture changed: {path}"
           expected = {
               "architecture/index.html": "8b3ed74786fa32b9c8af18a75fc86c6a6041eb55",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
@@ -247,7 +261,7 @@ jobs:
           journey = Path("assets/generic-workbench.js").read_text()
           evidence = Path("assets/story-journey.js").read_text()
           style = Path("styles.css").read_text()
-          assert 'assets/story-journey.js?v=20261016-manual-flow-54' in html
+          assert 'assets/story-journey.js?v=20261020-assurance-65' in html
           for fragment in ('function readJourneyQuery(params)', 'case_filter=', 'case_search=',
                            'data-journey-trace', 'data-clear-case-filters',
                            "state.caseSearch=event.target.value", 'state.evidenceTab='):
@@ -262,7 +276,7 @@ jobs:
                          'assets/architecture-module-inspector.css?v=20261019-module-io-64',
                          'assets/architecture-execution.js?v=20261019-module-io-64'):
               assert source in html, "Block inspector assets must load: "+source
-          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261019-module-io-64'), "Scenario inspector must load before parent workflow"
+          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261020-assurance-65'), "Scenario inspector must load before parent workflow"
           assert 'id="architecture-module-inspector"' in app, "Selected block drawer must exist inside Architecture Explorer"
           assert 'onFrameModuleClick' in app and 'onFrameEscape' in app, "Original React nodes must open selected block details"
           assert 'ArchitectureModuleInspector?.setScenario' in app, "Selected fixture must drive block input and output evidence"
