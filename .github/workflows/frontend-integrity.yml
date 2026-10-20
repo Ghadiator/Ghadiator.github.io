@@ -4,6 +4,8 @@ on:
     paths:
       - app.js
       - assets/assurance-design.css
+      - assets/architecture-design.css
+      - scripts/check-architecture-presentation.py
       - assets/generic-workbench.js
       - assets/public-submissions.js
       - assets/public-backend.js
@@ -29,6 +31,8 @@ on:
     paths:
       - app.js
       - assets/assurance-design.css
+      - assets/architecture-design.css
+      - scripts/check-architecture-presentation.py
       - assets/generic-workbench.js
       - assets/public-submissions.js
       - assets/public-backend.js
@@ -60,6 +64,8 @@ jobs:
           node --check assets/public-personas.js
           node --check assets/public-attacker.js
           node --check assets/story-journey.js
+      - name: Protect architecture semantics during presentation changes
+        run: python3 scripts/check-architecture-presentation.py
       - name: Test architecture state against source fixtures
         run: node scripts/check-architecture-module-map.cjs
       - name: Check module definitions and recorded scenario inputs and outputs
@@ -109,7 +115,6 @@ jobs:
           for path, sha in protected_architecture.items():
               assert subprocess.check_output(["git", "hash-object", path], text=True).strip() == sha, f"Protected architecture changed: {path}"
           expected = {
-              "architecture/index.html": "8b3ed74786fa32b9c8af18a75fc86c6a6041eb55",
               "data/facts.json": "15987cfbcb97c404fe71865881da5457adc5546d",
               "data/scenarios/index.json": "f384fc608e6c38bc0df9257cd4af7842f7ca7476"
           }
