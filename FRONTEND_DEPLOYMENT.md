@@ -15,8 +15,12 @@ Revert this deployment commit or restore root `index.html` and legacy route `ind
 ## Assurance presentation
 
 `assets/assurance-design.css` supplies shared colour, spacing and interaction
-tokens for the surrounding workbench. The original modular architecture,
-its diagram, connections, labels, player and block inspector remain intact.
+tokens for the surrounding workbench. The technical modular architecture,
+its connections, labels, player and block inspector remain intact.
+`assets/architecture-design.css` styles both the original diagram and its
+workbench panels without changing node coordinates, paths or interaction code.
+`python3 scripts/check-architecture-presentation.py` pins the implementation,
+original HTML (apart from the stylesheet link), and recorded scenario data.
 The introduction leads into the existing recorded-case experience; design
 choices and their remaining boundaries appear under Evidence & learning.
 

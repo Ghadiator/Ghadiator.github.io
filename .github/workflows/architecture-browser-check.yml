@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - 'app.js'
+      - 'assets/architecture-design.css'
+      - 'architecture/index.html'
       - 'assets/architecture-embed.css'
       - 'scripts/check-architecture-browser.mjs'
       - 'assets/architecture-execution.js'
