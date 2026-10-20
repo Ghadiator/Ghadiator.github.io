@@ -13,6 +13,19 @@ vm.runInNewContext(fs.readFileSync("assets/architecture-module-inspector.js","ut
 const api=window.ArchitectureModuleInspector;
 assert.ok(api,"Block inspector must expose a real selected-module controller");
 assert.equal(Object.keys(api.definitions).length,20,"Define all 20 original architecture modules");
+assert.deepEqual(Object.keys(api.actMappings).sort(),Object.keys(api.definitions).sort(),"Every module needs an explicit governance mapping, including non-obligation blocks");
+for(const id of Object.keys(api.definitions)){
+ api.select(id);
+ assert.ok(el.innerHTML.includes('Input to processing to output'),"Visual module contract missing: "+id);
+ assert.ok(el.innerHTML.includes('EU AI Act · this module’s contribution'),"Governance explanation missing: "+id);
+ assert.ok(el.innerHTML.includes('What remains unproven'),"Residual limitation missing: "+id);
+ assert.ok(el.innerHTML.includes('not a finding of legal applicability or compliance'),"No blanket compliance claim: "+id);
+ for(const ref of api.actMappings[id][0])assert.ok(el.innerHTML.includes('Article '+ref),"Precise article reference missing: "+id);
+}
+api.select('reminders');
+assert.ok(el.innerHTML.includes('No standalone obligation mapped'),"Do not invent a direct obligation for routine reminders");
+api.select('post_cove');
+assert.ok(el.innerHTML.includes('Architecture reference'),"Source-only controls cannot be portrayed as executed");
 for(const [id,contract] of Object.entries(api.definitions)){
  assert.equal(contract.length,5,"Each block defines name, purpose, input, output and predecessors: "+id);
  for(const [index,part] of contract.slice(0,4).entries())assert.ok(String(part).trim().length>=(index===0?1:12),"Empty block definition: "+id);
