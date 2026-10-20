@@ -571,8 +571,8 @@ function renderOverview(){
   <h1 id="overview-title">Clear rules for facts.<br><em>AI for unusual cases.</em><br>People make the decisions.</h1>
   <p>An interactive AI governance showcase that combines predictable, rule-based checks with AI-style personas who examine difficult cases from different angles. Evidence stays visible, decisions can be traced, and people keep final authority.</p>
   <div class="overview-cta">
-    <a class="button light-primary" data-view="cases" href="?view=cases">Explore recorded runs <span data-icon="layers"></span></a>
-    <a class="button dark" data-view="architecture" href="?view=architecture">Inspect architecture <span data-icon="arrow"></span></a>
+    <a class="button light-primary" data-view="architecture" data-scenario="${h(featured?.slug||state.scenario)}" href="${linkView('architecture',featured?.slug||state.scenario)}">Follow a recorded case <span data-icon="arrow"></span></a>
+    <a class="button dark" data-view="cases" href="?view=cases">Browse recorded cases <span data-icon="layers"></span></a>
   </div>
   <div class="overview-benefits" aria-label="Key values"><span><span data-icon="check"></span> Consistent checks</span><span><span data-icon="layers"></span> AI perspectives</span><span><span data-icon="list-tree"></span> Traceable decisions</span><span><span data-icon="user"></span> Human oversight</span></div>
 </section>

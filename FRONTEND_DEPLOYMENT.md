@@ -12,5 +12,16 @@ This repository publishes a **read-only Governance-as-Code reference UI** from `
 ## Recovery
 Revert this deployment commit or restore root `index.html` and legacy route `index.html` files, then remove the Aegis frontend assets. Original static files remain in earlier Git commits.
 
+## Assurance presentation
+
+`assets/assurance-design.css` supplies shared colour, spacing and interaction
+tokens for the surrounding workbench. The original modular architecture,
+its diagram, connections, labels, player and block inspector remain intact.
+The introduction leads into the existing recorded-case experience; design
+choices and their remaining boundaries appear under Evidence & learning.
+
+Run the frontend integrity workflow's checks before publishing. Recorded
+evidence and its verification pins remain unchanged.
+
 ## Workflow
 Change UI components without editing original JSON evidence. Update evidence pins only as part of a deliberate, separately reviewed provenance update.
