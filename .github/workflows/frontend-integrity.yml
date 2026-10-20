@@ -18,6 +18,7 @@ on:
       - assets/architecture-execution.js
       - assets/architecture-module-map.css
       - assets/architecture-module-inspector.js
+      - assets/architecture-governance.js
       - assets/architecture-module-inspector.css
       - scripts/check-architecture-module-inspector.cjs
       - assets/architecture-mobile-touch.css
@@ -56,6 +57,7 @@ jobs:
           node --check app.js
           node --check assets/architecture-execution.js
           node --check assets/architecture-module-inspector.js
+          node --check assets/architecture-governance.js
           node --check assets/generic-workbench.js
           node --check assets/public-submissions.js
           node --check assets/supplier-workbook.js
@@ -105,9 +107,9 @@ jobs:
           # Preserve the existing modular architecture through presentation changes.
           protected_architecture = {
               'assets/architecture-execution.js': 'f38288cfd797d364355b0d3db8d482fbc66f9e96',
-              'assets/architecture-module-inspector.js': '399af498c28ad1744fca4c0567bc82c88846cfdd',
+              'assets/architecture-module-inspector.js': '1aa298ca20aec040e8ec6114d4da85c083bb1344',
               'assets/architecture-module-map.css': '9146175310277cff91970b62aac0ab1870ca59bb',
-              'assets/architecture-module-inspector.css': 'ff300f33ef891adb987f4f6c9f1bae19fb92053a',
+              'assets/architecture-module-inspector.css': '1c2e3051e18015d19423fd21f35d8912b3fc4e43',
               'assets/architecture-mobile-touch.css': 'ef5def1e0004ff6f47cb843cd60b5ebf5f473448',
               'assets/architecture-explained.js': 'bcc29b5824c0e01513fa55509d990c416df805aa',
               'assets/architecture-explained.css': '0917ad5b7a65d054a4ecbb60a72ce3080fa774a6',
@@ -277,11 +279,13 @@ jobs:
           assert 'run-journey-links' in style and 'wb-clear-filters' in style
           # Public design system and evidence-first case views.
           assert '<span class="brand-text">Governance' in html
-          for source in ('assets/architecture-module-inspector.js?v=20261019-module-io-64',
-                         'assets/architecture-module-inspector.css?v=20261019-module-io-64',
+          for source in ('assets/architecture-module-inspector.js?v=20261020-governance-67',
+                         'assets/architecture-module-inspector.css?v=20261020-governance-67',
                          'assets/architecture-execution.js?v=20261019-module-io-64'):
               assert source in html, "Block inspector assets must load: "+source
           assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261020-assurance-65'), "Scenario inspector must load before parent workflow"
+          assert 'assets/architecture-governance.js?v=20261020-governance-67' in html
+          assert html.index('assets/architecture-governance.js') < html.index('assets/architecture-module-inspector.js'), "Governance mappings must load before block details"
           assert 'id="architecture-module-inspector"' in app, "Selected block drawer must exist inside Architecture Explorer"
           assert 'onFrameModuleClick' in app and 'onFrameEscape' in app, "Original React nodes must open selected block details"
           assert 'ArchitectureModuleInspector?.setScenario' in app, "Selected fixture must drive block input and output evidence"

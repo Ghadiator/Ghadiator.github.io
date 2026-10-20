@@ -12,6 +12,7 @@ on:
       - 'assets/architecture-execution.js'
       - 'assets/architecture-module-map.css'
       - 'assets/architecture-module-inspector.js'
+      - 'assets/architecture-governance.js'
       - 'assets/architecture-module-inspector.css'
       - 'scripts/check-architecture-module-inspector.cjs'
       - 'index.html'
