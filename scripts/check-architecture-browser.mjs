@@ -56,8 +56,18 @@ try{
  assert.ok(detailText.includes("not evidenced as executing"),
    "Source-only LangGraph orchestrator must not be described as an executed supplier block");
  const inspectPosition=await blockDetails.boundingBox();
- assert.ok(inspectPosition&&inspectPosition.x>500&&inspectPosition.y>=0,
-   "Selected module details must be visible beside the diagram without scrolling beneath it");
+ const canvasPosition=await page.locator('.architecture-main-canvas').boundingBox();
+ assert.ok(inspectPosition&&canvasPosition&&inspectPosition.x>=canvasPosition.x&&inspectPosition.y>=canvasPosition.y&&inspectPosition.x+inspectPosition.width<=canvasPosition.x+canvasPosition.width+1,
+   "Selected module details must stay inside the architecture canvas");
+ for(const node of await page.frameLocator('#modularArchitectureFrame').locator('[data-node]').all()){
+   const id=await node.getAttribute('data-node');
+   await node.evaluate(el=>el.click());
+   await page.waitForFunction(id=>document.getElementById('architecture-module-inspector')?.dataset.selectedModule===id,id);
+   const text=await blockDetails.innerText();
+   for(const phrase of ['01 · Input','02 · Processing','03 · Output','EU AI Act · this module’s contribution','How the design contributes','What remains unproven'])assert.ok(text.includes(phrase),'Missing module detail for '+id+': '+phrase);
+ }
+ await blockDetails.locator('[data-module-section="ami-governance"]').click();
+ assert.ok(await blockDetails.locator('#ami-governance').isVisible(),'Governance section shortcut must work');
 
  // Clicking React's actual Proponent node must use the real selected fixture.
  const proposalNode=page.frameLocator("#modularArchitectureFrame").locator('[data-node="proponent"]');

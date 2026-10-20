@@ -105,9 +105,9 @@ jobs:
           # Preserve the existing modular architecture through presentation changes.
           protected_architecture = {
               'assets/architecture-execution.js': 'f38288cfd797d364355b0d3db8d482fbc66f9e96',
-              'assets/architecture-module-inspector.js': '399af498c28ad1744fca4c0567bc82c88846cfdd',
+              'assets/architecture-module-inspector.js': 'acb507c52b1b2099a4e2c893eeb3864556598158',
               'assets/architecture-module-map.css': '9146175310277cff91970b62aac0ab1870ca59bb',
-              'assets/architecture-module-inspector.css': 'ff300f33ef891adb987f4f6c9f1bae19fb92053a',
+              'assets/architecture-module-inspector.css': 'fcccf5321dbb5706fdb9ffe3700cadae6bb63ac8',
               'assets/architecture-mobile-touch.css': 'ef5def1e0004ff6f47cb843cd60b5ebf5f473448',
               'assets/architecture-explained.js': 'bcc29b5824c0e01513fa55509d990c416df805aa',
               'assets/architecture-explained.css': '0917ad5b7a65d054a4ecbb60a72ce3080fa774a6',
