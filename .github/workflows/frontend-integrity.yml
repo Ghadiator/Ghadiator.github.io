@@ -109,7 +109,7 @@ jobs:
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
           assert 'styles.css?v=20261016-manual-flow-54' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261021-merged-results-70' in html, "Script must use a cache-busting URL"
+          assert 'app.js?v=20261021-replay-scroll-72' in html, "Script must use a cache-busting URL"
           # Preserve the existing modular architecture through presentation changes.
           protected_architecture = {
               'assets/architecture-execution.js': 'd3370d3d6edb77fc1637bbbac812d1a8d19d3af1',
@@ -293,7 +293,7 @@ jobs:
                          'assets/architecture-module-inspector.css?v=20261020-governance-67',
                          'assets/architecture-execution.js?v=20261021-merged-results-70'):
               assert source in html, "Block inspector assets must load: "+source
-          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261021-merged-results-70'), "Scenario inspector must load before parent workflow"
+          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261021-replay-scroll-72'), "Scenario inspector must load before parent workflow"
           assert 'assets/architecture-governance.js?v=20261020-governance-67' in html
           assert html.index('assets/architecture-governance.js') < html.index('assets/architecture-module-inspector.js'), "Governance mappings must load before block details"
           assert 'id="architecture-module-inspector"' in app, "Selected block drawer must exist inside Architecture Explorer"

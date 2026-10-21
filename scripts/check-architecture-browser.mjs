@@ -198,6 +198,31 @@ try{
   const box=document.getElementById("workflow-results");
   return box&&/Event [1-9] of/.test(document.getElementById("architecture-execution-dashboard")?.innerText||"");
  },{timeout:10000});
+ // Replay must never reclaim the page from a visitor who is reading elsewhere.
+ // Retain the actual scrolling element so native touch/wheel momentum survives.
+ const liveList=await page.locator('.ax-rail-list').elementHandle();
+ const readingPosition=await page.evaluate(()=>{
+   const list=document.querySelector('.ax-rail-list');
+   list.scrollTop=list.scrollHeight;
+   window.scrollTo({top:0,behavior:'instant'});
+   return {page:scrollY,list:list.scrollTop,cursor:Number(document.querySelector('#modularArchitectureFrame').contentDocument.querySelector('input[aria-label="Position in the recorded run"]').value)};
+ });
+ await page.waitForFunction(cursor=>Number(document.querySelector('#modularArchitectureFrame').contentDocument.querySelector('input[aria-label="Position in the recorded run"]').value)>=cursor+2,readingPosition.cursor,{timeout:10000});
+ assert.ok(await liveList.evaluate(el=>el.isConnected&&el===document.querySelector('.ax-rail-list')),
+   'Keep the event list DOM alive across replay ticks');
+ assert.ok(Math.abs((await page.evaluate(()=>scrollY))-readingPosition.page)<3,
+   'Replay must not scroll outer ancestors back to the event rail');
+ assert.ok(Math.abs((await page.locator('.ax-rail-list').evaluate(el=>el.scrollTop))-readingPosition.list)<3,
+   'Manual event-list browsing must override automatic following');
+ await page.mouse.move(900,700);
+ await page.mouse.wheel(0,350);
+ await page.waitForTimeout(250);
+ const wheelPosition=await page.evaluate(()=>scrollY);
+ assert.ok(wheelPosition>readingPosition.page+100,'Wheel scrolling over the running canvas must move the page');
+ const wheelCursor=await deck.locator('input[aria-label="Position in the recorded run"]').inputValue();
+ await page.waitForFunction(cursor=>Number(document.querySelector('#modularArchitectureFrame').contentDocument.querySelector('input[aria-label="Position in the recorded run"]').value)>Number(cursor),wheelCursor,{timeout:10000});
+ assert.ok(Math.abs((await page.evaluate(()=>scrollY))-wheelPosition)<3,'Replay must retain the wheel-selected page position');
+ console.log('REPLAY_SCROLL_STABILITY','Page position, manual trace browsing, persistent list and canvas wheel passed');
  const summaryAfter=await header.boundingBox();
  assert.equal(summaryAfter,null,"Run narrative must never appear inside the graph section");
  const outside=page.locator("#architecture-detail");
@@ -573,6 +598,8 @@ try{
      assert.equal(await mobile.locator('#architectureTouchToggle').getAttribute('aria-pressed'),'false');
      await mobileDetails.locator('[data-module-inspector-close]').tap();
    }
+   await mobile.frameLocator('#modularArchitectureFrame').getByRole('button',{name:'Run',exact:true}).tap();
+   await mobile.waitForFunction(()=>Number(document.querySelector('#modularArchitectureFrame').contentDocument.querySelector('input[aria-label="Position in the recorded run"]').value)>=0);
    const firstPosition=await mobile.evaluate(()=>{
      const guard=document.getElementById("architectureTouchGuard");
      const rect=guard.getBoundingClientRect();
@@ -612,6 +639,9 @@ try{
    const reverseAfter=await mobile.evaluate(()=>document.scrollingElement.scrollTop);
    assert.ok(reverseAfter<reverseBefore-40,
      "Swiping DOWN over the diagram must scroll the outer page UP (before "+reverseBefore+" after "+reverseAfter+")");
+   const mobileCursor=await mobile.frameLocator('#modularArchitectureFrame').locator('input[aria-label="Position in the recorded run"]').inputValue();
+   await mobile.waitForFunction(cursor=>Number(document.querySelector('#modularArchitectureFrame').contentDocument.querySelector('input[aria-label="Position in the recorded run"]').value)>Number(cursor),mobileCursor,{timeout:10000});
+   assert.ok(Math.abs((await mobile.evaluate(()=>scrollY))-reverseAfter)<3,'An active replay must preserve the phone reading position between gestures');
    // Native sideways swipes reveal the wide diagram without enabling pan mode.
    const viewport=mobile.locator('.architecture-canvas-viewport');
    assert.ok(await viewport.evaluate(el=>el.scrollWidth>el.clientWidth+400),"Phone canvas needs real horizontal overflow");
