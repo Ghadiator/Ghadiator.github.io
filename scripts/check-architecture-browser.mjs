@@ -547,6 +547,8 @@ try{
    assert.equal(await mobile.locator("#architectureTouchToggle").getAttribute("aria-pressed"),"false",
      "Mobile must start with parent-page scrolling, not trapped diagram panning");
    const phoneGenerate=mobile.frameLocator('#modularArchitectureFrame').locator('[data-case-generate]');
+   const phonePickerBox=await mobile.frameLocator('#modularArchitectureFrame').locator('select[aria-label="Recorded scenario"]').boundingBox();
+   assert.ok(phonePickerBox&&phonePickerBox.width>=180,"Keep the phone scenario picker readable beside generation controls");
    const phoneGenerateBox=await phoneGenerate.boundingBox();
    assert.ok(phoneGenerateBox&&phoneGenerateBox.x>=0&&phoneGenerateBox.x+phoneGenerateBox.width<=390,
      "Random case control must fit the phone viewport without sideways scrolling");

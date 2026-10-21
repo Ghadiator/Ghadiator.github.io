@@ -274,6 +274,7 @@ function mountEmbeddedArchitecture(){
   if(!touchGuard||!touchToggle||!touchExit||!canvasWrap)return;
   const touchEnabled=Boolean(touchQuery?.matches);
   if(doc?.documentElement){
+   doc.documentElement.classList.toggle('architecture-host-touch',touchEnabled);
    const width=touchEnabled?Math.floor((canvasViewport||canvasWrap).clientWidth)+'px':'';
    if(doc.documentElement.style.getPropertyValue('--host-canvas-controls-width')!==width){
     if(width)doc.documentElement.style.setProperty('--host-canvas-controls-width',width);
@@ -509,6 +510,7 @@ function mountEmbeddedArchitecture(){
         Live step explanations and drill buttons live BELOW the iframe. */
      main .deck::before{display:none!important}
      .deck > div:has(select[aria-label="Recorded scenario"]){max-width:var(--host-canvas-controls-width,none);box-sizing:border-box}
+     .architecture-host-touch .deck > div:has(select[aria-label="Recorded scenario"]){flex-direction:column!important;align-items:stretch!important}
      .deck > div:has(select[aria-label="Recorded scenario"]) > div:first-child{flex-wrap:wrap;flex:1;min-width:0}
      .deck select[aria-label="Recorded scenario"]{flex:1 1 230px;max-width:340px}
      .deck select[aria-label="Recorded scenario"] ~ span{display:none!important}
