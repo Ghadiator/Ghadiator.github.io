@@ -115,7 +115,7 @@ const DEFAULT_STAGES = ['request','reminders','ingest','memory','checks','contra
 const DISPLAY_STAGES={request:'Request',reminders:'Reminders',ingest:'Intake',memory:'History',checks:'Rule checks',contract:'Contract',exception:'Exception',advisory:'Advisory + CoVe',remediation:'Remediation',review:'Human gate',disposition:'Decision',archive:'Archive'};
 const STAGE_ICONS={request:'file',reminders:'clock',ingest:'download',memory:'database',checks:'check',contract:'book-open',exception:'alert',advisory:'shield-check',remediation:'workflow',review:'user',disposition:'scale',archive:'lock'};
 const VIEW_NAMES={overview:'Introduction',architecture:'Architecture',evidence:'Evidence & learning',dashboard:'Dashboard',tickets:'Document requests',submissions:'Document collection',newticket:'New submission',ticket:'Request detail',inbound:'Supplier intake',cases:'Recorded cases',case:'Case detail',monitor:'Architecture scenarios',tokens:'Token economics',governance:'Governance controls',attacker:'Red Team attacker',redteam:'Control probes',personas:'AI roles & controls',integration:'Integration',audit:'Process audit',assurance:'Hazards & controls',analytics:'Detection analytics',login:'Access & scope'};
-const state={view:'overview',architectureTab:'diagram',personaMode:'chat',evidenceTab:'reports',submissionTab:'compose',submissionMode:'request',attackerTab:'campaign',attackerRevealed:0,attackerNotes:[],personaName:'integrator',personaSessions:{},workbenchTab:'summary',scenario:'supplier_variance_review',index:{scenarios:SCENARIOS},facts:{facts:FACTS},loaded:{},raw:{},eventIndex:0,playing:false,speed:1150,search:'',filter:'all',caseSearch:'',caseFilter:'all',selectedObligation:0,selectedHazard:0,loading:{},errors:{},help:false};
+const state={view:'overview',architectureTab:'diagram',personaMode:'chat',evidenceTab:'trace',submissionTab:'compose',submissionMode:'request',attackerTab:'campaign',attackerRevealed:0,attackerNotes:[],personaName:'integrator',personaSessions:{},workbenchTab:'summary',scenario:'supplier_variance_review',index:{scenarios:SCENARIOS},facts:{facts:FACTS},loaded:{},raw:{},eventIndex:0,playing:false,speed:1150,search:'',filter:'all',caseSearch:'',caseFilter:'all',selectedObligation:0,selectedHazard:0,loading:{},errors:{},help:false};
 let playTimer=null,toastTimer=null,loadToken=0;
 const $=x=>document.querySelector(x);
 const MAIN=$('#main');
@@ -157,7 +157,7 @@ function linkView(view,scenario){
   const search=state.caseSearch?`&case_search=${encodeURIComponent(state.caseSearch)}`:'';
   return base+filter+search;
  }
- if(view==='evidence'&&state.evidenceTab==='trace')return base+'&tab=trace';
+ if(view==='evidence')return base+'&tab='+state.evidenceTab;
  return base;
 }
 function readJourneyQuery(params){
@@ -166,7 +166,7 @@ function readJourneyQuery(params){
   state.caseFilter=values.has(params.get('case_filter'))?params.get('case_filter'):'all';
   state.caseSearch=(params.get('case_search')||'').slice(0,150);
  }
- if(params.get('view')==='evidence')state.evidenceTab=['reports','learning','trace'].includes(params.get('tab'))?params.get('tab'):'reports';
+ if(params.get('view')==='evidence')state.evidenceTab=params.get('tab')==='learning'?'learning':'trace';
 }
 // The existing architecture artifact remains authoritative and unmodified.
 // Mount only its interactive content in the current workbench; never navigate
@@ -216,10 +216,10 @@ function refreshWorkflowResults(){
 }
 function renderEmbeddedArchitecture(){
  return `<div class="page-entrance unified-architecture-view">
-  <header class="architecture-entry"><div><span class="section-overline">SYSTEM · MODULES · EVIDENCE</span><h1>Architecture explorer</h1><p>Select a recorded scenario to inspect the original 20-module workflow, emitted events and human-decision boundary. Playback never executes a new supplier review.</p></div><span class="architecture-entry-status">Recorded execution only</span></header><div class="unified-architecture-context"><span class="section-overline">EXPLORE THE RECORDED RUN</span><span>20 connected modules · original interactive diagram</span></div>
+  <header class="architecture-entry"><div><span class="section-overline">SYSTEM · MODULES · EVIDENCE</span><h1>Architecture explorer</h1><p>Choose a recorded scenario to follow its checks and decisions, or generate an Excel case. Select any block to inspect its purpose, inputs, outputs and evidence.</p></div><span class="architecture-entry-status">Recorded execution only</span></header>
   <div class="architecture-live-layout">
    <div class="architecture-main-canvas">
-    <div class="architecture-canvas-hint"><strong>Module execution replay</strong><span>Blocks highlight as their recorded work runs. Executed blocks retain markers; routes animate in the original React canvas.</span><button type="button" class="architecture-touch-toggle" id="architectureTouchToggle" aria-pressed="false" aria-controls="modularArchitectureFrame">Explore diagram</button></div>
+    <div class="architecture-canvas-hint"><button type="button" class="architecture-touch-toggle" id="architectureTouchToggle" aria-pressed="false" aria-controls="modularArchitectureFrame">Explore diagram</button></div>
     <section id="architecture-module-inspector" class="architecture-module-inspector" role="region" aria-label="Selected module definition and recorded input and output" aria-live="polite" hidden></section>
     <div class="architecture-canvas-viewport" role="region" aria-label="Scrollable architecture diagram" tabindex="0">
      <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular validation workflow and scenario player" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
@@ -370,6 +370,7 @@ function mountEmbeddedArchitecture(){
     mainResizeObserver.observe(main);
    }
   }
+  window.ArchitectureCaseGenerator?.mount(doc);
   const height=Math.max(main.scrollHeight,main.getBoundingClientRect().height);
   if(!Number.isFinite(height)||height<100)return;
   const next=Math.min(MAX_HEIGHT,Math.max(MIN_HEIGHT,Math.ceil(height+36)));
@@ -499,6 +500,17 @@ function mountEmbeddedArchitecture(){
      body > div.flex.min-h-screen > div > main > div > div:has(> .deck){margin-top:0!important}
      /* The embedded panel is only scenario transport plus the original graph.
         Live step explanations and drill buttons live BELOW the iframe. */
+     main .deck::before{display:none!important}
+     .deck > div:has(select[aria-label="Recorded scenario"]) > div:first-child{flex-wrap:wrap;flex:1;min-width:0}
+     .deck select[aria-label="Recorded scenario"]{flex:1 1 230px;max-width:340px}
+     .deck select[aria-label="Recorded scenario"] ~ span{display:none!important}
+     #architecture-case-generator{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 300px;min-width:0}
+     .acg-actions{display:flex;flex-wrap:wrap;gap:6px}
+     .acg-actions button{border:1px solid #b8cfde;border-radius:7px;background:#fff;color:#2e5a77;padding:8px 10px;font:650 11px/1.35 "Barlow",Arial,sans-serif;cursor:pointer;min-height:36px}
+     .acg-actions button:first-child{background:#315f7e;border-color:#315f7e;color:#fff}
+     .acg-actions button:disabled{opacity:.5;cursor:default}
+     .acg-actions button:focus-visible{outline:3px solid #80aff4;outline-offset:2px}
+     .acg-status{flex-basis:100%;font:11px/1.6 "Barlow",Arial,sans-serif;color:#526d80;overflow-wrap:anywhere}
      .deck{display:flex!important;flex-direction:column!important}
      .deck > *{display:none!important}
      .deck > div:has(select[aria-label="Recorded scenario"]){display:flex!important;order:1}

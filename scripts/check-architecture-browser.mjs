@@ -41,6 +41,31 @@ try{
  assert.ok(await page.frameLocator('#modularArchitectureFrame').locator('main h1').isHidden(),
    "Hide the duplicate embedded Validation / Architecture heading");
  assert.equal(await page.locator('.unified-architecture-view .run-journey').count(),0);
+ // Generation beside the picker creates a separate local input, not fake trace events.
+ const generator=page.frameLocator('#modularArchitectureFrame').locator('#architecture-case-generator');
+ await generator.waitFor({state:'visible',timeout:12000});
+ assert.ok(await generator.locator('[data-case-download]').isDisabled());
+ const pickerBefore=await page.frameLocator('#modularArchitectureFrame').locator('select[aria-label="Recorded scenario"]').inputValue();
+ const railBefore=await page.locator('#architecture-event-rail').innerText();
+ await generator.locator('[data-case-generate]').click();
+ const generatedId=await generator.getAttribute('data-invoice-id');
+ assert.ok(generatedId?.startsWith('INV-DEMO-'));
+ assert.ok(await generator.locator('[data-case-download]').isEnabled());
+ const generatedDownloadEvent=page.waitForEvent('download');
+ await generator.locator('[data-case-download]').click();
+ const generatedDownload=await generatedDownloadEvent;
+ assert.ok(generatedDownload.suggestedFilename().includes(generatedId));
+ const generatedBytes=[...await readFile(await generatedDownload.path())];
+ const downloadedRecord=await page.evaluate(async bytes=>PublicSupplierWorkbook.read(new File([new Uint8Array(bytes)],'generated.xlsx')),generatedBytes);
+ assert.equal(downloadedRecord.invoice_id,generatedId,"Download must contain the exact generated case");
+ const repeatedDownloadEvent=page.waitForEvent('download');
+ await generator.locator('[data-case-download]').click();
+ const repeatedDownload=await repeatedDownloadEvent;
+ assert.deepEqual(await readFile(await repeatedDownload.path()),Buffer.from(generatedBytes),"Repeated download must not silently generate a new invoice");
+ assert.equal(await page.frameLocator('#modularArchitectureFrame').locator('select[aria-label="Recorded scenario"]').inputValue(),pickerBefore);
+ assert.equal(await page.locator('#architecture-event-rail').innerText(),railBefore,"Generation must not invent or alter recorded execution events");
+ assert.equal(await page.locator('.unified-architecture-context,.architecture-canvas-hint strong').count(),0,
+   "Merge the stacked architecture introduction labels into one header");
  const orchestration=page.frameLocator("#modularArchitectureFrame").locator('[data-node="orchestrator"]');
  const before=await orchestration.getAttribute("aria-pressed");
  await orchestration.click();
@@ -311,6 +336,15 @@ try{
  await page.waitForSelector('.wb-tabs [data-evidence-tab="trace"].selected',{timeout:15000});
  assert.equal(new URL(page.url()).searchParams.get("scenario"),"supplier_clean",
    "Evidence deep link must survive browser reload");
+ assert.equal(await page.locator('[data-evidence-tab]').count(),2,"Evidence has trace and learning tabs, not a second case browser");
+ assert.equal(await page.locator('[data-evidence-tab="reports"]').count(),0);
+ await page.locator('[data-evidence-tab="learning"]').click();
+ assert.equal(new URL(page.url()).searchParams.get('tab'),'learning');
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.waitForSelector('[data-evidence-tab="learning"].selected');
+ await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+'/?view=evidence&scenario=supplier_clean&tab=reports',{waitUntil:'domcontentloaded'});
+ await page.waitForSelector('[data-evidence-tab="trace"].selected');
+ assert.ok(!(await page.locator('#main').innerText()).includes('Case reports'),"Old report links fall back to the decision trace");
  console.log("RUN_JOURNEY", "Case filters, Back, case → Architecture → evidence, and reload passed");
 
 
@@ -462,6 +496,11 @@ try{
        throw Error("Excel round-trip changed the supplier invoice input");
      const report=PublicLocalRunner.run(parsed,{sampleContract:true});
      checks[type]={status:report.status,failures:report.validation.filter(x=>x.passed===false).map(x=>x.title)};
+   }
+   const random=PublicSupplierWorkbook.random();
+   const roundTrip=await PublicSupplierWorkbook.read(new File([PublicSupplierWorkbook.build(random.invoice)],'random.xlsx'));
+   if(JSON.stringify(roundTrip)!==JSON.stringify(random.invoice)){
+     for(const key of Object.keys(random.invoice))if(JSON.stringify(roundTrip[key])!==JSON.stringify(random.invoice[key]))throw Error('Random Excel round-trip changed '+key);
    }
    return checks;
  });

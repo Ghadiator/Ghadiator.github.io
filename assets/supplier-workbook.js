@@ -30,6 +30,15 @@ function sample(kind){
  if(kind==="currency")r.currency="USD";
  return r;
 }
+function random(){
+ const variant=variants[Math.floor(Math.random()*variants.length)];
+ const invoice=sample(variant.id),line=invoice.lines[0];
+ const quantity=variant.id==='limit'?160+Math.floor(Math.random()*61):80+Math.floor(Math.random()*41);
+ const rate=variant.id==='rate'?[110,120,125][Math.floor(Math.random()*3)]:100;
+ line.quantity=String(quantity);line.unit_rate=rate.toFixed(2);line.amount=(quantity*rate).toFixed(2);
+ invoice.total=(quantity*rate+(variant.id==='total'?250:0)).toFixed(2);
+ return {kind:variant.id,label:variant.label,invoice};
+}
 const put16=(v,o,n)=>v.setUint16(o,n,true),put32=(v,o,n)=>v.setUint32(o,n>>>0,true);
 const crcTable=(()=>{const a=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let j=0;j<8;j++)c=c&1?0xedb88320^(c>>>1):c>>>1;a[n]=c>>>0;}return a;})();
 function crc32(b){let c=0xffffffff;for(const x of b)c=crcTable[(c^x)&255]^(c>>>8);return (c^0xffffffff)>>>0;}
@@ -73,12 +82,13 @@ function build(input){
   "xl/worksheets/sheet3.xml":sheet(instructions)
  });
 }
-function download(kind){
- const r=sample(kind),blob=build(r),u=URL.createObjectURL(blob),a=document.createElement("a");
+function downloadInvoice(r,kind='generated'){
+ const blob=build(r),u=URL.createObjectURL(blob),a=document.createElement("a");
  a.href=u;a.download="synthetic-supplier-"+kind+"-"+r.invoice_id+".xlsx";a.click();
  setTimeout(()=>URL.revokeObjectURL(u),5000);
  return r;
 }
+function download(kind){return downloadInvoice(sample(kind),kind);}
 function parseXml(bytes,label){
  const text=dec.decode(bytes);
  if(/<!DOCTYPE|<!ENTITY/i.test(text))throw Error("Workbook XML entities are not supported");
@@ -169,5 +179,5 @@ async function open(file){
  if(!obj.lines.length)throw Error("No service lines found in LineItems");
  return obj;
 }
-window.PublicSupplierWorkbook={variants,sample,build,download,read:open};
+window.PublicSupplierWorkbook={variants,sample,random,build,download,downloadInvoice,read:open};
 })();

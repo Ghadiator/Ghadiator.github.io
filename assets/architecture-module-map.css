@@ -185,3 +185,6 @@
  .ax-integrated-group .ax-role-grid,.ax-integrated-group .ax-validation-grid,
  .ax-modules .ax-review-support{grid-template-columns:1fr}
 }
+
+.unified-architecture-view .architecture-canvas-hint{display:none}
+@media(pointer:coarse){.unified-architecture-view .architecture-canvas-hint{display:flex;justify-content:flex-end;padding:8px 12px}}
