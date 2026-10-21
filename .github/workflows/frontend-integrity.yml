@@ -234,7 +234,7 @@ jobs:
           assert 'Pool Analytics' not in html, 'No orphan Pool tab label'
           assert html.count('data-view="evidence" href=') == 1
           assert 'data-persona-mode="attacker"' in app and 'data-evidence-tab' in app
-          assert 'problem-pitch' in app and 'THE BUSINESS CHALLENGE' in app
+          assert 'problem-pitch' in app and 'original-workflow-title' in app
           assert 'function renderArchitectureContracts()' in app
           assert html.count('data-view="personas"') == 1, 'There must be only one Chat with the code entry'
           assert 'data-view="tickets" href=' not in html, 'Document requests must be one destination'
