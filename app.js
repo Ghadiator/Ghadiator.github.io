@@ -215,16 +215,7 @@ function refreshWorkflowResults(){
  }
 }
 function renderEmbeddedArchitecture(){
- const r=currentCase();
  return `<div class="page-entrance unified-architecture-view">
-  <nav class="run-journey" aria-label="Selected run journey">
-   <div class="run-journey-id"><span class="run-journey-eyebrow">RECORDED RUN · ${h(r.slug)}</span><strong>${h(r.title)}</strong><span class="run-journey-note">Synthetic reference execution · ${h(r.terminal_state.replaceAll('_',' '))}</span></div>
-   <div class="run-journey-links">
-    <a data-view="case" data-scenario="${h(r.slug)}" href="${linkView('case',r.slug)}">1 · Case detail</a>
-    <span class="active" aria-current="step">2 · Architecture</span>
-    <a data-journey-trace data-scenario="${h(r.slug)}" href="?view=evidence&amp;scenario=${encodeScenario(r.slug)}&amp;tab=trace">3 · Decision evidence →</a>
-   </div>
-  </nav>
   <header class="architecture-entry"><div><span class="section-overline">SYSTEM · MODULES · EVIDENCE</span><h1>Architecture explorer</h1><p>Select a recorded scenario to inspect the original 20-module workflow, emitted events and human-decision boundary. Playback never executes a new supplier review.</p></div><span class="architecture-entry-status">Recorded execution only</span></header><div class="unified-architecture-context"><span class="section-overline">EXPLORE THE RECORDED RUN</span><span>20 connected modules · original interactive diagram</span></div>
   <div class="architecture-live-layout">
    <div class="architecture-main-canvas">
@@ -396,32 +387,26 @@ function mountEmbeddedArchitecture(){
   const scrub=deck?.querySelector('input[aria-label="Position in the recorded run"]');
   const nodes=deck?Array.from(deck.children):[];
   const stepPanel=scrub?.parentElement?.nextElementSibling;
-  const looks=nodes.find(el=>Array.from(el.querySelectorAll('span')).some(span=>span.textContent.trim()==='Look inside'));
   const humanGate=nodes.find(el=>Array.from(el.querySelectorAll('button')).some(b=>/^(Resume|Continue)\s*[—–-]/.test(b.textContent.trim())));
   const inspector=nodes.find(el=>el.querySelector('section')&&el.textContent.includes('audit ledger'));
-  const breadcrumb=nodes.find(el=>Array.from(el.querySelectorAll('button')).some(b=>b.textContent.trim()==='Architecture'));
-  return {deck,scrub,stepPanel,looks,humanGate,inspector,breadcrumb};
+  return {deck,scrub,stepPanel,humanGate,inspector};
  };
  const renderExplanation=doc=>{
   const target=document.getElementById('architecture-detail');
   if(!target)return;
-  const {deck,scrub,stepPanel,looks,humanGate,inspector,breadcrumb}=sourcePanels(doc);
+  const {deck,scrub,stepPanel,humanGate,inspector}=sourcePanels(doc);
   if(!deck||!scrub||!stepPanel)return;
   const running=Number(scrub.value)>=0;
   const paragraphs=Array.from(stepPanel.querySelectorAll('p')).map(p=>p.textContent.trim()).filter(Boolean);
-  const title=running?'Current workflow step':'Pick a case and step through it';
   const lines=paragraphs.map((line,i)=>`<p class="architecture-detail-line ${i===0?'architecture-detail-lead':''}">${h(line)}</p>`).join('');
-  const explanation=`<section class="wb-panel architecture-detail-panel"><div class="wb-panel-head"><h2>${title}</h2></div><div class="wb-panel-body">${lines}${!running?'<button type="button" class="wb-button architecture-deck-control" data-deck-action="start">Step through this run →</button>':''}</div></section>`;
-  const drillButtons=looks?Array.from(looks.querySelectorAll('button')).map((b,i)=>`<button class="wb-button architecture-deck-control" type="button" data-deck-action="drill" data-deck-index="${i}">${h(b.textContent.trim())} ↗</button>`).join(''):'';
-  const back=breadcrumb?'<button class="wb-button architecture-deck-control" type="button" data-deck-action="back">← Back to main architecture</button>':'';
-  const drill=drillButtons||back?`<section class="wb-panel architecture-detail-panel"><div class="wb-panel-head"><h2>Look inside · modular components</h2></div><div class="wb-panel-body"><div class="wb-inline-actions">${back}${drillButtons}</div></div></section>`:'';
+  const explanation=running?`<section class="wb-panel architecture-detail-panel"><div class="wb-panel-head"><h2>Current workflow step</h2></div><div class="wb-panel-body">${lines}</div></section>`:'';
   const gateButton=humanGate?.querySelector('button');
   const gate=gateButton?`<section class="wb-panel architecture-detail-panel" aria-label="Human reviewer pause"><div class="wb-panel-head"><h2>Human review · recorded decision gate</h2></div><div class="wb-panel-body"><p class="architecture-detail-line">${h(humanGate.querySelector('p')?.textContent.trim()||'Workflow suspended for reviewer')}</p><button type="button" class="wb-button architecture-deck-control" data-deck-action="resume">${h(gateButton.textContent.trim())}</button></div></section>`:'';
   const inspectorSection=inspector?.querySelector('section');
   const moduleName=inspectorSection?.querySelector('h4')?.textContent.trim();
   const inspectorText=inspectorSection?.textContent?.replace(/\s+/g,' ').trim()||'';
   const inspect=moduleName&&inspectorText?`<details class="wb-panel architecture-module-inspector"><summary>Selected module · ${h(moduleName)}</summary><div class="wb-panel-body"><p class="architecture-detail-source">${h(inspectorText)}</p></div></details>`:'';
-  const html=`<div class="wb-page">${explanation}${drill}${gate}${running?inspect:''}</div>`;
+  const html=running||gate?`<div class="wb-page">${explanation}${gate}${running?inspect:''}</div>`:'';
   if(html!==lastExplanation){lastExplanation=html;target.innerHTML=html;}
  };
  document.getElementById('architecture-detail')?.addEventListener('click',event=>{
@@ -431,15 +416,9 @@ function mountEmbeddedArchitecture(){
   let doc;
   try{doc=frame.contentDocument;}catch{return;}
   if(!doc)return;
-  const {stepPanel,looks,humanGate,breadcrumb}=sourcePanels(doc);
+  const {humanGate}=sourcePanels(doc);
   const action=pressed.dataset.deckAction;
-  if(action==='start')stepPanel?.querySelector('button')?.click();
   if(action==='resume')humanGate?.querySelector('button')?.click();
-  if(action==='back')Array.from(breadcrumb?.querySelectorAll('button')||[]).find(b=>b.textContent.trim()==='Architecture')?.click();
-  if(action==='drill'){
-   const index=Number(pressed.dataset.deckIndex);
-   if(Number.isInteger(index)&&index>=0)looks?.querySelectorAll('button')[index]?.click();
-  }
  });
  const syncFromFrame=()=>{
   if(disposed||!frame.isConnected)return;

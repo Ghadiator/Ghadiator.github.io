@@ -166,3 +166,22 @@
  .ax-modules .ax-module{transition:none}
  .ax-modules .ax-module:hover{transform:none}
 }
+/* Module status and recorded output share one card in the same workflow phase. */
+.ax-modules .ax-integrated-group{grid-template-columns:1fr;gap:14px;padding:18px}
+.ax-integrated-group .ax-module-group-head{align-items:center;border-bottom:1px solid #e0e8ef;padding:0 0 14px}
+.ax-integrated-group .ax-phase-heading strong{font-size:18px}
+.ax-integrated-group .ax-phase-count{flex-basis:auto;padding-left:0;margin:0 0 0 auto}
+.ax-modules .ax-module-result{border:1px solid #d8e5ed;border-radius:10px;overflow:hidden;min-width:0;background:#fff}
+.ax-modules .ax-module-result>.ax-module{border:0;border-bottom:1px solid #e0e8ef;border-radius:0;min-height:0;box-shadow:none}
+.ax-module-result .ax-check-totals{padding:12px 14px 0}
+.ax-integrated-group .ax-role-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0;background:transparent}
+.ax-role-purpose{margin:0;padding:12px 14px 0;font-size:11px;line-height:1.5;color:#526f83}
+.ax-modules .ax-review-support{grid-template-columns:repeat(3,minmax(0,1fr))}
+.ax-modules .ax-check-reference{grid-template-columns:1fr}
+.ax-integrated-group .ax-dash-foot{padding:12px 0 0;background:transparent}
+@media(max-width:700px){
+ .ax-modules .ax-integrated-group{padding:12px;gap:12px}
+ .ax-integrated-group .ax-phase-count{flex-basis:100%;margin-left:45px}
+ .ax-integrated-group .ax-role-grid,.ax-integrated-group .ax-validation-grid,
+ .ax-modules .ax-review-support{grid-template-columns:1fr}
+}

@@ -108,14 +108,11 @@ try{
  assert.ok(await picker.count(),"Scenario selector must appear in the original modular canvas");
  assert.ok((await picker.locator("option").count())>=10,"The recorded scenarios must be selectable");
  const outsideBefore=page.locator("#architecture-detail");
- assert.ok((await outsideBefore.innerText()).includes("Pick a case and step through it"),"Introductory text must appear below the graph");
- assert.ok((await outsideBefore.innerText()).includes("Look inside"),"Modular drill controls must appear below the graph");
- const drillControl=outsideBefore.locator('[data-deck-action="drill"]').first();
- await drillControl.click();
- await page.waitForFunction(()=>document.querySelector('#architecture-detail [data-deck-action="back"]'),null,{timeout:10000});
- await outsideBefore.locator('[data-deck-action="back"]').click();
- await page.waitForFunction(()=>!document.querySelector('#architecture-detail [data-deck-action="back"]'),null,{timeout:10000});
- console.log("MODULE_DRILL", "React drill-down and return are controlled from beneath the modular canvas");
+ assert.equal((await outsideBefore.innerText()).trim(),"","Before replay, no introductory or drill panels may appear below the diagram");
+ assert.equal(await outsideBefore.locator('[data-deck-action="start"],[data-deck-action="drill"],[data-deck-action="back"]').count(),0);
+ for(const phrase of ['Pick a case and step through it','Look inside · modular components','Step through this run →']){
+   assert.ok(!(await page.locator('#main').innerText()).includes(phrase),"Deleted parent panel returned: "+phrase);
+ }
  const processEvents=page.locator('#architecture-event-rail [data-replay-seek]');
  assert.equal(await processEvents.count(),42,"The full 42-event source trace must be shown beside the graph");
  assert.ok((await page.locator('#architecture-execution-dashboard').innerText()).includes("Execution state by module"),
@@ -126,6 +123,15 @@ try{
  assert.ok(initialSnapshot.includes("14 / 20"),"The full 42-event fixture must show 14 observed architecture blocks even before replay starts");
  assert.equal(await page.locator("[data-architecture-stage]").count(),6,"Group modules by architecture lanes and workflow-wide rails");
  assert.equal(await page.locator("[data-architecture-module]").count(),20,"Each original diagram block must have an inspection action");
+ const checksGroup=page.locator('[data-architecture-stage="checks"]');
+ const reviewGroup=page.locator('[data-architecture-stage="review"]');
+ assert.equal(await checksGroup.locator('.ax-check-panel').count(),2,"Keep both result sets inside the verification phase");
+ assert.equal(await reviewGroup.locator('.ax-role-card').count(),4,"Keep all committee outputs inside exception review");
+ assert.equal(await checksGroup.locator('[data-architecture-module]').count(),3);
+ assert.equal(await reviewGroup.locator('[data-architecture-module]').count(),7);
+ assert.equal(await page.locator('.ax-module-result').count(),6,"Each check or role has one combined status/output card");
+ assert.equal(await page.locator('.ax-run-dashboard > .ax-validation-grid,.ax-run-dashboard > .ax-committee').count(),0,
+   "Do not render duplicate results panels outside their phase");
  // Clicking the 20-block status cards must open that SAME inspector.
  await page.locator('[data-architecture-module="rules"]').click();
  await page.waitForFunction(()=>document.getElementById('architecture-module-inspector')?.dataset.selectedModule==='rules',
@@ -285,7 +291,9 @@ try{
  await page.locator('.run-journey-links a[data-view="architecture"]').click();
  await page.waitForFunction(()=>new URLSearchParams(location.search).get("view")==="architecture",null,{timeout:10000});
  assert.equal(new URL(page.url()).searchParams.get("scenario"),"supplier_clean");
- await page.locator('.run-journey-links a[data-journey-trace]').click();
+ assert.equal(await page.locator('.unified-architecture-view .run-journey').count(),0,"Remove the recorded-run banner from Architecture");
+ await page.locator('#sidebar [data-view="evidence"]').click();
+ await page.locator('[data-evidence-tab="trace"]').click();
  await page.waitForFunction(()=>new URLSearchParams(location.search).get("view")==="evidence",null,{timeout:10000});
  assert.equal(new URL(page.url()).searchParams.get("tab"),"trace",
    "Run evidence links must open the Decision trace tab");
