@@ -10,6 +10,18 @@ page.on("pageerror",e=>errors.push("PAGEERROR "+e.message.slice(0,300)));
 page.on("console",m=>{if(m.type()==="error")errors.push("CONSOLE "+m.text().slice(0,300));});
 page.on("response",r=>{if(r.status()>=400)responses.push(r.status()+" "+r.url().slice(0,170));});
 try{
+ // Capture the visual refresh at both sizes, including reduced-motion mode.
+ for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
+  await page.setViewportSize(viewport);
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+'/?view=overview',{waitUntil:'networkidle'});
+  await page.locator('#overview-title').waitFor({state:'visible'});
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Introduction must fit the viewport');
+  assert.equal(await page.locator('.overview-hero').evaluate(el=>getComputedStyle(el,'::before').animationName),'none','Reduced motion must stop decorative lighting');
+  await page.screenshot({path:`frontend-introduction-${viewport.width}.png`,fullPage:false,animations:"disabled"});
+ }
+ await page.setViewportSize({width:1440,height:1000});
+ await page.emulateMedia({reducedMotion:'no-preference'});
  await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+"/?view=architecture",{waitUntil:"domcontentloaded",timeout:60000});
  await page.waitForTimeout(4500);
  const state=await page.evaluate(()=>{
@@ -130,7 +142,7 @@ try{
    "Recorded module output must link to its exact fixture event index");
 
  console.log("BAD_RESPONSES",JSON.stringify(responses.slice(0,30)));
- await page.screenshot({path:"architecture-embedded-test.png",fullPage:false});
+ await page.screenshot({path:"architecture-embedded-test.png",fullPage:false,animations:"disabled"});
  const deck=page.frameLocator("#modularArchitectureFrame");
  const picker=deck.locator('select[aria-label="Recorded scenario"]');
  assert.ok(await picker.count(),"Scenario selector must appear in the original modular canvas");
@@ -334,6 +346,29 @@ try{
    const doc=document.getElementById('modularArchitectureFrame')?.contentDocument;
    return doc?.querySelector('[data-node="rules"]')?.getAttribute('aria-pressed')==="true";
  },null,{timeout:10000});
+ // Inspection is independent of time, including after a correction has passed.
+ await blockDetails.locator('[data-module-inspector-close]').click();
+ await picker.selectOption('supplier_rate_correction');
+ await page.waitForFunction(()=>document.querySelectorAll('#architecture-event-rail [data-replay-seek]').length===64);
+ await page.locator('#architecture-event-rail [data-replay-seek="63"]').click();
+ const replayPosition=deck.locator('input[aria-label="Position in the recorded run"]');
+ await page.waitForFunction(()=>document.getElementById('modularArchitectureFrame').contentDocument.querySelector('input[aria-label="Position in the recorded run"]').value==='63');
+ await page.locator('[data-architecture-module="crosscheck"]').scrollIntoViewIfNeeded();
+ const inspectionScroll=await page.evaluate(()=>window.scrollY);
+ await page.locator('[data-architecture-module="crosscheck"]').click();
+ assert.equal(await replayPosition.inputValue(),'63','Contract block inspection must preserve the completed correction');
+ assert.ok(Math.abs((await page.evaluate(()=>window.scrollY))-inspectionScroll)<2,'Module selection must not scroll back to the graph');
+ const evidenceCopy=blockDetails.locator('.ami-event-record').first();
+ await evidenceCopy.click();
+ assert.equal(await replayPosition.inputValue(),'63','Reading contractual evidence must not rewind the run');
+ const jump=blockDetails.locator('.ami-event-jump').first();
+ const jumpIndex=await jump.getAttribute('data-replay-seek');
+ await jump.click();
+ assert.equal(await replayPosition.inputValue(),jumpIndex,'Explicit Jump to event must still seek');
+ await blockDetails.locator('[data-module-inspector-close]').click();
+ await deck.locator('[data-node="crosscheck"]').click();
+ assert.equal(await replayPosition.inputValue(),jumpIndex,'Graph block inspection must preserve position');
+ await blockDetails.locator('[data-module-inspector-close]').click();
  console.log("ARCHITECTURE_MODULE_MAP","Grouped 20-node coverage and click-through to original diagram passed");
 
 
@@ -374,6 +409,8 @@ try{
  await page.locator('.evidence-destinations [data-view="architecture"]').waitFor({state:'visible'});
  await page.locator('.evidence-destinations [data-view="case"]').click();
  await page.waitForSelector('.case-review-evidence');
+ // The case shell appears before its verified event stream finishes loading.
+ await page.locator('.case-review-evidence').getByText('Reviewer decision — APPROVE',{exact:true}).waitFor({state:'visible'});
  assert.equal(new URL(page.url()).searchParams.get('scenario'),'supplier_clean');
  assert.ok((await page.locator('.case-review-evidence').innerText()).includes('Reviewer decision — APPROVE'));
  await page.locator('.case-source-footer [data-journey-trace]').click();

@@ -55,12 +55,13 @@
   }
   const eventLabel=(e,index)=>{
     const ref=(Array.isArray(e.refs)&&e.refs[0])?e.refs[0]:"Published synthetic fixture";
-    return '<li class="ami-event"><button type="button" data-replay-seek="'+index+'" aria-label="Jump to recorded event '+safe(e.seq)+'">'
+    return '<li class="ami-event"><div class="ami-event-record">'
       +'<span class="ami-seq">#'+safe(e.seq)+'</span><span class="ami-event-copy"><b>'+safe(e.label)+'</b>'
       +(e.detail?'<span>'+safe(e.detail)+'</span>':'')
       +'<small>'+safe(model.eventInfo(e).category)+' · '+safe(e.kind)+'</small>'
       +'<small>Recorded owner: '+safe(e.node)+' · Producer: '+safe(model.eventInfo(e).producer)+'</small>'
-      +'<small>'+safe(ref)+'</small></span><span aria-hidden="true">↗</span></button></li>';
+      +'<small>'+safe(ref)+'</small></span></div>'
+      +'<button class="ami-event-jump" type="button" data-replay-seek="'+index+'" aria-label="Jump to recorded event '+safe(e.seq)+'">Jump to event '+safe(e.seq)+' <span aria-hidden="true">↗</span></button></li>';
   };
   function render(){
     const el=target();if(!el||!selected||!SPEC[selected])return;
@@ -135,8 +136,6 @@
       returnFocus=active?.tagName==="IFRAME"?active.contentDocument?.activeElement:active;
     }
     selected=id;
-    const canvas=target()?.closest?.(".architecture-main-canvas");
-    if(canvas&&canvas.getBoundingClientRect().bottom<160)canvas.scrollIntoView({block:"start",behavior:"auto"});
     render();target()?.querySelector?.("#ami-title")?.focus({preventScroll:true});return true;
   }
   function setScenario(nextScenario,events,nextCursor){

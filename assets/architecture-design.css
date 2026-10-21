@@ -133,3 +133,31 @@ main .deck{box-shadow:0 3px 8px #1c405a04,0 16px 38px #1c405a07}
   animation:none!important;transition:none!important;scroll-behavior:auto!important;
  }
 }
+
+/* Precision surfaces. Geometry, route paths and state colours stay owned by
+   the existing graph and trace model. Highlights indicate selection only. */
+.architecture-entry{position:relative;padding:24px 26px;border:1px solid #cbdde3;border-radius:16px;background:radial-gradient(ellipse at 100% 0,#d6eee870,transparent 60%),linear-gradient(110deg,#fff,#f2f8fa);box-shadow:0 6px 25px #163e5007}
+.architecture-entry::after{content:"";position:absolute;bottom:-1px;left:26px;width:72px;height:2px;background:linear-gradient(90deg,#208c8a,#8ed4c5);pointer-events:none}
+.architecture-entry .section-overline{color:#286d75;letter-spacing:.13em}
+.architecture-entry-status{background:#eaf6f3;color:#266c62;border-color:#c2dfd7}
+.architecture-main-canvas,.architecture-event-rail{border-color:#cbdde4;box-shadow:0 2px 5px #143a4905,0 16px 40px #143a4908}
+.deck-canvas{background-color:#f4f9fb;background-image:radial-gradient(ellipse at 50% 0,#d9eee940,transparent 70%),radial-gradient(circle,#a9c4cf80 .75px,transparent 1px);background-size:auto,20px 20px}
+main .deck::before{background:linear-gradient(100deg,#e3f0f1,#f4f8fb);color:#26596a}
+.deck-canvas [data-node]{filter:drop-shadow(0 3px 4px #183d5114)}
+.deck-canvas [data-node][aria-pressed="true"]{box-shadow:0 0 0 4px #2c8e8c20,0 5px 20px #255a671a}
+.ax-rail-header{background:linear-gradient(115deg,#e8f3f3,#f5f9fc)}
+.ax-rail-event.is-current{background:#e5f3f3;border-left-color:#207e81;box-shadow:inset 0 1px #3e9d9b18,inset 0 -1px #3e9d9b18}
+.ax-rail-event.is-failure.is-current{background:#fff1f3;border-left-color:#b14558}
+.ax-modules .ax-module-group{border-color:#d2e2e8;box-shadow:0 5px 18px #183d5105}
+.ax-modules .ax-module-group-head{background:linear-gradient(100deg,#eff6f7,#f9fbfc)}
+.ax-modules .ax-module-number{background:#e8f3f3;border-color:#cce0df;color:#2b6871}
+.ax-modules .ax-module:hover{box-shadow:0 0 0 2px #3b8c8612,0 5px 16px #173b5008}
+#architecture-module-inspector{border-color:#9fc5ce;box-shadow:0 24px 80px #102d3f30,0 2px 8px #102d3f12}
+#architecture-module-inspector .ami-header{background:radial-gradient(ellipse at 100% 0,#d6eee7,transparent 75%),#f0f7fa}
+#architecture-module-inspector .ami-nav button{background:#ffffffb8;border-color:#bed7dd;box-shadow:0 1px 3px #143a4905}
+#architecture-module-inspector .ami-event{border:1px solid #d6e4e9;border-radius:10px;background:#fbfdfe;overflow:hidden}
+#architecture-module-inspector .ami-event-record{display:flex;gap:10px;padding:13px 12px;align-items:flex-start}
+#architecture-module-inspector .ami-event button.ami-event-jump{display:flex;justify-content:space-between;align-items:center;border:0;border-top:1px solid #dce9ed;border-radius:0;padding:10px 12px;min-height:44px;font-family:inherit;font-weight:650;font-size:11px;line-height:1.5;background:#f0f6f8;color:#275e73}
+#architecture-module-inspector .ami-event button.ami-event-jump:hover{background:#e3f0f2}
+#architecture-module-inspector .ami-event-copy small{color:#526e80}
+@media(max-width:770px){.architecture-entry{padding:20px 18px;border-radius:12px}.architecture-entry::after{left:18px}}

@@ -9,8 +9,8 @@ def git_blob(data):
 
 BASELINES = {
     'app.js': '90d554d09f60c4d6b2308e573a6daf099fec0766',
-    'assets/architecture-execution.js': 'c09bdd33385f1433ce3b9983edcf9c56d4edff24',
-    'assets/architecture-module-inspector.js': 'c4d5ac679d00d252689a5af5d6503ef3a4e2f61e',
+    'assets/architecture-execution.js': '1b6118e548571c492a8d690432368f57c189ac0f',
+    'assets/architecture-module-inspector.js': 'e4b3e84b142656da571a01393a6d9993ab0159c6',
     'assets/architecture-explained.js': 'bcc29b5824c0e01513fa55509d990c416df805aa',
     '_next/static/chunks/app/architecture/page-2d56a5bff821821b.js': '5caa4722a597ef2ace16415e5aae8b1596faa19d',
     '_next/static/chunks/app/layout-00714e284e207e0e.js': '1e182c9d8081413b88611163515e350ed3ac48ee',
@@ -34,8 +34,11 @@ BASELINES = {
 for path, expected in BASELINES.items():
     assert git_blob(Path(path).read_bytes()) == expected, f"Technical implementation changed: {path}"
 
-# The only permitted HTML difference is the presentation stylesheet link.
-link = b'<link rel="stylesheet" href="/assets/architecture-design.css?v=20261020-architecture-66"/>'
+# The only permitted HTML difference is the versioned presentation stylesheet link.
+# Inspector cards now reserve seeking for a labeled button; module selection
+# no longer scrolls readers back to the diagram. Their reviewed hashes above
+# protect that interaction boundary alongside the unchanged React implementation.
+link = b'<link rel="stylesheet" href="/assets/architecture-design.css?v=20261021-studio-inspection-79"/>'
 page = Path("architecture/index.html").read_bytes()
 assert page.count(link) == 1
 assert git_blob(page.replace(link, b"")) == "8b3ed74786fa32b9c8af18a75fc86c6a6041eb55", "Architecture DOM, paths, labels or geometry changed"
