@@ -17,6 +17,10 @@ on:
       - _next/static/chunks/app/architecture/page-2d56a5bff821821b.js
       - _next/static/chunks/app/layout-00714e284e207e0e.js
       - .github/workflows/architecture-ui-integrity.yml
+concurrency:
+  group: architecture-ui-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
