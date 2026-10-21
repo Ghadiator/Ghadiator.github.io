@@ -690,6 +690,7 @@ try{
      "Exiting exploration must restore normal page swipe scrolling");
    console.log("MOBILE_DIAGRAM_SCROLL","Native upward/downward page swipes, explicit React interaction and one-tap exit passed");
    await mobile.locator('#mobileMenu').click();
+   assert.ok(await mobileDetails.isHidden(),'Opening navigation must dismiss the block popup so it cannot cover the drawer');
    await mobile.locator('#sidebar [data-view="background"]').click();
    await mobile.locator('.so-choice').last().waitFor({state:'visible'});
    assert.equal(await mobile.locator('.so-choice').count(),6);

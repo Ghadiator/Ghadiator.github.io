@@ -819,6 +819,7 @@ render();const focusEl=document.getElementById(id);if(focusEl){focusEl.focus();t
 document.body.addEventListener('click',event=>{const viewlink=event.target.closest('.sidebar [data-view]');if(viewlink){event.preventDefault();route(viewlink.dataset.view,state.scenario);}});
 /* Drawer uses the same navigation links as desktop. Focus stays inside while open. */
 function openMobileNav(){
+ window.ArchitectureModuleInspector?.close();
  const sidebar=$('#sidebar');
  sidebar.removeAttribute('inert');
  sidebar.classList.add('open');
