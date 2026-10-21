@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - 'app.js'
+      - 'assets/safety-to-governance.js'
+      - 'assets/safety-to-governance.css'
       - 'assets/architecture-design.css'
       - 'architecture/index.html'
       - 'assets/architecture-embed.css'
