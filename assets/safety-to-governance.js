@@ -3,12 +3,12 @@
 (function(){
  'use strict';
  const choices=[
-  {icon:'alert',title:'Start with what can go wrong',experience:'I define safety analysis strategies and align safety concepts with system architecture.',choice:'That shaped the failure cases: incorrect rates, missing evidence, duplicate invoices and unresolved reviews. Each concern has an explicit check or escalation path.',view:'cases',link:'Explore the failure cases'},
-  {icon:'list-tree',title:'Make claims traceable to evidence',experience:'I own safety cases and act as an interface for audits and external assessments.',choice:'That shaped the event record. A reader can trace a check, proposed finding, verification result and human decision back to the published case.',view:'evidence',link:'Inspect the decision evidence'},
+  {icon:'alert',title:'Design for failures and edge cases',experience:'I define safety analysis strategies and align safety concepts with system architecture.',choice:'That shaped the failure and edge cases: incorrect rates, missing evidence, duplicate invoices and unresolved reviews. Each concern has an explicit check or escalation path.',view:'cases',link:'Explore the failure cases'},
+  {icon:'list-tree',title:'Make claims traceable to evidence',experience:'I own safety cases and act as an interface for audits and external assessments.',choice:'That shaped the event record and replay dashboard. Like monitoring software, they make checks, exceptions and state changes visible, with each result traceable to the published case.',view:'evidence',link:'Inspect the decision evidence'},
   {icon:'shield-check',title:'Verify before accepting a proposal',experience:'I have verified the architecture and design of Simulink- and C-based software.',choice:'That shaped the separation between proposal and verification. Scripted Proponent and Opponent outputs are claims; CoVe checks evidence before the Judge packages the findings.',view:'architecture',link:'Inspect the review architecture'},
   {icon:'user',title:'Keep decision authority explicit',experience:'I lead safety governance through to release recommendation and coordinate technical project teams.',choice:'That shaped the human review gate. The review package supports a named reviewer; it does not grant an AI role the authority to approve. The replay shows recorded decisions.',view:'architecture',link:'Follow the human review gate'},
   {icon:'lock',title:'Define limits for tools and changes',experience:'I classify and qualify development tools, and have designed a sandboxed change process.',choice:'That shaped bounded proposals, input separation and the adapter-failure and proposal-budget cases. These demonstrate control behaviour; they do not qualify a live AI tool.',view:'personas',link:'Examine AI roles and controls'},
-  {icon:'code',title:'Automate repeatable work carefully',experience:'I automated software release management with VBA and developed project toolchains.',choice:'That shaped the rules-first approach: arithmetic and contract facts use fixed checks. Corrections return through validation, with versions and reviewer decisions kept visible.',view:'submissions',link:'Try local document checks'}
+  {icon:'code',title:'Use deterministic checks for repeatable facts',experience:'I automated software release management with VBA and developed project toolchains.',choice:'That shaped the deterministic, rules-first approach: arithmetic and contract facts use fixed checks. Corrections return through validation, with versions and reviewer decisions kept visible.',view:'submissions',link:'Try local document checks'}
  ];
  function render(ctx){
   const e=ctx.h,icon=ctx.icon;
@@ -17,7 +17,7 @@
    <header class="so-hero">
     <span class="section-overline">THE ENGINEERING BEHIND THE MODEL</span>
     <h1>From functional safety<br><em>to AI governance.</em></h1>
-    <p class="so-lead">How did my experience shape this model? It taught me to define the failure, make the control explicit, verify the evidence and keep decision authority clear.</p>
+    <p class="so-lead">How did my experience shape this model? It taught me to anticipate edge cases, use deterministic checks where facts can be verified, make failures visible and keep decision authority clear.</p>
     <div class="so-author"><span class="so-author-icon">${icon('user')}</span><div><strong>Ali Ghader</strong><span>Functional Safety Manager · Systems engineering · AI governance</span></div></div>
    </header>
    <section class="so-background" aria-labelledby="so-background-title">
