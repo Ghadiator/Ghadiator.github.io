@@ -546,6 +546,10 @@ try{
    },null,{timeout:25000});
    assert.equal(await mobile.locator("#architectureTouchToggle").getAttribute("aria-pressed"),"false",
      "Mobile must start with parent-page scrolling, not trapped diagram panning");
+   const phoneGenerate=mobile.frameLocator('#modularArchitectureFrame').locator('[data-case-generate]');
+   const phoneGenerateBox=await phoneGenerate.boundingBox();
+   assert.ok(phoneGenerateBox&&phoneGenerateBox.x>=0&&phoneGenerateBox.x+phoneGenerateBox.width<=390,
+     "Random case control must fit the phone viewport without sideways scrolling");
    // A normal phone tap must work WITHOUT first enabling diagram panning.
    // This travels through the real scroll guard, not a programmatic node click.
    const mobileDetails=mobile.locator('#architecture-module-inspector');

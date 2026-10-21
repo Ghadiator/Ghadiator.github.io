@@ -273,6 +273,13 @@ function mountEmbeddedArchitecture(){
  const alignTouchGuard=doc=>{
   if(!touchGuard||!touchToggle||!touchExit||!canvasWrap)return;
   const touchEnabled=Boolean(touchQuery?.matches);
+  if(doc?.documentElement){
+   const width=touchEnabled?Math.floor((canvasViewport||canvasWrap).clientWidth)+'px':'';
+   if(doc.documentElement.style.getPropertyValue('--host-canvas-controls-width')!==width){
+    if(width)doc.documentElement.style.setProperty('--host-canvas-controls-width',width);
+    else doc.documentElement.style.removeProperty('--host-canvas-controls-width');
+   }
+  }
   touchToggle.setAttribute('aria-pressed',String(touchInteractive));
   touchToggle.textContent=touchInteractive?'Return to page scroll':'Explore diagram';
   touchExit.hidden=!touchEnabled||!touchInteractive;
@@ -501,6 +508,7 @@ function mountEmbeddedArchitecture(){
      /* The embedded panel is only scenario transport plus the original graph.
         Live step explanations and drill buttons live BELOW the iframe. */
      main .deck::before{display:none!important}
+     .deck > div:has(select[aria-label="Recorded scenario"]){max-width:var(--host-canvas-controls-width,none);box-sizing:border-box}
      .deck > div:has(select[aria-label="Recorded scenario"]) > div:first-child{flex-wrap:wrap;flex:1;min-width:0}
      .deck select[aria-label="Recorded scenario"]{flex:1 1 230px;max-width:340px}
      .deck select[aria-label="Recorded scenario"] ~ span{display:none!important}
