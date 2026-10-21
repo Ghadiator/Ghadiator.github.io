@@ -709,6 +709,9 @@ try{
    await mobile.locator('#sidebar [data-view="background"]').click();
    await mobile.locator('.so-choice').last().waitFor({state:'visible'});
    assert.equal(await mobile.locator('.so-choice').count(),6);
+   assert.equal(await mobile.locator('.so-skill').count(),19);
+   await mobile.locator('.so-skill-group').last().locator('summary').click();
+   assert.ok(await mobile.locator('.so-skill-group').last().locator('.so-skill').last().isVisible());
    assert.ok(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Engineering story must fit the phone viewport');
    assert.equal(await mobile.locator('#sidebar [data-view="background"]').getAttribute('aria-current'),'page');
    await mobile.reload({waitUntil:'domcontentloaded'});
@@ -720,6 +723,8 @@ try{
  await page.locator('#sidebar [data-view="background"]').click();
  assert.equal(await page.locator('nav[aria-labelledby="nav-background"] [data-view]').count(),1,'Personal engineering rationale has its own sidebar section');
  assert.equal(await page.locator('.so-choice').count(),6);
+ assert.equal(await page.locator('.so-skill-group').count(),4);
+ assert.equal(await page.locator('.so-skill').count(),19);
  assert.ok((await page.locator('#main').innerText()).includes('Bosch Engineering'));
  assert.ok((await page.locator('#main').innerText()).includes('techcos'));
  assert.ok((await page.locator('#main').innerText()).includes('not equivalence between standards'));

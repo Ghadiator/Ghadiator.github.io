@@ -14,6 +14,7 @@ on:
       - assets/public-personas.js
       - assets/public-attacker.js
       - assets/story-journey.js
+      - scripts/check-safety-transfer.cjs
       - assets/safety-to-governance.js
       - assets/safety-to-governance.css
       - assets/overview-agentic-flow.css
@@ -49,6 +50,7 @@ on:
       - assets/public-personas.js
       - assets/public-attacker.js
       - assets/story-journey.js
+      - scripts/check-safety-transfer.cjs
       - assets/safety-to-governance.js
       - assets/safety-to-governance.css
       - assets/overview-agentic-flow.css
@@ -80,6 +82,8 @@ jobs:
           node --check assets/story-journey.js
       - name: Protect architecture semantics during presentation changes
         run: python3 scripts/check-architecture-presentation.py
+      - name: Verify CV-grounded safety-to-governance skills
+        run: node scripts/check-safety-transfer.cjs
       - name: Verify all scenario and control states at every playback position
         run: node scripts/check-architecture-run-model.cjs
       - name: Test architecture state against source fixtures
