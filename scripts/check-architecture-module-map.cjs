@@ -31,6 +31,29 @@ function assertStructure(html){
  for(const id of ids)assert.match(block(html,id),/data-architecture-module=/,'Module must open the actual graph node');
 }
 for(const markup of [initial,mid,complete])assertStructure(markup);
+const phase=(html,key)=>{
+ const match=html.match(new RegExp('<section[^>]*data-architecture-stage="'+key+'"[\\s\\S]*?<\\/section>'));
+ assert.ok(match,'Missing combined phase '+key);
+ return match[0];
+};
+for(const markup of [initial,mid,complete]){
+ const checks=phase(markup,'checks'),review=phase(markup,'review');
+ assert.equal((checks.match(/data-module-status=/g)||[]).length,3);
+ assert.equal((review.match(/data-module-status=/g)||[]).length,7);
+ assert.equal((checks.match(/data-module-results=/g)||[]).length,2,'Both check result sets belong to verification');
+ assert.equal((review.match(/data-module-results=/g)||[]).length,4,'All four role outputs belong to exception review');
+ assert.equal((markup.match(/data-module-results=/g)||[]).length,6,'Results must not be repeated outside the two phases');
+ assert.doesNotMatch(markup,/DETERMINISTIC VALIDATION|BOUNDED REVIEW COMMITTEE/,'Remove duplicate panel headings');
+}
+assert.doesNotMatch(initial,/class="ax-check-row /,'No future check may appear before replay');
+assert.doesNotMatch(initial,/class="ax-role-message"/,'No future committee output may appear before replay');
+const completedChecks=phase(complete,'checks');
+assert.equal((completedChecks.match(/class="ax-check-row /g)||[]).length,
+ events.filter(e=>['checks.rule','contract.check'].includes(e.kind)).length,'Keep every recorded deterministic result exactly once');
+const completedReview=phase(complete,'review');
+assert.equal((completedReview.match(/class="ax-role-message"/g)||[]).length,
+ events.filter(e=>['committee.proponent.argument','committee.opponent.argument','verification.result','committee.judge.argument'].includes(e.kind)).length,
+ 'Keep every recorded role output exactly once');
 assert.match(initial,/14<span> \/ 20<\/span>/,'Full case has 14 blocks with emitted events');
 assert.match(initial,/0 of 20 reached so far/,'Cursor begins before the first recorded event');
 assert.match(initial,/Replay not started/);
@@ -61,4 +84,14 @@ assert.equal((correctedHtml.match(/data-module-status="/g)||[]).length,20);
 assert.ok(correctedHtml.includes('Rate')||correctedHtml.includes('rate'),'Correction run remains visible');
 assert.match(block(correctedHtml,'process_semantics'),/12 \/ 12 audit transitions · 4 \/ 4 human-gate events/,'Correction-loop evidence count must remain sourced from fixture, not hard-coded');
 assertStructure(engine.renderDashboard([], -1));
+for(const slug of ['supplier_clean','supplier_unsupported_claim','supplier_adapter_failure','supplier_proposal_budget']){
+ const fixture=JSON.parse(fs.readFileSync('data/scenarios/'+slug+'.json','utf8'));
+ const html=engine.renderDashboard(fixture.events,fixture.events.length-1);
+ assertStructure(html);
+ const review=phase(html,'review');
+ for(const event of fixture.events.filter(e=>['committee.adapter_failed','committee.budget_exceeded'].includes(e.kind))){
+  assert.ok(review.includes(event.label),'Retain recorded adapter failures and proposal forfeits: '+slug);
+ }
+ if(slug==='supplier_clean')assert.doesNotMatch(review,/class="ax-role-message"/,'Clean case does not invent committee execution');
+}
 console.log('Architecture module map: phase grouping, 20-node identity, replay-vs-run coverage and source integrity passed.');

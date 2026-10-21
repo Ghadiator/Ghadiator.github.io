@@ -63,7 +63,7 @@
     <p class="ax-rail-foot">Ordinal fixture records, not live telemetry or real-world timestamps.</p>`;
  }
  const badge=(label,kind)=>`<span class="ax-pill ax-pill-${kind}">${escape(label)}</span>`;
- function renderCheckPanel(kind,title,visible){
+ function renderCheckPanel(kind,title,visible,renderCard,id){
   const checks=visible.filter(e=>e.kind===kind);
   const failures=checks.filter(e=>status(e)==="fail").length;
   const passes=checks.filter(e=>status(e)==="pass").length;
@@ -72,25 +72,27 @@
     <span class="ax-check-desc"><strong>${escape(e.label)}</strong>${e.detail?`<small>${escape(e.detail)}</small>`:''}<small>Event ${escape(e.seq)} · ${escape(e.refs?.[0]||'Recorded fixture')}</small></span>
     ${badge(status(e)==='fail'?'Failed':status(e)==='pass'?'Passed':'Recorded',status(e))}
   </li>`).join("");
-  return `<section class="ax-dash-panel"><div class="ax-panel-head"><div><span class="ax-overline">DETERMINISTIC VALIDATION</span><h3>${escape(title)}</h3></div><div class="ax-check-totals">${badge(passes+' passed','pass')}${failures?badge(failures+' failed','fail'):''}</div></div>
-   ${checks.length?`<ol class="ax-check-list">${rows}</ol>`:'<p class="ax-panel-empty">No checks of this kind have been emitted yet in this replay.</p>'}</section>`;
+  return `<article class="ax-module-result ax-check-panel" data-module-results="${id}" aria-label="${escape(title)}">
+   ${renderCard(id)}<div class="ax-check-totals" aria-label="Replayed check results">${badge(passes+' passed','pass')}${failures?badge(failures+' failed','fail'):''}</div>
+   ${checks.length?`<ol class="ax-check-list">${rows}</ol>`:'<p class="ax-panel-empty">No checks have been replayed for this module.</p>'}</article>`;
  }
  const roleKinds=[
-  ["Proponent","committee.proponent.argument","Supports the submission"],
-  ["Opponent","committee.opponent.argument","Challenges submitted evidence"],
-  ["Pre-Judge CoVe","verification.result","Verifies claims against evidence"],
-  ["Judge","committee.judge.argument","Packages verified findings"]
+  ["proponent","committee.proponent.argument","Supports the submission"],
+  ["opponent","committee.opponent.argument","Challenges submitted evidence"],
+  ["firewall","verification.result","Verifies claims against evidence"],
+  ["judge","committee.judge.argument","Packages verified findings"]
  ];
- function renderCommittee(visible){
+ function renderCommittee(visible,renderCard){
   const forfeits=visible.filter(e=>["committee.adapter_failed","committee.budget_exceeded"].includes(e.kind));
-  const cards=roleKinds.map(([title,kind,subtitle])=>{
+  const cards=roleKinds.map(([id,kind,subtitle])=>{
    const lines=visible.filter(e=>e.kind===kind);
-   return `<article class="ax-role-card ${lines.length?'ax-role-emitted':'ax-role-pending'}"><div class="ax-role-head"><div><h4>${title}</h4><span>${subtitle}</span></div>${badge(lines.length?lines.length+' event'+(lines.length===1?'':'s'):'Not reached',lines.length?'record':'pending')}</div>
+   return `<article class="ax-module-result ax-role-card ${lines.length?'ax-role-emitted':'ax-role-pending'}" data-module-results="${id}">${renderCard(id)}<p class="ax-role-purpose">${subtitle}</p>
     ${lines.length?lines.map(e=>`<div class="ax-role-message"><b>${escape(e.label)}</b><p>${escape(e.detail||'No narrative included in the recorded event.')}</p><small>Event ${escape(e.seq)} · ${escape(e.refs?.[0]||'Fixture trace')}</small></div>`).join(""):'<p class="ax-panel-empty">No recorded output from this role at the current step.</p>'}</article>`;
   }).join("");
-  return `<section class="ax-dash-panel ax-committee"><div class="ax-panel-head"><div><span class="ax-overline">BOUNDED REVIEW COMMITTEE</span><h3>Proponent · Opponent · CoVe · Judge</h3></div>${badge('Scripted roles · no live AI','record')}</div><div class="ax-role-grid">${cards}</div>
+  return `<div class="ax-role-grid">${cards}</div>
+    <div class="ax-modules-grid ax-review-support" aria-label="Supporting review controls">${['sanitiser','post_cove','token_economics'].map(renderCard).join('')}</div>
     ${forfeits.map(e=>`<p class="ax-forfeit">${escape(e.label)} — ${escape(e.detail||'Proposals forfeited by the runner.')}</p>`).join("")}
-    <p class="ax-dash-foot">Only emitted claims and verification results are shown. The broader source architecture contains Post-Judge CoVe, but the supplier fixture has no separate Post-Judge CoVe event.</p></section>`;
+    <p class="ax-dash-foot">Only emitted claims and verification results are shown. The broader source architecture contains Post-Judge CoVe, but the supplier fixture has no separate Post-Judge CoVe event.</p>`;
  }
  function renderModules(visible,current,all,cursor){
   // Full-run coverage and playback-to-date are independent measurements.
@@ -127,11 +129,17 @@
    const groupCount=group.key==="semantics"
     ?'<span class="ax-phase-count">Supplier trace: '+auditSeen+' / '+auditTotal+' audit transitions · '+humanSeen+' / '+humanTotal+' human-gate events <span>· Separate DAiA pool not executed</span></span>'
     :'<span class="ax-phase-count">'+reached+' reached <span>· '+recorded+'/'+group.ids.length+' in full run</span></span>';
-   return '<section class="ax-module-group '+(group.rail?'ax-module-group-rail':'')+'" data-architecture-stage="'+group.key+'" aria-label="'+escape(group.title)+'">'
+   const detailed=group.key==='checks'||group.key==='review';
+   const body=group.key==='checks'
+    ?'<div class="ax-validation-grid">'+renderCheckPanel('checks.rule','Invoice rule checks',visible,renderCard,'rules')+renderCheckPanel('contract.check','Contract checks',visible,renderCard,'crosscheck')+'</div>'
+      +'<div class="ax-modules-grid ax-check-reference" aria-label="Verification reference input">'+renderCard('external')+'</div>'
+    :group.key==='review'?renderCommittee(visible,renderCard)
+    :'<div class="ax-modules-grid">'+group.ids.map(renderCard).join('')+'</div>';
+   return '<section class="ax-module-group '+(group.rail?'ax-module-group-rail':'')+(detailed?' ax-integrated-group':'')+(group.key==='review'?' ax-committee':'')+'" data-architecture-stage="'+group.key+'" aria-label="'+escape(group.title)+'">'
     +'<div class="ax-module-group-head"><span class="ax-phase-number">'+escape(group.code)+'</span>'
     +'<span class="ax-phase-heading"><strong>'+escape(group.title)+'</strong><small>'+escape(group.note)+'</small></span>'
-    +groupCount+'</div>'
-    +'<div class="ax-modules-grid">'+group.ids.map(renderCard).join('')+'</div></section>';
+    +groupCount+(group.key==='review'?badge('Scripted roles · no live AI','record'):'')+'</div>'
+    +body+'</section>';
   }).join('');
   const cursorStatus=cursor<0?"Replay not started":cursor>=all.length-1?"At the final recorded event":"Replay in progress";
   return '<section class="ax-dash-panel ax-modules" aria-labelledby="ax-modules-title">'
@@ -170,8 +178,6 @@
       <div class="ax-stat"><span>Human gate opened</span><strong>${hitl.length}</strong></div>
     </div>
     ${renderModules(visible,current,all,cursor)}
-    <div class="ax-validation-grid">${renderCheckPanel('checks.rule','Invoice rule checks',visible)}${renderCheckPanel('contract.check','Contract checks',visible)}</div>
-    ${renderCommittee(visible)}
     <section class="ax-dash-panel"><div class="ax-panel-head"><div><span class="ax-overline">REVIEWER AUTHORITY &amp; OUTPUT</span><h3>Handover and recorded decisions</h3></div></div>
       <div class="ax-decision-grid">
         <div><b>Review package</b><p>${packaged.length?escape(packaged.at(-1).detail||packaged.at(-1).label):'Not assembled at this point in the recorded run.'}</p></div>

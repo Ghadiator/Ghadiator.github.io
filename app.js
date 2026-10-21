@@ -115,7 +115,7 @@ const DEFAULT_STAGES = ['request','reminders','ingest','memory','checks','contra
 const DISPLAY_STAGES={request:'Request',reminders:'Reminders',ingest:'Intake',memory:'History',checks:'Rule checks',contract:'Contract',exception:'Exception',advisory:'Advisory + CoVe',remediation:'Remediation',review:'Human gate',disposition:'Decision',archive:'Archive'};
 const STAGE_ICONS={request:'file',reminders:'clock',ingest:'download',memory:'database',checks:'check',contract:'book-open',exception:'alert',advisory:'shield-check',remediation:'workflow',review:'user',disposition:'scale',archive:'lock'};
 const VIEW_NAMES={overview:'Introduction',architecture:'Architecture',evidence:'Evidence & learning',dashboard:'Dashboard',tickets:'Document requests',submissions:'Document collection',newticket:'New submission',ticket:'Request detail',inbound:'Supplier intake',cases:'Recorded cases',case:'Case detail',monitor:'Architecture scenarios',tokens:'Token economics',governance:'Governance controls',attacker:'Red Team attacker',redteam:'Control probes',personas:'AI roles & controls',integration:'Integration',audit:'Process audit',assurance:'Hazards & controls',analytics:'Detection analytics',login:'Access & scope'};
-const state={view:'overview',architectureTab:'diagram',personaMode:'chat',evidenceTab:'reports',submissionTab:'compose',submissionMode:'request',attackerTab:'campaign',attackerRevealed:0,attackerNotes:[],personaName:'integrator',personaSessions:{},workbenchTab:'summary',scenario:'supplier_variance_review',index:{scenarios:SCENARIOS},facts:{facts:FACTS},loaded:{},raw:{},eventIndex:0,playing:false,speed:1150,search:'',filter:'all',caseSearch:'',caseFilter:'all',selectedObligation:0,selectedHazard:0,loading:{},errors:{},help:false};
+const state={view:'overview',architectureTab:'diagram',personaMode:'chat',evidenceTab:'trace',submissionTab:'compose',submissionMode:'request',attackerTab:'campaign',attackerRevealed:0,attackerNotes:[],personaName:'integrator',personaSessions:{},workbenchTab:'summary',scenario:'supplier_variance_review',index:{scenarios:SCENARIOS},facts:{facts:FACTS},loaded:{},raw:{},eventIndex:0,playing:false,speed:1150,search:'',filter:'all',caseSearch:'',caseFilter:'all',selectedObligation:0,selectedHazard:0,loading:{},errors:{},help:false};
 let playTimer=null,toastTimer=null,loadToken=0;
 const $=x=>document.querySelector(x);
 const MAIN=$('#main');
@@ -157,7 +157,7 @@ function linkView(view,scenario){
   const search=state.caseSearch?`&case_search=${encodeURIComponent(state.caseSearch)}`:'';
   return base+filter+search;
  }
- if(view==='evidence'&&state.evidenceTab==='trace')return base+'&tab=trace';
+ if(view==='evidence')return base+'&tab='+state.evidenceTab;
  return base;
 }
 function readJourneyQuery(params){
@@ -166,7 +166,7 @@ function readJourneyQuery(params){
   state.caseFilter=values.has(params.get('case_filter'))?params.get('case_filter'):'all';
   state.caseSearch=(params.get('case_search')||'').slice(0,150);
  }
- if(params.get('view')==='evidence')state.evidenceTab=['reports','learning','trace'].includes(params.get('tab'))?params.get('tab'):'reports';
+ if(params.get('view')==='evidence')state.evidenceTab=params.get('tab')==='learning'?'learning':'trace';
 }
 // The existing architecture artifact remains authoritative and unmodified.
 // Mount only its interactive content in the current workbench; never navigate
@@ -215,20 +215,11 @@ function refreshWorkflowResults(){
  }
 }
 function renderEmbeddedArchitecture(){
- const r=currentCase();
  return `<div class="page-entrance unified-architecture-view">
-  <nav class="run-journey" aria-label="Selected run journey">
-   <div class="run-journey-id"><span class="run-journey-eyebrow">RECORDED RUN · ${h(r.slug)}</span><strong>${h(r.title)}</strong><span class="run-journey-note">Synthetic reference execution · ${h(r.terminal_state.replaceAll('_',' '))}</span></div>
-   <div class="run-journey-links">
-    <a data-view="case" data-scenario="${h(r.slug)}" href="${linkView('case',r.slug)}">1 · Case detail</a>
-    <span class="active" aria-current="step">2 · Architecture</span>
-    <a data-journey-trace data-scenario="${h(r.slug)}" href="?view=evidence&amp;scenario=${encodeScenario(r.slug)}&amp;tab=trace">3 · Decision evidence →</a>
-   </div>
-  </nav>
-  <header class="architecture-entry"><div><span class="section-overline">SYSTEM · MODULES · EVIDENCE</span><h1>Architecture explorer</h1><p>Select a recorded scenario to inspect the original 20-module workflow, emitted events and human-decision boundary. Playback never executes a new supplier review.</p></div><span class="architecture-entry-status">Recorded execution only</span></header><div class="unified-architecture-context"><span class="section-overline">EXPLORE THE RECORDED RUN</span><span>20 connected modules · original interactive diagram</span></div>
+  <header class="architecture-entry"><div><span class="section-overline">SYSTEM · MODULES · EVIDENCE</span><h1>Architecture explorer</h1><p>Choose a recorded scenario to follow its checks and decisions, or generate an Excel case. Select any block to inspect its purpose, inputs, outputs and evidence.</p></div><span class="architecture-entry-status">Recorded execution only</span></header>
   <div class="architecture-live-layout">
    <div class="architecture-main-canvas">
-    <div class="architecture-canvas-hint"><strong>Module execution replay</strong><span>Blocks highlight as their recorded work runs. Executed blocks retain markers; routes animate in the original React canvas.</span><button type="button" class="architecture-touch-toggle" id="architectureTouchToggle" aria-pressed="false" aria-controls="modularArchitectureFrame">Explore diagram</button></div>
+    <div class="architecture-canvas-hint"><button type="button" class="architecture-touch-toggle" id="architectureTouchToggle" aria-pressed="false" aria-controls="modularArchitectureFrame">Explore diagram</button></div>
     <section id="architecture-module-inspector" class="architecture-module-inspector" role="region" aria-label="Selected module definition and recorded input and output" aria-live="polite" hidden></section>
     <div class="architecture-canvas-viewport" role="region" aria-label="Scrollable architecture diagram" tabindex="0">
      <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular validation workflow and scenario player" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
@@ -282,6 +273,14 @@ function mountEmbeddedArchitecture(){
  const alignTouchGuard=doc=>{
   if(!touchGuard||!touchToggle||!touchExit||!canvasWrap)return;
   const touchEnabled=Boolean(touchQuery?.matches);
+  if(doc?.documentElement){
+   doc.documentElement.classList.toggle('architecture-host-touch',touchEnabled);
+   const width=touchEnabled?Math.floor((canvasViewport||canvasWrap).clientWidth)+'px':'';
+   if(doc.documentElement.style.getPropertyValue('--host-canvas-controls-width')!==width){
+    if(width)doc.documentElement.style.setProperty('--host-canvas-controls-width',width);
+    else doc.documentElement.style.removeProperty('--host-canvas-controls-width');
+   }
+  }
   touchToggle.setAttribute('aria-pressed',String(touchInteractive));
   touchToggle.textContent=touchInteractive?'Return to page scroll':'Explore diagram';
   touchExit.hidden=!touchEnabled||!touchInteractive;
@@ -379,6 +378,7 @@ function mountEmbeddedArchitecture(){
     mainResizeObserver.observe(main);
    }
   }
+  window.ArchitectureCaseGenerator?.mount(doc);
   const height=Math.max(main.scrollHeight,main.getBoundingClientRect().height);
   if(!Number.isFinite(height)||height<100)return;
   const next=Math.min(MAX_HEIGHT,Math.max(MIN_HEIGHT,Math.ceil(height+36)));
@@ -396,32 +396,26 @@ function mountEmbeddedArchitecture(){
   const scrub=deck?.querySelector('input[aria-label="Position in the recorded run"]');
   const nodes=deck?Array.from(deck.children):[];
   const stepPanel=scrub?.parentElement?.nextElementSibling;
-  const looks=nodes.find(el=>Array.from(el.querySelectorAll('span')).some(span=>span.textContent.trim()==='Look inside'));
   const humanGate=nodes.find(el=>Array.from(el.querySelectorAll('button')).some(b=>/^(Resume|Continue)\s*[—–-]/.test(b.textContent.trim())));
   const inspector=nodes.find(el=>el.querySelector('section')&&el.textContent.includes('audit ledger'));
-  const breadcrumb=nodes.find(el=>Array.from(el.querySelectorAll('button')).some(b=>b.textContent.trim()==='Architecture'));
-  return {deck,scrub,stepPanel,looks,humanGate,inspector,breadcrumb};
+  return {deck,scrub,stepPanel,humanGate,inspector};
  };
  const renderExplanation=doc=>{
   const target=document.getElementById('architecture-detail');
   if(!target)return;
-  const {deck,scrub,stepPanel,looks,humanGate,inspector,breadcrumb}=sourcePanels(doc);
+  const {deck,scrub,stepPanel,humanGate,inspector}=sourcePanels(doc);
   if(!deck||!scrub||!stepPanel)return;
   const running=Number(scrub.value)>=0;
   const paragraphs=Array.from(stepPanel.querySelectorAll('p')).map(p=>p.textContent.trim()).filter(Boolean);
-  const title=running?'Current workflow step':'Pick a case and step through it';
   const lines=paragraphs.map((line,i)=>`<p class="architecture-detail-line ${i===0?'architecture-detail-lead':''}">${h(line)}</p>`).join('');
-  const explanation=`<section class="wb-panel architecture-detail-panel"><div class="wb-panel-head"><h2>${title}</h2></div><div class="wb-panel-body">${lines}${!running?'<button type="button" class="wb-button architecture-deck-control" data-deck-action="start">Step through this run →</button>':''}</div></section>`;
-  const drillButtons=looks?Array.from(looks.querySelectorAll('button')).map((b,i)=>`<button class="wb-button architecture-deck-control" type="button" data-deck-action="drill" data-deck-index="${i}">${h(b.textContent.trim())} ↗</button>`).join(''):'';
-  const back=breadcrumb?'<button class="wb-button architecture-deck-control" type="button" data-deck-action="back">← Back to main architecture</button>':'';
-  const drill=drillButtons||back?`<section class="wb-panel architecture-detail-panel"><div class="wb-panel-head"><h2>Look inside · modular components</h2></div><div class="wb-panel-body"><div class="wb-inline-actions">${back}${drillButtons}</div></div></section>`:'';
+  const explanation=running?`<section class="wb-panel architecture-detail-panel"><div class="wb-panel-head"><h2>Current workflow step</h2></div><div class="wb-panel-body">${lines}</div></section>`:'';
   const gateButton=humanGate?.querySelector('button');
   const gate=gateButton?`<section class="wb-panel architecture-detail-panel" aria-label="Human reviewer pause"><div class="wb-panel-head"><h2>Human review · recorded decision gate</h2></div><div class="wb-panel-body"><p class="architecture-detail-line">${h(humanGate.querySelector('p')?.textContent.trim()||'Workflow suspended for reviewer')}</p><button type="button" class="wb-button architecture-deck-control" data-deck-action="resume">${h(gateButton.textContent.trim())}</button></div></section>`:'';
   const inspectorSection=inspector?.querySelector('section');
   const moduleName=inspectorSection?.querySelector('h4')?.textContent.trim();
   const inspectorText=inspectorSection?.textContent?.replace(/\s+/g,' ').trim()||'';
   const inspect=moduleName&&inspectorText?`<details class="wb-panel architecture-module-inspector"><summary>Selected module · ${h(moduleName)}</summary><div class="wb-panel-body"><p class="architecture-detail-source">${h(inspectorText)}</p></div></details>`:'';
-  const html=`<div class="wb-page">${explanation}${drill}${gate}${running?inspect:''}</div>`;
+  const html=running||gate?`<div class="wb-page">${explanation}${gate}${running?inspect:''}</div>`:'';
   if(html!==lastExplanation){lastExplanation=html;target.innerHTML=html;}
  };
  document.getElementById('architecture-detail')?.addEventListener('click',event=>{
@@ -431,15 +425,9 @@ function mountEmbeddedArchitecture(){
   let doc;
   try{doc=frame.contentDocument;}catch{return;}
   if(!doc)return;
-  const {stepPanel,looks,humanGate,breadcrumb}=sourcePanels(doc);
+  const {humanGate}=sourcePanels(doc);
   const action=pressed.dataset.deckAction;
-  if(action==='start')stepPanel?.querySelector('button')?.click();
   if(action==='resume')humanGate?.querySelector('button')?.click();
-  if(action==='back')Array.from(breadcrumb?.querySelectorAll('button')||[]).find(b=>b.textContent.trim()==='Architecture')?.click();
-  if(action==='drill'){
-   const index=Number(pressed.dataset.deckIndex);
-   if(Number.isInteger(index)&&index>=0)looks?.querySelectorAll('button')[index]?.click();
-  }
  });
  const syncFromFrame=()=>{
   if(disposed||!frame.isConnected)return;
@@ -515,8 +503,24 @@ function mountEmbeddedArchitecture(){
      body > div.flex.min-h-screen > div{min-width:0!important;width:100%!important;display:block!important}
      body > div.flex.min-h-screen > div > main{padding:0!important;width:100%!important}
      body > div.flex.min-h-screen > div > main > div{max-width:none!important}
+     /* The host page supplies the title and introduction for this embed. */
+     body > div.flex.min-h-screen > div > main > div > :is(p:first-child,h1,h1+div){display:none!important}
+     body > div.flex.min-h-screen > div > main > div > div:has(> .deck){margin-top:0!important}
      /* The embedded panel is only scenario transport plus the original graph.
         Live step explanations and drill buttons live BELOW the iframe. */
+     main .deck::before{display:none!important}
+     .deck > div:has(select[aria-label="Recorded scenario"]){max-width:var(--host-canvas-controls-width,none);box-sizing:border-box}
+     .architecture-host-touch .deck > div:has(select[aria-label="Recorded scenario"]){flex-direction:column!important;align-items:stretch!important}
+     .deck > div:has(select[aria-label="Recorded scenario"]) > div:first-child{flex-wrap:wrap;flex:1;min-width:0}
+     .deck select[aria-label="Recorded scenario"]{flex:1 1 230px;max-width:340px}
+     .deck select[aria-label="Recorded scenario"] ~ span{display:none!important}
+     #architecture-case-generator{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 300px;min-width:0}
+     .acg-actions{display:flex;flex-wrap:wrap;gap:6px}
+     .acg-actions button{border:1px solid #b8cfde;border-radius:7px;background:#fff;color:#2e5a77;padding:8px 10px;font:650 11px/1.35 "Barlow",Arial,sans-serif;cursor:pointer;min-height:36px}
+     .acg-actions button:first-child{background:#315f7e;border-color:#315f7e;color:#fff}
+     .acg-actions button:disabled{opacity:.5;cursor:default}
+     .acg-actions button:focus-visible{outline:3px solid #80aff4;outline-offset:2px}
+     .acg-status{flex-basis:100%;font:11px/1.6 "Barlow",Arial,sans-serif;color:#526d80;overflow-wrap:anywhere}
      .deck{display:flex!important;flex-direction:column!important}
      .deck > *{display:none!important}
      .deck > div:has(select[aria-label="Recorded scenario"]){display:flex!important;order:1}

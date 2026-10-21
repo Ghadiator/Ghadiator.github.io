@@ -38,6 +38,34 @@ try{
  assert.ok(state.mainExists,"The source Architecture main must be present");
  assert.ok(state.frameHeight>=1000,"Modular architecture frame must remain at least 1000px tall after Next hydration");
  assert.ok((state.iframeTextSize||0)>900,"The architecture graph and controls must be visible");
+ assert.ok(await page.frameLocator('#modularArchitectureFrame').locator('main h1').isHidden(),
+   "Hide the duplicate embedded Validation / Architecture heading");
+ assert.equal(await page.locator('.unified-architecture-view .run-journey').count(),0);
+ // Generation beside the picker creates a separate local input, not fake trace events.
+ const generator=page.frameLocator('#modularArchitectureFrame').locator('#architecture-case-generator');
+ await generator.waitFor({state:'visible',timeout:12000});
+ assert.ok(await generator.locator('[data-case-download]').isDisabled());
+ const pickerBefore=await page.frameLocator('#modularArchitectureFrame').locator('select[aria-label="Recorded scenario"]').inputValue();
+ const railBefore=await page.locator('#architecture-event-rail').innerText();
+ await generator.locator('[data-case-generate]').click();
+ const generatedId=await generator.getAttribute('data-invoice-id');
+ assert.ok(generatedId?.startsWith('INV-DEMO-'));
+ assert.ok(await generator.locator('[data-case-download]').isEnabled());
+ const generatedDownloadEvent=page.waitForEvent('download');
+ await generator.locator('[data-case-download]').click();
+ const generatedDownload=await generatedDownloadEvent;
+ assert.ok(generatedDownload.suggestedFilename().includes(generatedId));
+ const generatedBytes=[...await readFile(await generatedDownload.path())];
+ const downloadedRecord=await page.evaluate(async bytes=>PublicSupplierWorkbook.read(new File([new Uint8Array(bytes)],'generated.xlsx')),generatedBytes);
+ assert.equal(downloadedRecord.invoice_id,generatedId,"Download must contain the exact generated case");
+ const repeatedDownloadEvent=page.waitForEvent('download');
+ await generator.locator('[data-case-download]').click();
+ const repeatedDownload=await repeatedDownloadEvent;
+ assert.deepEqual(await readFile(await repeatedDownload.path()),Buffer.from(generatedBytes),"Repeated download must not silently generate a new invoice");
+ assert.equal(await page.frameLocator('#modularArchitectureFrame').locator('select[aria-label="Recorded scenario"]').inputValue(),pickerBefore);
+ assert.equal(await page.locator('#architecture-event-rail').innerText(),railBefore,"Generation must not invent or alter recorded execution events");
+ assert.equal(await page.locator('.unified-architecture-context,.architecture-canvas-hint strong').count(),0,
+   "Merge the stacked architecture introduction labels into one header");
  const orchestration=page.frameLocator("#modularArchitectureFrame").locator('[data-node="orchestrator"]');
  const before=await orchestration.getAttribute("aria-pressed");
  await orchestration.click();
@@ -108,14 +136,11 @@ try{
  assert.ok(await picker.count(),"Scenario selector must appear in the original modular canvas");
  assert.ok((await picker.locator("option").count())>=10,"The recorded scenarios must be selectable");
  const outsideBefore=page.locator("#architecture-detail");
- assert.ok((await outsideBefore.innerText()).includes("Pick a case and step through it"),"Introductory text must appear below the graph");
- assert.ok((await outsideBefore.innerText()).includes("Look inside"),"Modular drill controls must appear below the graph");
- const drillControl=outsideBefore.locator('[data-deck-action="drill"]').first();
- await drillControl.click();
- await page.waitForFunction(()=>document.querySelector('#architecture-detail [data-deck-action="back"]'),null,{timeout:10000});
- await outsideBefore.locator('[data-deck-action="back"]').click();
- await page.waitForFunction(()=>!document.querySelector('#architecture-detail [data-deck-action="back"]'),null,{timeout:10000});
- console.log("MODULE_DRILL", "React drill-down and return are controlled from beneath the modular canvas");
+ assert.equal((await outsideBefore.innerText()).trim(),"","Before replay, no introductory or drill panels may appear below the diagram");
+ assert.equal(await outsideBefore.locator('[data-deck-action="start"],[data-deck-action="drill"],[data-deck-action="back"]').count(),0);
+ for(const phrase of ['Pick a case and step through it','Look inside · modular components','Step through this run →']){
+   assert.ok(!(await page.locator('#main').innerText()).includes(phrase),"Deleted parent panel returned: "+phrase);
+ }
  const processEvents=page.locator('#architecture-event-rail [data-replay-seek]');
  assert.equal(await processEvents.count(),42,"The full 42-event source trace must be shown beside the graph");
  assert.ok((await page.locator('#architecture-execution-dashboard').innerText()).includes("Execution state by module"),
@@ -126,6 +151,15 @@ try{
  assert.ok(initialSnapshot.includes("14 / 20"),"The full 42-event fixture must show 14 observed architecture blocks even before replay starts");
  assert.equal(await page.locator("[data-architecture-stage]").count(),6,"Group modules by architecture lanes and workflow-wide rails");
  assert.equal(await page.locator("[data-architecture-module]").count(),20,"Each original diagram block must have an inspection action");
+ const checksGroup=page.locator('[data-architecture-stage="checks"]');
+ const reviewGroup=page.locator('[data-architecture-stage="review"]');
+ assert.equal(await checksGroup.locator('.ax-check-panel').count(),2,"Keep both result sets inside the verification phase");
+ assert.equal(await reviewGroup.locator('.ax-role-card').count(),4,"Keep all committee outputs inside exception review");
+ assert.equal(await checksGroup.locator('[data-architecture-module]').count(),3);
+ assert.equal(await reviewGroup.locator('[data-architecture-module]').count(),7);
+ assert.equal(await page.locator('.ax-module-result').count(),6,"Each check or role has one combined status/output card");
+ assert.equal(await page.locator('.ax-run-dashboard > .ax-validation-grid,.ax-run-dashboard > .ax-committee').count(),0,
+   "Do not render duplicate results panels outside their phase");
  // Clicking the 20-block status cards must open that SAME inspector.
  await page.locator('[data-architecture-module="rules"]').click();
  await page.waitForFunction(()=>document.getElementById('architecture-module-inspector')?.dataset.selectedModule==='rules',
@@ -207,7 +241,11 @@ try{
  const complete=await page.locator("#workflow-results").innerText();
  assert.ok(complete.includes("Recorded workflow result"),"Terminal state must appear when the replay reaches its last event");
  const committeeInDashboard=await page.locator("#architecture-execution-dashboard").innerText();
- assert.ok(committeeInDashboard.includes("Proponent · Opponent · CoVe · Judge"),"Keep the nonduplicated committee results in the execution dashboard");
+ assert.ok(committeeInDashboard.includes("Bounded exception review"),"Keep one combined review phase");
+ for(const id of ['proponent','opponent','firewall','judge']){
+   assert.equal(await page.locator('[data-architecture-stage="review"] [data-module-results="'+id+'"] .ax-role-message').count(),1,
+     "Keep the completed role output once inside its own module card: "+id);
+ }
  for(const duplicate of ["Current evidence","Trace navigator","Scripted adversarial committee"]){
   assert.ok(!(await page.locator("#main").innerText()).includes(duplicate),"Duplicated panel must remain deleted: "+duplicate);
  }
@@ -285,7 +323,9 @@ try{
  await page.locator('.run-journey-links a[data-view="architecture"]').click();
  await page.waitForFunction(()=>new URLSearchParams(location.search).get("view")==="architecture",null,{timeout:10000});
  assert.equal(new URL(page.url()).searchParams.get("scenario"),"supplier_clean");
- await page.locator('.run-journey-links a[data-journey-trace]').click();
+ assert.equal(await page.locator('.unified-architecture-view .run-journey').count(),0,"Remove the recorded-run banner from Architecture");
+ await page.locator('#sidebar [data-view="evidence"]').click();
+ await page.locator('[data-evidence-tab="trace"]').click();
  await page.waitForFunction(()=>new URLSearchParams(location.search).get("view")==="evidence",null,{timeout:10000});
  assert.equal(new URL(page.url()).searchParams.get("tab"),"trace",
    "Run evidence links must open the Decision trace tab");
@@ -296,6 +336,15 @@ try{
  await page.waitForSelector('.wb-tabs [data-evidence-tab="trace"].selected',{timeout:15000});
  assert.equal(new URL(page.url()).searchParams.get("scenario"),"supplier_clean",
    "Evidence deep link must survive browser reload");
+ assert.equal(await page.locator('[data-evidence-tab]').count(),2,"Evidence has trace and learning tabs, not a second case browser");
+ assert.equal(await page.locator('[data-evidence-tab="reports"]').count(),0);
+ await page.locator('[data-evidence-tab="learning"]').click();
+ assert.equal(new URL(page.url()).searchParams.get('tab'),'learning');
+ await page.reload({waitUntil:'domcontentloaded'});
+ await page.waitForSelector('[data-evidence-tab="learning"].selected');
+ await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+'/?view=evidence&scenario=supplier_clean&tab=reports',{waitUntil:'domcontentloaded'});
+ await page.waitForSelector('[data-evidence-tab="trace"].selected');
+ assert.ok(!(await page.locator('#main').innerText()).includes('Case reports'),"Old report links fall back to the decision trace");
  console.log("RUN_JOURNEY", "Case filters, Back, case → Architecture → evidence, and reload passed");
 
 
@@ -448,6 +497,11 @@ try{
      const report=PublicLocalRunner.run(parsed,{sampleContract:true});
      checks[type]={status:report.status,failures:report.validation.filter(x=>x.passed===false).map(x=>x.title)};
    }
+   const random=PublicSupplierWorkbook.random();
+   const roundTrip=await PublicSupplierWorkbook.read(new File([PublicSupplierWorkbook.build(random.invoice)],'random.xlsx'));
+   if(JSON.stringify(roundTrip)!==JSON.stringify(random.invoice)){
+     for(const key of Object.keys(random.invoice))if(JSON.stringify(roundTrip[key])!==JSON.stringify(random.invoice[key]))throw Error('Random Excel round-trip changed '+key);
+   }
    return checks;
  });
  assert.equal(variants.clean.status,"Local_checks_partial","Clean workbook must pass evaluated local rules");
@@ -492,6 +546,12 @@ try{
    },null,{timeout:25000});
    assert.equal(await mobile.locator("#architectureTouchToggle").getAttribute("aria-pressed"),"false",
      "Mobile must start with parent-page scrolling, not trapped diagram panning");
+   const phoneGenerate=mobile.frameLocator('#modularArchitectureFrame').locator('[data-case-generate]');
+   const phonePickerBox=await mobile.frameLocator('#modularArchitectureFrame').locator('select[aria-label="Recorded scenario"]').boundingBox();
+   assert.ok(phonePickerBox&&phonePickerBox.width>=180,"Keep the phone scenario picker readable beside generation controls");
+   const phoneGenerateBox=await phoneGenerate.boundingBox();
+   assert.ok(phoneGenerateBox&&phoneGenerateBox.x>=0&&phoneGenerateBox.x+phoneGenerateBox.width<=390,
+     "Random case control must fit the phone viewport without sideways scrolling");
    // A normal phone tap must work WITHOUT first enabling diagram panning.
    // This travels through the real scroll guard, not a programmatic node click.
    const mobileDetails=mobile.locator('#architecture-module-inspector');

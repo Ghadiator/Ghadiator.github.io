@@ -16,6 +16,9 @@ on:
       - assets/story-journey.js
       - assets/overview-agentic-flow.css
       - assets/architecture-execution.js
+      - assets/architecture-case-generator.js
+      - assets/supplier-workbook.js
+      - scripts/check-architecture-case-generator.cjs
       - assets/architecture-module-map.css
       - assets/architecture-module-inspector.js
       - assets/architecture-governance.js
@@ -61,6 +64,7 @@ jobs:
           node --check assets/generic-workbench.js
           node --check assets/public-submissions.js
           node --check assets/supplier-workbook.js
+          node --check assets/architecture-case-generator.js
           node --check assets/public-backend.js
           node --check assets/public-local-runner.js
           node --check assets/public-personas.js
@@ -70,6 +74,8 @@ jobs:
         run: python3 scripts/check-architecture-presentation.py
       - name: Test architecture state against source fixtures
         run: node scripts/check-architecture-module-map.cjs
+      - name: Verify random Excel generation and exact-record export
+        run: node scripts/check-architecture-case-generator.cjs
       - name: Check module definitions and recorded scenario inputs and outputs
         run: node scripts/check-architecture-module-inspector.cjs
       - name: Check plain-language introduction and preserved evidence
@@ -103,12 +109,12 @@ jobs:
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
           assert 'styles.css?v=20261016-manual-flow-54' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261021-tap-intro-69' in html, "Script must use a cache-busting URL"
+          assert 'app.js?v=20261021-merged-results-70' in html, "Script must use a cache-busting URL"
           # Preserve the existing modular architecture through presentation changes.
           protected_architecture = {
-              'assets/architecture-execution.js': 'f38288cfd797d364355b0d3db8d482fbc66f9e96',
+              'assets/architecture-execution.js': 'd3370d3d6edb77fc1637bbbac812d1a8d19d3af1',
               'assets/architecture-module-inspector.js': '1aa298ca20aec040e8ec6114d4da85c083bb1344',
-              'assets/architecture-module-map.css': '9146175310277cff91970b62aac0ab1870ca59bb',
+              'assets/architecture-module-map.css': '24594e06519cff95316956d98137d8ed49615936',
               'assets/architecture-module-inspector.css': '1c2e3051e18015d19423fd21f35d8912b3fc4e43',
               'assets/architecture-mobile-touch.css': '70ab95d0a936719d646ba6c07a34038bd75c7e92',
               'assets/architecture-explained.js': 'bcc29b5824c0e01513fa55509d990c416df805aa',
@@ -192,10 +198,10 @@ jobs:
           assert 'id="workflow-results"' in app and 'syncFromFrame' in app
           assert 'id="architecture-event-rail"' in app and 'id="architecture-execution-dashboard"' in app
           assert 'decorateGraph' in app and 'refreshWorkflowResults' in app
-          assert 'assets/architecture-execution.js?v=20261019-module-io-64' in html
+          assert 'assets/architecture-execution.js?v=20261021-merged-results-70' in html
           assert html.index('assets/architecture-execution.js') < html.index('src="./app.js')
           engine = Path('assets/architecture-execution.js').read_text()
-          assert 'assets/architecture-module-map.css?v=20261016-audit-scope-58' in html
+          assert 'assets/architecture-module-map.css?v=20261021-merged-results-70' in html
           assert 'assets/architecture-mobile-touch.css?v=20261021-tap-intro-69' in html
           assert 'id="architectureTouchToggle"' in app and 'id="architectureTouchGuard"' in app and 'id="architectureTouchExit"' in app
           assert 'alignTouchGuard' in app and 'touchInteractive' in app
@@ -254,7 +260,7 @@ jobs:
           assert 'PublicLocalRunner.run' in Path('assets/public-submissions.js').read_text()
           assert 'PublicSupplierWorkbook.read' in Path('assets/public-submissions.js').read_text()
           assert 'PublicSupplierWorkbook.download' in app
-          assert 'assets/supplier-workbook.js?v=20261016-excel-lab-57' in html
+          assert 'assets/supplier-workbook.js?v=20261021-merged-results-70' in html
           assert html.index('assets/public-local-runner.js') < html.index('assets/supplier-workbook.js') < html.index('assets/public-submissions.js')
           assert 'introduction-interactive.js' not in html and 'introduction-interactive.css' not in html, "Removed walkthrough assets must not load"
           assert 'WORKFLOW VIEW · ORIGINAL MANUAL PROCESS' in overview, "Retain the named manual workflow view"
@@ -268,22 +274,26 @@ jobs:
           journey = Path("assets/generic-workbench.js").read_text()
           evidence = Path("assets/story-journey.js").read_text()
           style = Path("styles.css").read_text()
-          assert 'assets/story-journey.js?v=20261020-assurance-65' in html
+          assert 'assets/story-journey.js?v=20261021-merged-results-70' in html
           for fragment in ('function readJourneyQuery(params)', 'case_filter=', 'case_search=',
                            'data-journey-trace', 'data-clear-case-filters',
                            "state.caseSearch=event.target.value", 'state.evidenceTab='):
               assert fragment in app, f"Broken selected-run navigation: {fragment}"
-          assert 'run-journey' in journey and 'run-journey' in evidence and 'run-journey' in app
-          assert 'data-scenario="${e(r.slug)}"' in evidence, "Case links must identify the target scenario"
+          assert 'run-journey' in journey and 'run-journey' in evidence
+          architecture_markup = app[app.index('function renderEmbeddedArchitecture()'):app.index('function recoverArchitectureFrame(')]
+          assert 'run-journey' not in architecture_markup, 'Architecture must omit the recorded-run banner'
+          assert 'Look inside · modular components' not in app and 'Pick a case and step through it' not in app
+          assert 'data-scenario="${e(selected.slug)}"' in evidence, "Evidence navigation must identify the selected scenario"
+          assert 'Case reports' not in evidence and 'Case outcomes ·' not in evidence, 'Keep one case browser under Recorded cases'
           assert 'data-scenario="${safe(ctx,r.slug)}"' in journey, "Case detail must keep its selected scenario"
           assert 'run-journey-links' in style and 'wb-clear-filters' in style
           # Public design system and evidence-first case views.
           assert '<span class="brand-text">Governance' in html
           for source in ('assets/architecture-module-inspector.js?v=20261020-governance-67',
                          'assets/architecture-module-inspector.css?v=20261020-governance-67',
-                         'assets/architecture-execution.js?v=20261019-module-io-64'):
+                         'assets/architecture-execution.js?v=20261021-merged-results-70'):
               assert source in html, "Block inspector assets must load: "+source
-          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261021-tap-intro-69'), "Scenario inspector must load before parent workflow"
+          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261021-merged-results-70'), "Scenario inspector must load before parent workflow"
           assert 'assets/architecture-governance.js?v=20261020-governance-67' in html
           assert html.index('assets/architecture-governance.js') < html.index('assets/architecture-module-inspector.js'), "Governance mappings must load before block details"
           assert 'id="architecture-module-inspector"' in app, "Selected block drawer must exist inside Architecture Explorer"
@@ -397,7 +407,7 @@ jobs:
           const evidence={window:{}};
           vm.runInNewContext(fs.readFileSync('assets/story-journey.js','utf8'),evidence);
           const ev=evidence.window.StoryJourney.renderEvidence(ctx);
-          if(!ev.includes('Case reports')||!ev.includes('Lessons learned')||!ev.includes('synthetic'))
+          if(ev.includes('Case reports')||!ev.includes('Decision trace')||!ev.includes('Lessons learned')||!ev.includes('synthetic'))
             throw Error('Evidence and learning landing missing');
           const local = {window:{}};
           vm.runInNewContext(fs.readFileSync('assets/public-local-runner.js','utf8'),local);
