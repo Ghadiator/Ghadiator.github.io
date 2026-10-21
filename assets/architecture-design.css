@@ -110,6 +110,18 @@ main .deck::before{background:#edf4f9;color:#3c6380;border-bottom-color:#d8e4ed;
 #architecture-module-inspector .ami-event button{border-color:#d9e6ee;background:#fff}
 #architecture-module-inspector .ami-event button:hover{background:#f0f7fb;border-color:#9fbed2}
 #architecture-module-inspector .ami-close{border-radius:9px}
+/* Visual feedback only. No position, transform, hit-target or route changes. */
+main .deck{box-shadow:0 3px 8px #1c405a04,0 16px 38px #1c405a07}
+.deck-canvas [data-node]{transition:border-color 180ms ease,box-shadow 180ms ease,filter 180ms ease}
+.deck-canvas [data-node]:hover{filter:drop-shadow(0 3px 5px #193b5124)}
+.deck-canvas [data-node][aria-pressed="true"]{box-shadow:0 0 0 5px #32688f12}
+.architecture-entry{border-bottom:1px solid #dce6ed;padding-bottom:22px}
+.architecture-main-canvas,.architecture-event-rail{box-shadow:0 3px 8px #1c405a04,0 16px 38px #1c405a06}
+.ax-rail-header{background:linear-gradient(110deg,#edf4f8,#f9fbfd)}
+.ax-rail-event.is-current{box-shadow:inset 0 1px #32688f0a,inset 0 -1px #32688f0a}
+.ax-module-group{box-shadow:0 3px 10px #1c405a03}
+#architecture-module-inspector .ami-header{background:linear-gradient(115deg,#edf5f8,#f6f9fc)}
+#architecture-module-inspector .ami-nav button{transition:background-color 180ms ease,color 180ms ease}
 @media(max-width:770px){
  #architecture-module-inspector{border-radius:16px 16px 0 0}
  .ax-modules .ax-module-name{font-size:13px}
