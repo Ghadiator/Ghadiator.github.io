@@ -47,6 +47,17 @@ assert.ok(el.innerHTML.includes("Original source records"));
 assert.ok(el.innerHTML.includes("Proponent: contractual checks passed"));
 assert.ok(el.innerHTML.includes("Later in replay"),"Output must be discoverable before playback");
 assert.match(el.innerHTML,/data-replay-seek="28"/,"Exact source event index must be navigable");
+// Reading a check card must not seek the replay. Only its explicit action does.
+const cards=[...el.innerHTML.matchAll(/<li class="ami-event">([\s\S]*?)<\/li>/g)];
+assert.ok(cards.length>0);
+for(const [,card] of cards){
+ const [record,action]=card.split('</div>');
+ assert.ok(record.startsWith('<div class="ami-event-record">'));
+ assert.ok(!record.includes('<button')&&!record.includes('data-replay-seek'),
+   'Evidence content must remain readable and selectable without seeking');
+ assert.match(action,/<button class="ami-event-jump"[^>]+data-replay-seek="\d+"[^>]*>Jump to event \d+/,
+   'Only an explicitly labeled replay action may seek');
+}
 assert.ok(el.innerHTML.includes("not</strong> captured function-call arguments"),
  "Upstream context must never be misrepresented as actual function-call input");
 assert.ok(el.innerHTML.includes("Invoice is not already approved"),"Input context should come from real prior cross-check output");

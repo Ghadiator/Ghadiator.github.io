@@ -209,10 +209,6 @@
    const node=Array.from(doc?.querySelectorAll(".deck [data-node]")||[]).find(el=>el.dataset.node===id);
    if(!node)return;
    node.click();
-   if(frame?.scrollIntoView){
-    const reduced=window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
-    frame.scrollIntoView({block:"start",behavior:reduced?"auto":"smooth"});
-   }
   });
  }
  window.ArchitectureExecution={renderRail,renderDashboard,decorateGraph,seek};

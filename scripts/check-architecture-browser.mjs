@@ -334,6 +334,29 @@ try{
    const doc=document.getElementById('modularArchitectureFrame')?.contentDocument;
    return doc?.querySelector('[data-node="rules"]')?.getAttribute('aria-pressed')==="true";
  },null,{timeout:10000});
+ // Inspection is independent of time, including after a correction has passed.
+ await blockDetails.locator('[data-module-inspector-close]').click();
+ await picker.selectOption('supplier_rate_correction');
+ await page.waitForFunction(()=>document.querySelectorAll('#architecture-event-rail [data-replay-seek]').length===64);
+ await page.locator('#architecture-event-rail [data-replay-seek="63"]').click();
+ const replayPosition=deck.locator('input[aria-label="Position in the recorded run"]');
+ await page.waitForFunction(()=>document.getElementById('modularArchitectureFrame').contentDocument.querySelector('input[aria-label="Position in the recorded run"]').value==='63');
+ await page.locator('[data-architecture-module="crosscheck"]').scrollIntoViewIfNeeded();
+ const inspectionScroll=await page.evaluate(()=>window.scrollY);
+ await page.locator('[data-architecture-module="crosscheck"]').click();
+ assert.equal(await replayPosition.inputValue(),'63','Contract block inspection must preserve the completed correction');
+ assert.ok(Math.abs((await page.evaluate(()=>window.scrollY))-inspectionScroll)<2,'Module selection must not scroll back to the graph');
+ const evidenceCopy=blockDetails.locator('.ami-event-record').first();
+ await evidenceCopy.click();
+ assert.equal(await replayPosition.inputValue(),'63','Reading contractual evidence must not rewind the run');
+ const jump=blockDetails.locator('.ami-event-jump').first();
+ const jumpIndex=await jump.getAttribute('data-replay-seek');
+ await jump.click();
+ assert.equal(await replayPosition.inputValue(),jumpIndex,'Explicit Jump to event must still seek');
+ await blockDetails.locator('[data-module-inspector-close]').click();
+ await deck.locator('[data-node="crosscheck"]').click();
+ assert.equal(await replayPosition.inputValue(),jumpIndex,'Graph block inspection must preserve position');
+ await blockDetails.locator('[data-module-inspector-close]').click();
  console.log("ARCHITECTURE_MODULE_MAP","Grouped 20-node coverage and click-through to original diagram passed");
 
 

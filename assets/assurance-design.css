@@ -165,3 +165,70 @@ body{background:linear-gradient(145deg,#f7f9fc,#f2f6f8)}
 @media(prefers-reduced-motion:reduce){
  #sidebar *, .topbar *, #main:not(.architecture-active) *,#main:not(.architecture-active) *::before,#main:not(.architecture-active) *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
+
+/* Studio finish: dark editorial opening, clear working surfaces, quiet light.
+   Effects are decorative; evidence and playback never depend on animation. */
+:root{
+ --accent:#176e79;--accent-soft:#eaf6f5;
+ --assurance-shadow:0 1px 2px #102c4205,0 12px 36px #102c4208;
+ --assurance-lift:0 4px 12px #102c4208,0 20px 48px #102c4210;
+}
+body{background:radial-gradient(ellipse at 95% 0,#dceeea80,transparent 45%),#f4f7fa}
+#sidebar{background:radial-gradient(ellipse at 0 0,#23485870,transparent 55%),linear-gradient(165deg,#112b3b,#0b1b2b);border-right-color:#294353}
+#sidebar .nav-list a.active{background:linear-gradient(100deg,#24505b,#183447);box-shadow:inset 3px 0 #8de2d0,0 5px 20px #06121f30}
+#sidebar .sidebar-scope{background:linear-gradient(135deg,#19394b,#132c3e);border-color:#335363;border-radius:12px}
+#sidebar .sidebar-brand-footer .brand:hover{background:#203e50;border-color:#456371}
+#sidebar .sidebar-brand-footer .brand-icon{box-shadow:0 0 24px #72d4bf15}
+.topbar{background:#f9fcfded;box-shadow:0 1px 0 #fff inset,0 4px 24px #12364a04}
+#main:not(.architecture-active) .overview-hero{
+ overflow:hidden;background:radial-gradient(ellipse at 100% 0,#23616c80,transparent 55%),linear-gradient(120deg,#102a3b,#0b1c2c 75%);
+ border-color:#335261;border-radius:22px!important;box-shadow:0 20px 55px #0e2b3d20!important;
+ padding:clamp(30px,4.5vw,66px);margin-bottom:32px;
+}
+#main:not(.architecture-active) .overview-hero::before{
+ content:"";display:block;position:absolute;inset:-40% -20% -40% 40%;z-index:-1;pointer-events:none;
+ background:radial-gradient(ellipse,#67d9c223,transparent 65%);filter:blur(24px);
+}
+#main:not(.architecture-active) .overview-hero::after{
+ background-image:linear-gradient(#88c6cc10 1px,transparent 1px),linear-gradient(90deg,#88c6cc10 1px,transparent 1px);
+ background-size:48px 48px;mask-image:linear-gradient(100deg,transparent 30%,#000);-webkit-mask-image:linear-gradient(100deg,transparent 30%,#000);
+}
+#main:not(.architecture-active) .overview-hero h1{color:#f0f7fa;font-size:clamp(34px,4vw,60px);line-height:1.12;letter-spacing:-.045em;max-width:920px}
+#main:not(.architecture-active) .overview-hero h1 em{color:#91e2ce}
+#main:not(.architecture-active) .overview-hero p{color:#bdd0dc;max-width:650px}
+#main:not(.architecture-active) .overview-hero .eyebrow{color:#9ed7d1;letter-spacing:.15em}
+.overview-hero .eyebrow-line{background:#8be0cc;box-shadow:0 0 14px #8be0cc50}
+#main:not(.architecture-active) .overview-hero .light-primary{color:#102d36;background:#a0ead7;border-color:#a0ead7;box-shadow:0 4px 24px #77dac020}
+#main:not(.architecture-active) .overview-hero .button.dark{color:#e1eef3;background:#ffffff08;border-color:#7796a575}
+#main:not(.architecture-active) .overview-hero .overview-example-note{color:#a6bbc9;font-size:12px;letter-spacing:.02em}
+#main:not(.architecture-active) :is(.wb-head,.page-header){position:relative}
+#main:not(.architecture-active) :is(.wb-head,.page-header)::after{
+ content:"";position:absolute;bottom:-1px;left:0;width:64px;height:2px;background:linear-gradient(90deg,#208c8a,#7ec8bb);pointer-events:none;
+}
+#main:not(.architecture-active) :is(.wb-panel,.panel,.original-workflow,.agentic-flow-board){border-color:#d5e2e8;box-shadow:var(--assurance-shadow)}
+#main:not(.architecture-active) .wb-panel-head{background:linear-gradient(110deg,#f0f7f8,#fff 75%)}
+#main:not(.architecture-active) :is(.promise-card,.wb-small-card,.cross-card,.story-card){background:linear-gradient(135deg,#fff,#f9fcfd);border-color:#dae5ea}
+#main:not(.architecture-active) .original-step-icon{background:#eaf6f4;color:#276b70;border:1px solid #cde6e2;box-shadow:0 3px 10px #1c615309}
+#main:not(.architecture-active) .wb-tabs{background:#e9f0f3;border-color:#d3e1e7;box-shadow:inset 0 1px 3px #183b5008}
+#main:not(.architecture-active) .wb-tab.selected{color:#175c67;box-shadow:0 2px 7px #17384a12}
+@media(hover:hover) and (pointer:fine){
+ #main:not(.architecture-active) .overview-hero .light-primary:hover{background:#b9f2e3;border-color:#b9f2e3;box-shadow:0 5px 30px #82e1c938}
+ #main:not(.architecture-active) .overview-hero .button.dark:hover{background:#ffffff12;border-color:#9bb8c5}
+ #main:not(.architecture-active) :is(.promise-card,.wb-small-card,.cross-card,.story-card):hover{border-color:#8cbdbb;box-shadow:var(--assurance-lift)}
+}
+@media(prefers-reduced-motion:no-preference){
+ #main:not(.architecture-active) .overview-hero::before{animation:studio-light 9s ease-in-out 2 alternate}
+ .overview-hero .overview-cta .button span[data-icon]{transition:transform 180ms ease}
+ .overview-hero .overview-cta .button:hover span[data-icon]{transform:translateX(3px)}
+ @keyframes studio-light{from{transform:translate(-4%,-3%);opacity:.5}to{transform:translate(6%,5%);opacity:1}}
+}
+@media(max-width:770px){
+ #main:not(.architecture-active) .overview-hero{padding:30px 23px;border-radius:16px!important}
+ #main:not(.architecture-active) .overview-hero h1{font-size:clamp(29px,7.7vw,40px);line-height:1.16;overflow-wrap:break-word}
+ #main:not(.architecture-active) .overview-hero .eyebrow{font-size:9px;line-height:1.6;letter-spacing:.1em}
+ #main:not(.architecture-active) .overview-hero p{font-size:14px;line-height:1.75}
+}
+@media(prefers-reduced-motion:reduce){
+ #main:not(.architecture-active) .overview-hero::before{animation:none}
+ .overview-hero .overview-cta .button span[data-icon]{transition:none;transform:none!important}
+}
