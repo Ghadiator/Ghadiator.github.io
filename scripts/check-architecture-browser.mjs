@@ -701,6 +701,7 @@ try{
    assert.ok((await mobile.locator('.so-hero').innerText()).includes('How did my experience shape this model?'));
  }finally{await mobileContext.close();}
 
+ await page.setViewportSize({width:1440,height:1000});
  await page.locator('#sidebar [data-view="background"]').click();
  assert.equal(await page.locator('nav[aria-labelledby="nav-background"] [data-view]').count(),1,'Personal engineering rationale has its own sidebar section');
  assert.equal(await page.locator('.so-choice').count(),6);
