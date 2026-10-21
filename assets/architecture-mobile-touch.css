@@ -3,9 +3,16 @@
    When not deliberately exploring, this *parent-document* layer catches touch
    events over the canvas and allows the browser to scroll the page. */
 .architecture-main-canvas{position:relative}
+.architecture-canvas-viewport{position:relative;min-width:0;max-width:100%}
+.architecture-canvas-viewport:focus-visible{outline:3px solid #80aff4;outline-offset:3px}
 .architecture-touch-toggle,.architecture-touch-exit{display:none}
 .architecture-touch-guard[hidden],.architecture-touch-exit[hidden]{display:none!important}
 @media (pointer:coarse){
+ .architecture-canvas-viewport{
+  overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
+  scrollbar-width:thin;scrollbar-color:#9cb7cb #edf4f8;
+ }
+ .architecture-canvas-viewport .unified-architecture-frame{width:1040px;min-width:100%}
  .architecture-main-canvas .architecture-canvas-hint{align-items:center}
  .architecture-touch-toggle{
   display:inline-flex;align-items:center;justify-content:center;
@@ -25,7 +32,7 @@
   cursor:default
  }
  .architecture-touch-guard>span{
-  display:inline-block;margin:12px;max-width:calc(100% - 24px);
+  display:inline-block;margin:12px;max-width:320px;
   padding:9px 12px;background:rgba(238,247,253,.97);
   color:#355b74;font:600 11px/1.55 "Barlow",Arial,sans-serif;
   border:1px solid #c5dbe8;border-radius:7px;

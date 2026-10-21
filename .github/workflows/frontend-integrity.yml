@@ -95,22 +95,22 @@ jobs:
           assert "overview-measures" not in overview and "demo-note" not in overview, "Remove the requested disclaimer and statistics sections from the homepage"
           assert "+metrics()" not in overview, "Homepage must not render metric cards"
           assert "Explore the working examples" not in overview and "About this demonstration:" not in overview
-          for term in ("Clear rules for facts.", "AI for unusual cases.", "People make the decisions.", "AI governance showcase", "deterministic checks", "AI-style personas", "Transparent and auditable", "Human oversight"):
+          for term in ("Clear rules for facts.", "AI for unusual cases.", "People make the decisions.", "agreed terms", "scripted AI roles", "recorded runs"):
               assert term in overview, f"Missing content: {term}"
           assert not any(term in overview for term in ("INSIDE STEP 04", "Proponent", "Opponent", "CoVe", "Judge")), "Committee internals belong on the Architecture page"
-          assert overview.index("promise-section") < overview.index("journey-section"), "The governance value proposition should come first"
+          assert overview.index("overview-hero") < overview.index("original-workflow") < overview.index("journey-section"), "Keep one introduction followed by the manual and automated workflow views"
           assert "Example data · No live AI" in html
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
           assert 'styles.css?v=20261016-manual-flow-54' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261020-assurance-65' in html, "Script must use a cache-busting URL"
+          assert 'app.js?v=20261021-tap-intro-69' in html, "Script must use a cache-busting URL"
           # Preserve the existing modular architecture through presentation changes.
           protected_architecture = {
               'assets/architecture-execution.js': 'f38288cfd797d364355b0d3db8d482fbc66f9e96',
               'assets/architecture-module-inspector.js': '1aa298ca20aec040e8ec6114d4da85c083bb1344',
               'assets/architecture-module-map.css': '9146175310277cff91970b62aac0ab1870ca59bb',
               'assets/architecture-module-inspector.css': '1c2e3051e18015d19423fd21f35d8912b3fc4e43',
-              'assets/architecture-mobile-touch.css': 'ef5def1e0004ff6f47cb843cd60b5ebf5f473448',
+              'assets/architecture-mobile-touch.css': '70ab95d0a936719d646ba6c07a34038bd75c7e92',
               'assets/architecture-explained.js': 'bcc29b5824c0e01513fa55509d990c416df805aa',
               'assets/architecture-explained.css': '0917ad5b7a65d054a4ecbb60a72ce3080fa774a6',
           }
@@ -196,7 +196,7 @@ jobs:
           assert html.index('assets/architecture-execution.js') < html.index('src="./app.js')
           engine = Path('assets/architecture-execution.js').read_text()
           assert 'assets/architecture-module-map.css?v=20261016-audit-scope-58' in html
-          assert 'assets/architecture-mobile-touch.css?v=20261019-touch-scroll-62' in html
+          assert 'assets/architecture-mobile-touch.css?v=20261021-tap-intro-69' in html
           assert 'id="architectureTouchToggle"' in app and 'id="architectureTouchGuard"' in app and 'id="architectureTouchExit"' in app
           assert 'alignTouchGuard' in app and 'touchInteractive' in app
           assert 'Separate pool not executed' in engine
@@ -234,7 +234,7 @@ jobs:
           assert 'Pool Analytics' not in html, 'No orphan Pool tab label'
           assert html.count('data-view="evidence" href=') == 1
           assert 'data-persona-mode="attacker"' in app and 'data-evidence-tab' in app
-          assert 'problem-pitch' in app and 'THE BUSINESS CHALLENGE' in app
+          assert 'problem-pitch' in app and 'original-workflow-title' in app
           assert 'function renderArchitectureContracts()' in app
           assert html.count('data-view="personas"') == 1, 'There must be only one Chat with the code entry'
           assert 'data-view="tickets" href=' not in html, 'Document requests must be one destination'
@@ -283,7 +283,7 @@ jobs:
                          'assets/architecture-module-inspector.css?v=20261020-governance-67',
                          'assets/architecture-execution.js?v=20261019-module-io-64'):
               assert source in html, "Block inspector assets must load: "+source
-          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261020-assurance-65'), "Scenario inspector must load before parent workflow"
+          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261021-tap-intro-69'), "Scenario inspector must load before parent workflow"
           assert 'assets/architecture-governance.js?v=20261020-governance-67' in html
           assert html.index('assets/architecture-governance.js') < html.index('assets/architecture-module-inspector.js'), "Governance mappings must load before block details"
           assert 'id="architecture-module-inspector"' in app, "Selected block drawer must exist inside Architecture Explorer"
@@ -302,7 +302,9 @@ jobs:
           assert 'assets/sidebar-brand-footer.css?v=20261019-brand-footer-61' in html, "Load footer-only branding stylesheet"
           assert 'sidebar-brand-footer .brand' in Path('assets/sidebar-brand-footer.css').read_text(), "Style the footer identity"
 
-          assert 'featured-run' in overview and 'featured-run-facts' in overview
+          for removed in ('featured-run', 'original-context-cards', 'promise-section', 'balance-banner', 'overview-scope', 'See one real execution trace', 'Implementation boundary'):
+              assert removed not in overview, f"Redundant introduction section returned: {removed}"
+          assert overview.count('overview-example-note') == 1, "Keep one concise example-data note"
           assert 'original-workflow-title' in overview, "Original review flow must appear in Introduction"
           assert overview.count('class="original-step-number"') == 7, "All seven representative manual stages must be shown"
           assert overview.count('class="original-flow-card"') == 7, "Manual stages must be separate connected cards"

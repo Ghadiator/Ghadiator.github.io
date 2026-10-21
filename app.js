@@ -230,8 +230,10 @@ function renderEmbeddedArchitecture(){
    <div class="architecture-main-canvas">
     <div class="architecture-canvas-hint"><strong>Module execution replay</strong><span>Blocks highlight as their recorded work runs. Executed blocks retain markers; routes animate in the original React canvas.</span><button type="button" class="architecture-touch-toggle" id="architectureTouchToggle" aria-pressed="false" aria-controls="modularArchitectureFrame">Explore diagram</button></div>
     <section id="architecture-module-inspector" class="architecture-module-inspector" role="region" aria-label="Selected module definition and recorded input and output" aria-live="polite" hidden></section>
-    <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular validation workflow and scenario player" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
-    <div id="architectureTouchGuard" class="architecture-touch-guard" aria-hidden="true" hidden><span>Swipe to scroll the page · Choose “Explore diagram” to move the blocks</span></div>
+    <div class="architecture-canvas-viewport" role="region" aria-label="Scrollable architecture diagram" tabindex="0">
+     <iframe id="modularArchitectureFrame" class="unified-architecture-frame" title="Interactive modular validation workflow and scenario player" src="${embeddedArchitectureUrl(state.scenario)}" loading="eager" referrerpolicy="same-origin"></iframe>
+     <div id="architectureTouchGuard" class="architecture-touch-guard" aria-hidden="true" hidden><span>Tap for details · Swipe sideways to explore</span></div>
+    </div>
     <button type="button" id="architectureTouchExit" class="architecture-touch-exit" hidden>Done exploring · Scroll page</button>
    </div>
    <aside id="architecture-event-rail" class="architecture-event-rail" aria-label="Emitted workflow events">${window.ArchitectureExecution?.renderRail(events(),Number.isInteger(state.architectureCursor)?state.architectureCursor:-1)||''}</aside>
@@ -271,6 +273,7 @@ function mountEmbeddedArchitecture(){
  // the visitor is scrolling; entering inspection mode reveals the actual
  // React canvas, and a fixed Exit button restores normal page scrolling.
  const canvasWrap=frame.closest('.architecture-main-canvas');
+ const canvasViewport=canvasWrap?.querySelector('.architecture-canvas-viewport');
  const touchToggle=canvasWrap?.querySelector('#architectureTouchToggle');
  const touchGuard=canvasWrap?.querySelector('#architectureTouchGuard');
  const touchExit=canvasWrap?.querySelector('#architectureTouchExit');
@@ -284,11 +287,11 @@ function mountEmbeddedArchitecture(){
   touchExit.hidden=!touchEnabled||!touchInteractive;
   const canvas=doc?.querySelector('.deck-canvas');
   if(!touchEnabled||touchInteractive||!canvas){touchGuard.hidden=true;return;}
-  const box=canvas.getBoundingClientRect(),outer=canvasWrap.getBoundingClientRect(),iframeBox=frame.getBoundingClientRect();
+  const box=canvas.getBoundingClientRect(),outer=(canvasViewport||canvasWrap).getBoundingClientRect(),iframeBox=frame.getBoundingClientRect();
   // Geometry is measured after React hydration, and again when the diagram
   // or the viewport changes. Keep the scenario picker and scrubber uncovered.
   if(box.width<50||box.height<50){touchGuard.hidden=true;return;}
-  touchGuard.style.left=Math.max(0,iframeBox.left-outer.left+box.left)+'px';
+  touchGuard.style.left=Math.max(0,iframeBox.left-outer.left+box.left+(canvasViewport?.scrollLeft||0))+'px';
   touchGuard.style.top=Math.max(0,iframeBox.top-outer.top+box.top)+'px';
   touchGuard.style.width=Math.min(box.width,iframeBox.width)+'px';
   touchGuard.style.height=Math.min(box.height,Math.max(0,iframeBox.bottom-iframeBox.top-box.top))+'px';
@@ -302,6 +305,30 @@ function mountEmbeddedArchitecture(){
  const onTouchToggle=()=>setTouchInteractive(!touchInteractive);
  const onTouchExit=()=>setTouchInteractive(false);
  const onTouchEscape=event=>{if(event.key==='Escape'&&touchInteractive)setTouchInteractive(false);};
+ // The scroll guard covers the child document on phones. Forward a stationary
+ // tap to the original React block; leave swipes and pinch gestures to scrolling.
+ let guardTap=null;
+ const onGuardPointerDown=event=>{
+  guardTap=event.isPrimary===false||event.button!==0?null:
+   {x:event.clientX,y:event.clientY,scrollX:window.scrollX,scrollY:window.scrollY,moved:false};
+ };
+ const onGuardPointerMove=event=>{
+  if(guardTap&&Math.hypot(event.clientX-guardTap.x,event.clientY-guardTap.y)>10)guardTap.moved=true;
+ };
+ const onGuardPointerCancel=()=>{guardTap=null;};
+ const onGuardClick=event=>{
+  const tap=guardTap;guardTap=null;
+  if(!tap||tap.moved||touchInteractive||touchGuard.hidden||
+   Math.hypot(event.clientX-tap.x,event.clientY-tap.y)>10||
+   Math.hypot(window.scrollX-tap.scrollX,window.scrollY-tap.scrollY)>10)return;
+  const rect=frame.getBoundingClientRect();
+  const module=frame.contentDocument?.elementFromPoint(event.clientX-rect.left,event.clientY-rect.top)?.closest('.deck [data-node]');
+  if(module){event.preventDefault();module.click();}
+ };
+ touchGuard?.addEventListener('pointerdown',onGuardPointerDown,{passive:true});
+ touchGuard?.addEventListener('pointermove',onGuardPointerMove,{passive:true});
+ touchGuard?.addEventListener('pointercancel',onGuardPointerCancel,{passive:true});
+ touchGuard?.addEventListener('click',onGuardClick);
  touchToggle?.addEventListener('click',onTouchToggle);
  touchExit?.addEventListener('click',onTouchExit);
  document.addEventListener('keydown',onTouchEscape);
@@ -329,6 +356,10 @@ function mountEmbeddedArchitecture(){
   touchToggle?.removeEventListener('click',onTouchToggle);
   touchExit?.removeEventListener('click',onTouchExit);
   document.removeEventListener('keydown',onTouchEscape);
+  touchGuard?.removeEventListener('pointerdown',onGuardPointerDown);
+  touchGuard?.removeEventListener('pointermove',onGuardPointerMove);
+  touchGuard?.removeEventListener('pointercancel',onGuardPointerCancel);
+  touchGuard?.removeEventListener('click',onGuardClick);
   window.removeEventListener('resize',onHostResize);
  };
  disposeArchitectureEmbed=clean;
@@ -547,40 +578,20 @@ function metrics(){const facts=state.facts?.facts||FACTS;const wanted=['supplier
 function outcomeMeta(s){return `<div class="minimetric"><span>Case status</span>${fmtStatus(s.terminal_state)}</div><div class="minimetric"><span>Recorded events</span><strong>${Number(s.event_count)||0}</strong></div><div class="minimetric"><span>Human gate reached</span><strong>${s.reached_human_gate?'Yes':'No'}</strong></div>`;}
 function renderOverview(){
  const featured=state.index.scenarios.find(r=>r.slug==='supplier_variance_review')||state.index.scenarios[0];
- const featuredCard=featured?`<section class="featured-run" aria-labelledby="featured-run-heading">
-  <div class="featured-run-story"><span class="section-overline">A TWO-MINUTE GUIDED EXAMPLE</span>
-   <h2 id="featured-run-heading">See one real execution trace—not just a system diagram.</h2>
-   <p>${h(featured.one_liner)} Follow the recorded checks into verification, the human gate and the evidence behind the outcome.</p>
-   <div class="featured-run-actions">
-    <a class="button dark" data-view="case" data-scenario="${h(featured.slug)}" href="${linkView('case',featured.slug)}">Explore this recorded run ${icon('arrow-right')}</a>
-    <a class="button" data-view="governance" href="${linkView('governance',featured.slug)}">Inspect governance controls ${icon('shield-check')}</a>
-   </div>
-  </div>
-  <div class="featured-run-facts" aria-label="Reference run facts">
-   <span class="featured-facts-label">RECORDED REFERENCE RUN</span>
-   <strong>${h(featured.title)}</strong>
-   <dl><dt>Run ID</dt><dd class="mono">${h(featured.slug)}</dd>
-    <dt>Recorded outcome</dt><dd>${fmtStatus(featured.terminal_state)}</dd>
-    <dt>Human gate</dt><dd>${featured.reached_human_gate?'Reached':'Not reached'}</dd>
-    <dt>Event records</dt><dd>${Number(featured.event_count)||0}</dd></dl>
-   <small>Synthetic fixture · read-only replay · no live model calls</small>
-  </div></section>`:'';
  return `<div class="page-entrance overview-page">
 <section class="overview-hero" aria-labelledby="overview-title">
   <div class="eyebrow"><span class="eyebrow-line"></span>AI GOVERNANCE · INTERACTIVE SHOWCASE</div>
   <h1 id="overview-title">Clear rules for facts.<br><em>AI for unusual cases.</em><br>People make the decisions.</h1>
-  <p>An interactive AI governance showcase that combines predictable, rule-based checks with AI-style personas who examine difficult cases from different angles. Evidence stays visible, decisions can be traced, and people keep final authority.</p>
+  <p>Supplier invoices need more than correct totals. This project checks them against agreed terms, verifies proposed exceptions and keeps the final decision with a person.</p>
   <div class="overview-cta">
     <a class="button light-primary" data-view="architecture" data-scenario="${h(featured?.slug||state.scenario)}" href="${linkView('architecture',featured?.slug||state.scenario)}">Follow a recorded case <span data-icon="arrow"></span></a>
     <a class="button dark" data-view="cases" href="?view=cases">Browse recorded cases <span data-icon="layers"></span></a>
   </div>
-  <div class="overview-benefits" aria-label="Key values"><span><span data-icon="check"></span> Consistent checks</span><span><span data-icon="layers"></span> AI perspectives</span><span><span data-icon="list-tree"></span> Traceable decisions</span><span><span data-icon="user"></span> Human oversight</span></div>
+  <p class="overview-example-note">Example invoices · scripted AI roles · recorded runs</p>
 </section>
-${featuredCard}
-<section class="problem-pitch" aria-labelledby="challenge-title">
- <div class="overview-section-heading"><div><span class="section-overline">THE BUSINESS CHALLENGE</span><h2 id="challenge-title">From manual reconciliation to evidence-led review</h2><p>A recurring service invoice starts with a supplier, a purchase order, contractual rates and supporting reports. Someone must reconcile all of them before any payment decision.</p></div></div>
+<section class="problem-pitch" aria-label="Original manual workflow">
  <section class="original-workflow" aria-labelledby="original-workflow-title">
-  <div class="original-workflow-heading"><div><span class="section-overline">WORKFLOW VIEW · ORIGINAL MANUAL PROCESS</span><h3 id="original-workflow-title">The original supplier-invoice review workflow</h3><p>The business process addressed by this project, presented as a representative manual sequence—not as measured observations of a production team.</p></div><span class="original-workflow-label">Manual review · 7 stages</span></div>
+  <div class="original-workflow-heading"><div><span class="section-overline">WORKFLOW VIEW · ORIGINAL MANUAL PROCESS</span><h2 id="original-workflow-title">The original supplier-invoice review workflow</h2><p>The seven steps this project models.</p></div><span class="original-workflow-label">Manual review · 7 stages</span></div>
   <ol class="original-workflow-list" aria-label="Seven stages of the original manual workflow">
    <li class="original-flow-card">
     <span class="original-step-icon" data-icon="file" aria-hidden="true"></span>
@@ -611,20 +622,6 @@ ${featuredCard}
     <div class="original-step-copy"><span class="original-step-number">STEP 07</span><strong>Record the outcome and evidence</strong><p>Preserve the decision, rationale, document references and review history for later inspection.</p></div>
    </li>
   </ol></section>
- <div class="wb-grid original-context-cards">
-  <article class="wb-small-card"><small>BUSINESS CHALLENGE</small><h3>Consistency and traceability</h3><p>An invoice may add up correctly yet still use an unapproved rate or lack service evidence. Email-based follow-ups and separated records make exceptions harder to explain.</p></article>
-  <article class="wb-small-card"><small>WHAT THE REFERENCE SYSTEM SUPPORTS</small><h3>Rules for facts; people for decisions</h3><p>Automated checks, scripted proposal and verification stages, a recorded human decision gate and inspectable events support this process. Document exchange and long-term archiving are not live integrations in this showcase.</p></article>
- </div>
- <p class="wb-file-hint">All public examples are synthetic supplier reference cases, not verified production results or claimed cost savings.</p>
-</section>
-<section class="promise-section" aria-labelledby="promise-title">
- <div class="overview-section-heading"><div><span class="section-overline">WHAT THIS AI GOVERNANCE SHOWCASE DEMONSTRATES</span><h2 id="promise-title">Useful automation. Decisions you can explain.</h2><p>Four ideas help make automated reviews clear, accountable and easier to trust.</p></div></div>
- <div class="promise-grid">
-  <article class="promise-card"><span class="promise-icon"><span data-icon="check"></span></span><h3>Consistent checks</h3><p>Fixed rules check the same facts the same way every time. These are called <strong>deterministic checks</strong>.</p></article>
-  <article class="promise-card"><span class="promise-icon"><span data-icon="layers"></span></span><h3>Different AI perspectives</h3><p>Several AI-style personas look at unusual cases from different angles. They raise questions, not final decisions.</p></article>
-  <article class="promise-card"><span class="promise-icon"><span data-icon="list-tree"></span></span><h3>Transparent and auditable</h3><p>See what was checked, what evidence was used, and how the final decision was reached.</p></article>
-  <article class="promise-card"><span class="promise-icon"><span data-icon="user"></span></span><h3>Human oversight</h3><p>A named person must approve, reject or ask for corrections. Automated advice cannot approve a case on its own.</p></article>
- </div>
 </section>
 <section class="journey-section" aria-labelledby="journey-title">
  <div class="overview-section-heading"><div><span class="section-overline">SIX STEPS · ONE CLEAR FLOW</span><h2 id="journey-title">From an invoice to a decision</h2><p>Follow the process from top to bottom. For a closer look at the individual components, open the Architecture Explorer.</p></div><a class="text-arrow" href="?view=architecture" data-view="architecture">View all system blocks <span data-icon="arrow"></span></a></div>
@@ -673,11 +670,9 @@ ${featuredCard}
     </article>
    </li>
   </ol>
-  <p class="agentic-flow-scope">A simplified view of the synthetic reference workflow—not a live AI service. The AI-style review is optional, and automated checks never approve an invoice.</p>
+  <p class="agentic-flow-scope">Open any block in the architecture explorer for its purpose, inputs, outputs and recorded evidence.</p>
  </div>
 </section>
-<section class="balance-banner" aria-label="The best of both approaches"><div class="balance-icon"><span data-icon="workflow"></span></div><div><span class="section-overline">THE BEST OF BOTH WORLDS</span><h2>As rule-driven as possible. As AI-assisted as useful.</h2><p>Use fixed checks for what can be verified, different review perspectives to find what needs attention, and a clear record and human review to keep decisions accountable.</p></div></section>
-<section class="overview-scope" aria-label="Implementation boundaries"><strong>Implementation boundary</strong><p>These are synthetic supplier invoice runs and scripted AI-style proposals; they demonstrate controls and inspection, not a live supplier-review deployment, certification or measured business outcome.</p><a data-view="evidence" href="?view=evidence">Examine the published evidence →</a></section>
 </div>`;}
 function renderCaseSelector(){const entries=state.index.scenarios;const opt=entries.map(s=>`<option value="${h(s.slug)}" ${s.slug===state.scenario?'selected':''}>${h(s.title)}</option>`).join('');return `<div class="scenario-switcher"><label for="scenarioSelect">RECORDED SCENARIO</label><select class="select" id="scenarioSelect" aria-label="Select recorded scenario">${opt}</select>${fmtStatus(currentCase().terminal_state)}<span class="count-chip">${currentCase().event_count} events</span></div>`;}
 function renderFlowNodes(){const list=scenarioData()?.stages||DEFAULT_STAGES;const ev=events();const selected=activeEvent()?.stage;const completed=selected?list.indexOf(selected):-1;return `<div class="flow-lanes">${list.map((st,i)=>{const count=ev.filter(e=>e.stage===st).length;const cls=st===selected?'active':completed>i?'complete':'';return `<button type="button" class="flow-node ${cls}" data-stage="${h(st)}" aria-pressed="${st===selected}"><div class="node-num"><span>${String(i+1).padStart(2,'0')}</span><span class="node-icon">${icon(STAGE_ICONS[st]||'workflow')}</span></div><span class="node-label">${h(DISPLAY_STAGES[st]||st)}</span><span class="node-count">${ev.length?`${count} event${count===1?'':'s'}`:'Recorded stage'}</span></button>`;}).join('')}</div>`;}
