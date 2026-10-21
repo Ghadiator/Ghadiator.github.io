@@ -10,6 +10,18 @@ page.on("pageerror",e=>errors.push("PAGEERROR "+e.message.slice(0,300)));
 page.on("console",m=>{if(m.type()==="error")errors.push("CONSOLE "+m.text().slice(0,300));});
 page.on("response",r=>{if(r.status()>=400)responses.push(r.status()+" "+r.url().slice(0,170));});
 try{
+ // Capture the visual refresh at both sizes, including reduced-motion mode.
+ for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
+  await page.setViewportSize(viewport);
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+'/?view=overview',{waitUntil:'networkidle'});
+  await page.locator('#overview-title').waitFor({state:'visible'});
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Introduction must fit the viewport');
+  assert.equal(await page.locator('.overview-hero').evaluate(el=>getComputedStyle(el,'::before').animationName),'none','Reduced motion must stop decorative lighting');
+  await page.screenshot({path:`frontend-introduction-${viewport.width}.png`,fullPage:false});
+ }
+ await page.setViewportSize({width:1440,height:1000});
+ await page.emulateMedia({reducedMotion:'no-preference'});
  await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+"/?view=architecture",{waitUntil:"domcontentloaded",timeout:60000});
  await page.waitForTimeout(4500);
  const state=await page.evaluate(()=>{
