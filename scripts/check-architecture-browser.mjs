@@ -40,7 +40,7 @@ try{
  assert.ok((state.iframeTextSize||0)>900,"The architecture graph and controls must be visible");
  const orchestration=page.frameLocator("#modularArchitectureFrame").locator('[data-node="orchestrator"]');
  const before=await orchestration.getAttribute("aria-pressed");
- await orchestration.evaluate(el=>el.click());
+ await orchestration.click();
  await page.waitForTimeout(500);
  const after=await orchestration.getAttribute("aria-pressed");
  console.log("NODE_INTERACTION",JSON.stringify({before,after}));
@@ -63,7 +63,8 @@ try{
  const nodeIds=await page.frameLocator("#modularArchitectureFrame").locator('.deck [data-node]').evaluateAll(nodes=>nodes.map(n=>n.dataset.node));
  assert.equal(new Set(nodeIds).size,20);
  for(const id of nodeIds){
-   await page.frameLocator("#modularArchitectureFrame").locator('[data-node="'+id+'"]').evaluate(el=>el.click());
+   await blockDetails.locator("[data-module-inspector-close]").click();
+   await page.frameLocator("#modularArchitectureFrame").locator('[data-node="'+id+'"]').click();
    assert.equal(await blockDetails.getAttribute('data-selected-module'),id);
    for(const phrase of ['Expected input','Expected output','EU AI Act relevance','What this does not establish','Scope of this mapping']){
      assert.ok((await blockDetails.innerText()).includes(phrase),id+" must explain "+phrase);
@@ -302,11 +303,10 @@ try{
  await page.setViewportSize({width:375,height:812});
  await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+"/?view=overview",
    {waitUntil:"domcontentloaded",timeout:60000});
- await page.waitForSelector('.featured-run-facts',{timeout:12000});
- assert.ok((await page.locator('.featured-run-facts').innerText()).includes("supplier_variance_review"),
-   "Featured reference run must come from the published scenario catalogue");
- assert.ok(await page.locator('.overview-scope').count(),
-   "Introduction must identify implementation boundaries");
+ await page.waitForSelector('.overview-example-note',{timeout:12000});
+ assert.ok((await page.locator('.overview-example-note').innerText()).includes("scripted AI roles"));
+ assert.equal(await page.locator('.featured-run,.original-context-cards,.promise-section,.balance-banner,.overview-scope').count(),0,
+   "Introduction must omit the repeated pitch and boundary sections");
  const manualCards=page.locator('.original-workflow-list > .original-flow-card');
  assert.equal(await manualCards.count(),7,"Manual workflow must have seven distinct blocks");
  assert.equal(await page.locator('.original-workflow-list .original-step-icon svg').count(),7,
@@ -402,7 +402,8 @@ try{
  assert.equal(await menu.getAttribute('aria-expanded'),'false',
    'Footer brand must navigate home and close the mobile drawer');
 
- await page.locator('.featured-run-actions [data-view="case"]').click();
+ await page.locator('.overview-cta [data-view="cases"]').click();
+ await page.locator('.wb-table a[data-view="case"]').first().click();
  await page.waitForFunction(()=>new URLSearchParams(location.search).get("view")==="case",null,{timeout:10000});
  assert.ok(await page.locator('.case-detail-facts').count(),
    "Case detail must show outcome and human authority before the event tabs");
@@ -415,7 +416,7 @@ try{
    "Governance deep links must open the control mapping, not an empty tab");
  assert.ok(await page.locator('.control-proof').first().innerText().then(x=>x.toLowerCase().includes("evidence pointer")),
    "Each governance control must expose an evidence pointer");
- console.log("DESIGN_SYSTEM", "Mobile navigation, featured run, case authority and governance source mappings passed");
+ console.log("DESIGN_SYSTEM", "Mobile navigation, concise introduction, case authority and governance source mappings passed");
 
  // Keep the original seven-stage manual workflow; remove the duplicate guided tour.
  await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+"/?view=overview",
@@ -491,6 +492,27 @@ try{
    },null,{timeout:25000});
    assert.equal(await mobile.locator("#architectureTouchToggle").getAttribute("aria-pressed"),"false",
      "Mobile must start with parent-page scrolling, not trapped diagram panning");
+   // A normal phone tap must work WITHOUT first enabling diagram panning.
+   // This travels through the real scroll guard, not a programmatic node click.
+   const mobileDetails=mobile.locator('#architecture-module-inspector');
+   for(const id of ['request','intake']){
+     const node=mobile.frameLocator('#modularArchitectureFrame').locator('[data-node="'+id+'"]');
+     await node.scrollIntoViewIfNeeded();
+     const box=await node.boundingBox();
+     assert.ok(box,"The selected source block must have an on-screen hit target");
+     const x=box.x+box.width/2,y=box.y+box.height/2;
+     assert.equal(await mobile.evaluate(({x,y})=>document.elementFromPoint(x,y)?.closest('#architectureTouchGuard')?.id,{x,y}),
+       'architectureTouchGuard',"Reproduce the default scroll overlay covering the block");
+     await mobile.touchscreen.tap(x,y);
+     await mobile.waitForFunction(id=>document.getElementById('architecture-module-inspector')?.dataset.selectedModule===id,id);
+     assert.ok(await mobileDetails.isVisible(),"Default phone tap must open block details");
+     for(const phrase of ['Expected input','Expected output','EU AI Act relevance','Recorded output']){
+       assert.ok((await mobileDetails.innerText()).includes(phrase),"Phone popup must include "+phrase);
+     }
+     assert.equal(await node.getAttribute('aria-pressed'),'true',"Tap must preserve the original React selection");
+     assert.equal(await mobile.locator('#architectureTouchToggle').getAttribute('aria-pressed'),'false');
+     await mobileDetails.locator('[data-module-inspector-close]').tap();
+   }
    const firstPosition=await mobile.evaluate(()=>{
      const guard=document.getElementById("architectureTouchGuard");
      const rect=guard.getBoundingClientRect();
@@ -518,6 +540,7 @@ try{
    const scrollAfter=await mobile.evaluate(()=>document.scrollingElement.scrollTop);
    assert.ok(scrollAfter>scrollBefore+60,
      "Swiping UP on the embedded diagram must scroll the outer page DOWN (before "+scrollBefore+" after "+scrollAfter+")");
+   assert.ok(await mobileDetails.isHidden(),"Swiping over blocks must not open the popup");
    // Reposition under the finger and verify reverse scrolling as well.
    await mobile.evaluate(()=>{
      const box=document.getElementById("architectureTouchGuard").getBoundingClientRect();
@@ -529,6 +552,41 @@ try{
    const reverseAfter=await mobile.evaluate(()=>document.scrollingElement.scrollTop);
    assert.ok(reverseAfter<reverseBefore-40,
      "Swiping DOWN over the diagram must scroll the outer page UP (before "+reverseBefore+" after "+reverseAfter+")");
+   // Native sideways swipes reveal the wide diagram without enabling pan mode.
+   const viewport=mobile.locator('.architecture-canvas-viewport');
+   assert.ok(await viewport.evaluate(el=>el.scrollWidth>el.clientWidth+400),"Phone canvas needs real horizontal overflow");
+   assert.ok(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),"Keep horizontal overflow inside the canvas, not the page");
+   const scrollCanvas=async (startX,endX,y)=>{
+     await client.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:startX,y}]});
+     for(let i=1;i<=12;i++){
+       await client.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:Math.round(startX+(endX-startX)*i/12),y}]});
+       await mobile.waitForTimeout(22);
+     }
+     await client.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+     await mobile.waitForTimeout(550);
+   };
+   await mobile.evaluate(()=>{
+     const guard=document.getElementById('architectureTouchGuard');
+     scrollBy({top:guard.getBoundingClientRect().top-130,behavior:'instant'});
+     document.querySelector('.architecture-canvas-viewport').scrollLeft=0;
+   });
+   await mobile.waitForTimeout(180);
+   const pageBeforeSideways=await mobile.evaluate(()=>scrollY);
+   await scrollCanvas(320,65,420);
+   const right=await viewport.evaluate(el=>el.scrollLeft);
+   assert.ok(right>60,"Swipe left must scroll the canvas to the right: "+right);
+   assert.ok(Math.abs((await mobile.evaluate(()=>scrollY))-pageBeforeSideways)<15,"Sideways canvas swipe must preserve page position");
+   assert.ok(await mobileDetails.isHidden(),"Horizontal swipe must not open block details");
+   await scrollCanvas(65,320,420);
+   assert.ok((await viewport.evaluate(el=>el.scrollLeft))<right-40,"Swipe right must scroll the canvas back");
+   // Taps must still hit the correct child block after a horizontal scroll.
+   const farNode=mobile.frameLocator('#modularArchitectureFrame').locator('[data-node="archive"]');
+   await farNode.scrollIntoViewIfNeeded();
+   const farBox=await farNode.boundingBox();
+   await mobile.touchscreen.tap(farBox.x+farBox.width/2,farBox.y+farBox.height/2);
+   await mobile.waitForFunction(()=>document.getElementById('architecture-module-inspector')?.dataset.selectedModule==='archive');
+   assert.ok(await mobileDetails.isVisible());
+   await mobileDetails.locator('[data-module-inspector-close]').tap();
    // Explicit interaction mode must still allow selecting a real React node.
    await mobile.locator("#architectureTouchToggle").click();
    assert.equal(await mobile.locator("#architectureTouchToggle").getAttribute("aria-pressed"),"true");

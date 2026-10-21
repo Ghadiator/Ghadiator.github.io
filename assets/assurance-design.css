@@ -98,3 +98,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
  .overview-page .overview-hero{animation:assurance-intro 400ms ease-out both}
  @keyframes assurance-intro{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 }
+
+.overview-hero .overview-example-note{font-size:12px;line-height:1.6;margin:20px 0 0;color:#536f83}
+
+.original-workflow-heading h2{font-size:clamp(20px,2.1vw,26px);letter-spacing:-.035em;line-height:1.25;margin:8px 0}
