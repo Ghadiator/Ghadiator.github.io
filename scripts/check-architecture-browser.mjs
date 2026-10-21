@@ -38,6 +38,9 @@ try{
  assert.ok(state.mainExists,"The source Architecture main must be present");
  assert.ok(state.frameHeight>=1000,"Modular architecture frame must remain at least 1000px tall after Next hydration");
  assert.ok((state.iframeTextSize||0)>900,"The architecture graph and controls must be visible");
+ assert.ok(await page.frameLocator('#modularArchitectureFrame').locator('main h1').isHidden(),
+   "Hide the duplicate embedded Validation / Architecture heading");
+ assert.equal(await page.locator('.unified-architecture-view .run-journey').count(),0);
  const orchestration=page.frameLocator("#modularArchitectureFrame").locator('[data-node="orchestrator"]');
  const before=await orchestration.getAttribute("aria-pressed");
  await orchestration.click();

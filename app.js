@@ -494,6 +494,9 @@ function mountEmbeddedArchitecture(){
      body > div.flex.min-h-screen > div{min-width:0!important;width:100%!important;display:block!important}
      body > div.flex.min-h-screen > div > main{padding:0!important;width:100%!important}
      body > div.flex.min-h-screen > div > main > div{max-width:none!important}
+     /* The host page supplies the title and introduction for this embed. */
+     body > div.flex.min-h-screen > div > main > div > :is(p:first-child,h1,h1+div){display:none!important}
+     body > div.flex.min-h-screen > div > main > div > div:has(> .deck){margin-top:0!important}
      /* The embedded panel is only scenario transport plus the original graph.
         Live step explanations and drill buttons live BELOW the iframe. */
      .deck{display:flex!important;flex-direction:column!important}
