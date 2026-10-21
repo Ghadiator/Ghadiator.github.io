@@ -14,6 +14,8 @@ on:
       - assets/public-personas.js
       - assets/public-attacker.js
       - assets/story-journey.js
+      - assets/safety-to-governance.js
+      - assets/safety-to-governance.css
       - assets/overview-agentic-flow.css
       - assets/architecture-execution.js
       - assets/architecture-case-generator.js
@@ -45,6 +47,8 @@ on:
       - assets/public-personas.js
       - assets/public-attacker.js
       - assets/story-journey.js
+      - assets/safety-to-governance.js
+      - assets/safety-to-governance.css
       - assets/overview-agentic-flow.css
       - styles.css
       - assets/sidebar-brand-footer.css
@@ -58,6 +62,7 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check app.js
+          node --check assets/safety-to-governance.js
           node --check assets/architecture-execution.js
           node --check assets/architecture-module-inspector.js
           node --check assets/architecture-governance.js
@@ -109,7 +114,7 @@ jobs:
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
           assert 'styles.css?v=20261016-manual-flow-54' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261021-replay-scroll-72' in html, "Script must use a cache-busting URL"
+          assert 'app.js?v=20261021-safety-origin-73' in html, "Script must use a cache-busting URL"
           # Preserve the existing modular architecture through presentation changes.
           protected_architecture = {
               'assets/architecture-execution.js': 'd3370d3d6edb77fc1637bbbac812d1a8d19d3af1',
@@ -136,7 +141,7 @@ jobs:
           assert 'data-view="overview"' in shell
           required_tabs = (
               'overview', 'architecture', 'personas', 'governance', 'evidence',
-              'submissions', 'cases'
+              'submissions', 'cases', 'background'
           )
           for tab in required_tabs:
               assert 'data-view="'+tab+'"' in html, f'Missing DAiA-equivalent public tab: {tab}'
@@ -178,6 +183,7 @@ jobs:
               ('nav-start', ['overview']),
               ('nav-explore', ['architecture', 'cases', 'submissions']),
               ('nav-assurance', ['personas', 'governance', 'evidence']),
+              ('nav-background', ['background']),
           )
           for group_id, expected_views in groups:
               nav_start = html.index('<nav class="nav-list" aria-labelledby="' + group_id + '">')
@@ -293,7 +299,7 @@ jobs:
                          'assets/architecture-module-inspector.css?v=20261020-governance-67',
                          'assets/architecture-execution.js?v=20261021-merged-results-70'):
               assert source in html, "Block inspector assets must load: "+source
-          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261021-replay-scroll-72'), "Scenario inspector must load before parent workflow"
+          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261021-safety-origin-73'), "Scenario inspector must load before parent workflow"
           assert 'assets/architecture-governance.js?v=20261020-governance-67' in html
           assert html.index('assets/architecture-governance.js') < html.index('assets/architecture-module-inspector.js'), "Governance mappings must load before block details"
           assert 'id="architecture-module-inspector"' in app, "Selected block drawer must exist inside Architecture Explorer"

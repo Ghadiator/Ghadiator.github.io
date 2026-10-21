@@ -689,7 +689,28 @@ try{
    assert.ok(await mobile.locator("#architectureTouchGuard").isVisible(),
      "Exiting exploration must restore normal page swipe scrolling");
    console.log("MOBILE_DIAGRAM_SCROLL","Native upward/downward page swipes, explicit React interaction and one-tap exit passed");
+   await mobile.locator('#mobileMenu').click();
+   await mobile.locator('#sidebar [data-view="background"]').click();
+   await mobile.locator('.so-choice').last().waitFor({state:'visible'});
+   assert.equal(await mobile.locator('.so-choice').count(),6);
+   assert.ok(await mobile.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Engineering story must fit the phone viewport');
+   assert.equal(await mobile.locator('#sidebar [data-view="background"]').getAttribute('aria-current'),'page');
+   await mobile.reload({waitUntil:'domcontentloaded'});
+   await mobile.locator('.so-hero h1').waitFor({state:'visible'});
+   assert.ok((await mobile.locator('.so-hero').innerText()).includes('How did my experience shape this model?'));
  }finally{await mobileContext.close();}
+
+ await page.locator('#sidebar [data-view="background"]').click();
+ assert.equal(await page.locator('nav[aria-labelledby="nav-background"] [data-view]').count(),1,'Personal engineering rationale has its own sidebar section');
+ assert.equal(await page.locator('.so-choice').count(),6);
+ assert.ok((await page.locator('#main').innerText()).includes('Bosch Engineering'));
+ assert.ok((await page.locator('#main').innerText()).includes('techcos'));
+ assert.ok((await page.locator('#main').innerText()).includes('not equivalence between standards'));
+ await page.locator('.so-inspect[href*="view=evidence"]').click();
+ await page.locator('[data-evidence-tab="trace"]').waitFor({state:'visible'});
+ await page.goBack();
+ await page.locator('.so-hero h1').waitFor({state:'visible'});
+ console.log('SAFETY_TO_GOVERNANCE','Dedicated section, six experience/control connections, evidence navigation, history and phone reload passed');
 
  // The archived compiled architecture already has a React #418 HTML
  // hydration warning because its SSR markup was customized independently.

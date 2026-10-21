@@ -114,7 +114,7 @@ const FACTS = [
 const DEFAULT_STAGES = ['request','reminders','ingest','memory','checks','contract','exception','advisory','remediation','review','disposition','archive'];
 const DISPLAY_STAGES={request:'Request',reminders:'Reminders',ingest:'Intake',memory:'History',checks:'Rule checks',contract:'Contract',exception:'Exception',advisory:'Advisory + CoVe',remediation:'Remediation',review:'Human gate',disposition:'Decision',archive:'Archive'};
 const STAGE_ICONS={request:'file',reminders:'clock',ingest:'download',memory:'database',checks:'check',contract:'book-open',exception:'alert',advisory:'shield-check',remediation:'workflow',review:'user',disposition:'scale',archive:'lock'};
-const VIEW_NAMES={overview:'Introduction',architecture:'Architecture',evidence:'Evidence & learning',dashboard:'Dashboard',tickets:'Document requests',submissions:'Document collection',newticket:'New submission',ticket:'Request detail',inbound:'Supplier intake',cases:'Recorded cases',case:'Case detail',monitor:'Architecture scenarios',tokens:'Token economics',governance:'Governance controls',attacker:'Red Team attacker',redteam:'Control probes',personas:'AI roles & controls',integration:'Integration',audit:'Process audit',assurance:'Hazards & controls',analytics:'Detection analytics',login:'Access & scope'};
+const VIEW_NAMES={overview:'Introduction',architecture:'Architecture',background:'Safety → AI governance',evidence:'Evidence & learning',dashboard:'Dashboard',tickets:'Document requests',submissions:'Document collection',newticket:'New submission',ticket:'Request detail',inbound:'Supplier intake',cases:'Recorded cases',case:'Case detail',monitor:'Architecture scenarios',tokens:'Token economics',governance:'Governance controls',attacker:'Red Team attacker',redteam:'Control probes',personas:'AI roles & controls',integration:'Integration',audit:'Process audit',assurance:'Hazards & controls',analytics:'Detection analytics',login:'Access & scope'};
 const state={view:'overview',architectureTab:'diagram',personaMode:'chat',evidenceTab:'trace',submissionTab:'compose',submissionMode:'request',attackerTab:'campaign',attackerRevealed:0,attackerNotes:[],personaName:'integrator',personaSessions:{},workbenchTab:'summary',scenario:'supplier_variance_review',index:{scenarios:SCENARIOS},facts:{facts:FACTS},loaded:{},raw:{},eventIndex:0,playing:false,speed:1150,search:'',filter:'all',caseSearch:'',caseFilter:'all',selectedObligation:0,selectedHazard:0,loading:{},errors:{},help:false};
 let playTimer=null,toastTimer=null,loadToken=0;
 const $=x=>document.querySelector(x);
@@ -742,6 +742,7 @@ function render(){refreshLinkState();
  evidence:()=>window.StoryJourney.renderEvidence(ctx),
  governance:()=>wb.governanceHub(ctx,renderGovernance),
  architecture:renderEmbeddedArchitecture,
+ background:()=>window.SafetyToGovernance.render(ctx),
  integration:renderIntegration,
  audit:renderAudit,
  assurance:renderAssurance,
