@@ -3,21 +3,21 @@
 (function(){
  'use strict';
  const choices=[
-  {icon:'alert',title:'Design for failures and edge cases',experience:'I define safety analysis strategies and align safety concepts with system architecture.',choice:'That shaped the failure and edge cases: incorrect rates, missing evidence, duplicate invoices and unresolved reviews. Each concern has an explicit check or escalation path.',view:'cases',link:'Explore the failure cases'},
-  {icon:'list-tree',title:'Make claims traceable to evidence',experience:'I own safety cases and act as an interface for audits and external assessments.',choice:'That shaped the event record and replay dashboard. Like monitoring software, they make checks, exceptions and state changes visible, with each result traceable to the published case.',view:'evidence',link:'Inspect the decision evidence'},
-  {icon:'shield-check',title:'Verify before accepting a proposal',experience:'I have verified the architecture and design of Simulink- and C-based software.',choice:'That shaped the separation between proposal and verification. Scripted Proponent and Opponent outputs are claims; CoVe checks evidence before the Judge packages the findings.',view:'architecture',link:'Inspect the review architecture'},
-  {icon:'user',title:'Keep decision authority explicit',experience:'I lead safety governance through to release recommendation and coordinate technical project teams.',choice:'That shaped the human review gate. The review package supports a named reviewer; it does not grant an AI role the authority to approve. The replay shows recorded decisions.',view:'architecture',link:'Follow the human review gate'},
-  {icon:'lock',title:'Define limits for tools and changes',experience:'I classify and qualify development tools, and have designed a sandboxed change process.',choice:'That shaped bounded proposals, input separation and the adapter-failure and proposal-budget cases. These demonstrate control behaviour; they do not qualify a live AI tool.',view:'personas',link:'Examine AI roles and controls'},
-  {icon:'code',title:'Use deterministic checks for repeatable facts',experience:'I automated software release management with VBA and developed project toolchains.',choice:'That shaped the deterministic, rules-first approach: arithmetic and contract facts use fixed checks. Corrections return through validation, with versions and reviewer decisions kept visible.',view:'submissions',link:'Try local document checks'}
+  {icon:'shield-check',title:'Keep deterministic verification behind CoVe reviews',experience:'My functional safety work taught me to separate uncertain behaviour from checks whose results can be reproduced.',choice:'I added CoVe reviews to keep AI-style proposals behind an evidence-verification boundary. In this reference workflow, deterministic checks can reject unsupported findings even if a proposal is wrong; approval still requires the human gate.',view:'architecture',link:'Inspect the verification boundary'},
+  {icon:'messages-square',title:'Challenge hallucinations with Proponent and Opponent',experience:'Architecture and software verification taught me to challenge a proposed result before accepting it.',choice:'I added Proponent and Opponent roles to surface contradictions and challenge hallucinated or unsupported claims. My aim was to improve review quality and confidence in the evidence. Agreement between roles is still not proof of correctness.',view:'personas',link:'Explore the opposing review roles'},
+  {icon:'alert',title:'Use FMEA to expose failure modes and edge cases',experience:'I performed a Failure Mode and Effects Analysis (FMEA) to examine how this system could fail, the effects of each failure and the controls needed.',choice:'That shaped the failure and edge cases: fabricated findings, missing evidence, incorrect rates and unresolved reviews. The published hazard analysis connects failures to controls, tests and remaining limitations.',view:'assurance',link:'Inspect failure modes and controls'},
+  {icon:'list-tree',title:'Make the system card and process audit traceable',experience:'Owning safety cases and supporting assessments taught me to connect each claim to its controls and evidence.',choice:'I added the system card and process audit aspects to make scope, limitations and decisions inspectable. Like monitoring software, the event record and replay dashboard make checks, exceptions and state changes visible and traceable.',view:'evidence',tab:'trace',link:'Inspect the audit evidence'},
+  {icon:'workflow',title:'Connect lessons learned with incident response',experience:'My experience with release processes and controlled changes shaped how I think about learning from failures.',choice:'I included lessons learned and incident response in the governance design so failures can lead to reviewed improvements. The showcase explains that loop; persistent lessons, incident handling and approved control updates need a connected backend.',view:'evidence',tab:'learning',link:'Examine lessons learned'},
+  {icon:'user',title:'Keep human authority and automation limits explicit',experience:'I lead safety governance through to release recommendation, qualify development tools and coordinate technical project teams.',choice:'That shaped the named reviewer gate, bounded proposals and failure handling. Deterministic checks support the decision; neither an AI-style role nor monitoring software receives final approval authority.',view:'architecture',link:'Follow the human decision boundary'}
  ];
  function render(ctx){
   const e=ctx.h,icon=ctx.icon;
-  const href=view=>'?view='+view+'&scenario='+encodeURIComponent(ctx.state.scenario)+(view==='evidence'?'&tab=trace':'');
+  const href=c=>'?view='+c.view+'&scenario='+encodeURIComponent(ctx.state.scenario)+(c.view==='evidence'?'&tab='+(c.tab||'trace'):'');
   return `<div class="page-entrance safety-origin">
    <header class="so-hero">
     <span class="section-overline">THE ENGINEERING BEHIND THE MODEL</span>
     <h1>From functional safety<br><em>to AI governance.</em></h1>
-    <p class="so-lead">How did my experience shape this model? It taught me to anticipate edge cases, use deterministic checks where facts can be verified, make failures visible and keep decision authority clear.</p>
+    <p class="so-lead">How did my experience shape this model? I used FMEA to examine failure modes, deterministic checks to verify facts, opposing roles to challenge claims and process audits to keep decisions traceable.</p>
     <div class="so-author"><span class="so-author-icon">${icon('user')}</span><div><strong>Ali Ghader</strong><span>Functional Safety Manager · Systems engineering · AI governance</span></div></div>
    </header>
    <section class="so-background" aria-labelledby="so-background-title">
@@ -28,12 +28,12 @@
     </div>
    </section>
    <section aria-labelledby="so-choices-title" class="so-choices">
-    <div class="so-section-heading"><span class="section-overline">EXPERIENCE → DESIGN CHOICE</span><h2 id="so-choices-title">Where that thinking appears in the model</h2><p>These connections explain my design rationale. Each one leads to a control you can inspect.</p></div>
+    <div class="so-section-heading"><span class="section-overline">EXPERIENCE → DESIGN CHOICE</span><h2 id="so-choices-title">Where that thinking appears in the model</h2><p>These are the engineering decisions I carried into this model, and the reasoning behind each one.</p></div>
     <div class="so-choice-grid">${choices.map((c,i)=>`<article class="so-choice">
      <div class="so-choice-title"><span class="so-choice-icon">${icon(c.icon)}</span><span class="so-number">${String(i+1).padStart(2,'0')}</span><h3>${e(c.title)}</h3></div>
      <div class="so-experience"><span class="so-label">MY ENGINEERING EXPERIENCE</span><p>${e(c.experience)}</p></div>
      <div class="so-decision"><span class="so-label">WHAT I CARRIED INTO THIS MODEL</span><p>${e(c.choice)}</p></div>
-     <a href="${e(href(c.view))}" class="so-inspect">${e(c.link)} <span aria-hidden="true">→</span></a>
+     <a href="${e(href(c))}" class="so-inspect">${e(c.link)} <span aria-hidden="true">→</span></a>
     </article>`).join('')}</div>
    </section>
    <section class="so-transfer" aria-labelledby="so-transfer-title">
