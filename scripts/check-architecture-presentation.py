@@ -8,7 +8,7 @@ def git_blob(data):
     return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
 
 BASELINES = {
-    'app.js': 'b2ab6f2c895a1a8a5c77c73c26d36a9be35012dc',
+    'app.js': 'd31d6ecb40f5fe4816717ffb283fba3e30457a5e',
     'assets/architecture-execution.js': 'd3370d3d6edb77fc1637bbbac812d1a8d19d3af1',
     'assets/architecture-module-inspector.js': '1aa298ca20aec040e8ec6114d4da85c083bb1344',
     'assets/architecture-explained.js': 'bcc29b5824c0e01513fa55509d990c416df805aa',

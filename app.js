@@ -201,16 +201,38 @@ function refreshWorkflowResults(){
  if(dashboard)dashboard.innerHTML=execution.renderDashboard(timeline,cursor);
  const rail=document.getElementById('architecture-event-rail');
  if(rail){
-  const previous=rail.querySelector('.ax-rail-list')?.scrollTop??0;
-  rail.innerHTML=execution.renderRail(timeline,cursor);
+  // Keep the scrolling element and its buttons alive during playback. Replacing
+  // them interrupts touch momentum, focus and an ongoing wheel gesture.
+  if(rail._timeline!==timeline){
+   rail.innerHTML=execution.renderRail(timeline,cursor);
+   rail._timeline=timeline;
+   rail._followReplay=true;
+   rail._replayScroll=0;
+  }
   const list=rail.querySelector('.ax-rail-list');
   if(list){
-   list.scrollTop=previous;
+   // Once a visitor scrolls the trace themselves, leave their reading position
+   // alone until they choose another scenario. Page scrolling is independent.
+   if(Math.abs(list.scrollTop-rail._replayScroll)>2)rail._followReplay=false;
+   const current=cursor>=0?Math.min(cursor,timeline.length-1):-1;
+   rail.querySelector('.ax-event-progress').textContent=Math.max(0,current+1)+' / '+timeline.length;
+   list.querySelectorAll('[data-replay-seek]').forEach((item,i)=>{
+    item.classList.toggle('is-current',i===current);
+    item.classList.toggle('is-done',i<current);
+    item.classList.toggle('is-next',i>current);
+    item.setAttribute('aria-current',i===current?'step':'false');
+    const mark=item.querySelector('.ax-rail-mark'),text=i===current?'●':i<current?'✓':'·';
+    if(mark.textContent!==text)mark.textContent=text;
+   });
    const active=list.querySelector('.is-current');
-   if(active&&cursor>=0){
+   if(active&&rail._followReplay){
     const bounds=list.getBoundingClientRect(),rect=active.getBoundingClientRect();
-    if(rect.bottom>bounds.bottom-40||rect.top<bounds.top+20)active.scrollIntoView({block:'nearest',behavior:'auto'});
+    // scrollIntoView also scrolls outer ancestors, pulling the whole page back
+    // to the event rail. Move ONLY this bounded list, never the page or canvas.
+    if(rect.bottom>bounds.bottom-40)list.scrollTop+=rect.bottom-bounds.bottom+40;
+    else if(rect.top<bounds.top+20)list.scrollTop+=rect.top-bounds.top-20;
    }
+   rail._replayScroll=list.scrollTop;
   }
  }
 }
