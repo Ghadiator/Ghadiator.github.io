@@ -18,7 +18,7 @@ try{
   await page.locator('#overview-title').waitFor({state:'visible'});
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Introduction must fit the viewport');
   assert.equal(await page.locator('.overview-hero').evaluate(el=>getComputedStyle(el,'::before').animationName),'none','Reduced motion must stop decorative lighting');
-  await page.screenshot({path:`frontend-introduction-${viewport.width}.png`,fullPage:false});
+  await page.screenshot({path:`frontend-introduction-${viewport.width}.png`,fullPage:false,animations:"disabled"});
  }
  await page.setViewportSize({width:1440,height:1000});
  await page.emulateMedia({reducedMotion:'no-preference'});
@@ -142,7 +142,7 @@ try{
    "Recorded module output must link to its exact fixture event index");
 
  console.log("BAD_RESPONSES",JSON.stringify(responses.slice(0,30)));
- await page.screenshot({path:"architecture-embedded-test.png",fullPage:false});
+ await page.screenshot({path:"architecture-embedded-test.png",fullPage:false,animations:"disabled"});
  const deck=page.frameLocator("#modularArchitectureFrame");
  const picker=deck.locator('select[aria-label="Recorded scenario"]');
  assert.ok(await picker.count(),"Scenario selector must appear in the original modular canvas");
@@ -409,6 +409,8 @@ try{
  await page.locator('.evidence-destinations [data-view="architecture"]').waitFor({state:'visible'});
  await page.locator('.evidence-destinations [data-view="case"]').click();
  await page.waitForSelector('.case-review-evidence');
+ // The case shell appears before its verified event stream finishes loading.
+ await page.locator('.case-review-evidence').getByText('Reviewer decision — APPROVE',{exact:true}).waitFor({state:'visible'});
  assert.equal(new URL(page.url()).searchParams.get('scenario'),'supplier_clean');
  assert.ok((await page.locator('.case-review-evidence').innerText()).includes('Reviewer decision — APPROVE'));
  await page.locator('.case-source-footer [data-journey-trace]').click();
