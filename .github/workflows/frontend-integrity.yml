@@ -13,6 +13,7 @@ on:
       - data/backend-config.json
       - assets/public-personas.js
       - assets/public-attacker.js
+      - scripts/check-evidence-consolidation.cjs
       - assets/story-journey.js
       - scripts/check-safety-transfer.cjs
       - assets/safety-to-governance.js
@@ -49,6 +50,7 @@ on:
       - data/backend-config.json
       - assets/public-personas.js
       - assets/public-attacker.js
+      - scripts/check-evidence-consolidation.cjs
       - assets/story-journey.js
       - scripts/check-safety-transfer.cjs
       - assets/safety-to-governance.js
@@ -82,6 +84,8 @@ jobs:
           node --check assets/story-journey.js
       - name: Protect architecture semantics during presentation changes
         run: python3 scripts/check-architecture-presentation.py
+      - name: Verify canonical evidence navigation
+        run: node scripts/check-evidence-consolidation.cjs
       - name: Verify CV-grounded safety-to-governance skills
         run: node scripts/check-safety-transfer.cjs
       - name: Verify all scenario and control states at every playback position
@@ -123,7 +127,7 @@ jobs:
           assert 'data-view="architecture" href="?view=architecture"' in html
           assert 'INSIDE STEP 04' not in app, "Outdated committee copy must not reappear"
           assert 'styles.css?v=20261016-manual-flow-54' in html, "Stylesheet must use a cache-busting URL"
-          assert 'app.js?v=20261021-safety-origin-73' in html, "Script must use a cache-busting URL"
+          assert 'app.js?v=20261021-evidence-consolidation-78' in html, "Script must use a cache-busting URL"
           # Preserve the existing modular architecture through presentation changes.
           protected_architecture = {
               'assets/architecture-execution.js': 'c09bdd33385f1433ce3b9983edcf9c56d4edff24',
@@ -155,7 +159,7 @@ jobs:
           for tab in required_tabs:
               assert 'data-view="'+tab+'"' in html, f'Missing DAiA-equivalent public tab: {tab}'
               assert tab + ':' in app, f'Missing app router view: {tab}'
-          assert 'assets/generic-workbench.js?v=20261016-manual-flow-54' in html
+          assert 'assets/generic-workbench.js?v=20261021-evidence-consolidation-78' in html
           assert html.index('assets/generic-workbench.js') < html.index('src="./app.js')
           workbench = Path('assets/generic-workbench.js').read_text()
           for screen in ('overview', 'tickets', 'inbound', 'cases', 'monitor', 'economics',
@@ -256,7 +260,7 @@ jobs:
           assert 'data-attacker-action' in Path('assets/public-attacker.js').read_text()
           assert 'Pool Analytics' not in html, 'No orphan Pool tab label'
           assert html.count('data-view="evidence" href=') == 1
-          assert 'data-persona-mode="attacker"' in app and 'data-evidence-tab' in app
+          assert 'data-persona-mode="attacker"' in app and 'data-evidence-tab' not in app
           assert 'problem-pitch' in app and 'original-workflow-title' in app
           assert 'function renderArchitectureContracts()' in app
           assert html.count('data-view="personas"') == 1, 'There must be only one Chat with the code entry'
@@ -291,16 +295,16 @@ jobs:
           journey = Path("assets/generic-workbench.js").read_text()
           evidence = Path("assets/story-journey.js").read_text()
           style = Path("styles.css").read_text()
-          assert 'assets/story-journey.js?v=20261021-merged-results-70' in html
+          assert 'assets/story-journey.js?v=20261021-evidence-consolidation-78' in html
           for fragment in ('function readJourneyQuery(params)', 'case_filter=', 'case_search=',
                            'data-journey-trace', 'data-clear-case-filters',
-                           "state.caseSearch=event.target.value", 'state.evidenceTab='):
+                           "state.caseSearch=event.target.value", 'function canonicalView(params)'):
               assert fragment in app, f"Broken selected-run navigation: {fragment}"
-          assert 'run-journey' in journey and 'run-journey' in evidence
+          assert 'run-journey' in journey and 'run-journey' not in evidence
           architecture_markup = app[app.index('function renderEmbeddedArchitecture()'):app.index('function recoverArchitectureFrame(')]
           assert 'run-journey' not in architecture_markup, 'Architecture must omit the recorded-run banner'
           assert 'Look inside · modular components' not in app and 'Pick a case and step through it' not in app
-          assert 'data-scenario="${e(selected.slug)}"' in evidence, "Evidence navigation must identify the selected scenario"
+          assert 'data-scenario="${e(selected?.slug||s.scenario)}"' in evidence, "Evidence navigation must identify the selected scenario"
           assert 'Case reports' not in evidence and 'Case outcomes ·' not in evidence, 'Keep one case browser under Recorded cases'
           assert 'data-scenario="${safe(ctx,r.slug)}"' in journey, "Case detail must keep its selected scenario"
           assert 'run-journey-links' in style and 'wb-clear-filters' in style
@@ -310,7 +314,7 @@ jobs:
                          'assets/architecture-module-inspector.css?v=20261020-governance-67',
                          'assets/architecture-execution.js?v=20261021-run-consistency-77'):
               assert source in html, "Block inspector assets must load: "+source
-          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261021-safety-origin-73'), "Scenario inspector must load before parent workflow"
+          assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261021-evidence-consolidation-78'), "Scenario inspector must load before parent workflow"
           assert 'assets/architecture-governance.js?v=20261021-run-consistency-77' in html
           assert html.index('assets/architecture-governance.js') < html.index('assets/architecture-module-inspector.js'), "Governance mappings must load before block details"
           assert 'id="architecture-module-inspector"' in app, "Selected block drawer must exist inside Architecture Explorer"
@@ -391,7 +395,7 @@ jobs:
              state.workbenchTab=tab;
              const detail=wb.detail(ctx);
              if (!detail.includes('Case review') || !detail.includes('Selected run journey')
-                 || !detail.includes('data-journey-trace')) throw Error('case journey '+tab+' failed');
+                 || !detail.includes('data-view="architecture"')) throw Error('case journey '+tab+' failed');
           }
           state.caseSearch='not-a-recorded-run';
           state.caseFilter='Approved';
@@ -424,7 +428,7 @@ jobs:
           const evidence={window:{}};
           vm.runInNewContext(fs.readFileSync('assets/story-journey.js','utf8'),evidence);
           const ev=evidence.window.StoryJourney.renderEvidence(ctx);
-          if(ev.includes('Case reports')||!ev.includes('Decision trace')||!ev.includes('Lessons learned')||!ev.includes('synthetic'))
+          if(ev.includes('Case reports')||ev.includes('Decision trace')||!ev.includes('Lessons learned')||!ev.includes('synthetic'))
             throw Error('Evidence and learning landing missing');
           const local = {window:{}};
           vm.runInNewContext(fs.readFileSync('assets/public-local-runner.js','utf8'),local);
