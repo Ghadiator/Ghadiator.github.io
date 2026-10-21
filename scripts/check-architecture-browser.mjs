@@ -708,7 +708,7 @@ try{
  assert.ok((await page.locator('#main').innerText()).includes('Bosch Engineering'));
  assert.ok((await page.locator('#main').innerText()).includes('techcos'));
  assert.ok((await page.locator('#main').innerText()).includes('not equivalence between standards'));
- await page.locator('.so-inspect[href*="view=evidence"]').click();
+ await page.locator('.so-inspect[href*="tab=trace"]').click();
  await page.locator('[data-evidence-tab="trace"]').waitFor({state:'visible'});
  await page.goBack();
  await page.locator('.so-hero h1').waitFor({state:'visible'});
