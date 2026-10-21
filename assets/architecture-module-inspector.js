@@ -5,7 +5,7 @@
   const safe=value=>String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");
   // Canonical public architecture nodes, not invented supplier-run components.
   const SPEC={
-    orchestrator:["Main orchestrator — LangGraph","Coordinates the broader source architecture's graph, routing and pauses.","Workflow graph state, task state and control decisions.","Next graph node and updated coordination state.",[]],
+    orchestrator:["Workflow orchestrator","Coordinates every recorded case: allowed transitions, routing, reviewer pauses, resumption and corrections. The recorded implementation is SupplierWorkflow; LangGraph is the broader design implementation.","Case request, validated submissions, current workflow state and authorised reviewer decisions.","Updated workflow state, routed checks and review steps, and ordered Event records.",[]],
     request:["Collection request","Opens the supplier review and prepares a document request.","Case identifier, supplier and requested billing evidence.","A collection request and a recorded requested state.",[]],
     reminders:["Deadline reminders","Prepares reminders leading up to the supplier submission deadline.","Collection request and its due date.","Reminder records in the fixture outbox; no real email.",["request"]],
     intake:["Supplier intake","Receives the submitted workbook and validates the required structure.","Invoice workbook and supporting submission.","Parsed and versioned supplier billing input, or an intake rejection.",["reminders","request"]],
@@ -19,15 +19,16 @@
     firewall:["Pre-Judge CoVe","Checks proposed findings against supporting evidence before the Judge can use them.","Proponent and Opponent claims plus deterministic case facts.","Verified, revised or rejected claims based on evidence.",["opponent","proponent"]],
     judge:["Judge","Summarises verified findings for an authorised reviewer; cannot approve invoices.","Evidence-filtered findings and review context.","A scripted reviewer-facing summary of verified findings.",["firewall","opponent"]],
     post_cove:["Post-Judge CoVe","Represents a further post-Judge verification layer in the broader architecture.","Judge output and the reference evidence.","A further verification result in designs that execute this layer.",["judge"]],
-    token_economics:["Committee orchestration — token economics","Defines limits or budgets for review participation in the broader architecture.","Committee workload and allocation limits.","A bounded committee execution or budget outcome; no live token metering in these fixtures.",["proponent","opponent"]],
+    token_economics:["Committee orchestration · proposal bounds","Bounds scripted proposal contributions and forfeits failed or over-budget adapters. Live token metering and model fallback are broader design features.","Checked submission, scripted proposer and a maximum of four adapter proposals.","Bounded proposals, or no contribution after an adapter failure or exceeded cap.",["proponent"]],
     advisory:["Review package","Collects deterministic results and any supported exception findings for the human gate.","Invoice/contract checks and verified exception findings, when present.","A review package with counted failed checks and verified findings.",["judge","crosscheck"]],
     remediation:["Supplier correction","Prepares supplier clarification or correction requests when the review calls for one.","Findings and missing or inconsistent supporting evidence.","A drafted clarification/correction notice and review status.",["advisory","judge"]],
     disposition:["Human-in-the-loop (HITL)","Places final approval, rejection or correction authority with a named human reviewer.","Review package, supporting evidence and the reviewer's response.","Human gate events and a recorded terminal disposition.",["advisory","remediation"]],
     archive:["Evidence archive","Retains the recorded case outcome and audit evidence for inspection.","Recorded decision, rule results and event history.","An archive event; persistence is fixture memory, not a production repository.",["disposition"]],
-    process_semantics:["DAiA ProcessEvent pool (architecture reference)","Describes a separate generic ProcessEvent semantics layer, distinct from the supplier fixture audit.","General workflow event semantics in the broader design.","A generic ProcessEvent stream if that separate source is run.",[]]
+    process_semantics:["Workflow event record","Records each SupplierWorkflow action in an ordered immutable Event. State changes add audit.row_appended records; the broader generic ProcessEvent pool is a different implementation of this architectural role.","Workflow actions, allowed state transitions, check results, scripted claims and human decisions.","SupplierWorkflow.events: ordered records with seq, kind, actor, node, detail and source references.",[]]
   };
-  const DESIGN_ONLY=new Set(["orchestrator","post_cove","token_economics","process_semantics"]);
-  const norm=n=>n==="gate"?"disposition":n;
+  const DESIGN_ONLY=new Set(["post_cove"]);
+  const model=window.ArchitectureRunModel;
+  const norm=model.normalize;
   let scenario="",all=[],cursor=-1,selected="",returnFocus=null;
   const target=()=>document.getElementById("architecture-module-inspector");
   function position(){
@@ -57,7 +58,9 @@
     return '<li class="ami-event"><button type="button" data-replay-seek="'+index+'" aria-label="Jump to recorded event '+safe(e.seq)+'">'
       +'<span class="ami-seq">#'+safe(e.seq)+'</span><span class="ami-event-copy"><b>'+safe(e.label)+'</b>'
       +(e.detail?'<span>'+safe(e.detail)+'</span>':'')
-      +'<small>'+safe(e.kind)+' · '+safe(ref)+'</small></span><span aria-hidden="true">↗</span></button></li>';
+      +'<small>'+safe(model.eventInfo(e).category)+' · '+safe(e.kind)+'</small>'
+      +'<small>Recorded owner: '+safe(e.node)+' · Producer: '+safe(model.eventInfo(e).producer)+'</small>'
+      +'<small>'+safe(ref)+'</small></span><span aria-hidden="true">↗</span></button></li>';
   };
   function render(){
     const el=target();if(!el||!selected||!SPEC[selected])return;
@@ -66,7 +69,8 @@
     const open=same?[...(el.querySelectorAll?.("details[open]")??[])].map(d=>d.className):[];
     const focused=el.contains?.(document.activeElement)?document.activeElement?.id:null;
     const [title,purpose,input,output,sources]=SPEC[selected];
-    const active=all.map((e,i)=>({e,i})).filter(({e})=>norm(e.node)===selected);
+    const module=model.moduleState(selected,all,cursor);
+    const active=module.evidence;
     const first=active[0]?.i??-1;
     const relevant=sources.map(source=>{
       if(first<0)return null;
@@ -75,10 +79,7 @@
     const unique=[...new Map(relevant.map(v=>[v.i,v])).values()].sort((a,b)=>a.i-b.i);
     const loaded=all.length>0;
     const matched=active.length>0;
-    const reached=active.filter(({i})=>i<=cursor).length;
-    const runState=!loaded?"Case events are loading":!matched?"No directly attributed event in this case":
-      reached?reached+" of "+active.length+" module events reached in replay":
-      active.length+" module events recorded · later in replay";
+    const runState=!loaded?"Case events are loading":module.label+' · '+module.countText;
     const context=matched
       ?unique.length?'<ol class="ami-event-list">'+unique.slice(-3).map(({e,i})=>eventLabel(e,i)).join("")+'</ol>':
         '<p class="ami-empty">No relevant upstream event is documented before this block’s first recorded event.</p>'
@@ -88,7 +89,9 @@
         +(active.length>5?'<details class="ami-more"><summary>Show '+(active.length-5)+' more recorded events</summary><ol class="ami-event-list">'+active.slice(5).map(({e,i})=>eventLabel(e,i)).join("")+'</ol></details>':'')
       :'<p class="ami-empty">No module output is directly emitted in this selected synthetic case. This does not establish that a separate source component ran or failed.</p>';
     const special=selected==="process_semantics"
-      ?'<p class="ami-provenance">The supplier audit stream is not the separate generic DAiA ProcessEvent pool.</p>'
+      ?'<p class="ami-provenance">Every displayed record comes from SupplierWorkflow.emit(). The supplier audit stream is not the separate generic DAiA ProcessEvent pool.</p>'
+      :selected==="orchestrator"
+      ?'<p class="ami-provenance">Every recorded scenario is coordinated by SupplierWorkflow. Its records carry the local step owner, so no dedicated orchestrator event is required. This is evidence of the workflow orchestration role, not a claim that LangGraph executed.</p>'
       :selected==="external"
       ?'<p class="ami-provenance">Approved contract details may appear inside contract cross-check events, not as events attributed to this reference-input block.</p>'
       :DESIGN_ONLY.has(selected)
@@ -113,8 +116,9 @@
       +'<span class="ami-status">'+safe(runState)+'</span>'
       +'<h4>Input context in the recorded trace</h4>'
       +'<p class="ami-explain">Upstream events that precede this block. These are <strong>not</strong> captured function-call arguments.</p>'
-      +context+'<h4>Recorded output from this block</h4>'
-      +'<p class="ami-explain">Directly attributed fixture events, including their published details and source reference.</p>'
+      +context+'<h4>Recorded output and control evidence</h4>'
+      +'<p class="ami-explain">Original source records that evidence this block. Each shows its recorded owner and producer. Supporting controls can share an event; the source node and event count are unchanged.</p>'
+      +'<p class="ami-provenance">'+safe(module.note)+'</p>'
       +outputs+special+'</section>'
       +'<p class="ami-footer">Read-only synthetic scenario · scripted AI-style roles · no live model invocation or payment action.</p></div>';
     el.dataset.selectedModule=selected;

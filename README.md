@@ -55,6 +55,39 @@ here is a conformity assessment or certification.
 
 ## Scope — what runs and what is a fixture
 
+### Reading the Architecture Explorer
+
+Every recorded case is coordinated by `SupplierWorkflow`. The explorer shows
+this workflow-wide role as coordinating, paused for a reviewer, waiting for a
+supplier, or complete. The broader design uses LangGraph; the supplier traces
+do not claim to execute that framework.
+
+Each row in **Workflow event log** is one original `Event` appended by
+`SupplierWorkflow.emit()`. `kind` describes the action, `node` is the recorded
+local owner, and `seq` orders the trace. `ts_rel` is an ordinal index, not elapsed
+time. `audit.row_appended` is specifically an allowed state transition; other
+records describe checks, proposals, verification, human decisions and archives.
+
+The shared `assets/architecture-run-model.js` maps those source records to the
+graph, module cards and inspector. Supporting control evidence is explicit:
+`security.input` is owned by Case history but also evidences the input boundary;
+`contract.snapshot_loaded` evidences the reference input; guarded adapter results
+evidence bounded participation without inventing an Opponent argument. Evidence
+counts can overlap. The underlying event list and source owners remain unchanged.
+Post-Judge CoVe, live token metering and model fallback remain broader design
+features. The recorded event log is `SupplierWorkflow.events`, distinct from the
+broader generic `ProcessEvent` pool.
+
+Correction-case status follows the latest validation pass while preserving all
+earlier failure records. The end of a replay does not imply a completed case:
+unresolved reviewer and supplier waits remain visible.
+
+`node scripts/check-architecture-run-model.cjs` checks all 15 cases at every
+playback position. With the engineering source and its Python dependencies
+available, `python3 scripts/check-supplier-source.py /path/to/generic-agentic-validation`
+reruns each source scenario and compares its entire export, outcome and
+provenance with the published JSON.
+
 Everything on the critical path executes: the state machine, Decimal
 arithmetic, contract cross-checks, the evidence verifier, the reviewer gate
 and the correction loop.

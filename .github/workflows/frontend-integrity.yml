@@ -17,6 +17,8 @@ on:
       - assets/safety-to-governance.js
       - assets/safety-to-governance.css
       - assets/overview-agentic-flow.css
+      - assets/architecture-run-model.js
+      - scripts/check-architecture-run-model.cjs
       - assets/architecture-execution.js
       - assets/architecture-case-generator.js
       - assets/supplier-workbook.js
@@ -63,6 +65,7 @@ jobs:
         run: |
           node --check app.js
           node --check assets/safety-to-governance.js
+          node --check assets/architecture-run-model.js
           node --check assets/architecture-execution.js
           node --check assets/architecture-module-inspector.js
           node --check assets/architecture-governance.js
@@ -77,6 +80,8 @@ jobs:
           node --check assets/story-journey.js
       - name: Protect architecture semantics during presentation changes
         run: python3 scripts/check-architecture-presentation.py
+      - name: Verify all scenario and control states at every playback position
+        run: node scripts/check-architecture-run-model.cjs
       - name: Test architecture state against source fixtures
         run: node scripts/check-architecture-module-map.cjs
       - name: Verify random Excel generation and exact-record export
@@ -117,9 +122,9 @@ jobs:
           assert 'app.js?v=20261021-safety-origin-73' in html, "Script must use a cache-busting URL"
           # Preserve the existing modular architecture through presentation changes.
           protected_architecture = {
-              'assets/architecture-execution.js': 'd3370d3d6edb77fc1637bbbac812d1a8d19d3af1',
-              'assets/architecture-module-inspector.js': '1aa298ca20aec040e8ec6114d4da85c083bb1344',
-              'assets/architecture-module-map.css': '24594e06519cff95316956d98137d8ed49615936',
+              'assets/architecture-execution.js': 'c09bdd33385f1433ce3b9983edcf9c56d4edff24',
+              'assets/architecture-module-inspector.js': 'c4d5ac679d00d252689a5af5d6503ef3a4e2f61e',
+              'assets/architecture-module-map.css': '029563b358d19d8f9fde83e1118b3573b4cd829e',
               'assets/architecture-module-inspector.css': '1c2e3051e18015d19423fd21f35d8912b3fc4e43',
               'assets/architecture-mobile-touch.css': '70ab95d0a936719d646ba6c07a34038bd75c7e92',
               'assets/architecture-explained.js': 'bcc29b5824c0e01513fa55509d990c416df805aa',
@@ -204,15 +209,17 @@ jobs:
           assert 'id="workflow-results"' in app and 'syncFromFrame' in app
           assert 'id="architecture-event-rail"' in app and 'id="architecture-execution-dashboard"' in app
           assert 'decorateGraph' in app and 'refreshWorkflowResults' in app
-          assert 'assets/architecture-execution.js?v=20261021-merged-results-70' in html
+          assert 'assets/architecture-execution.js?v=20261021-run-consistency-77' in html
           assert html.index('assets/architecture-execution.js') < html.index('src="./app.js')
           engine = Path('assets/architecture-execution.js').read_text()
-          assert 'assets/architecture-module-map.css?v=20261021-merged-results-70' in html
+          assert 'assets/architecture-module-map.css?v=20261021-run-consistency-77' in html
           assert 'assets/architecture-mobile-touch.css?v=20261021-tap-intro-69' in html
           assert 'id="architectureTouchToggle"' in app and 'id="architectureTouchGuard"' in app and 'id="architectureTouchExit"' in app
           assert 'alignTouchGuard' in app and 'touchInteractive' in app
-          assert 'Separate pool not executed' in engine
-          assert 'Supplier trace:' in engine and 'DAiA pool not executed' in engine
+          assert 'Workflow orchestration spans every case' in engine
+          assert 'Supplier trace:' in engine and 'SupplierWorkflow.events' in engine
+          assert html.index('assets/architecture-run-model.js') < html.index('assets/architecture-execution.js')
+          assert html.index('assets/architecture-run-model.js') < html.index('assets/architecture-module-inspector.js')
           assert 'const auditTotal=all.filter' in engine and 'const humanTotal=all.filter' in engine
           for feature in ('renderRail','renderDashboard','decorateGraph','renderCheckPanel',
                           'renderCommittee','verification.result','checks.rule','contract.check',
@@ -295,12 +302,12 @@ jobs:
           assert 'run-journey-links' in style and 'wb-clear-filters' in style
           # Public design system and evidence-first case views.
           assert '<span class="brand-text">Governance' in html
-          for source in ('assets/architecture-module-inspector.js?v=20261020-governance-67',
+          for source in ('assets/architecture-module-inspector.js?v=20261021-run-consistency-77',
                          'assets/architecture-module-inspector.css?v=20261020-governance-67',
-                         'assets/architecture-execution.js?v=20261021-merged-results-70'):
+                         'assets/architecture-execution.js?v=20261021-run-consistency-77'):
               assert source in html, "Block inspector assets must load: "+source
           assert html.index('assets/architecture-module-inspector.js') < html.index('app.js?v=20261021-safety-origin-73'), "Scenario inspector must load before parent workflow"
-          assert 'assets/architecture-governance.js?v=20261020-governance-67' in html
+          assert 'assets/architecture-governance.js?v=20261021-run-consistency-77' in html
           assert html.index('assets/architecture-governance.js') < html.index('assets/architecture-module-inspector.js'), "Governance mappings must load before block details"
           assert 'id="architecture-module-inspector"' in app, "Selected block drawer must exist inside Architecture Explorer"
           assert 'onFrameModuleClick' in app and 'onFrameEscape' in app, "Original React nodes must open selected block details"

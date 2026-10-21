@@ -1,5 +1,11 @@
 /* Architecture execution map — same 20 node identities and broad lanes as the React diagram.
    Scopes exclusively to the public Architecture dashboard; no diagram CSS modified. */
+.ax-event-guide{margin:0 16px 14px;border:1px solid #d9e5ee;border-radius:9px;background:#f6f9fc;padding:10px 12px;font-size:11px;line-height:1.6;color:#48677e}
+.ax-event-guide summary{cursor:pointer;font-weight:700;color:#315d79}
+.ax-event-guide dl{margin:12px 0}.ax-event-guide dt{font-weight:700;margin-top:10px}.ax-event-guide dd{margin:2px 0 0}.ax-event-guide p{margin-bottom:0}
+.ax-event-kind code{font-size:10px;color:#456a86;overflow-wrap:anywhere}
+.ax-modules .ax-module-waiting,.ax-modules .ax-module-guarded{background:#fff9ed;border-color:#e2cfa8}
+.ax-module-waiting .ax-module-dot,.ax-module-guarded .ax-module-dot{background:#a57933}
 .ax-modules{border-radius:10px;overflow:hidden;border-color:#d7e3ed}
 .ax-modules .ax-modules-head{
   padding:20px 23px;align-items:center;

@@ -78,11 +78,11 @@ try{
    null,{timeout:10000});
  assert.ok(await blockDetails.isVisible(),"Clicking a source-architecture block must immediately show its explanation");
  let detailText=await blockDetails.innerText();
- for(const phrase of ["Main orchestrator","Expected input","Expected output","No directly attributed event"]){
+ for(const phrase of ["Workflow orchestrator","Expected input","Expected output","Runs with every case"]){
    assert.ok(detailText.includes(phrase),"Module description must explain purpose, I/O and evidence limits: "+phrase);
  }
- assert.ok(detailText.includes("not evidenced as executing"),
-   "Source-only LangGraph orchestrator must not be described as an executed supplier block");
+ assert.ok(detailText.includes("not a claim that LangGraph executed"),
+   "Recorded workflow coordination must not claim a LangGraph execution");
  const inspectPosition=await blockDetails.boundingBox();
  assert.ok(inspectPosition&&inspectPosition.x>500&&inspectPosition.y>=0,
    "Selected module details must be visible beside the diagram without scrolling beneath it");
@@ -147,8 +147,12 @@ try{
    "Execution dashboard must show the 20 module statuses");
  assert.equal(await page.locator('.ax-module').count(),20,"Display every architecture module, including non-emitting support modules");
  const initialSnapshot=await page.locator('#architecture-execution-dashboard').innerText();
+ assert.ok((await page.locator('#architecture-event-rail').innerText()).includes('SupplierWorkflow.emit()'));
+ assert.ok((await processEvents.nth(10).innerText()).includes('checks.rule'));
+ assert.ok((await processEvents.nth(10).innerText()).includes('SupplierWorkflow.submit()'));
+ assert.ok((await page.locator('[data-module-status="orchestrator"]').innerText()).includes('Runs with every case'));
  assert.ok(initialSnapshot.includes("0 / 20"),"No module is claimed executed before replay begins");
- assert.ok(initialSnapshot.includes("14 / 20"),"The full 42-event fixture must show 14 observed architecture blocks even before replay starts");
+ assert.ok(initialSnapshot.includes("19 / 20"),"The full 42-event fixture evidences 19 module roles, including shared controls");
  assert.equal(await page.locator("[data-architecture-stage]").count(),6,"Group modules by architecture lanes and workflow-wide rails");
  assert.equal(await page.locator("[data-architecture-module]").count(),20,"Each original diagram block must have an inspection action");
  const checksGroup=page.locator('[data-architecture-stage="checks"]');
@@ -178,7 +182,7 @@ try{
  await page.waitForFunction(()=>{
    const el=document.getElementById('architecture-module-inspector');
    return el?.dataset.selectedModule==='proponent' &&
-     el.innerText.includes("No directly attributed event in this case") &&
+     el.innerText.includes("Not used in this case") &&
      !el.innerText.includes("Proponent: contractual checks passed");
  },null,{timeout:12000});
  assert.ok((await blockDetails.innerText()).includes("supplier_clean"),
@@ -289,18 +293,29 @@ try{
  assert.equal(await page.locator('.ax-module').count(),20,"All twenty module rows must persist across scenarios");
  const auditRail=page.locator('[data-architecture-stage="semantics"]');
  const auditText=await auditRail.innerText();
- assert.ok(auditText.includes("Supplier trace: 12 / 12 audit transitions"),"Show all recorded supplier state changes");
- assert.ok(auditText.includes("4 / 4 human-gate events"),"Show human review evidence on correction runs");
- assert.ok(auditText.includes("Separate DAiA pool not executed"),"Do not present the generic ProcessEvent pool as an unmet workflow step");
+ assert.ok(auditText.includes("Supplier trace: 12 / 12 state transitions"),"Show all recorded supplier state changes");
+ assert.ok(auditText.includes("4 / 4 human-gate records"),"Show human review evidence on correction runs");
+ assert.ok(auditText.includes("SupplierWorkflow.events"),"Name the actual source event log");
  assert.ok(!auditText.includes("0 reached"),"Do not show the misleading zero-reached indicator for architecture-only rail");
- assert.ok(await auditRail.locator('[data-module-status="process_semantics"].ax-module-reference').count(),
-   "Keep the generic-only module available in the original diagram without marking it executed");
+ assert.ok(await auditRail.locator('[data-module-status="process_semantics"].ax-module-done').count(),
+   "The selected recorded log must be available after all source events");
 
  assert.equal(await page.locator('#architecture-event-rail [data-replay-seek]').count(),64,"All 64 correction events must be shown in the rail");
- assert.ok(await deck.locator('[data-node="crosscheck"].ax-node-failure').count(),"Failed rule should highlight its actual architecture block");
+ assert.equal(await deck.locator('[data-node="crosscheck"].ax-node-failure').count(),0,"A successful correction must clear the current failure marker while preserving the old FAIL record");
+ assert.ok((await page.locator('[data-module-status="crosscheck"]').innerText()).includes('Revalidated · checks passed'));
  assert.ok(await deck.locator('[data-node="rules"].ax-node-executed').count(),"Executed rules should remain marked in the architecture");
  assert.equal(await deck.locator('[data-node="post_cove"].ax-node-executed').count(),0,"Do not invent a post-Judge CoVe execution");
  console.log("CHECK_DASHBOARD",JSON.stringify({rateFail:true,correctedPass:true,emitted:64,allModules:20}));
+ assert.ok((await page.locator('[data-module-status="orchestrator"]').innerText()).includes('Recorded run complete'));
+ assert.equal(await deck.locator('[data-node="orchestrator"]').getAttribute('data-execution-state'),'Recorded run complete');
+ await picker.selectOption('supplier_pending');
+ await scrub.focus();await scrub.press('End');
+ await page.waitForFunction(()=>document.querySelector('[data-module-status="orchestrator"]')?.innerText.includes('Paused for reviewer'));
+ assert.equal(await deck.locator('[data-node="orchestrator"]').getAttribute('data-execution-state'),'Paused for reviewer');
+ await picker.selectOption('supplier_rate_correction');
+ await scrub.focus();await scrub.press('End');
+ await page.waitForFunction(()=>document.querySelector('[data-module-status="crosscheck"]')?.innerText.includes('Revalidated · checks passed'));
+
 
  // The event rail must be an actual navigation control, synchronized to the
  // source React deck, rather than a second independent fake timeline.
