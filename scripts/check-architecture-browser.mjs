@@ -216,7 +216,11 @@ try{
  const complete=await page.locator("#workflow-results").innerText();
  assert.ok(complete.includes("Recorded workflow result"),"Terminal state must appear when the replay reaches its last event");
  const committeeInDashboard=await page.locator("#architecture-execution-dashboard").innerText();
- assert.ok(committeeInDashboard.includes("Proponent · Opponent · CoVe · Judge"),"Keep the nonduplicated committee results in the execution dashboard");
+ assert.ok(committeeInDashboard.includes("Bounded exception review"),"Keep one combined review phase");
+ for(const id of ['proponent','opponent','firewall','judge']){
+   assert.equal(await page.locator('[data-architecture-stage="review"] [data-module-results="'+id+'"] .ax-role-message').count(),1,
+     "Keep the completed role output once inside its own module card: "+id);
+ }
  for(const duplicate of ["Current evidence","Trace navigator","Scripted adversarial committee"]){
   assert.ok(!(await page.locator("#main").innerText()).includes(duplicate),"Duplicated panel must remain deleted: "+duplicate);
  }
