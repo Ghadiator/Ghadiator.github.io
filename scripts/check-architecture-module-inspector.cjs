@@ -9,6 +9,7 @@ const document={
  addEventListener(name,fn){registered[name]=fn;}
 };
 const window={};
+vm.runInNewContext(fs.readFileSync("assets/architecture-run-model.js","utf8"),{window});
 vm.runInNewContext(fs.readFileSync("assets/architecture-governance.js","utf8"),{window});
 vm.runInNewContext(fs.readFileSync("assets/architecture-module-inspector.js","utf8"),{window,document});
 const api=window.ArchitectureModuleInspector;
@@ -42,16 +43,16 @@ assert.ok(el.innerHTML.includes("Proponent"));
 assert.ok(el.innerHTML.includes("Expected input · architecture"));
 assert.ok(el.innerHTML.includes("Expected output · architecture"));
 assert.ok(el.innerHTML.includes("Input context in the recorded trace"));
-assert.ok(el.innerHTML.includes("Directly attributed fixture events"));
+assert.ok(el.innerHTML.includes("Original source records"));
 assert.ok(el.innerHTML.includes("Proponent: contractual checks passed"));
-assert.ok(el.innerHTML.includes("later in replay"),"Output must be discoverable before playback");
+assert.ok(el.innerHTML.includes("Later in replay"),"Output must be discoverable before playback");
 assert.match(el.innerHTML,/data-replay-seek="28"/,"Exact source event index must be navigable");
 assert.ok(el.innerHTML.includes("not</strong> captured function-call arguments"),
  "Upstream context must never be misrepresented as actual function-call input");
 assert.ok(el.innerHTML.includes("Invoice is not already approved"),"Input context should come from real prior cross-check output");
 api.setScenario(clean.slug,clean.events,clean.events.length-1);
 assert.equal(el.dataset.selectedModule,"proponent","Selection survives scenario change");
-assert.ok(el.innerHTML.includes("No directly attributed event in this case"),"Clean case bypasses the committee");
+assert.ok(el.innerHTML.includes("Not used in this case"),"Clean case bypasses the committee");
 assert.ok(!el.innerHTML.includes("Proponent: contractual checks passed"),"Old run must not leak into changed selection");
 api.select("disposition");
 assert.ok(el.innerHTML.includes("Run suspended for authorised reviewer"),
@@ -60,8 +61,9 @@ assert.ok(el.innerHTML.includes("Recorded outcome: Approved"),"Human outcome mus
 api.select("external");
 assert.ok(el.innerHTML.includes("Approved contract details may appear"),"Contract reference must not be claimed executed");
 api.select("orchestrator");
-assert.ok(el.innerHTML.includes("no live model")||el.innerHTML.includes("not evidenced as executing"),
- "Source-only architecture module must remain outside supplier execution");
+assert.ok(el.innerHTML.includes("Every recorded scenario is coordinated by SupplierWorkflow"),
+ "Workflow coordination must be evidenced even without a dedicated owner event");
+assert.ok(el.innerHTML.includes("not a claim that LangGraph executed"));
 api.select("process_semantics");
 assert.ok(el.innerHTML.includes("not the separate generic DAiA ProcessEvent pool"),
  "Do not conflate supplier audit rows with generic ProcessEvent stream");

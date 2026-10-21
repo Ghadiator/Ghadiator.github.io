@@ -55,3 +55,14 @@
 @media(hover:hover) and (pointer:fine){.so-choice:hover{box-shadow:0 12px 32px #21475e0d}.so-inspect:hover>span{transform:translateX(3px)}}
 @media(max-width:600px){.so-choice-title h3{font-size:20px}.so-decision::before{left:20px}.so-hero::after{opacity:.6}}
 @media(prefers-reduced-motion:reduce){.safety-origin *,.safety-origin *::before,.safety-origin *::after{animation:none!important;transition:none!important}}
+
+.so-skills{margin-top:44px}.so-skill-groups{display:grid;gap:12px}
+.so-skill-group{border:1px solid #d4e2eb;border-radius:13px;background:#fff;overflow:hidden}
+.so-skill-group>summary{display:flex;align-items:center;gap:14px;cursor:pointer;padding:20px 24px;color:#2b4f67;font-weight:700;list-style:none;background:linear-gradient(110deg,#f1f6fa,#fff)}
+.so-skill-group>summary::-webkit-details-marker{display:none}.so-skill-group>summary::before{content:'+';font-size:21px;font-weight:400;color:#5d869d;width:16px}.so-skill-group[open]>summary::before{content:'−'}
+.so-skill-group>summary small{margin-left:auto;white-space:nowrap;font-size:11px;color:#526e82;font-weight:500}
+.so-skill-list{padding:0 24px}.so-skill{padding:22px 0;border-top:1px solid #e1eaf0}.so-skill-name{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.so-skill-name h3{margin:0;font-size:17px}.so-skill-scope{border:1px solid #dce6ed;border-radius:5px;padding:4px 7px;background:#f4f7fa;color:#4f6c80;font-size:10px;line-height:1.4}
+.so-skill dl{display:grid;grid-template-columns:1fr 1.65fr;gap:18px 30px;margin:15px 0}.so-skill dt{font-size:10px;letter-spacing:.06em;font-weight:700;color:#5b798d;text-transform:uppercase}.so-skill dd{margin:6px 0 0;font-size:13px;line-height:1.75;color:#506b7e}
+.so-skill-link{display:inline-flex;align-items:center;gap:14px;font-size:11px;font-weight:700;color:#32688f;line-height:1.6;text-underline-offset:4px}.so-skill-link:hover{text-decoration:underline}
+@media(max-width:650px){.so-skill-group>summary{padding:18px;gap:10px}.so-skill-list{padding:0 18px}.so-skill dl{grid-template-columns:1fr;gap:13px}.so-skill-name h3{font-size:18px}.so-skill-link{font-size:12px}.so-skills{margin-top:32px}}

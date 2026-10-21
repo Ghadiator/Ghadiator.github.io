@@ -11,6 +11,8 @@ on:
       - 'architecture/index.html'
       - 'assets/architecture-embed.css'
       - 'scripts/check-architecture-browser.mjs'
+      - 'assets/architecture-run-model.js'
+      - 'scripts/check-architecture-run-model.cjs'
       - 'assets/architecture-execution.js'
       - 'assets/architecture-case-generator.js'
       - 'assets/supplier-workbook.js'
