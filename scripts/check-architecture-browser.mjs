@@ -365,26 +365,32 @@ try{
  assert.equal(new URL(page.url()).searchParams.get("scenario"),"supplier_clean");
  assert.equal(await page.locator('.unified-architecture-view .run-journey').count(),0,"Remove the recorded-run banner from Architecture");
  await page.locator('#sidebar [data-view="evidence"]').click();
- await page.locator('[data-evidence-tab="trace"]').click();
- await page.waitForFunction(()=>new URLSearchParams(location.search).get("view")==="evidence",null,{timeout:10000});
- assert.equal(new URL(page.url()).searchParams.get("tab"),"trace",
-   "Run evidence links must open the Decision trace tab");
- assert.equal(new URL(page.url()).searchParams.get("scenario"),"supplier_clean");
- await page.waitForSelector('.wb-tabs [data-evidence-tab="trace"].selected',{timeout:10000});
- assert.ok((await page.locator(".run-journey-id").innerText()).includes("supplier_clean"));
- await page.reload({waitUntil:"domcontentloaded"});
- await page.waitForSelector('.wb-tabs [data-evidence-tab="trace"].selected',{timeout:15000});
- assert.equal(new URL(page.url()).searchParams.get("scenario"),"supplier_clean",
-   "Evidence deep link must survive browser reload");
- assert.equal(await page.locator('[data-evidence-tab]').count(),2,"Evidence has trace and learning tabs, not a second case browser");
- assert.equal(await page.locator('[data-evidence-tab="reports"]').count(),0);
- await page.locator('[data-evidence-tab="learning"]').click();
- assert.equal(new URL(page.url()).searchParams.get('tab'),'learning');
+ await page.waitForFunction(()=>new URLSearchParams(location.search).get('view')==='evidence');
+ assert.equal(new URL(page.url()).searchParams.get('scenario'),'supplier_clean');
+ assert.equal(await page.locator('[data-evidence-tab]').count(),0,'The duplicate trace tab must be removed');
+ assert.ok((await page.locator('#main').innerText()).includes('Lessons learned · mechanism and boundary'));
+ assert.ok(!(await page.locator('#main').innerText()).includes('Previewing the first'));
  await page.reload({waitUntil:'domcontentloaded'});
- await page.waitForSelector('[data-evidence-tab="learning"].selected');
- await page.goto((process.env.TEST_ORIGIN||"https://ghadiator.github.io")+'/?view=evidence&scenario=supplier_clean&tab=reports',{waitUntil:'domcontentloaded'});
- await page.waitForSelector('[data-evidence-tab="trace"].selected');
- assert.ok(!(await page.locator('#main').innerText()).includes('Case reports'),"Old report links fall back to the decision trace");
+ await page.locator('.evidence-destinations [data-view="architecture"]').waitFor({state:'visible'});
+ await page.locator('.evidence-destinations [data-view="case"]').click();
+ await page.waitForSelector('.case-review-evidence');
+ assert.equal(new URL(page.url()).searchParams.get('scenario'),'supplier_clean');
+ assert.ok((await page.locator('.case-review-evidence').innerText()).includes('Reviewer decision — APPROVE'));
+ await page.locator('.case-source-footer [data-journey-trace]').click();
+ await page.waitForSelector('#modularArchitectureFrame');
+ assert.equal(new URL(page.url()).searchParams.get('view'),'architecture');
+ assert.equal(new URL(page.url()).searchParams.get('scenario'),'supplier_clean');
+ const origin=process.env.TEST_ORIGIN||'https://ghadiator.github.io';
+ await page.goto(origin+'/?view=evidence&scenario=supplier_pending&tab=trace',{waitUntil:'domcontentloaded'});
+ await page.waitForSelector('#modularArchitectureFrame');
+ assert.equal(new URL(page.url()).searchParams.get('view'),'architecture','Legacy trace links go to the canonical event log');
+ assert.equal(new URL(page.url()).searchParams.get('scenario'),'supplier_pending');
+ await page.goto(origin+'/?view=evidence&scenario=supplier_clean&tab=reports',{waitUntil:'domcontentloaded'});
+ await page.waitForSelector('#caseSearch');
+ assert.equal(new URL(page.url()).searchParams.get('view'),'cases','Legacy reports links go to the sole case browser');
+ await page.goto(origin+'/?view=evidence&scenario=supplier_clean&tab=learning',{waitUntil:'domcontentloaded'});
+ await page.locator('.evidence-destinations').waitFor({state:'visible'});
+ assert.equal(new URL(page.url()).searchParams.get('tab'),null,'Canonical learning page needs no redundant single tab');
  console.log("RUN_JOURNEY", "Case filters, Back, case → Architecture → evidence, and reload passed");
 
 
@@ -728,8 +734,8 @@ try{
  assert.ok((await page.locator('#main').innerText()).includes('Bosch Engineering'));
  assert.ok((await page.locator('#main').innerText()).includes('techcos'));
  assert.ok((await page.locator('#main').innerText()).includes('not equivalence between standards'));
- await page.locator('.so-inspect[href*="tab=trace"]').click();
- await page.locator('[data-evidence-tab="trace"]').waitFor({state:'visible'});
+ await page.getByRole('link',{name:'Inspect the audit evidence',exact:true}).click();
+ await page.locator('#modularArchitectureFrame').waitFor({state:'visible'});
  await page.goBack();
  await page.locator('.so-hero h1').waitFor({state:'visible'});
  console.log('SAFETY_TO_GOVERNANCE','Dedicated section, six experience/control connections, evidence navigation, history and phone reload passed');

@@ -115,7 +115,7 @@ const DEFAULT_STAGES = ['request','reminders','ingest','memory','checks','contra
 const DISPLAY_STAGES={request:'Request',reminders:'Reminders',ingest:'Intake',memory:'History',checks:'Rule checks',contract:'Contract',exception:'Exception',advisory:'Advisory + CoVe',remediation:'Remediation',review:'Human gate',disposition:'Decision',archive:'Archive'};
 const STAGE_ICONS={request:'file',reminders:'clock',ingest:'download',memory:'database',checks:'check',contract:'book-open',exception:'alert',advisory:'shield-check',remediation:'workflow',review:'user',disposition:'scale',archive:'lock'};
 const VIEW_NAMES={overview:'Introduction',architecture:'Architecture',background:'Safety → AI governance',evidence:'Evidence & learning',dashboard:'Dashboard',tickets:'Document requests',submissions:'Document collection',newticket:'New submission',ticket:'Request detail',inbound:'Supplier intake',cases:'Recorded cases',case:'Case detail',monitor:'Architecture scenarios',tokens:'Token economics',governance:'Governance controls',attacker:'Red Team attacker',redteam:'Control probes',personas:'AI roles & controls',integration:'Integration',audit:'Process audit',assurance:'Hazards & controls',analytics:'Detection analytics',login:'Access & scope'};
-const state={view:'overview',architectureTab:'diagram',personaMode:'chat',evidenceTab:'trace',submissionTab:'compose',submissionMode:'request',attackerTab:'campaign',attackerRevealed:0,attackerNotes:[],personaName:'integrator',personaSessions:{},workbenchTab:'summary',scenario:'supplier_variance_review',index:{scenarios:SCENARIOS},facts:{facts:FACTS},loaded:{},raw:{},eventIndex:0,playing:false,speed:1150,search:'',filter:'all',caseSearch:'',caseFilter:'all',selectedObligation:0,selectedHazard:0,loading:{},errors:{},help:false};
+const state={view:'overview',architectureTab:'diagram',personaMode:'chat',submissionTab:'compose',submissionMode:'request',attackerTab:'campaign',attackerRevealed:0,attackerNotes:[],personaName:'integrator',personaSessions:{},workbenchTab:'summary',scenario:'supplier_variance_review',index:{scenarios:SCENARIOS},facts:{facts:FACTS},loaded:{},raw:{},eventIndex:0,playing:false,speed:1150,search:'',filter:'all',caseSearch:'',caseFilter:'all',selectedObligation:0,selectedHazard:0,loading:{},errors:{},help:false};
 let playTimer=null,toastTimer=null,loadToken=0;
 const $=x=>document.querySelector(x);
 const MAIN=$('#main');
@@ -157,16 +157,20 @@ function linkView(view,scenario){
   const search=state.caseSearch?`&case_search=${encodeURIComponent(state.caseSearch)}`:'';
   return base+filter+search;
  }
- if(view==='evidence')return base+'&tab='+state.evidenceTab;
  return base;
 }
+function canonicalView(params){
+ const view=params.get('view')||'overview';
+ if(view==='evidence'&&params.get('tab')==='trace')return 'architecture';
+ if(view==='evidence'&&params.get('tab')==='reports')return 'cases';
+ return view;
+}
 function readJourneyQuery(params){
- if((params.get('view')||'overview')==='cases'){
+ if(canonicalView(params)==='cases'){
   const values=new Set(state.index.scenarios.map(x=>x.terminal_state));
   state.caseFilter=values.has(params.get('case_filter'))?params.get('case_filter'):'all';
   state.caseSearch=(params.get('case_search')||'').slice(0,150);
  }
- if(params.get('view')==='evidence')state.evidenceTab=params.get('tab')==='learning'?'learning':'trace';
 }
 // The existing architecture artifact remains authoritative and unmodified.
 // Mount only its interactive content in the current workbench; never navigate
@@ -755,7 +759,6 @@ function render(){refreshLinkState();
  MAIN.innerHTML=markup;MAIN.classList.toggle('architecture-active',state.view==='architecture');hydrateIcons();if(state.view==='architecture')mountEmbeddedArchitecture();
  if(['architecture','case','ticket','inbound','audit','personas','attacker'].includes(state.view)&&!state.loaded[`scenario:${state.scenario}`]&&!state.errors[`scenario:${state.scenario}`]){const wanted=state.scenario;ensureScenario(wanted).then(d=>{if(d&&wanted===state.scenario)renderIfNeeded();});}
  if(['governance','evidence'].includes(state.view)&&!state.loaded.rules&&!state.errors.rules)ensureData('rules').then(d=>d&&['governance','evidence'].includes(state.view)&&renderIfNeeded());
- if(state.view==='evidence'&&!state.loaded[`scenario:${state.scenario}`]&&!state.errors[`scenario:${state.scenario}`])ensureScenario(state.scenario).then(d=>d&&state.view==='evidence'&&renderIfNeeded());
  if(state.view==='governance'&&!state.loaded.crosswalk&&!state.errors.crosswalk)ensureData('crosswalk').then(d=>d&&state.view==='governance'&&renderIfNeeded());
  if(state.view==='governance'&&!state.loaded.rules&&!state.errors.rules)ensureData('rules').then(d=>d&&state.view==='governance'&&renderIfNeeded());
  if(state.view==='assurance'&&(!state.loaded.hazards&&!state.errors.hazards||!state.loaded.assurance&&!state.errors.assurance)){Promise.all([ensureData('hazards'),ensureData('assurance')]).then(()=>state.view==='assurance'&&renderIfNeeded());}
@@ -790,8 +793,7 @@ const refreshButton=event.target.closest('[data-backend-refresh]');if(refreshBut
 }
 const subaction=event.target.closest('[data-submission-action]');if(subaction){const [cmd,...idParts]=subaction.dataset.submissionAction.split(':');const id=idParts.join(':');if(cmd==='export')window.PublicSubmissions.download(id);if(cmd==='template')window.PublicSubmissions.template();if(cmd==='generate'){const kind=document.getElementById('supplierCaseType')?.value||'clean';const example=window.PublicSupplierWorkbook.download(kind);state.submissionMode='upload';state.submissionTab='compose';render();notify('Synthetic Excel case downloaded: '+example.invoice_id+'. Upload it under File submission; select the synthetic contract checkbox for rate and document checks.');}if(cmd==='delete'&&confirm('Delete this local submission record?')){window.PublicSubmissions.remove(id);render();}return;}
 const personaMode=event.target.closest('[data-persona-mode]');if(personaMode){state.personaMode=personaMode.dataset.personaMode;render();return;}
-const evidenceTab=event.target.closest('[data-evidence-tab]');if(evidenceTab){state.evidenceTab=evidenceTab.dataset.evidenceTab;history.replaceState(null,'',linkView('evidence',state.scenario));render();return;}
-const journeyTrace=event.target.closest('[data-journey-trace]');if(journeyTrace){event.preventDefault();state.evidenceTab='trace';route('evidence',journeyTrace.dataset.scenario||state.scenario);return;}
+const journeyTrace=event.target.closest('[data-journey-trace]');if(journeyTrace){event.preventDefault();route('architecture',journeyTrace.dataset.scenario||state.scenario);return;}
 const clearCaseFilters=event.target.closest('[data-clear-case-filters]');if(clearCaseFilters){event.preventDefault();state.caseSearch='';state.caseFilter='all';history.replaceState(null,'',linkView('cases',state.scenario));render();return;}
 const per=event.target.closest('[data-persona-select]');if(per){state.personaName=per.dataset.personaSelect;render();return;}
 const perq=event.target.closest('[data-persona-question]');if(perq){const target=document.querySelector('#public-persona-chat input[name="question"]');if(target){target.value=perq.dataset.personaQuestion;target.focus();}return;}
@@ -881,6 +883,6 @@ MAIN.addEventListener('submit',async event=>{
  if(event.target.id==='wb-draft-form'){event.preventDefault();route('submissions',state.scenario);return;}
 });
 $('#helpButton').addEventListener('click',()=>notify('Read-only evidence viewer · synthetic fixtures · no live-model testing or certification.'));
-window.addEventListener('popstate',()=>{const params=new URLSearchParams(location.search);readJourneyQuery(params);const s=params.get('scenario');route(params.get('view')||'overview',s,{push:false});});
+window.addEventListener('popstate',()=>{const params=new URLSearchParams(location.search);readJourneyQuery(params);const s=params.get('scenario');const view=canonicalView(params);route(view,s,{push:false});if(view!==params.get('view')||(view==='evidence'&&params.has('tab')))history.replaceState(null,'',linkView(state.view,state.scenario));});
 window.addEventListener('keydown',ev=>{if(ev.key==='Escape'&&$('#sidebar').classList.contains('open')){ev.preventDefault();closeMobileNav({restoreFocus:true});return;}if(ev.target.closest('input,textarea,select')||ev.altKey||ev.ctrlKey||ev.metaKey)return;if(ev.key==='ArrowRight'&&['architecture','audit'].includes(state.view)){stopPlay();setEvent(state.eventIndex+1);}else if(ev.key==='ArrowLeft'&&['architecture','audit'].includes(state.view)){stopPlay();setEvent(state.eventIndex-1);}else if(ev.key==='Escape')closeMobileNav();});
-(async()=>{window.PublicBackend?.init().then(()=>{renderIfNeeded();}).catch(()=>{});const params=new URLSearchParams(location.search);readJourneyQuery(params);state.scenario=SCENARIOS.some(s=>s.slug===params.get('scenario'))?params.get('scenario'):'supplier_variance_review';const requestedView=params.get('view');if(requestedView==='monitor')state.architectureTab='replay';if(requestedView==='tickets')state.submissionTab='history';if(requestedView==='newticket'){state.submissionTab='compose';state.submissionMode='request';}if(['redteam','attacker'].includes(requestedView)){state.attackerTab='campaign';state.personaMode='attacker';}state.view=requestedView==='monitor'?'architecture':requestedView==='pool'?'dashboard':['tickets','newticket'].includes(requestedView)?'submissions':['redteam','attacker'].includes(requestedView)?'personas':VIEW_NAMES[requestedView]?requestedView:'overview';if(state.view==='governance')state.workbenchTab='controls';hydrateIcons();render();const available=await Promise.all([ensureData('index'),ensureData('facts')]);if(available.some(Boolean))renderIfNeeded();})();
+(async()=>{window.PublicBackend?.init().then(()=>{renderIfNeeded();}).catch(()=>{});const params=new URLSearchParams(location.search);readJourneyQuery(params);state.scenario=SCENARIOS.some(s=>s.slug===params.get('scenario'))?params.get('scenario'):'supplier_variance_review';const requestedView=canonicalView(params);if(requestedView==='monitor')state.architectureTab='replay';if(requestedView==='tickets')state.submissionTab='history';if(requestedView==='newticket'){state.submissionTab='compose';state.submissionMode='request';}if(['redteam','attacker'].includes(requestedView)){state.attackerTab='campaign';state.personaMode='attacker';}state.view=requestedView==='monitor'?'architecture':requestedView==='pool'?'dashboard':['tickets','newticket'].includes(requestedView)?'submissions':['redteam','attacker'].includes(requestedView)?'personas':VIEW_NAMES[requestedView]?requestedView:'overview';if(state.view==='governance')state.workbenchTab='controls';if(params.get('view')!==requestedView||(requestedView==='evidence'&&params.has('tab')))history.replaceState(null,'',linkView(state.view,state.scenario));hydrateIcons();render();const available=await Promise.all([ensureData('index'),ensureData('facts')]);if(available.some(Boolean))renderIfNeeded();})();
