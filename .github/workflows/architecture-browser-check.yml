@@ -54,6 +54,7 @@ jobs:
       - name: Verify fixed modular Architecture and its real React interactions
         run: node scripts/check-architecture-browser.mjs
       - name: Verify live workspace browser API contract
+        if: success() || failure()
         run: node scripts/check-live-workspace.mjs
       - uses: actions/upload-artifact@v4
         if: always()
