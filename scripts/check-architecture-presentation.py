@@ -31,8 +31,29 @@ BASELINES = {
     'data/scenarios/supplier_unsupported_claim.json': 'b4d3771dd96b1fa40d02e358572a2474d320770b',
     'data/scenarios/supplier_variance_review.json': 'a8453e2181da74e5cad94809f7e89d815a8b41fa',
 }
+# The Introduction has two intentionally reviewed wording changes.
+# Reverse *only* these exact text substitutions before checking the pinned
+# original app.js blob. Any alteration to behavior, structure or other copy
+# still changes the hash and fails the check.
+INTRO_COPY_REWRITES = (
+    (
+        "FUNCTIONAL SAFETY × AI GOVERNANCE · KNOWLEDGE SHARING",
+        "AI GOVERNANCE · INTERACTIVE SHOWCASE",
+    ),
+    (
+        "What can functional safety engineering contribute to AI governance? This reference case shares one approach: explicit checks, traceable evidence and human authority. It checks supplier invoices against agreed terms, examines exceptions and keeps the final decision with a person.",
+        "Supplier invoices need more than correct totals. This project checks them against agreed terms, verifies proposed exceptions and keeps the final decision with a person.",
+    ),
+)
+
 for path, expected in BASELINES.items():
-    assert git_blob(Path(path).read_bytes()) == expected, f"Technical implementation changed: {path}"
+    content = Path(path).read_bytes()
+    if path == 'app.js':
+        for revised, original in INTRO_COPY_REWRITES:
+            revised, original = revised.encode('utf-8'), original.encode('utf-8')
+            assert content.count(revised) == 1, "Unexpected or missing reviewed Introduction copy"
+            content = content.replace(revised, original)
+    assert git_blob(content) == expected, f"Technical implementation changed: {path}"
 
 # The only permitted HTML difference is the versioned presentation stylesheet link.
 # Inspector cards now reserve seeking for a labeled button; module selection
