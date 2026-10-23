@@ -79,3 +79,16 @@
 @media (prefers-reduced-motion: reduce) {
   #sidebar .sidebar-brand-footer .brand { transition: none; }
 }
+
+/* Keep the reference scope and single brand footer visible on shorter desktop displays.
+   Compress spacing, not navigation labels or the source/evidence context. */
+@media (min-width: 771px) and (max-height: 980px) {
+  #sidebar #nav-start { margin-top: 10px; }
+  #sidebar .sidebar-section-label.group-space { margin-top: 10px; }
+  #sidebar .nav-list a { height: 31px; min-height: 31px; }
+  #sidebar .sidebar-scope { margin: 9px 12px; padding: 10px 12px; }
+  #sidebar .sidebar-scope strong { margin-top: 7px; }
+  #sidebar .sidebar-scope p { margin: 5px 0 8px; }
+  #sidebar .sidebar-brand-footer { padding: 8px 12px 10px; }
+  #sidebar .sidebar-brand-footer .brand { min-height: 42px; padding: 5px 7px; }
+}
