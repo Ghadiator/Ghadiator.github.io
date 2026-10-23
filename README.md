@@ -53,6 +53,33 @@ here is a conformity assessment or certification.
 - **Evidence** — the complete ordered event record of any recorded run, with
   JSON download.
 
+### DAiA source-backed incident and lessons-learned visualization
+
+The Architecture Explorer displays the **implemented**, separately sourced
+DAiA governance channels alongside the existing immutable 20-node supplier
+fixture diagram. This is a code-grounded architectural comparison, not a
+claim that the supplier fixture runs those channels. Source: pinned
+`Ghadiator/generic-agentic-validation` commit `6392d23e747e993379d87a5e017885c6b2e7069e`.
+
+- **Lessons:** `step_3_4_email_monitoring/confirm.py` invokes best-effort
+  deterministic `auto_aggregate_lessons()` after confirmed validation;
+  `schedule_lesson_synthesis()` optionally starts key-gated PydanticAI
+  synthesis. `LessonsJSONLStore` persists candidate lessons with source,
+  topic, event references and status. `review_frontend/app/governance/page.tsx`
+  supports human acknowledge / integrate-to-ADR / reject.
+- **Ruleset proposals:** `feedback/ruleset_proposals.py` can derive
+  valid knob updates from `integrated` lessons and compare challenger against
+  champion in shadow mode. It is disabled by default and never auto-activates
+  proposed policies.
+- **Incidents:** `compliance/incidents.py` defines IncidentEvent and
+  incident storage. Fairness/oversight scans can persist incident signals.
+  `orchestrator.py` checks the last 60 minutes for HIGH/CRITICAL incidents
+  before STP auto-approval, failing closed without a shared store when §9
+  uses SQL.
+- These are **two distinct channels**: incidents do not automatically become
+  lesson records. No source engine behavior, signed event, or archived
+  scenario fixture is fabricated or mutated by the presentation.
+
 ## Scope — what runs and what is a fixture
 
 ### Reading the Architecture Explorer
