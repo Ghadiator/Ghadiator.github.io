@@ -46,34 +46,34 @@
    <header class="so-hero">
     <span class="section-overline">THE ENGINEERING BEHIND THE MODEL</span>
     <h1>From functional safety<br><em>to AI governance.</em></h1>
-    <p class="so-lead">How did my experience shape this model? I used FMEA to examine failure modes, deterministic checks to verify facts, opposing roles to challenge claims and process audits to keep decisions traceable.</p>
-    <div class="so-author"><span class="so-author-icon">${icon('user')}</span><div><strong>Ali Ghader</strong><span>Functional Safety Manager · Systems engineering · AI governance</span></div></div>
+    <p class="so-lead">What can functional safety methods contribute to AI governance? I share one engineering perspective: use FMEA to examine failures, deterministic checks to verify facts, opposing roles to challenge claims and process records to make decisions traceable. Each connection has limits.</p>
+    <div class="so-author"><span class="so-author-icon">${icon('user')}</span><div><strong>Ali Ghader</strong><span>Functional Safety Manager · Exploring AI governance through engineering</span></div></div>
    </header>
    <section class="so-background" aria-labelledby="so-background-title">
-    <h2 id="so-background-title">The experience I bring</h2>
+    <h2 id="so-background-title">The engineering practice behind these ideas</h2>
     <div class="so-career-grid">
-     <article><span class="so-date">2023 — PRESENT</span><h3>Bosch Engineering</h3><p>Functional Safety Manager. ASIL D safety governance for five vehicle systems, safety cases, assessments, tool qualification and technical leadership.</p></article>
-     <article><span class="so-date">2019 — 2022</span><h3>techcos</h3><p>Functional Safety Engineer. Safety analysis coordination for seven embedded software components for BMW, architecture verification, toolchains and release automation.</p></article>
+     <article><span class="so-date">2023 — PRESENT</span><h3>Bosch Engineering</h3><p>Work on ASIL D systems, safety cases, assessments and tool qualification shapes how I think about risk, traceable evidence and accountable release decisions.</p></article>
+     <article><span class="so-date">2019 — 2022</span><h3>techcos</h3><p>Work in embedded software safety analysis, architecture verification, toolchains and controlled releases informs this focus on reproducible checks and explicit interfaces.</p></article>
     </div>
    </section>
    <section aria-labelledby="so-choices-title" class="so-choices">
-    <div class="so-section-heading"><span class="section-overline">EXPERIENCE → DESIGN CHOICE</span><h2 id="so-choices-title">Where that thinking appears in the model</h2><p>These are the engineering decisions I carried into this model, and the reasoning behind each one.</p></div>
+    <div class="so-section-heading"><span class="section-overline">SAFETY PRACTICE → GOVERNANCE QUESTION</span><h2 id="so-choices-title">Why these controls appear in the reference model</h2><p>These examples share how safety-engineering methods informed the reference design, and where the resulting controls can be inspected. They do not establish live AI-governance assurance.</p></div>
     <div class="so-choice-grid">${choices.map((c,i)=>`<article class="so-choice">
      <div class="so-choice-title"><span class="so-choice-icon">${icon(c.icon)}</span><span class="so-number">${String(i+1).padStart(2,'0')}</span><h3>${e(c.title)}</h3></div>
-     <div class="so-experience"><span class="so-label">MY ENGINEERING EXPERIENCE</span><p>${e(c.experience)}</p></div>
-     <div class="so-decision"><span class="so-label">WHAT I CARRIED INTO THIS MODEL</span><p>${e(c.choice)}</p></div>
+     <div class="so-experience"><span class="so-label">SAFETY-ENGINEERING INSIGHT</span><p>${e(c.experience)}</p></div>
+     <div class="so-decision"><span class="so-label">GOVERNANCE DESIGN IMPLICATION</span><p>${e(c.choice)}</p></div>
      <a href="${e(href(c))}" class="so-inspect">${e(c.link)} <span aria-hidden="true">→</span></a>
     </article>`).join('')}</div>
    </section>
    <section class="so-skills" aria-labelledby="so-skills-title">
-    <div class="so-section-heading"><span class="section-overline">TRANSFERABLE SKILLS · ${skillGroups.reduce((n,g)=>n+g.items.length,0)} CONNECTIONS</span><h2 id="so-skills-title">The capabilities I can bring to AI governance</h2><p>The six decisions above show how I built this model. This register covers the wider skills behind them, grounded in my CV and the design work described here.</p></div>
-    <div class="so-skill-groups">${skillGroups.map((group,i)=>`<details class="so-skill-group"${i===0?' open':''}><summary><span>${e(group.title)}</span><small>${group.items.length} skills</small></summary><div class="so-skill-list">${group.items.map(skill=>`<article class="so-skill"><div class="so-skill-name"><h3>${e(skill.name)}</h3><span class="so-skill-scope">${e(skill.scope)}</span></div><dl><div><dt>My experience</dt><dd>${e(skill.source)}</dd></div><div><dt>How it transfers</dt><dd>${e(skill.transfer)}</dd></div></dl><a class="so-skill-link" href="${e(href(skill))}">Inspect the relevant part of the model <span aria-hidden="true">→</span></a></article>`).join('')}</div></details>`).join('')}</div>
+    <div class="so-section-heading"><span class="section-overline">ENGINEERING METHODS · ${skillGroups.reduce((n,g)=>n+g.items.length,0)} CONNECTIONS</span><h2 id="so-skills-title">Engineering methods and governance questions</h2><p>The connections below explain how safety-engineering practices can inform governance design. Each note distinguishes an observable reference control from a design foundation, developing capability or deployment gap.</p></div>
+    <div class="so-skill-groups">${skillGroups.map((group,i)=>`<details class="so-skill-group"${i===0?' open':''}><summary><span>${e(group.title)}</span><small>${group.items.length} skills</small></summary><div class="so-skill-list">${group.items.map(skill=>`<article class="so-skill"><div class="so-skill-name"><h3>${e(skill.name)}</h3><span class="so-skill-scope">${e(skill.scope)}</span></div><dl><div><dt>Safety practice</dt><dd>${e(skill.source)}</dd></div><div><dt>Governance connection</dt><dd>${e(skill.transfer)}</dd></div></dl><a class="so-skill-link" href="${e(href(skill))}">Inspect the relevant part of the model <span aria-hidden="true">→</span></a></article>`).join('')}</div></details>`).join('')}</div>
    </section>
    <section class="so-transfer" aria-labelledby="so-transfer-title">
     <div><span class="section-overline">THE TRANSFER HAS LIMITS</span><h2 id="so-transfer-title">An engineering foundation.<br>AI-specific work still matters.</h2></div>
-    <div><p>I bring risk analysis, traceability, verification and accountable release decisions. AI governance also needs evaluation of model and data behaviour, bias, misuse and performance after deployment.</p><p>This synthetic, scripted reference model demonstrates selected controls. It carries no automotive safety qualification or AI compliance claim.</p></div>
+    <div><p>Safety engineering offers structured risk analysis, traceability, verification and accountable release decisions. AI governance also requires evaluation of model and data behaviour, bias, misuse and performance after deployment.</p><p>This synthetic, scripted reference model demonstrates selected controls. It carries no automotive safety qualification or AI compliance claim.</p></div>
    </section>
-   <footer class="so-source"><p>Professional background summarised from my CV. The mappings above are my design rationale, not equivalence between standards.</p><div><a href="https://www.iso.org/standard/68384.html" target="_blank" rel="noopener">ISO 26262: functional safety management ↗</a><a href="https://airc.nist.gov/airmf-resources/airmf/5-sec-core/" target="_blank" rel="noopener">NIST AI RMF: AI risk management ↗</a></div></footer>
+   <footer class="so-source"><p>The professional context reflects my functional safety experience. The governance connections are shared engineering interpretations, not equivalence between standards.</p><div><a href="https://www.iso.org/standard/68384.html" target="_blank" rel="noopener">ISO 26262: functional safety management ↗</a><a href="https://airc.nist.gov/airmf-resources/airmf/5-sec-core/" target="_blank" rel="noopener">NIST AI RMF: AI risk management ↗</a></div></footer>
   </div>`;
  }
  window.SafetyToGovernance={render,skillGroups};
