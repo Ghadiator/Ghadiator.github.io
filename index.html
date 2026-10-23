@@ -2,6 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <!-- Public entry point: the knowledge-sharing narrative; explicit workbench routes remain unchanged. -->
+  <script>
+    if (location.pathname === '/' && !new URLSearchParams(location.search).has('view')) {
+      location.replace('/perspective/' + location.search + location.hash);
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1" /><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&amp;family=Barlow+Condensed:wght@500;600;700&amp;display=swap"/>
   <meta name="color-scheme" content="light" />
   <meta name="frontend-ui-build" content="20261021-safety-origin-73" />
@@ -42,7 +48,8 @@
       </div>
       <div class="sidebar-section-label group-space" id="nav-start">START HERE</div>
 <nav class="nav-list" aria-labelledby="nav-start">
-<a data-view="overview" href="?view=overview"><span data-icon="book-open"></span> Introduction</a>
+<a href="/perspective/"><span data-icon="book-open"></span> Engineering perspective</a>
+<a data-view="overview" href="?view=overview"<span data-icon="book-open"></span> Introduction</a>
 </nav>
 <div class="sidebar-section-label group-space" id="nav-explore">EXPLORE THE WORKFLOW</div>
 <nav class="nav-list" aria-labelledby="nav-explore">
