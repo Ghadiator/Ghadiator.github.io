@@ -610,9 +610,9 @@ function renderOverview(){
  const featured=state.index.scenarios.find(r=>r.slug==='supplier_variance_review')||state.index.scenarios[0];
  return `<div class="page-entrance overview-page">
 <section class="overview-hero" aria-labelledby="overview-title">
-  <div class="eyebrow"><span class="eyebrow-line"></span>AI GOVERNANCE · INTERACTIVE SHOWCASE</div>
+  <div class="eyebrow"><span class="eyebrow-line"></span>FUNCTIONAL SAFETY × AI GOVERNANCE · KNOWLEDGE SHARING</div>
   <h1 id="overview-title">Clear rules for facts.<br><em>AI for unusual cases.</em><br>People make the decisions.</h1>
-  <p>Supplier invoices need more than correct totals. This project checks them against agreed terms, verifies proposed exceptions and keeps the final decision with a person.</p>
+  <p>What can functional safety engineering contribute to AI governance? This reference case shares one approach: explicit checks, traceable evidence and human authority. It checks supplier invoices against agreed terms, examines exceptions and keeps the final decision with a person.</p>
   <div class="overview-cta">
     <a class="button light-primary" data-view="architecture" data-scenario="${h(featured?.slug||state.scenario)}" href="${linkView('architecture',featured?.slug||state.scenario)}">Follow a recorded case <span data-icon="arrow"></span></a>
     <a class="button dark" data-view="cases" href="?view=cases">Browse recorded cases <span data-icon="layers"></span></a>
