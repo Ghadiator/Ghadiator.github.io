@@ -23,6 +23,9 @@ on:
       - 'assets/architecture-module-inspector.css'
       - 'scripts/check-architecture-module-inspector.cjs'
       - 'index.html'
+      - 'live.html'
+      - 'assets/live-workspace.*'
+      - 'scripts/check-live-workspace.mjs'
       - 'assets/sidebar-brand-footer.css'
       - 'architecture-embed/**'
       - '.github/workflows/architecture-browser-check.yml'
@@ -50,6 +53,9 @@ jobs:
           curl --fail --silent --output /dev/null http://127.0.0.1:8765/architecture/
       - name: Verify fixed modular Architecture and its real React interactions
         run: node scripts/check-architecture-browser.mjs
+      - name: Verify live workspace browser API contract
+        if: success() || failure()
+        run: node scripts/check-live-workspace.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -57,3 +63,4 @@ jobs:
           path: |
             architecture-embedded-test.png
             frontend-introduction-*.png
+            live-workspace-*.png
