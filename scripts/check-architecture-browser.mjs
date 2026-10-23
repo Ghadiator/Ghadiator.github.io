@@ -759,7 +759,7 @@ try{
    assert.equal(await mobile.locator('#sidebar [data-view="background"]').getAttribute('aria-current'),'page');
    await mobile.reload({waitUntil:'domcontentloaded'});
    await mobile.locator('.so-hero h1').waitFor({state:'visible'});
-   assert.ok((await mobile.locator('.so-hero').innerText()).includes('How did my experience shape this model?'));
+   assert.ok((await mobile.locator('.so-hero').innerText()).includes('What can functional safety engineering contribute to AI governance?'));
  }finally{await mobileContext.close();}
 
  await page.setViewportSize({width:1440,height:1000});
