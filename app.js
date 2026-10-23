@@ -196,7 +196,6 @@ function renderWorkflowResults(){
 function refreshWorkflowResults(){
  const target=document.getElementById('workflow-results');
  if(target)target.innerHTML=renderWorkflowResults();
- updateIncidentLearningEvidence();
  const execution=window.ArchitectureExecution;
  if(!execution)return;
  const timeline=events();
@@ -241,51 +240,6 @@ function refreshWorkflowResults(){
   }
  }
 }
-// An explanatory, design-only extension of the published 20-node React graph.
-function renderIncidentLearning(){
- return `<section class="ail-module" aria-labelledby="incidentLearningTitle">
- <div class="ail-top"><div><span class="ail-eyebrow">Governance feedback · modular architecture extension</span>
- <h2 id="incidentLearningTitle">Incident reporting &amp; lessons learned</h2>
- <p>Human-reviewed feedback can inform future controls. The starting evidence sources below exist in the recorded workflow; the learning loop remains a proposed module.</p></div>
- <span class="ail-proposal">DESIGN ONLY · NOT IMPLEMENTED</span></div>
- <div class="ail-sources"><p class="ail-rowlabel">Existing evidence sources · inspect the implemented blocks</p>
- <div class="ail-source-grid">
- <button type="button" class="ail-source" data-incident-source="disposition"><strong>Human reviewer decision ↗</strong><small data-incident-evidence="review">No decision replayed yet</small></button>
- <button type="button" class="ail-source" data-incident-source="process_semantics"><strong>Workflow event record ↗</strong><small data-incident-evidence="audit">0 state transitions replayed</small></button>
- <button type="button" class="ail-source" data-incident-source="archive"><strong>Evidence archive ↗</strong><small data-incident-evidence="archive">No archive event replayed yet</small></button>
- </div></div>
- <div class="ail-bridge" aria-hidden="true">Potential input from reviewed exceptions, recurring failures and near misses <span>↓</span></div>
- <div class="ail-future"><p class="ail-rowlabel">Proposed incident-to-improvement loop · no incidents are fabricated</p>
- <ol class="ail-steps">
- <li><span class="ail-step-no">01</span><strong>Report incident</strong><p>Register a deviation or near miss; link the affected case and evidence.</p></li>
- <li><span class="ail-step-no">02</span><strong>Human triage</strong><p>Classify severity, investigate root cause and assign accountability.</p></li>
- <li><span class="ail-step-no">03</span><strong>Capture lesson</strong><p>Record the verified finding, failed control and corrective action.</p></li>
- <li><span class="ail-step-no">04</span><strong>Approve change</strong><p>Review proposed rule, prompt or test updates; require a named approver.</p></li>
- <li><span class="ail-step-no">05</span><strong>Test &amp; monitor</strong><p>Regression-test and version an approved release; watch recurrence.</p></li>
- </ol>
- <div class="ail-return"><span class="ail-return-arrow" aria-hidden="true">↶</span><div><strong>Controlled learning → future validation checks and reviewer guidance</strong><p>Approved corrective actions may feed a later workflow version, but never rewrite the recorded run or bypass the human gate.</p></div><span class="ail-return-tag">Human approval required</span></div></div>
- <p class="ail-scope"><strong>Evidence boundary:</strong> The source implements review events, audit transitions, submission corrections and a fixture-memory archive. It does not yet implement incident intake, a lessons register, automatic policy updates or autonomous model learning. The proposed stages are not counted as execution events.</p>
- </section>`;
-}
-function updateIncidentLearningEvidence(){
- const panel=document.querySelector(".ail-module");if(!panel)return;
- const timeline=events(),cursor=Number.isInteger(state.architectureCursor)?state.architectureCursor:-1;
- const seen=cursor<0?[]:timeline.slice(0,Math.min(cursor+1,timeline.length));
- const decisions=seen.filter(e=>e.kind==="hitl.resumed").length;
- const opened=seen.some(e=>e.kind==="hitl.opened");
- const transitions=seen.filter(e=>e.kind==="audit.row_appended").length;
- const archive=seen.some(e=>e.kind==="case.archived");
- const values={
-  review:[decisions?`${decisions} human decision${decisions===1?"":"s"} replayed`:opened?"Reviewer gate opened · awaiting decision":"No human decision replayed",decisions?"seen":opened?"waiting":"idle"],
-  audit:[`${transitions} state transition${transitions===1?"":"s"} replayed`,transitions?"seen":"idle"],
-  archive:[archive?"Archive event replayed":"No archive event replayed",archive?"seen":"idle"]
- };
- for(const [key,[value,status]] of Object.entries(values)){
-  const label=panel.querySelector(`[data-incident-evidence="${key}"]`);
-  if(label){if(label.textContent!==value)label.textContent=value;label.dataset.state=status;}
- }
-}
-
 function renderEmbeddedArchitecture(){
  return `<div class="page-entrance unified-architecture-view">
   <header class="architecture-entry"><div><span class="section-overline">SYSTEM · MODULES · EVIDENCE</span><h1>Architecture explorer</h1><p>Choose a recorded scenario to follow its checks and decisions, or generate an Excel case. Select any block to inspect its purpose, inputs, outputs and evidence.</p></div><span class="architecture-entry-status">Recorded execution only</span></header>
@@ -298,7 +252,6 @@ function renderEmbeddedArchitecture(){
      <div id="architectureTouchGuard" class="architecture-touch-guard" aria-hidden="true" hidden><span>Tap for details · Swipe sideways to explore</span></div>
     </div>
     <button type="button" id="architectureTouchExit" class="architecture-touch-exit" hidden>Done exploring · Scroll page</button>
-    ${renderIncidentLearning()}
    </div>
    <aside id="architecture-event-rail" class="architecture-event-rail" aria-label="Emitted workflow events">${window.ArchitectureExecution?.renderRail(events(),Number.isInteger(state.architectureCursor)?state.architectureCursor:-1)||''}</aside>
   </div>
@@ -824,8 +777,6 @@ function downloadRaw(){const key=`scenario:${state.scenario}`;const raw=state.ra
 async function copyEvent(){const e=activeEvent();if(!e)return;try{await navigator.clipboard.writeText(JSON.stringify(e,null,2));notify('Exact event JSON copied.');}catch{notify('Copy blocked by browser permissions.');}}
 function clickAction(action){if(action.startsWith('goto:'))return route(action.slice(5),state.scenario);switch(action){case 'toggle-play':togglePlay();break;case 'next':stopPlay();setEvent(state.eventIndex+1);break;case 'prev':stopPlay();setEvent(state.eventIndex-1);break;case 'reset':stopPlay();setEvent(0);break;case 'copy-event':copyEvent();break;case 'download-trace':downloadRaw();break;case 'source-repo':window.open('https://github.com/Ghadiator/Ghadiator.github.io','_blank','noopener');break;}}
 MAIN.addEventListener('click',event=>{
-const incidentSource=event.target.closest('[data-incident-source]');
-if(incidentSource){event.preventDefault();window.ArchitectureModuleInspector?.select(incidentSource.dataset.incidentSource);return;}
 const architectureSeek=event.target.closest('[data-replay-seek]');
 if(architectureSeek){
  event.preventDefault();

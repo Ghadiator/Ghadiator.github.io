@@ -60,8 +60,8 @@ incident reporting and lessons learned module below the original 20-node
 React diagram. Its three interactive source links inspect the already
 implemented Human-in-the-loop, workflow event and evidence archive blocks.
 Those source blocks have genuine `hitl.opened`, `hitl.resumed`,
-`audit.row_appended` and `case.archived` fixture events, and the
-extension's labels follow the selected replay cursor.
+`audit.row_appended` and `case.archived` fixture events, and selecting a source opens the existing module inspector. The inspector's
+recorded evidence follows the selected scenario and playback position.
 
 The proposed flow is: incident report → human triage and root-cause analysis
 → lessons register → human-approved control change → regression testing,
