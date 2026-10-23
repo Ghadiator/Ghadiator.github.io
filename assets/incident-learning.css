@@ -1,0 +1,33 @@
+/* Visual extension of the deployed architecture. This is design-only:
+   never assign SupplierWorkflow events to the proposed feedback block. */
+.ail-module{margin:18px 0 6px;overflow:hidden;border:1px solid #d5e2e9;border-radius:12px;background:#fff;box-shadow:0 7px 24px #173c5810;font-family:"Barlow",Arial,sans-serif;color:#29485e}
+.ail-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:20px 22px 18px;background:linear-gradient(115deg,#f1f7fa,#f4faf8);border-bottom:1px solid #dbe8ee}
+.ail-eyebrow{display:block;font:700 11px/1.4 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#4b7186}
+.ail-top h2{font-size:25px;letter-spacing:-.035em;line-height:1.17;margin:5px 0 7px;color:#244459}
+.ail-top p{font-size:12px;line-height:1.6;max-width:690px;color:#567384;margin:0}
+.ail-proposal{flex:0 0 auto;background:#fff8e9;border:1px dashed #b49c68;border-radius:50px;padding:7px 10px;color:#7e642d;font-size:10px;font-weight:800;text-align:center}
+.ail-sources{padding:16px 19px 12px}
+.ail-rowlabel{display:flex;align-items:center;gap:8px;margin:0 0 11px;color:#54758a;text-transform:uppercase;font-size:10px;letter-spacing:.08em;font-weight:800}
+.ail-rowlabel:after{content:"";flex:1;height:1px;background:#dce8ee}
+.ail-source-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.ail-source{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;text-align:left;cursor:pointer;font-family:inherit;border:1px solid #c5dce5;border-left:3px solid #397e8f;border-radius:8px;background:#f5fbfd;padding:11px 12px;color:#305f70;transition:background .15s}
+.ail-source:hover{background:#eaf6f8}.ail-source:focus-visible{outline:3px solid #83b6d7;outline-offset:2px}
+.ail-source strong{font-size:12px;line-height:1.4}.ail-source small{font-size:10.5px;line-height:1.45;overflow-wrap:anywhere;color:#597585}
+.ail-source [data-state="seen"]{color:#207b68}.ail-source [data-state="waiting"]{color:#9b7339}
+.ail-bridge{display:flex;align-items:center;justify-content:center;gap:11px;padding:8px 9px;color:#5a8294;text-align:center;font-size:10px;font-weight:700}
+.ail-bridge span{font-size:22px;line-height:1;color:#4a849b}
+.ail-future{margin:0 15px 15px;padding:17px 15px 14px;border:1px dashed #95b6c6;border-radius:10px;background:#fcfdfd}
+.ail-future .ail-rowlabel{color:#786a49;margin-bottom:16px}
+.ail-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px}
+.ail-steps li{position:relative;min-width:0;border:1px solid #d5e3ea;background:#fff;border-radius:8px;padding:12px 11px;min-height:147px}
+.ail-steps li:not(:last-child):after{content:"➜";position:absolute;right:-17px;top:45%;font-size:15px;color:#71a3b6}
+.ail-step-no{display:inline-flex;width:25px;height:25px;align-items:center;justify-content:center;background:#edf5fa;color:#315f79;border-radius:6px;font-size:11px;font-weight:800}
+.ail-steps strong{display:block;color:#29475a;font-size:12px;line-height:1.4;margin:8px 0 6px}
+.ail-steps p{font-size:10.5px;line-height:1.58;color:#567184;margin:0;overflow-wrap:break-word}
+.ail-return{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:11px;padding:13px 15px;margin-top:13px;border:1px solid #cde5de;border-radius:8px;background:#edf7f4}
+.ail-return-arrow{font-size:29px;color:#258274}.ail-return strong{font-size:12px;color:#2a6e60}.ail-return p{font-size:11px;line-height:1.55;color:#55766e;margin:4px 0 0}
+.ail-return-tag{border:1px solid #b6d6cb;border-radius:6px;padding:7px 9px;background:#fff;color:#40766b;font-size:10px;font-weight:750;text-align:center}
+.ail-scope{font-size:10.5px;line-height:1.65;color:#597384;padding:0 19px 17px;margin:0}.ail-scope strong{color:#325d74}
+@media(max-width:1100px){.ail-steps{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:24px}.ail-steps li:nth-child(3):after{display:none}.ail-return{grid-template-columns:auto 1fr}.ail-return-tag{grid-column:2;width:fit-content}}
+@media(max-width:690px){.ail-top{display:block;padding:17px 15px}.ail-proposal{display:inline-block;margin-top:13px}.ail-sources{padding:13px}.ail-source-grid{grid-template-columns:1fr}.ail-future{margin:0 10px 12px;padding:13px 11px}.ail-steps{grid-template-columns:1fr;gap:19px}.ail-steps li{min-height:0}.ail-steps li:not(:last-child):after{content:"↓";left:50%;right:auto;top:auto;bottom:-19px;transform:translateX(-50%)}.ail-return{grid-template-columns:1fr;gap:5px}.ail-return-arrow{font-size:21px}.ail-return-tag{grid-column:1}.ail-scope{padding:0 13px 15px}}
+@media(prefers-reduced-motion:reduce){.ail-source{transition:none}}

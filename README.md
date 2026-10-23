@@ -53,6 +53,23 @@ here is a conformity assessment or certification.
 - **Evidence** — the complete ordered event record of any recorded run, with
   JSON download.
 
+### Proposed incident reporting / lessons learned extension
+
+The deployed Architecture Explorer adds a clearly labeled **design-only**
+incident reporting and lessons learned module below the original 20-node
+React diagram. Its three interactive source links inspect the already
+implemented Human-in-the-loop, workflow event and evidence archive blocks.
+Those source blocks have genuine `hitl.opened`, `hitl.resumed`,
+`audit.row_appended` and `case.archived` fixture events, and the
+extension's labels follow the selected replay cursor.
+
+The proposed flow is: incident report → human triage and root-cause analysis
+→ lessons register → human-approved control change → regression testing,
+controlled release and monitoring. It **does not** add synthetic incident
+events, automatic model retraining, autonomous policy or rule changes, or a
+working incident-management backend. The original 20-node evidence graph
+and exported scenario JSON are unchanged. This distinction is deliberate.
+
 ## Scope — what runs and what is a fixture
 
 ### Reading the Architecture Explorer
