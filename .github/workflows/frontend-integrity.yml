@@ -60,6 +60,10 @@ on:
       - assets/sidebar-brand-footer.css
       - index.html
       - .github/workflows/frontend-integrity.yml
+concurrency:
+  group: frontend-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest

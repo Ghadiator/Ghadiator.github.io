@@ -26,6 +26,10 @@ on:
       - 'assets/sidebar-brand-footer.css'
       - 'architecture-embed/**'
       - '.github/workflows/architecture-browser-check.yml'
+concurrency:
+  group: browser-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   chromium:
     runs-on: ubuntu-latest
