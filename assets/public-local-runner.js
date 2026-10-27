@@ -74,3 +74,4 @@ function run(input,{sampleContract=false}={}){
 }
 window.PublicLocalRunner={run,template:()=>JSON.parse(JSON.stringify(SAMPLE_SUBMISSION)),sampleContract:()=>JSON.parse(JSON.stringify(SAMPLE_CONTRACT))};
 })();
+

@@ -181,3 +181,4 @@ async function open(file){
 }
 window.PublicSupplierWorkbook={variants,sample,random,build,download,downloadInvoice,read:open};
 })();
+

@@ -1,9 +1,3 @@
 {
-  "schemaVersion": 1,
-  "enabled": false,
-  "apiOrigin": null,
-  "apiPrefix": "/api/v1",
-  "authentication": "same-origin-cookie",
-  "maxUploadBytes": 15000000,
-  "timeoutMs": 12000
+  "liveWorkspaceUrl": null
 }

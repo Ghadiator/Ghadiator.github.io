@@ -1,0 +1,13 @@
+{
+  "source_repo": "Ghadiator/generic-agentic-validation",
+  "source_commit": "f6b365210209b8d0edc56f39ae0fcb2a739960d9",
+  "source_branch": "feat/readable-target-workbench-20261027",
+  "mode": "public-reference-with-local-preflight",
+  "backend_available": false,
+  "live_ai_available": false,
+  "live_approvals_available": false,
+  "output_digest_sha256": "7e922234673dbf74cf2f37f051a662edd7c599d5f35e41729ffa4d0f8153af78",
+  "previous_public_site_commit": "47cac6595bce98c7ded251bac667e15a51038f9a",
+  "previous_public_site_branch": "archive/pre-native-publication-2026-10-27",
+  "built_at_utc": "2026-10-27T08:36:15.452392+00:00"
+}
