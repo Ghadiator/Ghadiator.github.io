@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Governance as Code">
-  <rect width="32" height="32" rx="6" fill="#162019"/>
-  <path d="M9 16.5l4.5 4.5L23 11.5" fill="none" stroke="#7fce95" stroke-width="3"
-        stroke-linecap="square" stroke-linejoin="miter"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <rect width="32" height="32" fill="#5980a6"/>
+  <text x="16" y="22" text-anchor="middle" font-family="Barlow Condensed, Arial, Helvetica, sans-serif" font-size="19" font-weight="700" fill="#ffffff">V</text>
 </svg>
+
