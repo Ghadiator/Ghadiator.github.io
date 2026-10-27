@@ -1,0 +1,35 @@
+name: Native workbench browser acceptance
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exported file contracts
+        run: python3 scripts/check-native-release.py
+      - name: Install browser driver without touching published assets
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-package-lock playwright-core@1.56.1
+          command -v google-chrome || command -v chromium
+      - name: Start local static Pages server
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/governance-pages.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8765/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/governance-pages.log
+          exit 1
+      - name: Exercise pages in mobile, tablet and desktop Chromium
+        run: node scripts/check-native-browser.cjs
