@@ -1,0 +1,33 @@
+name: Public native workbench integrity
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check generated pages and published source provenance
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          for page in index.html architecture/index.html governance/index.html introduction/index.html safety-origin/index.html; do
+            test -s "$page"
+          done
+          test -d _next/static
+          grep -q 'Public read-only reference' index.html
+          grep -q 'Synthetic supplier examples' index.html
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          obj=json.loads(Path('.site-release.json').read_text())
+          assert obj['mode']=='public-static-read-only'
+          assert obj['source_repo']=='Ghadiator/generic-agentic-validation'
+          assert len(obj['source_commit']) == 40
+          assert len(obj['output_digest_sha256']) == 64
+          assert obj['previous_public_site_commit']=='fbb9a3302170ce594510e0fe86e64d5f163711c8'
+          print('Native Pages release manifest and static routes checked')
+          PY
