@@ -1,0 +1,730 @@
+{
+ "generated_from": "the published DAiA/GaC site's architecture-explained.js, architecture-module-inspector.js, architecture-run-model.js and architecture-governance.js, extracted verbatim",
+ "id_map": {
+  "post_cove": "postcove",
+  "process_semantics": "ledger",
+  "token_economics": "tokens"
+ },
+ "retired": {
+  "request": "ADR-168 retired the collection-request step from this deployment; the deadline machinery remains behind a switch. Its explanation is kept so the map can say the step existed rather than silently lose it."
+ },
+ "nodes": {
+  "request": {
+   "explained": {
+    "title": "Collection request",
+    "is_a": "A buyer-authorised starting point.",
+    "does": "Opens a named supplier case and sets the deadline.",
+    "matters": "Makes responsibility clear before documents arrive.",
+    "bound": "Only the allowlisted buyer can initiate a case; this is not an invoice approval.",
+    "articles": [
+     "Art. 14"
+    ]
+   },
+   "io": {
+    "title": "Collection request",
+    "purpose": "Opens the supplier review and prepares a document request.",
+    "inputs": "Case identifier, supplier and requested billing evidence.",
+    "outputs": "A collection request and a recorded requested state.",
+    "depends_on": []
+   },
+   "obligation": {
+    "intent": "Clear review scope",
+    "contribution": "A defined evidence request makes the case purpose and required material visible before review.",
+    "remaining": "A request template does not establish complete deployer instructions or system transparency.",
+    "articles": [
+     "Art. 13 — Transparency for deployers"
+    ]
+   }
+  },
+  "reminders": {
+   "explained": {
+    "title": "Deadline reminders",
+    "is_a": "A scheduled follow-up step.",
+    "does": "Prepares reminders before the supplier's deadline.",
+    "matters": "Makes late or missing documents visible.",
+    "bound": "Repeatable checkpoints; no live email delivery is demonstrated.",
+    "articles": [
+     "Art. 12"
+    ]
+   },
+   "io": {
+    "title": "Deadline reminders",
+    "purpose": "Prepares reminders leading up to the supplier submission deadline.",
+    "inputs": "Collection request and its due date.",
+    "outputs": "Reminder records in the fixture outbox; no real email.",
+    "depends_on": [
+     "request"
+    ]
+   },
+   "obligation": {
+    "intent": "Traceable follow-up",
+    "contribution": "Recorded reminders show which collection actions were prepared for the case.",
+    "remaining": "Fixture outbox records do not demonstrate delivery, reliable production logging or retention.",
+    "articles": [
+     "Art. 12 — Record-keeping"
+    ]
+   }
+  },
+  "intake": {
+   "explained": {
+    "title": "Supplier intake",
+    "is_a": "The entry point for invoice data.",
+    "does": "Checks that submitted information follows a defined structure.",
+    "matters": "Catches malformed or unwanted data before other checks run.",
+    "bound": "Typed fields only; the truth of submitted figures is not guaranteed.",
+    "articles": [
+     "Art. 10",
+     "Art. 15"
+    ]
+   },
+   "io": {
+    "title": "Supplier intake",
+    "purpose": "Receives the submitted workbook and validates the required structure.",
+    "inputs": "Invoice workbook and supporting submission.",
+    "outputs": "Parsed and versioned supplier billing input, or an intake rejection.",
+    "depends_on": [
+     "reminders",
+     "request"
+    ]
+   },
+   "obligation": {
+    "intent": "Validated input boundary",
+    "contribution": "Rejecting malformed submissions keeps structurally invalid material out of downstream review.",
+    "remaining": "Schema validation does not establish model accuracy or training-data governance. Operational invoice fields are not a training dataset.",
+    "articles": [
+     "Art. 15 — Accuracy, robustness and cybersecurity"
+    ]
+   }
+  },
+  "memory": {
+   "explained": {
+    "title": "Case history",
+    "is_a": "A history of invoice versions.",
+    "does": "Links corrections to the same supplier and case.",
+    "matters": "Keeps earlier information available when a supplier sends a new version.",
+    "bound": "Version history exists in the example runner, not permanent storage.",
+    "articles": [
+     "Art. 12"
+    ]
+   },
+   "io": {
+    "title": "Case history",
+    "purpose": "Attaches prior submission versions while excluding untrusted free text from decision inputs.",
+    "inputs": "Parsed invoice, previous version and supplier notes.",
+    "outputs": "Case-version context and an input-boundary record.",
+    "depends_on": [
+     "intake"
+    ]
+   },
+   "obligation": {
+    "intent": "Version-aware context",
+    "contribution": "Submission history helps a reviewer distinguish corrected evidence from earlier case versions.",
+    "remaining": "Version context alone does not prove complete lifetime logs, access controls or retention safeguards.",
+    "articles": [
+     "Art. 12 — Record-keeping"
+    ]
+   }
+  },
+  "rules": {
+   "explained": {
+    "title": "Invoice checks",
+    "is_a": "An automatic, rule-based checker.",
+    "does": "Recalculates amounts and checks totals, periods and attachments.",
+    "matters": "Uses repeatable rules for facts that do not require subjective judgment.",
+    "bound": "Limited to implemented checks; an unimplemented rule cannot fail.",
+    "articles": [
+     "Art. 9",
+     "Art. 15"
+    ]
+   },
+   "io": {
+    "title": "Invoice checks",
+    "purpose": "Applies repeatable invoice validation rules: arithmetic, dates, uniqueness and required reports.",
+    "inputs": "Parsed invoice fields, service lines and attachments.",
+    "outputs": "Individual deterministic pass/fail check results.",
+    "depends_on": [
+     "intake",
+     "memory"
+    ]
+   },
+   "obligation": {
+    "intent": "Repeatable factual checks",
+    "contribution": "Explicit arithmetic and completeness checks give review a testable factual baseline.",
+    "remaining": "Invoice-rule results do not measure AI accuracy; production thresholds, failure tests and monitoring remain necessary.",
+    "articles": [
+     "Art. 15 — Accuracy, robustness and cybersecurity"
+    ]
+   }
+  },
+  "crosscheck": {
+   "explained": {
+    "title": "Contract cross-check",
+    "is_a": "A comparison with approved business terms.",
+    "does": "Checks rates, purchase orders, contract scope and spending limits.",
+    "matters": "Bases review on contract evidence rather than an AI opinion.",
+    "bound": "Assumes the supplied contract and rate card are correct and current.",
+    "articles": [
+     "Art. 10",
+     "Art. 15"
+    ]
+   },
+   "io": {
+    "title": "Contract cross-check",
+    "purpose": "Compares the invoice with the approved contract, PO, rate card and limits.",
+    "inputs": "Validated invoice and approved contract snapshot.",
+    "outputs": "Contract-matching pass/fail results and baseline status.",
+    "depends_on": [
+     "rules",
+     "intake"
+    ]
+   },
+   "obligation": {
+    "intent": "Grounding in approved facts",
+    "contribution": "Comparison with approved commercial terms constrains which invoice claims can be supported.",
+    "remaining": "The reference baseline must itself be current and authorised. Contract matching does not validate overall AI performance.",
+    "articles": [
+     "Art. 15 — Accuracy, robustness and cybersecurity"
+    ]
+   }
+  },
+  "sanitiser": {
+   "explained": {
+    "title": "Input sanitiser",
+    "is_a": "A boundary between supplier text and the review personas.",
+    "does": "Removes untrusted free-text notes from their inputs.",
+    "matters": "Prevents supplier instructions from becoming review instructions.",
+    "bound": "Structural exclusion, not a complete injection detection system.",
+    "articles": [
+     "Art. 15"
+    ]
+   },
+   "io": {
+    "title": "Input sanitiser",
+    "purpose": "Defines the trusted-input boundary for supplier text before optional exception review.",
+    "inputs": "Untrusted supplier text and already-validated case facts.",
+    "outputs": "Restricted review input without supplier instructions being treated as authority.",
+    "depends_on": [
+     "memory",
+     "crosscheck"
+    ]
+   },
+   "obligation": {
+    "intent": "Separation of data and instructions",
+    "contribution": "A trust boundary prevents supplier narrative from becoming decision authority.",
+    "remaining": "A scripted injection fixture illustrates the boundary; live-model attack coverage and security testing remain unproven.",
+    "articles": [
+     "Art. 15 — Accuracy, robustness and cybersecurity"
+    ]
+   }
+  },
+  "proponent": {
+   "explained": {
+    "title": "Proponent",
+    "is_a": "An AI-style persona arguing for acceptance.",
+    "does": "Presents supporting facts, then sends those claims through pre-Judge CoVe.",
+    "matters": "Balances a critical reading of the case without granting positive claims authority.",
+    "bound": "Broader workflow verifies both roles; the small supplier fixture does not independently check each positive sentence.",
+    "articles": [
+     "Art. 14"
+    ]
+   },
+   "io": {
+    "title": "Proponent",
+    "purpose": "Produces the supportive perspective in a bounded, scripted exception review.",
+    "inputs": "Checked contract facts and case evidence when exception review is invoked.",
+    "outputs": "A recorded supporting argument; not a payment approval.",
+    "depends_on": [
+     "crosscheck",
+     "sanitiser"
+    ]
+   },
+   "obligation": {
+    "intent": "Inspectable supporting rationale",
+    "contribution": "The supportive perspective makes the proposed case for an exception available for review.",
+    "remaining": "An AI-style argument is neither verified evidence nor a decision. A second persona alone does not establish effective oversight.",
+    "articles": [
+     "Art. 14 — Human oversight"
+    ]
+   }
+  },
+  "opponent": {
+   "explained": {
+    "title": "Opponent",
+    "is_a": "An AI-style persona challenging the submission.",
+    "does": "Raises potential exceptions, sending claims through the same pre-Judge CoVe.",
+    "matters": "Tests apparently favourable findings with counterarguments.",
+    "bound": "Claims are provisional until CoVe keeps, revises or drops them.",
+    "articles": [
+     "Art. 9",
+     "Art. 14"
+    ]
+   },
+   "io": {
+    "title": "Opponent",
+    "purpose": "Challenges the submission and identifies possible unsupported or exceptional claims.",
+    "inputs": "Checked case evidence and the review context.",
+    "outputs": "A challenge or proposed finding requiring verification.",
+    "depends_on": [
+     "proponent",
+     "crosscheck"
+    ]
+   },
+   "obligation": {
+    "intent": "Visible challenge",
+    "contribution": "A separate challenge surfaces claims for verification before the reviewer receives a recommendation.",
+    "remaining": "Scripted disagreement does not prove independence, bias mitigation or comprehensive error detection.",
+    "articles": [
+     "Art. 14 — Human oversight"
+    ]
+   }
+  },
+  "firewall": {
+   "explained": {
+    "title": "Pre-Judge CoVe",
+    "is_a": "The first evidence-verification gate in the broader validation committee.",
+    "does": "Checks Proponent AND Opponent claims; contradicted assertions get bounded revision or are dropped.",
+    "matters": "Keeps both favourable and critical arguments from bypassing independent evidence checking.",
+    "bound": "The supplier fixture records only an Opponent finding in its smaller verifier, not every Proponent statement.",
+    "articles": [
+     "Art. 14(4)",
+     "Art. 15"
+    ]
+   },
+   "io": {
+    "title": "Pre-Judge CoVe",
+    "purpose": "Checks proposed findings against supporting evidence before the Judge can use them.",
+    "inputs": "Proponent and Opponent claims plus deterministic case facts.",
+    "outputs": "Verified, revised or rejected claims based on evidence.",
+    "depends_on": [
+     "opponent",
+     "proponent"
+    ]
+   },
+   "obligation": {
+    "intent": "Evidence before recommendation",
+    "contribution": "Checking proposed claims against case facts reduces the path for unsupported findings to reach the Judge.",
+    "remaining": "Verification is bounded by available evidence and checker coverage. It cannot guarantee that every claim is correct.",
+    "articles": [
+     "Art. 15 — Accuracy, robustness and cybersecurity",
+     "Art. 14 — Human oversight"
+    ]
+   }
+  },
+  "postcove": {
+   "explained": {
+    "title": "Post-Judge CoVe",
+    "is_a": "A second CoVe gate checking Judge synthesis.",
+    "does": "Verifies claims newly introduced by Judge, permitting bounded revisions or dropping unsupported assertions.",
+    "matters": "Prevents final summary prose from bypassing evidence verification.",
+    "bound": "Present in the broader validation source at pipeline/cove_loop.py; not independently recorded in the supplier fixture.",
+    "articles": [
+     "Art. 14(4)",
+     "Art. 15"
+    ]
+   },
+   "io": {
+    "title": "Post-Judge CoVe",
+    "purpose": "Represents a further post-Judge verification layer in the broader architecture.",
+    "inputs": "Judge output and the reference evidence.",
+    "outputs": "A further verification result in designs that execute this layer.",
+    "depends_on": [
+     "judge"
+    ]
+   },
+   "obligation": {
+    "intent": "Verification after synthesis",
+    "contribution": "The broader design places another checking boundary after the Judge summary.",
+    "remaining": "Architecture reference only here. No supplier-fixture event demonstrates that this additional layer ran.",
+    "articles": [
+     "Art. 15 — Accuracy, robustness and cybersecurity"
+    ]
+   }
+  },
+  "judge": {
+   "explained": {
+    "title": "Judge",
+    "is_a": "An AI-style persona synthesizing verified arguments.",
+    "does": "Weighs Proponent and Opponent CoVe survivors, then sends any new conclusions through post-Judge CoVe.",
+    "matters": "Stops unverified synthesis from entering a human review package.",
+    "bound": "Post-Judge verification is in the broader source, not separately replayed in supplier fixtures; HITL keeps authority.",
+    "articles": [
+     "Art. 14",
+     "Art. 14(4)"
+    ]
+   },
+   "io": {
+    "title": "Judge",
+    "purpose": "Summarises verified findings for an authorised reviewer; cannot approve invoices.",
+    "inputs": "Evidence-filtered findings and review context.",
+    "outputs": "A scripted reviewer-facing summary of verified findings.",
+    "depends_on": [
+     "firewall",
+     "opponent"
+    ]
+   },
+   "obligation": {
+    "intent": "Advisory authority only",
+    "contribution": "A summary of verified findings helps the reviewer interpret the result while reserving final authority for a person.",
+    "remaining": "A summary is not oversight by itself; people still need competence, context and the ability to disregard it.",
+    "articles": [
+     "Art. 14 — Human oversight",
+     "Art. 13 — Transparency for deployers"
+    ]
+   }
+  },
+  "advisory": {
+   "explained": {
+    "title": "Review package",
+    "is_a": "The structured handover to a human reviewer.",
+    "does": "Combines failed rules and verified findings into one package.",
+    "matters": "Allows decisions to be based on explicit checks and evidence.",
+    "bound": "A recommendation is not a decision.",
+    "articles": [
+     "Art. 12",
+     "Art. 14(4)"
+    ]
+   },
+   "io": {
+    "title": "Review package",
+    "purpose": "Collects deterministic results and any supported exception findings for the human gate.",
+    "inputs": "Invoice/contract checks and verified exception findings, when present.",
+    "outputs": "A review package with counted failed checks and verified findings.",
+    "depends_on": [
+     "judge",
+     "crosscheck"
+    ]
+   },
+   "obligation": {
+    "intent": "Decision-ready evidence",
+    "contribution": "A consolidated review package keeps factual failures and verified findings available to the human gate.",
+    "remaining": "The package supports review; it does not prove that a reviewer understood the limits or avoided automation bias.",
+    "articles": [
+     "Art. 14 — Human oversight",
+     "Art. 13 — Transparency for deployers"
+    ]
+   }
+  },
+  "remediation": {
+   "explained": {
+    "title": "Supplier correction",
+    "is_a": "A controlled way to request more information.",
+    "does": "Prepares a clarification or starts rechecking a corrected invoice.",
+    "matters": "Gives a safer option than accepting doubtful submissions.",
+    "bound": "Drafts do not mean emails were sent; corrected documents must be checked again.",
+    "articles": [
+     "Art. 12",
+     "Art. 14"
+    ]
+   },
+   "io": {
+    "title": "Supplier correction",
+    "purpose": "Prepares supplier clarification or correction requests when the review calls for one.",
+    "inputs": "Findings and missing or inconsistent supporting evidence.",
+    "outputs": "A drafted clarification/correction notice and review status.",
+    "depends_on": [
+     "advisory",
+     "judge"
+    ]
+   },
+   "obligation": {
+    "intent": "Correctable review path",
+    "contribution": "A correction request gives the supplier a documented route to address missing or inconsistent evidence.",
+    "remaining": "An invoice correction loop is a workflow safeguard, not evidence of every legally required remedy or intervention mechanism.",
+    "articles": [
+     "Art. 14 — Human oversight"
+    ]
+   }
+  },
+  "orchestrator": {
+   "explained": {
+    "title": "Main orchestrator — LangGraph",
+    "is_a": "The workflow-wide controller: the broader validation process is orchestrated by a LangGraph StateGraph.",
+    "does": "Routes workflow stages, pauses and resumes HITL, manages corrections and emits ProcessEvents.",
+    "matters": "Keeps cross-step transitions auditable instead of allowing model-directed routing.",
+    "bound": "Implemented at validation_workflow/orchestrator.py; the supplier-invoice replay uses separate Python SupplierWorkflow, not LangGraph.",
+    "articles": [
+     "Art. 12",
+     "Art. 14"
+    ]
+   },
+   "io": {
+    "title": "Workflow orchestrator",
+    "purpose": "Coordinates every recorded case: allowed transitions, routing, reviewer pauses, resumption and corrections. The recorded implementation is SupplierWorkflow; LangGraph is the broader design implementation.",
+    "inputs": "Case request, validated submissions, current workflow state and authorised reviewer decisions.",
+    "outputs": "Updated workflow state, routed checks and review steps, and ordered Event records.",
+    "depends_on": []
+   },
+   "obligation": {
+    "intent": "Controlled coordination",
+    "contribution": "SupplierWorkflow coordinates every recorded case through allowed states, deterministic routing and explicit reviewer pauses.",
+    "remaining": "The traces evidence this synthetic state machine, not LangGraph execution, durable recovery or production coordination.",
+    "articles": [
+     "Art. 14 — Human oversight"
+    ]
+   }
+  },
+  "disposition": {
+   "explained": {
+    "title": "Human-in-the-loop (HITL)",
+    "is_a": "An explicit human decision gate.",
+    "does": "Suspends the workflow until an authorised reviewer approves, rejects or asks for correction.",
+    "matters": "Keeps final authority with a person, even after all automated checks pass.",
+    "bound": "Only configured reviewers may resume; hard-check failures cannot be approved. No payment is executed.",
+    "articles": [
+     "Art. 12",
+     "Art. 14",
+     "Art. 26"
+    ]
+   },
+   "io": {
+    "title": "Human-in-the-loop (HITL)",
+    "purpose": "Places final approval, rejection or correction authority with a named human reviewer.",
+    "inputs": "Review package, supporting evidence and the reviewer's response.",
+    "outputs": "Human gate events and a recorded terminal disposition.",
+    "depends_on": [
+     "advisory",
+     "remediation"
+    ]
+   },
+   "obligation": {
+    "intent": "Final human authority",
+    "contribution": "The human gate separates advisory findings from an authorised reviewer's disposition.",
+    "remaining": "Historical fixture decisions do not demonstrate real reviewer training, independent judgment or a production stop mechanism.",
+    "articles": [
+     "Art. 14 — Human oversight"
+    ]
+   }
+  },
+  "tokens": {
+   "explained": {
+    "title": "Committee orchestration — token economics",
+    "is_a": "A resource guard inside the broader AI committee, bounding model calls, retries and recovery without becoming another verdict stage.",
+    "does": "Tracks token use and estimated costs, applies configured call/retry budgets and helps enable model fallback or evidence-backed CoVe revisions.",
+    "matters": "Can recover within a budget without overriding the verification checkpoints or HITL.",
+    "bound": "Recovery is conditional and not guaranteed; supplier fixture has zero live-model tokens, and the four-proposal limit is not a token budget.",
+    "articles": []
+   },
+   "io": {
+    "title": "Committee orchestration · proposal bounds",
+    "purpose": "Bounds scripted proposal contributions and forfeits failed or over-budget adapters. Live token metering and model fallback are broader design features.",
+    "inputs": "Checked submission, scripted proposer and a maximum of four adapter proposals.",
+    "outputs": "Bounded proposals, or no contribution after an adapter failure or exceeded cap.",
+    "depends_on": [
+     "proponent"
+    ]
+   },
+   "obligation": {
+    "intent": "Bounded resource use",
+    "contribution": "The scripted proposal path limits adapter contributions to four and discards failed or over-budget output before the review package.",
+    "remaining": "No direct token-budget obligation is identified in these articles. Live token metering, cost control and model fallback are not demonstrated.",
+    "articles": []
+   }
+  },
+  "ledger": {
+   "explained": {
+    "title": "Process semantics pool / ProcessEvent stream",
+    "is_a": "The workflow-wide append-only ProcessEvent stream receiving state changes and process events from across stages.",
+    "does": "Workflow steps and LangGraph emit typed ProcessEvents to the pool for conformance checking, case continuity and audit.",
+    "matters": "Provides one history across components, rather than deciding state transitions itself.",
+    "bound": "The broader source uses validation_workflow/telemetry/emitter.py; supplier fixture instead stores its own in-memory event sequence.",
+    "articles": [
+     "Art. 12",
+     "Art. 14"
+    ]
+   },
+   "io": {
+    "title": "Workflow event record",
+    "purpose": "Records each SupplierWorkflow action in an ordered immutable Event. State changes add audit.row_appended records; the broader generic ProcessEvent pool is a different implementation of this architectural role.",
+    "inputs": "Workflow actions, allowed state transitions, check results, scripted claims and human decisions.",
+    "outputs": "SupplierWorkflow.events: ordered records with seq, kind, actor, node, detail and source references.",
+    "depends_on": []
+   },
+   "obligation": {
+    "intent": "Consistent event meaning",
+    "contribution": "Typed supplier Event records distinguish state transitions, check results, claims and human decisions in the recorded workflow.",
+    "remaining": "The in-memory supplier log does not demonstrate the separate generic ProcessEvent emitter, durable retention or lifetime production logging.",
+    "articles": [
+     "Art. 12 — Record-keeping"
+    ]
+   }
+  },
+  "archive": {
+   "explained": {
+    "title": "Evidence archive",
+    "is_a": "A record of the reviewed case and its outcome.",
+    "does": "Collects the decision and prior workflow events.",
+    "matters": "Supports later reconstruction and investigation.",
+    "bound": "Records are in memory; production retention and custody are not demonstrated.",
+    "articles": [
+     "Art. 12"
+    ]
+   },
+   "io": {
+    "title": "Evidence archive",
+    "purpose": "Retains the recorded case outcome and audit evidence for inspection.",
+    "inputs": "Recorded decision, rule results and event history.",
+    "outputs": "An archive event; persistence is fixture memory, not a production repository.",
+    "depends_on": [
+     "disposition"
+    ]
+   },
+   "obligation": {
+    "intent": "Inspectable decision record",
+    "contribution": "The recorded outcome and event history provide material for tracing how the case ended.",
+    "remaining": "Fixture memory is not a durable audit repository. Production log coverage, custody and retention remain to be demonstrated.",
+    "articles": [
+     "Art. 12 — Record-keeping"
+    ]
+   }
+  },
+  "external": {
+   "explained": {
+    "title": "Approved contract",
+    "is_a": "Reference information against which checks are made.",
+    "does": "Supplies contract, rate card, PO and prior-invoice register inputs.",
+    "matters": "Makes comparisons measurable.",
+    "bound": "The example does not validate whether this reference data is current.",
+    "articles": [
+     "Art. 10"
+    ]
+   },
+   "io": {
+    "title": "Approved contract",
+    "purpose": "Supplies the reference contract and approved commercial terms used for verification.",
+    "inputs": "Approved contract, purchase-order and rate-card information.",
+    "outputs": "Reference facts for contract cross-check; not necessarily its own trace event.",
+    "depends_on": []
+   },
+   "obligation": {
+    "intent": "Authoritative reference boundary",
+    "contribution": "Approved terms provide an independent reference for downstream verification.",
+    "remaining": "Indirect support only: a contract document is not an AI control by itself and does not establish Article 10 training-data compliance.",
+    "articles": [
+     "Art. 15 — Accuracy, robustness and cybersecurity"
+    ]
+   }
+  }
+ },
+ "events": {
+  "workflow.start": {
+   "label": "Workflow start",
+   "function": "request()",
+   "meaning": "Opens the authorised collection request."
+  },
+  "audit.row_appended": {
+   "label": "State transition",
+   "function": "_transition()",
+   "meaning": "Records an allowed change of workflow state."
+  },
+  "collection.reminder": {
+   "label": "Collection reminder",
+   "function": "remind()",
+   "meaning": "Prepares a reminder in the fixture outbox; no email is sent."
+  },
+  "intake.received": {
+   "label": "Submission received",
+   "function": "submit()",
+   "meaning": "Records the parsed invoice and its version."
+  },
+  "intake.rejected": {
+   "label": "Intake rejection",
+   "function": "submit()",
+   "meaning": "Rejects a payload that fails the typed input boundary."
+  },
+  "history.attached": {
+   "label": "Version history",
+   "function": "submit()",
+   "meaning": "Attaches the previous and current submission versions."
+  },
+  "security.input": {
+   "label": "Input boundary",
+   "function": "submit()",
+   "meaning": "Keeps supplier free text outside proposal and decision inputs."
+  },
+  "checks.started": {
+   "label": "Invoice validation",
+   "function": "submit()",
+   "meaning": "Starts the deterministic invoice checks."
+  },
+  "checks.rule": {
+   "label": "Invoice check result",
+   "function": "submit()",
+   "meaning": "Records one of the six invoice checks as PASS or FAIL."
+  },
+  "contract.snapshot_loaded": {
+   "label": "Reference input",
+   "function": "submit()",
+   "meaning": "Loads the approved contract used by the cross-checks."
+  },
+  "contract.check": {
+   "label": "Contract check result",
+   "function": "submit()",
+   "meaning": "Records one of the eight approved-contract checks as PASS or FAIL."
+  },
+  "exception.started": {
+   "label": "Exception review",
+   "function": "_committee()",
+   "meaning": "Starts bounded scripted review after the deterministic checks."
+  },
+  "committee.proponent.argument": {
+   "label": "Supporting argument",
+   "function": "_committee()",
+   "meaning": "Records a scripted supporting claim; it is not a verified fact."
+  },
+  "committee.opponent.argument": {
+   "label": "Proposed finding",
+   "function": "_committee()",
+   "meaning": "Records a scripted challenge that still requires verification."
+  },
+  "committee.adapter_failed": {
+   "label": "Handled adapter failure",
+   "function": "_propose()",
+   "meaning": "Discards the failed adapter contribution and continues to the reviewer."
+  },
+  "committee.budget_exceeded": {
+   "label": "Proposal guard",
+   "function": "_propose()",
+   "meaning": "Discards every proposal when the four-proposal limit is exceeded."
+  },
+  "verification.result": {
+   "label": "Claim verification",
+   "function": "_committee()",
+   "meaning": "Accepts, restates or removes a proposed finding against computed evidence."
+  },
+  "committee.judge.argument": {
+   "label": "Review summary",
+   "function": "_committee()",
+   "meaning": "Packages the verified findings; the Judge cannot approve a case."
+  },
+  "review.package": {
+   "label": "Review package",
+   "function": "_open_review()",
+   "meaning": "Assembles failed checks and verified findings for a human reviewer."
+  },
+  "remediation.email.composed": {
+   "label": "Clarification draft",
+   "function": "_open_review()",
+   "meaning": "Drafts a clarification from findings; no real email is sent."
+  },
+  "hitl.opened": {
+   "label": "Human review pause",
+   "function": "_open_review()",
+   "meaning": "Suspends the workflow for an authorised reviewer."
+  },
+  "hitl.resumed": {
+   "label": "Human decision",
+   "function": "resume()",
+   "meaning": "Records the named reviewer decision that resumes the workflow."
+  },
+  "workflow.terminal": {
+   "label": "Recorded disposition",
+   "function": "resume()",
+   "meaning": "Records approval, rejection or a request for supplier changes."
+  },
+  "case.archived": {
+   "label": "Archive record",
+   "function": "archive()",
+   "meaning": "Records the final evidence archive in fixture memory."
+  }
+ }
+}
