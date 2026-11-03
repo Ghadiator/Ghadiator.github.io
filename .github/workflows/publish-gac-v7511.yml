@@ -1,0 +1,79 @@
+name: Publish verified GovernanceAsCode 7.5.11 simplified live stream
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/publish-gac-v7511.yml]
+permissions:
+  contents: write
+concurrency:
+  group: gac-public-static-v7511
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ARTIFACT_URL: "https://sdmntprcentralus.oaiusercontent.com/files/00000000-9fe0-81f5-96d8-c4a26444ec75/raw?se=2026-11-03T20%3A14%3A34Z&sp=r&sv=2026-02-06&sr=b&scid=13c795e9-81a1-5789-9275-b97f65274f4b&skoid=5c9dda00-298b-4376-81e9-b4568c8a3c0f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-03T11%3A54%3A34Z&ske=2026-11-04T11%3A54%3A34Z&sks=b&skv=2026-02-06&sig=b7s5CarHdneexAOz3nEnDnh5nw1P5GeN6Tj3BQWmjrQ%3D"
+      ARTIFACT_SHA256: "e7eb2b05be824a8e1db36667d5f1ed05452001a4014920a5071a443157e20c5c"
+      SOURCE_SHA: "4763e7de0532143765780a18186ca8a865386572"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify immutable static build
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --connect-timeout 15 --max-time 120 "$ARTIFACT_URL" -o /tmp/gac.zip
+          echo "$ARTIFACT_SHA256  /tmp/gac.zip" | sha256sum -c -
+          mkdir -p /tmp/gac
+          unzip -q /tmp/gac.zip -d /tmp/gac
+          for path in index.html architecture/index.html ai-assurance/index.html red-team/index.html token-economics/index.html; do
+            test -s "/tmp/gac/$path"
+          done
+          test -d /tmp/gac/_next/static
+          grep -q 'Public read-only reference' /tmp/gac/index.html
+          grep -q 'The original supplier-invoice review workflow' /tmp/gac/index.html
+          grep -q 'Pydantic Models' /tmp/gac/architecture/index.html || grep -q 'Understand the data' /tmp/gac/architecture/index.html
+          if find /tmp/gac -type f \( -name '*.py' -o -name '.env' -o -name '*.pem' -o -name '*.key' -o -name '*.db' \) | grep -q .; then echo 'Backend or secret file in public build'; exit 1; fi
+      - name: Overlay verified static export
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -a --exclude='.git/' --exclude='.github/' /tmp/gac/ ./
+          touch .nojekyll
+          python3 - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          from datetime import datetime,timezone
+          root=Path('/tmp/gac')
+          h=hashlib.sha256()
+          for p in sorted(root.rglob('*')):
+            if p.is_file():
+              h.update(str(p.relative_to(root)).encode())
+              h.update(hashlib.sha256(p.read_bytes()).digest())
+          p=Path('.site-release.json')
+          info=json.loads(p.read_text())
+          info.update({
+            'mode':'public-static-read-only',
+            'source_repo':'Ghadiator/generic-agentic-validation',
+            'source_branch':'feat/governance-visual-atlas-20261103',
+            'source_commit':os.environ['SOURCE_SHA'],
+            'app_version':'7.5.11',
+            'output_digest_sha256':h.hexdigest(),
+            'release_artifact_sha256':os.environ['ARTIFACT_SHA256'],
+            'published_at_utc':datetime.now(timezone.utc).isoformat(),
+            'backend_available':False,'live_ai_available':False,'live_approvals_available':False
+          })
+          p.write_text(json.dumps(info,indent=2)+'\n')
+          PY
+          python3 scripts/check-native-release.py
+          git diff --check
+      - name: Commit reversible update
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
+          git commit -m "deploy: GovernanceAsCode 7.5.11 simplified tabs and in-place real output"
+          git push origin HEAD:main
