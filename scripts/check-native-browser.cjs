@@ -83,17 +83,23 @@ const routes = [
         await systemMap.screenshot({path:"visual-acceptance/validation-map.png"});
       }
       await page.goto(base + "/architecture/",{waitUntil:"domcontentloaded"});
-      await page.locator('nav[aria-label="Architecture learning and execution modes"] button').nth(2).click();
+      const tabs=page.locator('nav[aria-label="Architecture learning and execution modes"] button');
+      assert.equal(await tabs.count(),4,viewport.label+": expected four user journeys");
+      await tabs.nth(2).click();
       const schema=page.locator('[aria-label="Pydantic models canvas"]');
       const modular=page.locator('[aria-label="Modular architecture canvas"]');
-      await schema.waitFor({state:"visible"});
       await modular.waitFor({state:"visible"});
-      const sb=await schema.boundingBox(),mb=await modular.boundingBox();
-      assert.ok(sb&&mb,viewport.label+": missing synchronized canvases");
-      assert.ok(sb.y+sb.height<=mb.y+12,viewport.label+": Pydantic canvas must be above modular graph");
-      assert.ok(Math.abs(sb.width-mb.width)<6,viewport.label+": both canvases should span the same width");
+      assert.equal(await schema.isVisible(),false,viewport.label+": typed canvas must not stack below graph");
+      await page.getByRole("group",{name:"Choose execution view"})
+        .getByRole("button",{name:"Typed data / event"}).click();
+      await schema.waitFor({state:"visible"});
+      assert.equal(await modular.isVisible(),false,viewport.label+": original graph must hide when the schema lens is selected");
+      await page.getByRole("group",{name:"Choose execution view"})
+        .getByRole("button",{name:"Workflow",exact:true}).click();
+      await modular.waitFor({state:"visible"});
+      assert.equal(await schema.isVisible(),false,viewport.label+": returning to workflow must hide the model lens");
       await page.getByRole("heading",{name:"Inspect the committee without losing the architecture"}).waitFor();
-      checks+=4;
+      checks+=6;
       if(viewport.label==="desktop"){
         await page.screenshot({path:"visual-acceptance/architecture-cases.png"});
       }
@@ -112,8 +118,14 @@ const routes = [
       await page.getByRole("heading",{name:/original engineering connections/}).waitFor();
       checks+=2;
       await page.goto(base+"/architecture/#pydantic",{waitUntil:"domcontentloaded"});
+      await page.getByRole("heading",{name:"Typed contracts stop malformed data at the boundary."}).waitFor();
+      const chooser=page.getByText(/Source figures: open one diagram only/);
+      await chooser.click();
       await page.getByRole("region",{name:"Supplier workbook and authoritative reference anatomy"}).waitFor();
-      checks++;
+      await page.getByRole("button",{name:"Data preparation"}).click();
+      await page.getByRole("region",{name:"Data preparation and typed handoffs"}).waitFor();
+      assert.equal(await page.getByRole("region",{name:"Supplier workbook and authoritative reference anatomy"}).count(),0,viewport.label+": more than one Pydantic figure showing");
+      checks+=4;
       await page.goto(base+"/dashboard/",{waitUntil:"domcontentloaded"});
       await page.getByRole("heading",{name:"Behind every KPI is a control and an evidence trail."}).waitFor();
       await page.getByRole("button",{name:/Resource governance/}).click();
