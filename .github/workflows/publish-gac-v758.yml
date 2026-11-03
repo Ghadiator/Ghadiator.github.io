@@ -1,0 +1,79 @@
+name: Publish verified GovernanceAsCode 7.5.8 source-topology redesign
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/publish-gac-v758.yml]
+permissions:
+  contents: write
+concurrency:
+  group: gac-public-static-758
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ARTIFACT_URL: "https://sdmntprindiasocentral.oaiusercontent.com/files/00000000-5590-8211-b782-072ac2ac49e9/raw?se=2026-11-03T15%3A44%3A55Z&sp=r&sv=2026-02-06&sr=b&scid=e630c60b-4341-576f-98c6-42ed2ca0e4fd&skoid=5c9dda00-298b-4376-81e9-b4568c8a3c0f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-03T09%3A34%3A24Z&ske=2026-11-04T09%3A34%3A24Z&sks=b&skv=2026-02-06&sig=2EE8UgJTXhWMvMea96TPNvQXPNkLEj2%2BwAJZzPW%2BRDM%3D"
+      ARTIFACT_SHA256: "b4946418ed5a248f83e8f1b0015b5ffbfa8c7561d3233cb996f139570326857d"
+      SOURCE_SHA: "f1f62c412bf7c2021a001320b5aa1b953c66a9be"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify immutable source build before publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --connect-timeout 15 --max-time 120 "$ARTIFACT_URL" -o /tmp/release.zip
+          echo "$ARTIFACT_SHA256  /tmp/release.zip" | sha256sum -c -
+          mkdir -p /tmp/gac-758
+          unzip -q /tmp/release.zip -d /tmp/gac-758
+          for path in index.html architecture/index.html ai-assurance/index.html red-team/index.html safety-origin/index.html dashboard/index.html token-economics/index.html governance/index.html; do test -s "/tmp/gac-758/$path"; done
+          test -d /tmp/gac-758/_next/static
+          grep -q 'Public read-only reference' /tmp/gac-758/index.html
+          grep -q 'The original supplier-invoice review workflow' /tmp/gac-758/index.html
+          grep -q 'The personas behind controlled reasoning' /tmp/gac-758/index.html
+          grep -q 'Six decisions that shaped GovernanceAsCode' /tmp/gac-758/safety-origin/index.html
+          grep -q 'Interrogate a failure' /tmp/gac-758/red-team/index.html
+          grep -q 'Pydantic Models' /tmp/gac-758/architecture/index.html
+          if find /tmp/gac-758 -type f \( -name '*.py' -o -name '.env' -o -name '*.pem' -o -name '*.key' -o -name '*.db' \) | grep -q .; then echo 'Backend or credentials found in public export'; exit 1; fi
+      - name: Overlay reviewed build without deleting evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -a --exclude='.git/' --exclude='.github/' /tmp/gac-758/ ./
+          touch .nojekyll
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,os
+          from datetime import datetime,timezone
+          root=Path('/tmp/gac-758')
+          h=hashlib.sha256()
+          for path in sorted(root.rglob('*')):
+            if path.is_file():
+              h.update(str(path.relative_to(root)).encode())
+              h.update(hashlib.sha256(path.read_bytes()).digest())
+          old=json.loads(Path('.site-release.json').read_text())
+          old.update({
+            'mode':'public-static-read-only',
+            'source_repo':'Ghadiator/generic-agentic-validation',
+            'source_branch':'feat/governance-visual-atlas-20261103',
+            'source_commit':os.environ['SOURCE_SHA'],
+            'app_version':'7.5.8',
+            'output_digest_sha256':h.hexdigest(),
+            'release_artifact_sha256':os.environ['ARTIFACT_SHA256'],
+            'published_at_utc':datetime.now(timezone.utc).isoformat(),
+            'backend_available':False,'live_ai_available':False,'live_approvals_available':False
+          })
+          Path('.site-release.json').write_text(json.dumps(old,indent=2)+'\n')
+          PY
+          python3 scripts/check-native-release.py
+          git diff --check
+      - name: Commit reversible verified public release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then echo 'No build changes'; exit 0; fi
+          git commit -m "deploy: GovernanceAsCode 7.5.8 source-topology and observed-evidence interface"
+          git push origin HEAD:main
