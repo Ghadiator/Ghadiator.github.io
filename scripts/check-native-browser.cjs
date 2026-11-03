@@ -63,10 +63,21 @@ const routes = [
       await systemMap.waitFor({state:"visible"});
       await systemMap.getByRole("button",{name:/Chain-of-Verification · pre-Judge/}).click();
       await systemMap.getByRole("heading",{name:"Chain-of-Verification · pre-Judge control"}).waitFor();
-      await page.getByRole("group",{name:"Explanatory diagram category"})
-        .getByRole("button",{name:"Chain-of-Verification"}).click();
-      await page.getByText("Six evidential questions from the CoVe figure").waitFor();
-      checks+=3;
+      // The old redundant omnibus figure catalogue has been intentionally
+      // removed. Check the actual use-case, original seven-step process,
+      // five-step governed path, persona introduction, and technical source map.
+      await page.getByRole("heading",{name:"The original supplier-invoice review workflow"}).waitFor();
+      await page.getByRole("heading",{name:"From an invoice to a decision"}).waitFor();
+      await page.getByRole("heading",{name:"The personas behind controlled reasoning"}).waitFor();
+      await page.getByRole("heading",{name:"Measure improvement without inventing a success story."}).waitFor();
+      await page.getByRole("button",{name:/Verify against authoritative records/}).click();
+      await page.getByText("A reviewer must find and compare independent reference records.").waitFor();
+      const navLabels=await page.locator('nav[aria-label="Main navigation"] a span').allTextContents();
+      assert.deepEqual(navLabels.map(s=>s.trim()),[
+        "Overview","Architecture","Personas","Framework Explorer",
+        "Assurance","Failure Lab","Cases","Analytics","Safety Origins"
+      ],viewport.label+": nine primary destinations");
+      checks+=8;
       if(viewport.label==="desktop"){
         fs.mkdirSync("visual-acceptance", {recursive:true});
         await systemMap.screenshot({path:"visual-acceptance/validation-map.png"});
@@ -87,10 +98,22 @@ const routes = [
         await page.screenshot({path:"visual-acceptance/architecture-cases.png"});
       }
       await page.goto(base+"/ai-assurance/",{waitUntil:"domcontentloaded"});
+      await page.getByRole("heading",{name:"AI assurance case"}).waitFor();
+      await page.getByRole("region",{name:"Six distinct assurance evidence streams"}).waitFor();
+      await page.getByRole("region",{name:"CoVe verification wall before and after the Judge"}).waitFor();
+      checks+=3;
+      await page.goto(base+"/red-team/",{waitUntil:"domcontentloaded"});
       await page.getByRole("heading",{name:/Interrogate a failure/}).waitFor();
       await page.getByRole("navigation",{name:"Select AI failure mode"}).getByRole("button",{name:/Prompt injection/}).click();
       await page.getByRole("region",{name:"AI failure and evidence explorer"}).getByRole("heading",{name:/Prompt injection — supplier-authored text instructs the model/}).waitFor();
+      checks+=3;
+      await page.goto(base+"/safety-origin/",{waitUntil:"domcontentloaded"});
+      await page.getByRole("heading",{name:"Six decisions that shaped GovernanceAsCode"}).waitFor();
+      await page.getByRole("heading",{name:/original engineering connections/}).waitFor();
       checks+=2;
+      await page.goto(base+"/architecture/#pydantic",{waitUntil:"domcontentloaded"});
+      await page.getByRole("region",{name:"Supplier workbook and authoritative reference anatomy"}).waitFor();
+      checks++;
       await page.goto(base+"/dashboard/",{waitUntil:"domcontentloaded"});
       await page.getByRole("heading",{name:"Behind every KPI is a control and an evidence trail."}).waitFor();
       await page.getByRole("button",{name:/Resource governance/}).click();
@@ -110,7 +133,7 @@ const routes = [
       if (viewport.label === "mobile") {
         await page.getByRole("button", { name: /Explore/ }).click();
         await page.getByRole("navigation", { name: "Main navigation" })
-          .getByRole("link", { name: "Architecture explorer" }).click();
+          .getByRole("link", { name: "Architecture", exact: true }).click();
         await page.getByRole("heading", { name: "Architecture explorer" }).waitFor();
         checks++;
       }
