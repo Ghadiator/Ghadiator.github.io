@@ -178,6 +178,10 @@ const routes = [
         viewport.label+": original eight tier/error categories were lost");
       checks+=2;
       await page.goto(base+"/token-economics/",{waitUntil:"domcontentloaded"});
+      // Real metering is the default. Historical diagrams are deliberately
+      // hidden behind an optional one-at-a-time figure picker.
+      await page.getByText("Optional: historical diagrams explaining the economic controls").click();
+      await page.getByRole("button",{name:"Historical 5,045-token example"}).click();
       const tokenExample=page.getByRole("region",{name:"One historical case: token use against a rate window"});
       await tokenExample.waitFor({state:"visible"});
       await tokenExample.getByText("5,045 tokens").waitFor();
