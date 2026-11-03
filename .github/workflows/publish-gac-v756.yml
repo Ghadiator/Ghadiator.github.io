@@ -1,0 +1,86 @@
+name: Publish GovernanceAsCode holistic 7.5.6 source-verified public export
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/publish-gac-v756.yml]
+permissions:
+  contents: write
+concurrency:
+  group: gac-public-static-756
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ARTIFACT_URL: "https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-c7b4-8210-b7e2-1fb82ac2ebd6/raw?se=2026-11-03T15%3A08%3A30Z&sp=r&sv=2026-02-06&sr=b&scid=ed4c6482-9fd4-5f6f-a041-c901be55d5dc&skoid=5c9dda00-298b-4376-81e9-b4568c8a3c0f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-03T08%3A35%3A34Z&ske=2026-11-04T08%3A35%3A34Z&sks=b&skv=2026-02-06&sig=ej8NlDg63OQf/kdtF00DWVGWO%2B9sXix9fDY/GTS3zjM%3D"
+      ARTIFACT_SHA256: "4c2aa96a012a71d54badc2ac2faca06cc61e68f938bb7c9c1f7aadfedad9e431"
+      SOURCE_SHA: "c4c9d8e6f4da4dfd140b02a1a8a9aa5697fc1bf1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify source-built public-only release ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --connect-timeout 15 --max-time 120 "$ARTIFACT_URL" -o /tmp/release.zip
+          echo "$ARTIFACT_SHA256  /tmp/release.zip" | sha256sum -c -
+          mkdir -p /tmp/release-756
+          unzip -q /tmp/release.zip -d /tmp/release-756
+          test -s /tmp/release-756/index.html
+          test -s /tmp/release-756/architecture/index.html
+          test -s /tmp/release-756/red-team/index.html
+          test -s /tmp/release-756/ai-assurance/index.html
+          test -s /tmp/release-756/safety-origin/index.html
+          test -d /tmp/release-756/_next/static
+          grep -q 'Public read-only reference' /tmp/release-756/index.html
+          grep -q 'The original supplier-invoice review workflow' /tmp/release-756/index.html
+          grep -q 'From an invoice to a decision' /tmp/release-756/index.html
+          grep -q 'The personas behind controlled reasoning' /tmp/release-756/index.html
+          grep -q 'Six decisions that shaped GovernanceAsCode' /tmp/release-756/safety-origin/index.html
+          grep -q 'Interrogate a failure' /tmp/release-756/red-team/index.html
+          grep -q 'Pydantic Models' /tmp/release-756/architecture/index.html
+          if find /tmp/release-756 -type f \( -name '*.py' -o -name '.env' -o -name '*.pem' -o -name '*.key' -o -name '*.db' \) | grep -q .; then
+            echo "Unintended backend/credential file in public release"; exit 1
+          fi
+      - name: Publish compiled export while retaining evidence and deep links
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -a --exclude='.git/' --exclude='.github/' /tmp/release-756/ ./
+          touch .nojekyll
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,os
+          from datetime import datetime,timezone
+          root=Path('/tmp/release-756')
+          h=hashlib.sha256()
+          for p in sorted(root.rglob('*')):
+            if p.is_file():
+              h.update(str(p.relative_to(root)).encode())
+              h.update(hashlib.sha256(p.read_bytes()).digest())
+          info=json.loads(Path('.site-release.json').read_text())
+          info.update({
+           'mode':'public-static-read-only',
+           'source_repo':'Ghadiator/generic-agentic-validation',
+           'source_branch':'feat/governance-visual-atlas-20261103',
+           'source_commit':os.environ['SOURCE_SHA'],
+           'app_version':'7.5.6',
+           'output_digest_sha256':h.hexdigest(),
+           'release_artifact_sha256':os.environ['ARTIFACT_SHA256'],
+           'published_at_utc':datetime.now(timezone.utc).isoformat(),
+           'backend_available':False,'live_ai_available':False,'live_approvals_available':False
+          })
+          Path('.site-release.json').write_text(json.dumps(info,indent=2)+'\n')
+          PY
+          python3 scripts/check-native-release.py
+          git diff --check
+      - name: Create reversible public release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then echo "No change"; exit 0; fi
+          git commit -m "deploy: GovernanceAsCode 7.5.6 nine-section complete figure redesign"
+          git push origin HEAD:main
