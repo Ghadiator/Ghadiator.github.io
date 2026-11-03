@@ -146,7 +146,7 @@ const routes = [
         viewport.label+": source six-stream diagram was flattened or truncated");
       assert.ok(!(await six.innerText()).includes("1,035"),
         viewport.label+": historical 1,035 tests wrongly attributed to six-stream methods figure");
-      await page.getByRole("region",{name:"Historical hermetic suite · six closure streams"}).getByText("1,035").waitFor();
+      await page.getByRole("region",{name:"Historical hermetic suite · six closure streams"}).getByText("1,035",{exact:true}).waitFor();
       checks+=3;
       await page.goto(base+"/dashboard/",{waitUntil:"domcontentloaded"});
       const errorMatrix=page.locator('[aria-label="Error categories versus escalation tiers"]');
