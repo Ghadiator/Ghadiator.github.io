@@ -89,7 +89,7 @@ const routes = [
       await page.goto(base+"/ai-assurance/",{waitUntil:"domcontentloaded"});
       await page.getByRole("heading",{name:/Interrogate a failure/}).waitFor();
       await page.getByRole("navigation",{name:"Select AI failure mode"}).getByRole("button",{name:/Prompt injection/}).click();
-      await page.getByRole("heading",{name:/Prompt injection — supplier-authored text instructs the model/}).waitFor();
+      await page.getByRole("region",{name:"AI failure and evidence explorer"}).getByRole("heading",{name:/Prompt injection — supplier-authored text instructs the model/}).waitFor();
       checks+=2;
       await page.goto(base+"/dashboard/",{waitUntil:"domcontentloaded"});
       await page.getByRole("heading",{name:"Behind every KPI is a control and an evidence trail."}).waitFor();
