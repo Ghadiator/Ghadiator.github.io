@@ -66,12 +66,16 @@ const routes = [
       // The old redundant omnibus figure catalogue has been intentionally
       // removed. Check the actual use-case, original seven-step process,
       // five-step governed path, persona introduction, and technical source map.
-      await page.getByRole("heading",{name:"The original supplier-invoice review workflow"}).waitFor();
-      await page.getByRole("heading",{name:"From an invoice to a decision"}).waitFor();
+      await page.getByRole("heading",{name:"What exactly did the workflow automate?"}).waitFor();
+      await page.getByRole("heading",{name:"Before · Human-led review"}).waitFor();
+      await page.getByRole("heading",{name:"After · Governed workflow"}).waitFor();
       await page.getByRole("heading",{name:"The personas behind controlled reasoning"}).waitFor();
       await page.getByRole("heading",{name:"Measure improvement without inventing a success story."}).waitFor();
-      await page.getByRole("button",{name:/Verify against authoritative records/}).click();
-      await page.getByText("A reviewer must find and compare independent reference records.").waitFor();
+      const taskRows=page.locator("#manual-workflow-title ol > li");
+      assert.ok(await taskRows.count()>=8,viewport.label+": the detailed business workflow was truncated");
+      await taskRows.first().getByRole("button").click();
+      assert.equal(await taskRows.first().getByRole("button").getAttribute("aria-expanded"),"true",
+        viewport.label+": before/after task inspection must be interactive");
       const navLabels=await page.locator('nav[aria-label="Main navigation"] a span').allTextContents();
       assert.deepEqual(navLabels.map(s=>s.trim()),[
         "Overview","Architecture","Personas","Framework Explorer",
