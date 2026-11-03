@@ -56,6 +56,46 @@ const routes = [
           dimensions.document + " > " + dimensions.viewport);
         checks++;
       }
+      // Holistic figure-led release: inspect actual interactive behavior,
+      // not merely whether the old routes returned a successful status.
+      await page.goto(base + "/", { waitUntil: "domcontentloaded" });
+      const systemMap=page.locator('section[aria-label="Interactive three-tier validation and governance infographic"]');
+      await systemMap.waitFor({state:"visible"});
+      await systemMap.getByRole("button",{name:/Chain-of-Verification · pre-Judge/}).click();
+      await systemMap.getByRole("heading",{name:"Chain-of-Verification · pre-Judge control"}).waitFor();
+      await page.getByRole("group",{name:"Explanatory diagram category"})
+        .getByRole("button",{name:"Chain-of-Verification"}).click();
+      await page.getByText("Six evidential questions from the CoVe figure").waitFor();
+      checks+=3;
+      if(viewport.label==="desktop"){
+        fs.mkdirSync("visual-acceptance", {recursive:true});
+        await systemMap.screenshot({path:"visual-acceptance/validation-map.png"});
+      }
+      await page.goto(base + "/architecture/",{waitUntil:"domcontentloaded"});
+      await page.locator('nav[aria-label="Architecture learning and execution modes"] button').nth(2).click();
+      const schema=page.locator('[aria-label="Pydantic models canvas"]');
+      const modular=page.locator('[aria-label="Modular architecture canvas"]');
+      await schema.waitFor({state:"visible"});
+      await modular.waitFor({state:"visible"});
+      const sb=await schema.boundingBox(),mb=await modular.boundingBox();
+      assert.ok(sb&&mb,viewport.label+": missing synchronized canvases");
+      assert.ok(sb.y+sb.height<=mb.y+12,viewport.label+": Pydantic canvas must be above modular graph");
+      assert.ok(Math.abs(sb.width-mb.width)<6,viewport.label+": both canvases should span the same width");
+      await page.getByRole("heading",{name:"Inspect the committee without losing the architecture"}).waitFor();
+      checks+=4;
+      if(viewport.label==="desktop"){
+        await page.screenshot({path:"visual-acceptance/architecture-cases.png"});
+      }
+      await page.goto(base+"/ai-assurance/",{waitUntil:"domcontentloaded"});
+      await page.getByRole("heading",{name:/Interrogate a failure/}).waitFor();
+      await page.getByRole("navigation",{name:"Select AI failure mode"}).getByRole("button",{name:/Prompt injection/}).click();
+      await page.getByRole("heading",{name:/Prompt injection — supplier-authored text instructs the model/}).waitFor();
+      checks+=2;
+      await page.goto(base+"/dashboard/",{waitUntil:"domcontentloaded"});
+      await page.getByRole("heading",{name:"Behind every KPI is a control and an evidence trail."}).waitFor();
+      await page.getByRole("button",{name:/Resource governance/}).click();
+      await page.getByText("Where was model computation justified?").first().waitFor();
+      checks+=2;
       await page.goto(base + "/governance/", { waitUntil: "domcontentloaded" });
       await page.getByRole("navigation", { name: "Governance channels" })
         .getByRole("link", { name: "Lessons", exact: true }).click();
