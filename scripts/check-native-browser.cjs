@@ -87,8 +87,16 @@ const routes = [
         await systemMap.screenshot({path:"visual-acceptance/validation-map.png"});
       }
       await page.goto(base + "/architecture/",{waitUntil:"domcontentloaded"});
+      // Verify the new four-purpose navigation on the ACTUALLY published
+      // hydrated page, rather than assuming the old four diagram labels.
+      await page.getByText("These four choices are four purposes—not four canvases.").waitFor();
       const tabs=page.locator('nav[aria-label="Architecture learning and execution modes"] button');
       assert.equal(await tabs.count(),4,viewport.label+": expected four user journeys");
+      assert.deepEqual(
+        (await tabs.allTextContents()).map(s=>s.replace(/\s+/g," ").trim()).map(s=>s.split(" · ")[0]),
+        ["1. Understand the data","2. Understand the workflow","3. Replay a case","4. Try a new case"],
+        viewport.label+": user purpose labels missing"
+      );
       await tabs.nth(2).click();
       const schema=page.locator('[aria-label="Pydantic models canvas"]');
       const modular=page.locator('[aria-label="Modular architecture canvas"]');
