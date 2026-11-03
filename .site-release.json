@@ -11,5 +11,6 @@
   "previous_public_site_commit": "fbb9a3302170ce594510e0fe86e64d5f163711c8",
   "backend_available": false,
   "live_ai_available": false,
-  "live_approvals_available": false
+  "live_approvals_available": false,
+  "release_artifact_sha256": "1eff4e58f517f2748a5d4d0f907797fa91125ccb97704441ce523852bc4f4179"
 }
