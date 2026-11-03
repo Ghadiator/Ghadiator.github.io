@@ -1,0 +1,87 @@
+name: Publish verified GovernanceAsCode static visual release
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/visual-static-release.yml
+permissions:
+  contents: write
+concurrency:
+  group: publish-verified-gac-visual
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      RELEASE_ARTIFACT_URL: 'https://sdmntprukwest.oaiusercontent.com/files/00000000-2be8-8243-bac4-c238a776fec5/raw?se=2026-11-03T06%3A49%3A12Z&sp=r&sv=2026-02-06&sr=b&scid=8b8a213c-3c3c-5bef-a2e5-8f580e306fbd&skoid=5c9dda00-298b-4376-81e9-b4568c8a3c0f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-03T05%3A26%3A24Z&ske=2026-11-04T05%3A26%3A24Z&sks=b&skv=2026-02-06&sig=i98Y/e/szj98LeYrLpRfNhzFFsTX9Pv4PaN%2BwMg8WLU%3D'
+      EXPECTED_DIGEST: '1eff4e58f517f2748a5d4d0f907797fa91125ccb97704441ce523852bc4f4179'
+      SOURCE_SHA: '657375ab773f1c778b999f1babb669ea192d9bfb'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Fetch verified public-only export and verify checksum
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          curl -fLsS --retry 3 --max-time 150 "$RELEASE_ARTIFACT_URL" -o /tmp/gac-static.zip
+          printf '%s  %s\n' "$EXPECTED_DIGEST" /tmp/gac-static.zip | sha256sum -c -
+          mkdir -p /tmp/gac-static
+          unzip -q /tmp/gac-static.zip -d /tmp/gac-static
+          test -s /tmp/gac-static/index.html
+          test -s /tmp/gac-static/architecture/index.html
+          test -d /tmp/gac-static/_next/static
+          grep -q 'Public read-only reference' /tmp/gac-static/index.html
+          grep -q 'Pydantic Models' /tmp/gac-static/architecture/index.html
+          grep -q 'Try It Yourself' /tmp/gac-static/architecture/index.html
+          if find /tmp/gac-static -type f \( -name '*.py' -o -name '.env' -o -name '*.pem' -o -name '*.key' -o -name '*.db' \) | grep -q .; then
+            echo 'Unexpected backend or secret file in release archive'
+            exit 1
+          fi
+      - name: Overlay the static export without removing existing evidence or archives
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          rsync -a --exclude='.git/' --exclude='.github/' /tmp/gac-static/ ./
+          touch .nojekyll
+          python3 - <<'PY'
+          import hashlib, json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          output=Path('/tmp/gac-static')
+          digest=hashlib.sha256()
+          for p in sorted(output.rglob('*')):
+              if p.is_file():
+                  digest.update(str(p.relative_to(output)).encode())
+                  digest.update(hashlib.sha256(p.read_bytes()).digest())
+          obj={
+            'mode':'public-static-read-only',
+            'source_repo':'Ghadiator/generic-agentic-validation',
+            'source_branch':'feat/governance-visual-atlas-20261103',
+            'reviewed_release_branch':'release/public-pages-static-2026-10-26',
+            'source_commit':os.environ['SOURCE_SHA'],
+            'next_version':'15.5.28',
+            'output_digest_sha256':digest.hexdigest(),
+            'published_at_utc':datetime.now(timezone.utc).isoformat(),
+            'previous_public_site_branch':'archive/live-site-2026-10-26-pre-restore',
+            'previous_public_site_commit':'fbb9a3302170ce594510e0fe86e64d5f163711c8',
+            'backend_available':False,'live_ai_available':False,'live_approvals_available':False
+          }
+          Path('.site-release.json').write_text(json.dumps(obj,indent=2)+'\n')
+          PY
+          python3 scripts/check-native-release.py
+          git diff --check
+      - name: Commit published static artifacts with rollback history preserved
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Compiled export identical; no commit needed'
+            exit 0
+          fi
+          git commit -m "deploy: verified static governance visual release ${SOURCE_SHA:0:12}"
+          git push origin HEAD:main
