@@ -119,6 +119,48 @@ const routes = [
       await page.getByRole("button",{name:/Resource governance/}).click();
       await page.getByText("Where was model computation justified?").first().waitFor();
       checks+=2;
+      // v7.5.8: sources must render different directional topologies,
+      // not the same flat four-card rail on every technical page.
+      await page.goto(base+"/ai-roles/",{waitUntil:"domcontentloaded"});
+      const committee=page.getByRole("region",{name:"Adversarial committee · dual verification gates"});
+      await committee.waitFor({state:"visible"});
+      assert.equal(await committee.getByRole("button").count(),7,
+        viewport.label+": committee lost its seven distinct reasoning, verification and human gates");
+      await committee.getByRole("button",{name:/Post-Judge CoVe/}).click();
+      await committee.getByText(/checks newly introduced or rewritten claims/).waitFor();
+      await committee.locator('[aria-label="Source-informed modular relationship diagram"]').waitFor();
+      checks+=3;
+      if(viewport.label==="desktop")await committee.screenshot({path:"visual-acceptance/source-committee-topology.png"});
+      await page.goto(base+"/safety-origin/",{waitUntil:"domcontentloaded"});
+      const fmea=page.getByRole("region",{name:"From four evidence families to structured failure-mode review"});
+      await fmea.waitFor({state:"visible"});
+      assert.equal(await fmea.getByRole("button").count(),8,
+        viewport.label+": FMEA lost the four inputs, review and three evidence outcomes");
+      await fmea.getByRole("button",{name:/Structured FMEA review/}).click();
+      await fmea.getByText(/Classify what could go wrong/).waitFor();
+      checks+=3;
+      if(viewport.label==="desktop")await fmea.screenshot({path:"visual-acceptance/source-fmea-topology.png"});
+      await page.goto(base+"/ai-assurance/",{waitUntil:"domcontentloaded"});
+      const six=page.getByRole("region",{name:"Six distinct assurance evidence streams"});
+      assert.equal(await six.getByRole("button").count(),6,
+        viewport.label+": source six-stream diagram was flattened or truncated");
+      assert.ok(!(await six.innerText()).includes("1,035"),
+        viewport.label+": historical 1,035 tests wrongly attributed to six-stream methods figure");
+      await page.getByRole("region",{name:"Historical hermetic suite · six closure streams"}).getByText("1,035").waitFor();
+      checks+=3;
+      await page.goto(base+"/dashboard/",{waitUntil:"domcontentloaded"});
+      const errorMatrix=page.locator('[aria-label="Error categories versus escalation tiers"]');
+      await errorMatrix.waitFor({state:"visible"});
+      assert.equal(await errorMatrix.locator("tbody tr").count(),8,
+        viewport.label+": original eight tier/error categories were lost");
+      checks+=2;
+      await page.goto(base+"/token-economics/",{waitUntil:"domcontentloaded"});
+      const tokenExample=page.getByRole("region",{name:"One historical case: token use against a rate window"});
+      await tokenExample.waitFor({state:"visible"});
+      await tokenExample.getByText("5,045 tokens").waitFor();
+      await tokenExample.getByRole("img",{name:/Historical example: 4,760 input tokens/}).waitFor();
+      checks+=3;
+      if(viewport.label==="desktop")await tokenExample.screenshot({path:"visual-acceptance/historical-token-example.png"});
       await page.goto(base + "/governance/", { waitUntil: "domcontentloaded" });
       await page.getByRole("navigation", { name: "Governance channels" })
         .getByRole("link", { name: "Lessons", exact: true }).click();
