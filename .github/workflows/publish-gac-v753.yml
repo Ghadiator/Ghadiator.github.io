@@ -1,0 +1,91 @@
+name: Publish verified GovernanceAsCode 7.5.3 static interface
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/publish-gac-v753.yml]
+permissions:
+  contents: write
+concurrency:
+  group: public-static-gac-v753
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      RELEASE_ARTIFACT_URL: 'https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-67c8-820a-b5a2-37e48b02385e/raw?se=2026-11-03T08%3A52%3A39Z&sp=r&sv=2026-02-06&sr=b&scid=f17b6ed6-5504-5f23-903e-f8672f84e122&skoid=e5f84a89-964a-4fd3-92c2-c2cb3a12ea16&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-03T05%3A21%3A00Z&ske=2026-11-04T05%3A21%3A00Z&sks=b&skv=2026-02-06&sig=dFG0ossdiiQfdmkqCdccusjw5EzyO8GLKj9Yod%2BeoEA%3D'
+      EXPECTED_DIGEST: 'b4f578cf7222aec55e2c8227fb01432c512119232b8c3a493512609c3051615e'
+      SOURCE_SHA: '22772e2452f44a0647b257bd9a5c2030775d1274'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Verify compiled public export matches source release
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          curl -fLsS --retry 3 --max-time 150 "$RELEASE_ARTIFACT_URL" -o /tmp/gac-static.zip
+          printf '%s  %s\n' "$EXPECTED_DIGEST" /tmp/gac-static.zip | sha256sum -c -
+          mkdir -p /tmp/gac-static
+          unzip -q /tmp/gac-static.zip -d /tmp/gac-static
+          test -s /tmp/gac-static/index.html
+          test -s /tmp/gac-static/architecture/index.html
+          test -s /tmp/gac-static/governance/index.html
+          test -s /tmp/gac-static/ai-roles/index.html
+          test -d /tmp/gac-static/_next/static
+          grep -q 'Public read-only reference' /tmp/gac-static/index.html
+          grep -q 'Architecture Explorer' /tmp/gac-static/architecture/index.html
+          grep -q 'Pydantic Models' /tmp/gac-static/architecture/index.html
+          grep -q 'Try It Yourself' /tmp/gac-static/architecture/index.html
+          grep -q 'Reasoning personas' /tmp/gac-static/ai-roles/index.html
+          grep -q 'NIST AI RMF' /tmp/gac-static/governance/index.html
+          if find /tmp/gac-static -type f \( -name '*.py' -o -name '.env' -o -name '*.pem' -o -name '*.key' -o -name '*.db' \) | grep -q .; then
+            echo 'Unexpected backend or secret file in release archive'; exit 1
+          fi
+      - name: Overlay public static artifacts and document provenance
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          rsync -a --exclude='.git/' --exclude='.github/' /tmp/gac-static/ ./
+          touch .nojekyll
+          python3 - <<'PY'
+          import hashlib, json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          output=Path('/tmp/gac-static')
+          digest=hashlib.sha256()
+          for p in sorted(output.rglob('*')):
+              if p.is_file():
+                  digest.update(str(p.relative_to(output)).encode())
+                  digest.update(hashlib.sha256(p.read_bytes()).digest())
+          obj={
+            'mode':'public-static-read-only',
+            'source_repo':'Ghadiator/generic-agentic-validation',
+            'source_branch':'feat/governance-visual-atlas-20261103',
+            'reviewed_release_branch':'release/public-pages-static-2026-10-26',
+            'source_commit':os.environ['SOURCE_SHA'],
+            'app_version':'7.5.3',
+            'next_version':'15.5.28',
+            'output_digest_sha256':digest.hexdigest(),
+            'release_artifact_sha256':os.environ['EXPECTED_DIGEST'],
+            'published_at_utc':datetime.now(timezone.utc).isoformat(),
+            'previous_public_site_branch':'archive/live-site-2026-10-26-pre-restore',
+            'previous_public_site_commit':'fbb9a3302170ce594510e0fe86e64d5f163711c8',
+            'backend_available':False,
+            'live_ai_available':False,
+            'live_approvals_available':False
+          }
+          Path('.site-release.json').write_text(json.dumps(obj,indent=2)+'\n')
+          PY
+          python3 scripts/check-native-release.py
+          git diff --check
+      - name: Commit public export without removing legacy evidence
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then echo 'No compiled changes'; exit 0; fi
+          git commit -m "deploy: GovernanceAsCode public visual interface v7.5.3"
+          git push origin HEAD:main
