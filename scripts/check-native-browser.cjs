@@ -172,7 +172,7 @@ const routes = [
       await page.getByRole("region",{name:"Historical hermetic suite · six closure streams"}).getByText("1,035",{exact:true}).waitFor();
       checks+=3;
       await page.goto(base+"/dashboard/",{waitUntil:"domcontentloaded"});
-      const errorMatrix=page.locator('[aria-label="Error categories versus escalation tiers"]');
+      const errorMatrix=page.locator('[aria-label="Error categories versus escalation tiers"]').first();
       await errorMatrix.waitFor({state:"visible"});
       assert.equal(await errorMatrix.locator("tbody tr").count(),8,
         viewport.label+": original eight tier/error categories were lost");
