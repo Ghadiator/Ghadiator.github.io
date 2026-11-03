@@ -31,7 +31,7 @@ jobs:
           done
           test -d /tmp/gac/_next/static
           grep -q 'Public read-only reference' /tmp/gac/index.html
-          grep -q 'The original supplier-invoice review workflow' /tmp/gac/index.html
+          grep -q 'Original manual workflow' /tmp/gac/index.html
           grep -q 'Pydantic Models' /tmp/gac/architecture/index.html || grep -q 'Understand the data' /tmp/gac/architecture/index.html
           if find /tmp/gac -type f \( -name '*.py' -o -name '.env' -o -name '*.pem' -o -name '*.key' -o -name '*.db' \) | grep -q .; then echo 'Backend or secret file in public build'; exit 1; fi
       - name: Overlay verified static export
