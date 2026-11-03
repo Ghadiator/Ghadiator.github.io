@@ -180,8 +180,8 @@ const routes = [
       await page.goto(base+"/token-economics/",{waitUntil:"domcontentloaded"});
       // Real metering is the default. Historical diagrams are deliberately
       // hidden behind an optional one-at-a-time figure picker.
-      await page.getByText("Optional: historical diagrams explaining the economic controls").click();
-      await page.getByRole("button",{name:"Historical 5,045-token example"}).click();
+      await page.getByText("Explore the token-economics engineering diagrams (optional)").click();
+      await page.getByRole("button",{name:"Historical example",exact:true}).click();
       const tokenExample=page.getByRole("region",{name:"One historical case: token use against a rate window"});
       await tokenExample.waitFor({state:"visible"});
       await tokenExample.getByText("5,045 tokens").waitFor();
