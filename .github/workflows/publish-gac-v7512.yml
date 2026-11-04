@@ -1,0 +1,80 @@
+name: Publish verified GovernanceAsCode 7.5.12 architecture and Token Economics
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/publish-gac-v7512.yml]
+permissions:
+  contents: write
+concurrency:
+  group: gac-public-static-7512
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ARTIFACT_URL: "https://sdmntprindiasocentral.oaiusercontent.com/files/00000000-24f8-8211-b57b-e10f5847351b/raw?se=2026-11-04T09%3A35%3A32Z&sp=r&sv=2026-02-06&sr=b&scid=e6ade848-82a9-5f2b-b126-10cc8d0e9ede&skoid=e5f84a89-964a-4fd3-92c2-c2cb3a12ea16&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-04T06%3A31%3A50Z&ske=2026-11-05T06%3A31%3A50Z&sks=b&skv=2026-02-06&sig=BCOjS%2BpO/Q86%2Be1q7eVSP3MstKLLsPl21WuH0YSnQ7Y%3D"
+      ARTIFACT_SHA256: "087da094ed6d920adcaa6f4b845c2ddf298638ff15e04da6aec67753481a3b43"
+      SOURCE_SHA: "701d7b0b6bdda9376b751674a2352c2b90dfa954"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the immutable public artifact and evidence boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --connect-timeout 15 --max-time 120 "$ARTIFACT_URL" -o /tmp/gac.zip
+          echo "$ARTIFACT_SHA256  /tmp/gac.zip" | sha256sum -c -
+          mkdir -p /tmp/gac-7512
+          unzip -q /tmp/gac.zip -d /tmp/gac-7512
+          for p in index.html architecture/index.html ai-assurance/index.html red-team/index.html safety-origin/index.html dashboard/index.html token-economics/index.html governance/index.html; do test -s "/tmp/gac-7512/$p"; done
+          test -d /tmp/gac-7512/_next/static
+          grep -q 'Public read-only reference' /tmp/gac-7512/index.html
+          grep -q 'Understand the data' /tmp/gac-7512/architecture/index.html
+          grep -q 'Understand the workflow' /tmp/gac-7512/architecture/index.html
+          grep -q 'Replay a case' /tmp/gac-7512/architecture/index.html
+          grep -q 'Try a new case' /tmp/gac-7512/architecture/index.html
+          grep -q 'Token economics' /tmp/gac-7512/token-economics/index.html
+          grep -q 'The business question' /tmp/gac-7512/index.html
+          if find /tmp/gac-7512 -type f \( -name '*.py' -o -name '.env' -o -name '*.pem' -o -name '*.key' -o -name '*.db' \) | grep -q .; then echo 'Unexpected backend or secret'; exit 1; fi
+      - name: Overlay the compiled public reference, preserving all prior records
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -a --exclude='.git/' --exclude='.github/' /tmp/gac-7512/ ./
+          touch .nojekyll
+          python3 - <<'PY'
+          import hashlib,json,os
+          from datetime import datetime,timezone
+          from pathlib import Path
+          root=Path('/tmp/gac-7512')
+          digest=hashlib.sha256()
+          for p in sorted(root.rglob('*')):
+            if p.is_file():
+              digest.update(str(p.relative_to(root)).encode())
+              digest.update(hashlib.sha256(p.read_bytes()).digest())
+          old=json.loads(Path('.site-release.json').read_text())
+          old.update({
+            'mode':'public-static-read-only',
+            'source_repo':'Ghadiator/generic-agentic-validation',
+            'source_branch':'feat/governance-visual-atlas-20261103',
+            'source_commit':os.environ['SOURCE_SHA'],
+            'app_version':'7.5.12',
+            'output_digest_sha256':digest.hexdigest(),
+            'release_artifact_sha256':os.environ['ARTIFACT_SHA256'],
+            'published_at_utc':datetime.now(timezone.utc).isoformat(),
+            'backend_available':False,'live_ai_available':False,'live_approvals_available':False
+          })
+          Path('.site-release.json').write_text(json.dumps(old,indent=2)+'\n')
+          PY
+          python3 scripts/check-native-release.py
+          git diff --check
+      - name: Commit the public release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
+          git commit -m "deploy: GovernanceAsCode 7.5.12 corrected architecture, KPIs and token economics"
+          git push origin HEAD:main
