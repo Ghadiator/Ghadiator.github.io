@@ -1,0 +1,84 @@
+name: Publish verified GovernanceAsCode 7.5.13 restored validation workbench references
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/publish-gac-v7513.yml]
+permissions:
+  contents: write
+concurrency:
+  group: gac-public-static-7513
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ARTIFACT_URL: "https://sdmntprcentralus.oaiusercontent.com/files/00000000-31f0-81f5-ae2a-80bd622cd5b1/raw?se=2026-11-04T11%3A58%3A20Z&sp=r&sv=2026-02-06&sr=b&scid=883a54f8-72e3-594f-b305-19246a924a68&skoid=e5f84a89-964a-4fd3-92c2-c2cb3a12ea16&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-04T04%3A07%3A48Z&ske=2026-11-05T04%3A07%3A48Z&sks=b&skv=2026-02-06&sig=2MMfHvfZ5baLr42btFWpvSvyCwVBtgYA5kKz6AsD8Og%3D"
+      ARTIFACT_SHA256: "c1ae70485ca3ed4ecea1f1bc1ddbe075ad73bf556a08d73f16ab21c00233a1c5"
+      SOURCE_SHA: "47ff95921b61b8b9f0319d34420d3cdada9f36a8"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the immutable public artifact and evidence boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --connect-timeout 15 --max-time 120 "$ARTIFACT_URL" -o /tmp/gac.zip
+          echo "$ARTIFACT_SHA256  /tmp/gac.zip" | sha256sum -c -
+          mkdir -p /tmp/gac-7513
+          unzip -q /tmp/gac.zip -d /tmp/gac-7513
+          for p in index.html architecture/index.html ai-assurance/index.html red-team/index.html safety-origin/index.html dashboard/index.html token-economics/index.html governance/index.html tickets/index.html tickets/new/index.html ticket/index.html inbound/index.html monitor/index.html pool-analytics/index.html; do test -s "/tmp/gac-7513/$p"; done
+          test -d /tmp/gac-7513/_next/static
+          grep -q 'Public read-only reference' /tmp/gac-7513/index.html
+          grep -q 'Understand the data' /tmp/gac-7513/architecture/index.html
+          grep -q 'Understand the workflow' /tmp/gac-7513/architecture/index.html
+          grep -q 'Replay a case' /tmp/gac-7513/architecture/index.html
+          grep -q 'Try a new case' /tmp/gac-7513/architecture/index.html
+          grep -q 'Token economics' /tmp/gac-7513/token-economics/index.html
+          grep -q 'The business question' /tmp/gac-7513/index.html
+          grep -q 'Grounded checks → bypass Tier-3 committee' /tmp/gac-7513/index.html
+          grep -q 'Risk weights' /tmp/gac-7513/governance/index.html
+          grep -q 'Six controls behind a bounded model budget' /tmp/gac-7513/token-economics/index.html
+          grep -q 'Recorded collection register' /tmp/gac-7513/tickets/index.html
+          if find /tmp/gac-7513 -type f \( -name '*.py' -o -name '.env' -o -name '*.pem' -o -name '*.key' -o -name '*.db' \) | grep -q .; then echo 'Unexpected backend or secret'; exit 1; fi
+      - name: Overlay the compiled public reference, preserving all prior records
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -a --exclude='.git/' --exclude='.github/' /tmp/gac-7513/ ./
+          touch .nojekyll
+          python3 - <<'PY'
+          import hashlib,json,os
+          from datetime import datetime,timezone
+          from pathlib import Path
+          root=Path('/tmp/gac-7513')
+          digest=hashlib.sha256()
+          for p in sorted(root.rglob('*')):
+            if p.is_file():
+              digest.update(str(p.relative_to(root)).encode())
+              digest.update(hashlib.sha256(p.read_bytes()).digest())
+          old=json.loads(Path('.site-release.json').read_text())
+          old.update({
+            'mode':'public-static-read-only',
+            'source_repo':'Ghadiator/generic-agentic-validation',
+            'source_branch':'feat/governance-visual-atlas-20261103',
+            'source_commit':os.environ['SOURCE_SHA'],
+            'app_version':'7.5.13',
+            'output_digest_sha256':digest.hexdigest(),
+            'release_artifact_sha256':os.environ['ARTIFACT_SHA256'],
+            'published_at_utc':datetime.now(timezone.utc).isoformat(),
+            'backend_available':False,'live_ai_available':False,'live_approvals_available':False
+          })
+          Path('.site-release.json').write_text(json.dumps(old,indent=2)+'\n')
+          PY
+          python3 scripts/check-native-release.py
+          git diff --check
+      - name: Commit the public release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
+          git commit -m "deploy: GovernanceAsCode 7.5.13 workbench restoration without visual redesign and correct Tier-2 AI routing"
+          git push origin HEAD:main
