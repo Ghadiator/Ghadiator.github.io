@@ -52,7 +52,12 @@ const widths = [
      "Tier 2 falsely claims AI is bypassed");
    await map.getByText("Grounded checks → bypass Tier-3 committee").waitFor();
    await map.getByText("Tier 2").first().waitFor();
-   checks+=4;
+   // Keep four succinct role cards on Overview, not the entire operations roster.
+   const teaser=page.getByRole("region",{name:"Reasoning personas and their verification boundary"});
+   await teaser.waitFor({state:"visible"});
+   assert.equal(await teaser.locator('button[aria-label^="Inspect "]').count(),4,
+     viewport.label+": Overview teaser must remain concise");
+   checks+=5;
 
    await page.goto(base+"/governance/",{waitUntil:"domcontentloaded"});
    const controls=page.getByRole("navigation",{name:"Governance channels"});
@@ -86,7 +91,32 @@ const widths = [
    checks+=3;
 
    await page.goto(base+"/architecture/",{waitUntil:"domcontentloaded"});
+   // Submission schema and all declared fields are optional, never forced into the first view.
+   const optional=page.getByText("Optional: inspect how the source models relate",{exact:true});
+   const attributes=page.getByText("Submission · declared attributes",{exact:true});
+   assert.equal(await attributes.isVisible(),false,
+     viewport.label+": Submission fields escaped optional disclosure");
+   await optional.click();
+   await attributes.waitFor({state:"visible"});
+   for(const field of ["case_id: Identifier","invoice_id: Identifier","version: int ≥ 1, strict",
+     "currency: 3-letter code","lines: tuple[Line,...]","total: Decimal (2 d.p.)","documents: tuple[Identifier,...]"]){
+     await page.getByText(field,{exact:true}).first().waitFor({state:"visible"});
+   }
+   checks+=9;
    const modes=page.getByRole("navigation",{name:"Architecture learning and execution modes"});
+   await modes.getByRole("button",{name:/Understand the workflow/}).click();
+   const roster=page.getByRole("region",{name:"Architecture personas and authority boundaries"});
+   await roster.waitFor({state:"visible"});
+   assert.equal(await roster.locator('button[aria-label^="Inspect "]').count(),10,
+     viewport.label+": four committee/verification plus six operational/human roles");
+   await roster.getByRole("button",{name:"Inspect Proponent scope and controls"}).click();
+   const roleModal=page.getByRole("dialog",{name:"Proponent explanation"});
+   await roleModal.waitFor({state:"visible"});
+   await roleModal.getByText("Failure exposure",{exact:true}).waitFor();
+   await roleModal.getByRole("button",{name:/Open graph module/}).click();
+   await page.getByRole("dialog",{name:"Component detail"}).waitFor({state:"visible"});
+   await page.getByRole("button",{name:"Close component detail"}).click();
+   checks+=7;
    assert.equal(await modes.getByRole("button").count(),4,viewport.label+": four original architecture modes");
    await modes.getByRole("button",{name:/Replay a case/}).click();
    await page.locator('[aria-label="Modular architecture canvas"]').waitFor({state:"visible"});
