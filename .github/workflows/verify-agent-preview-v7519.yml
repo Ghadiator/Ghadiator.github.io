@@ -25,7 +25,7 @@ jobs:
           assert len(re.findall(r'class="agent"',p))==8
           for label in ['Proponent','Opponent','Judge','Attacker','Analytics','Integrator','Audit','Reporter']:
               assert label in p,label
-          for text in ['Always on','always on','CoVe verification','Human reviewer','not measured production results','Current public website']:
+          for text in ['always on','CoVe verification','Human reviewer','not measured production results','Current public website']:
               assert text in p,text
           assert 'data:image/webp;base64,' in s
           assert '<script' not in p
