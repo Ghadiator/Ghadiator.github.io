@@ -66,9 +66,12 @@ jobs:
           PY
               then
                 echo 'Live Pages HTTP manifests 7.5.18 with the verified source SHA'
-                curl -fLsS --connect-timeout 6 --max-time 15 'https://ghadiator.github.io/pool-analytics/' | grep -q 'Recorded findings · no assigned weights'
-                curl -fLsS --connect-timeout 6 --max-time 15 'https://ghadiator.github.io/business-impact/' | grep -q 'Six KPIs, with their improvement path and evidence status'
-                curl -fLsS --connect-timeout 6 --max-time 15 'https://ghadiator.github.io/ai-roles/' | grep -q 'Discuss with Proponent'
+                curl -fLsS --connect-timeout 6 --max-time 15 'https://ghadiator.github.io/pool-analytics/' -o /tmp/pool.html
+                grep -q 'Recorded findings · no assigned weights' /tmp/pool.html
+                curl -fLsS --connect-timeout 6 --max-time 15 'https://ghadiator.github.io/business-impact/' -o /tmp/business.html
+                grep -q 'Six KPIs, with their improvement path and evidence status' /tmp/business.html
+                curl -fLsS --connect-timeout 6 --max-time 15 'https://ghadiator.github.io/ai-roles/' -o /tmp/personas.html
+                grep -q 'Discuss with Proponent' /tmp/personas.html
                 exit 0
               fi
             fi
