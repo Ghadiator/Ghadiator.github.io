@@ -1,0 +1,51 @@
+name: Verify separate 7.5.19 eight-agent review preview
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/verify-agent-preview-v7519.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify preview remains independent and does not change live release identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,re
+          from pathlib import Path
+          p=Path('review/agents-7519/index.html').read_text()
+          s=Path('review/agents-7519/personas.svg').read_text()
+          m=json.loads(Path('.site-release.json').read_text())
+          assert m['app_version']=='7.5.18'
+          assert len(re.findall(r'class="agent"',p))==8
+          for label in ['Proponent','Opponent','Judge','Attacker','Analytics','Integrator','Audit','Reporter']:
+              assert label in p,label
+          for text in ['Always on','always on','CoVe verification','Human reviewer','not measured production results','Current public website']:
+              assert text in p,text
+          assert 'data:image/webp;base64,' in s
+          assert '<script' not in p
+          assert 'robots' in p and 'noindex,nofollow' in p
+          assert 'radial-gradient' in p and 'linear-gradient' in p
+          print('PASS: eight illustrated agents, diagram and honest KPI evidence; public 7.5.18 unchanged.')
+          PY
+      - name: Verify published Github Pages review route over HTTP
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 30); do
+            if curl -fLsS --connect-timeout 6 --max-time 15 https://ghadiator.github.io/review/agents-7519/ -o /tmp/gac-agents.html; then
+              if grep -q 'Our eight AI agents' /tmp/gac-agents.html; then
+                curl -fLsS --connect-timeout 6 --max-time 15 https://ghadiator.github.io/review/agents-7519/personas.svg -o /tmp/gac-personas.svg
+                grep -q 'data:image/webp;base64,' /tmp/gac-personas.svg
+                echo 'PASS: public review preview available with actual illustrated sprite.'
+                exit 0
+              fi
+            fi
+            sleep 4
+          done
+          echo 'Preview route did not become available.'; exit 1
