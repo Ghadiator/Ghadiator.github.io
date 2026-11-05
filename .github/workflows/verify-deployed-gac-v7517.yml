@@ -1,0 +1,71 @@
+name: Post-release 7.5.17 browser and public URL verification
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/verify-deployed-gac-v7517.yml]
+permissions:
+  contents: read
+jobs:
+  verify-published-site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify checkout corresponds to immutable source release
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('.site-release.json').read_text())
+          assert m['app_version']=='7.5.17',m
+          assert m['source_commit']=='4284f378fdac46fb7da4194dbca4c3cfa87b7ac4',m
+          assert m['release_artifact_sha256']=='3e428662b45d7a84feced9bf92bf1815b5b58fe9f19d394330926ede930769b8'
+          for page in ['index.html','governance/index.html','pool-analytics/index.html','token-economics/index.html','tickets/index.html','tickets/new/index.html','inbound/index.html']:
+            assert Path(page).is_file(),page
+          assert 'Recorded findings · no assigned weights' in Path('pool-analytics/index.html').read_text()
+          assert 'Grounded checks → bypass Tier-3 committee' in Path('index.html').read_text()
+          print('Verified release commit, artifact digest and required corrected pages.')
+          PY
+          python3 scripts/check-native-release.py
+      - name: Install Chromium browser test dependency
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-package-lock playwright-core@1.56.1
+          command -v google-chrome || command -v chromium
+      - name: Serve the exact published main branch checkout
+        shell: bash
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/gac-pages.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8765/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/gac-pages.log
+          exit 1
+      - name: Responsive real-browser acceptance on actual published files
+        run: node scripts/check-native-browser.cjs
+      - name: Verify GitHub Pages public HTTP release manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 20); do
+            if curl -fLsS --connect-timeout 6 --max-time 15 'https://ghadiator.github.io/.site-release.json' -o /tmp/live-release.json; then
+              if python3 - <<'PY'
+          import json
+          try:
+              d=json.load(open('/tmp/live-release.json'))
+              assert d['app_version']=='7.5.17'
+              assert d['source_commit']=='4284f378fdac46fb7da4194dbca4c3cfa87b7ac4'
+          except Exception:
+              raise SystemExit(1)
+          PY
+              then
+                echo 'Live Pages HTTP manifests 7.5.17 with the verified source SHA'
+                curl -fLsS --connect-timeout 6 --max-time 15 'https://ghadiator.github.io/pool-analytics/' | grep -q 'Recorded findings · no assigned weights'
+                exit 0
+              fi
+            fi
+            sleep 4
+          done
+          echo 'Public HTTP release did not match after retries'; exit 1
