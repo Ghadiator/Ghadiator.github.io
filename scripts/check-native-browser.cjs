@@ -119,7 +119,40 @@ const widths = [
    checks+=7;
    assert.equal(await modes.getByRole("button").count(),4,viewport.label+": four original architecture modes");
    await modes.getByRole("button",{name:/Replay a case/}).click();
-   await page.locator('[aria-label="Modular architecture canvas"]').waitFor({state:"visible"});
+   const graph=page.locator('[aria-label="Modular architecture canvas"]');
+   await graph.waitFor({state:"visible"});
+   for(const role of ["proponent","opponent","judge"]){
+     const agent=graph.locator('button[data-node="'+role+'"]');
+     await agent.waitFor({state:"visible"});
+     assert.match(await agent.textContent(),/AI AGENT/,
+       viewport.label+": "+role+" must read as a model agent, not a generic control");
+     const shape=await agent.evaluate(node=>getComputedStyle(node).clipPath);
+     assert.match(shape,/polygon\(/,
+       viewport.label+": "+role+" must have an explicit shaped agent node");
+   }
+   const cove=graph.locator('button[data-node="firewall"]');
+   await cove.waitFor({state:"visible"});
+   assert.match(await cove.textContent(),/CoVe · VERIFY/,
+     viewport.label+": CoVe must remain a verification gate, not another AI agent");
+   assert.equal(await page.getByText("Pick a case and step through it.",{exact:true}).count(),0,
+     "Duplicate step-through explanation returned");
+   assert.equal(await page.getByText("Step through this run",{exact:true}).count(),0,
+     "Duplicate replay call-to-action returned");
+   assert.ok(await graph.locator('[data-route]').count()>10,
+     "Original modular graph routes must remain intact");
+   checks+=10;
+
+   await page.goto(base+"/ai-assurance/",{waitUntil:"domcontentloaded"});
+   const assurance=page.getByRole("region",{name:"What six separate assurance streams can—and cannot—prove"});
+   await assurance.waitFor({state:"visible"});
+   await assurance.getByText("Optional: inspect the supporting figure",{exact:true}).click();
+   await assurance.getByRole("region",{name:"Six distinct assurance evidence streams"}).waitFor({state:"visible"});
+   checks+=2;
+
+   await page.goto(base+"/cases/",{waitUntil:"domcontentloaded"});
+   await page.getByRole("heading",{name:"From collection to the case record"}).waitFor();
+   await page.goto(base+"/token-economics/",{waitUntil:"domcontentloaded"});
+   await page.getByRole("heading",{name:"Historical example versus actual usage"}).waitFor();
    checks+=2;
 
    if(viewport.label==="mobile"){
