@@ -1,0 +1,103 @@
+name: Publish verified GovernanceAsCode 7.5.19 eight-persona artwork and KPI comparison
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/publish-gac-v7519.yml]
+permissions:
+  contents: write
+concurrency:
+  group: gac-public-static-7519
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ARTIFACT_URL: "https://sdmntprukwest.oaiusercontent.com/files/00000000-619c-8243-9b13-c5683229e600/raw?se=2026-11-05T23%3A58%3A39Z&sp=r&sv=2026-02-06&sr=b&scid=3a750b26-9f73-5be4-a0b0-6149ad0c644e&skoid=5c9dda00-298b-4376-81e9-b4568c8a3c0f&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-05T06%3A41%3A26Z&ske=2026-11-06T06%3A41%3A26Z&sks=b&skv=2026-02-06&sig=O6A8uyQ1Dq92CRI/1yLXXT8cMcIopijd4FGP1gM%2BdDA%3D"
+      ARTIFACT_SHA256: "56ebf7f00c44f6eb60b2597369fd545fe00b6f0255c489d33f843ce7d2be1448"
+      SOURCE_SHA: "fa37dc14804d7ee24e025e85f52d7cf97fd3dfad"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the immutable public artifact and evidence boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --connect-timeout 15 --max-time 120 "$ARTIFACT_URL" -o /tmp/gac.zip
+          echo "$ARTIFACT_SHA256  /tmp/gac.zip" | sha256sum -c -
+          mkdir -p /tmp/gac-7519
+          unzip -q /tmp/gac.zip -d /tmp/gac-7519
+          for p in index.html architecture/index.html ai-assurance/index.html red-team/index.html safety-origin/index.html dashboard/index.html token-economics/index.html governance/index.html tickets/index.html tickets/new/index.html ticket/index.html inbound/index.html monitor/index.html pool-analytics/index.html; do test -s "/tmp/gac-7519/$p"; done
+          test -d /tmp/gac-7519/_next/static
+          grep -q 'Public read-only reference' /tmp/gac-7519/index.html
+          grep -q 'Understand the data' /tmp/gac-7519/architecture/index.html
+          grep -q 'Understand the workflow' /tmp/gac-7519/architecture/index.html
+          grep -q 'Replay a case' /tmp/gac-7519/architecture/index.html
+          grep -q 'Try a new case' /tmp/gac-7519/architecture/index.html
+          grep -q 'Token economics' /tmp/gac-7519/token-economics/index.html
+          grep -q 'Where time and money are at risk' /tmp/gac-7519/business-impact/index.html
+          grep -q 'Grounded checks → bypass Tier-3 committee' /tmp/gac-7519/index.html
+          grep -q 'Risk weights' /tmp/gac-7519/governance/index.html
+          grep -q 'Six controls behind a bounded model budget' /tmp/gac-7519/token-economics/index.html
+          grep -q 'Recorded collection register' /tmp/gac-7519/tickets/index.html
+          grep -q 'Six KPIs, with their improvement path and evidence status' /tmp/gac-7519/business-impact/index.html
+          grep -q 'What the API enables' /tmp/gac-7519/business-impact/index.html
+          grep -q 'Discuss with Proponent' /tmp/gac-7519/ai-roles/index.html
+          if grep -q 'Technical directory' /tmp/gac-7519/index.html; then echo 'Redundant quick access returned'; exit 1; fi
+          grep -q 'Recorded findings · no assigned weights' /tmp/gac-7519/pool-analytics/index.html
+          grep -q 'No canonical supplier risk weight' /tmp/gac-7519/pool-analytics/index.html
+          grep -q 'https://aigovernanceascodelab.com/' /tmp/gac-7519/token-economics/index.html
+          grep -q 'Optional: inspect how the source models relate' /tmp/gac-7519/architecture/index.html
+          grep -q 'case_id: Identifier' /tmp/gac-7519/architecture/index.html
+          grep -q 'declared attributes' /tmp/gac-7519/architecture/index.html
+          grep -q 'Our eight AI agents' /tmp/gac-7519/index.html
+          grep -q 'How governed agentic AI changes the KPIs' /tmp/gac-7519/index.html
+          grep -q 'What six separate assurance streams' /tmp/gac-7519/ai-assurance/index.html
+          grep -q 'First boundary: source text' /tmp/gac-7519/red-team/index.html
+          grep -q 'Where oversight sits relative' /tmp/gac-7519/governance/index.html
+          grep -q 'From collection to the case record' /tmp/gac-7519/cases/index.html
+          grep -q 'Historical example versus actual usage' /tmp/gac-7519/token-economics/index.html
+          grep -q 'What makes a transition auditable' /tmp/gac-7519/audit/index.html
+          grep -q 'Independently controlled interface zones' /tmp/gac-7519/integration/index.html
+          if find /tmp/gac-7519 -type f \( -name '*.py' -o -name '.env' -o -name '*.pem' -o -name '*.key' -o -name '*.db' \) | grep -q .; then echo 'Unexpected backend or secret'; exit 1; fi
+      - name: Overlay the compiled public reference, preserving all prior records
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -a --exclude='.git/' --exclude='.github/' /tmp/gac-7519/ ./
+          touch .nojekyll
+          python3 - <<'PY'
+          import hashlib,json,os
+          from datetime import datetime,timezone
+          from pathlib import Path
+          root=Path('/tmp/gac-7519')
+          digest=hashlib.sha256()
+          for p in sorted(root.rglob('*')):
+            if p.is_file():
+              digest.update(str(p.relative_to(root)).encode())
+              digest.update(hashlib.sha256(p.read_bytes()).digest())
+          old=json.loads(Path('.site-release.json').read_text())
+          old.update({
+            'mode':'public-static-read-only',
+            'source_repo':'Ghadiator/generic-agentic-validation',
+            'source_branch':'feat/governance-visual-atlas-20261103',
+            'source_commit':os.environ['SOURCE_SHA'],
+            'app_version':'7.5.19',
+            'output_digest_sha256':digest.hexdigest(),
+            'release_artifact_sha256':os.environ['ARTIFACT_SHA256'],
+            'published_at_utc':datetime.now(timezone.utc).isoformat(),
+            'backend_available':False,'live_ai_available':False,'live_approvals_available':False
+          })
+          Path('.site-release.json').write_text(json.dumps(old,indent=2)+'\n')
+          PY
+          python3 scripts/check-native-release.py
+          git diff --check
+      - name: Commit the public release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
+          git commit -m "deploy: GovernanceAsCode 7.5.19 eight diverse personas, always-on orchestration, and the preserved KPI story"
+          git push origin HEAD:main
