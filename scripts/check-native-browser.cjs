@@ -93,7 +93,7 @@ const widths = [
    checks+=2;
 
    if(viewport.label==="mobile"){
-    await page.getByRole("button",{name:/Explore/}).click();
+    await page.locator("button.menu-toggle").click();
     await page.getByRole("navigation",{name:"Main navigation"}).getByRole("link",{name:"Architecture",exact:true}).click();
     checks++;
    }
