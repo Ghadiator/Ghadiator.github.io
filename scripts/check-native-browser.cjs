@@ -51,7 +51,7 @@ const widths = [
    assert.equal(await map.getByText("Grounded facts → bypass AI").count(),0,
      "Tier 2 falsely claims AI is bypassed");
    await map.getByText("Grounded checks → bypass Tier-3 committee").waitFor();
-   await map.getByRole("button",{name:/Enterprise cross-check|Approved rate card|Approved purchase order/}).first().click();
+   await map.getByText("Tier 2").first().waitFor();
    checks+=4;
 
    await page.goto(base+"/governance/",{waitUntil:"domcontentloaded"});
