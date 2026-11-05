@@ -5,13 +5,13 @@ const { chromium } = require("playwright-core");
 const fs = require("node:fs");
 const base = process.env.BASE_URL || "http://127.0.0.1:8765";
 const routes = [
-  "/", "/architecture/", "/ai-roles/", "/governance/", "/ai-assurance/",
+  "/", "/business-impact/", "/architecture/", "/ai-roles/", "/governance/", "/ai-assurance/",
   "/red-team/", "/cases/", "/dashboard/", "/token-economics/", "/safety-origin/",
   "/tickets/", "/tickets/new/", "/ticket/", "/inbound/", "/monitor/",
   "/audit/", "/pool-analytics/", "/upload/", "/integration/"
 ];
 const expectedNav = [
-  "Overview", "Architecture", "Personas", "Framework Explorer", "Assurance",
+  "Overview", "Business value & KPIs", "Architecture", "Personas", "Framework Explorer", "Assurance",
   "Failure Lab", "Cases", "Analytics", "Token Economics",
   "Document requests", "Incoming correspondence", "Scenario theater",
   "Process audit", "Pool analytics", "Local workbook lab", "Safety Origins"
@@ -57,7 +57,27 @@ const widths = [
    await teaser.waitFor({state:"visible"});
    assert.equal(await teaser.locator('button[aria-label^="Inspect "]').count(),4,
      viewport.label+": Overview teaser must remain concise");
-   checks+=5;
+   assert.equal(await page.locator('nav[aria-label="On this page"]').count(),0,
+     viewport.label+": redundant Overview quick-access nav returned");
+   assert.equal(await page.getByText("Technical directory",{exact:true}).count(),0,
+     viewport.label+": redundant technical directory returned");
+   await page.getByRole("link",{name:/Inspect each role and ask it questions/}).waitFor({state:"visible"});
+   checks+=8;
+
+   await page.goto(base+"/business-impact/",{waitUntil:"domcontentloaded"});
+   await page.getByRole("heading",{name:"Business value & KPI evidence"}).waitFor();
+   await page.getByRole("heading",{name:"Where time and money are at risk"}).waitFor();
+   await page.getByRole("heading",{name:/Six KPIs, with their improvement path/}).waitFor();
+   await page.getByRole("button",{name:/Model-token demand per case/}).click();
+   await page.getByText("0 live model calls in scripted supplier fixtures").waitFor();
+   await page.getByRole("heading",{name:/What the API enables/}).waitFor();
+   checks+=6;
+
+   await page.goto(base+"/ai-roles/",{waitUntil:"domcontentloaded"});
+   await page.getByRole("heading",{name:/Reasoning personas/}).waitFor();
+   await page.getByRole("heading",{name:/Discuss with Proponent/}).waitFor();
+   await page.getByRole("link",{name:/Open authenticated role conversations/}).waitFor();
+   checks+=3;
 
    await page.goto(base+"/governance/",{waitUntil:"domcontentloaded"});
    const controls=page.getByRole("navigation",{name:"Governance channels"});
