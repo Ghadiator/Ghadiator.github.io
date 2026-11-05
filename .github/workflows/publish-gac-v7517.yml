@@ -1,0 +1,98 @@
+name: Publish verified GovernanceAsCode 7.5.17 corrected supplier finding weights and preserved workbench
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/publish-gac-v7517.yml]
+permissions:
+  contents: write
+concurrency:
+  group: gac-public-static-7517
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ARTIFACT_URL: "https://sdmntprcentralus.oaiusercontent.com/files/00000000-74d0-81f5-ba17-82e3a520ac60/raw?se=2026-11-05T09%3A46%3A24Z&sp=r&sv=2026-02-06&sr=b&scid=3c0fe4fe-d0e3-56bb-bb22-f4cd420d04e1&skoid=e5f84a89-964a-4fd3-92c2-c2cb3a12ea16&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-11-05T09%3A10%3A16Z&ske=2026-11-06T09%3A10%3A16Z&sks=b&skv=2026-02-06&sig=XDkhxWR%2BAKUq0N/fB0HcmOu%2Bl1I5ObCg5ELugfZ8/AY%3D"
+      ARTIFACT_SHA256: "3e428662b45d7a84feced9bf92bf1815b5b58fe9f19d394330926ede930769b8"
+      SOURCE_SHA: "4284f378fdac46fb7da4194dbca4c3cfa87b7ac4"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify the immutable public artifact and evidence boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 --connect-timeout 15 --max-time 120 "$ARTIFACT_URL" -o /tmp/gac.zip
+          echo "$ARTIFACT_SHA256  /tmp/gac.zip" | sha256sum -c -
+          mkdir -p /tmp/gac-7517
+          unzip -q /tmp/gac.zip -d /tmp/gac-7517
+          for p in index.html architecture/index.html ai-assurance/index.html red-team/index.html safety-origin/index.html dashboard/index.html token-economics/index.html governance/index.html tickets/index.html tickets/new/index.html ticket/index.html inbound/index.html monitor/index.html pool-analytics/index.html; do test -s "/tmp/gac-7517/$p"; done
+          test -d /tmp/gac-7517/_next/static
+          grep -q 'Public read-only reference' /tmp/gac-7517/index.html
+          grep -q 'Understand the data' /tmp/gac-7517/architecture/index.html
+          grep -q 'Understand the workflow' /tmp/gac-7517/architecture/index.html
+          grep -q 'Replay a case' /tmp/gac-7517/architecture/index.html
+          grep -q 'Try a new case' /tmp/gac-7517/architecture/index.html
+          grep -q 'Token economics' /tmp/gac-7517/token-economics/index.html
+          grep -q 'The business question' /tmp/gac-7517/index.html
+          grep -q 'Grounded checks → bypass Tier-3 committee' /tmp/gac-7517/index.html
+          grep -q 'Risk weights' /tmp/gac-7517/governance/index.html
+          grep -q 'Six controls behind a bounded model budget' /tmp/gac-7517/token-economics/index.html
+          grep -q 'Recorded collection register' /tmp/gac-7517/tickets/index.html
+          grep -q 'Recorded findings · no assigned weights' /tmp/gac-7517/pool-analytics/index.html
+          grep -q 'No canonical supplier risk weight' /tmp/gac-7517/pool-analytics/index.html
+          grep -q 'https://aigovernanceascodelab.com/' /tmp/gac-7517/token-economics/index.html
+          grep -q 'Optional: inspect how the source models relate' /tmp/gac-7517/architecture/index.html
+          grep -q 'case_id: Identifier' /tmp/gac-7517/architecture/index.html
+          grep -q 'declared attributes' /tmp/gac-7517/architecture/index.html
+          grep -q 'Meet the roles behind controlled reasoning' /tmp/gac-7517/index.html
+          grep -q 'What six separate assurance streams' /tmp/gac-7517/ai-assurance/index.html
+          grep -q 'First boundary: source text' /tmp/gac-7517/red-team/index.html
+          grep -q 'Where oversight sits relative' /tmp/gac-7517/governance/index.html
+          grep -q 'From collection to the case record' /tmp/gac-7517/cases/index.html
+          grep -q 'Historical example versus actual usage' /tmp/gac-7517/token-economics/index.html
+          grep -q 'What makes a transition auditable' /tmp/gac-7517/audit/index.html
+          grep -q 'Independently controlled interface zones' /tmp/gac-7517/integration/index.html
+          if find /tmp/gac-7517 -type f \( -name '*.py' -o -name '.env' -o -name '*.pem' -o -name '*.key' -o -name '*.db' \) | grep -q .; then echo 'Unexpected backend or secret'; exit 1; fi
+      - name: Overlay the compiled public reference, preserving all prior records
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -a --exclude='.git/' --exclude='.github/' /tmp/gac-7517/ ./
+          touch .nojekyll
+          python3 - <<'PY'
+          import hashlib,json,os
+          from datetime import datetime,timezone
+          from pathlib import Path
+          root=Path('/tmp/gac-7517')
+          digest=hashlib.sha256()
+          for p in sorted(root.rglob('*')):
+            if p.is_file():
+              digest.update(str(p.relative_to(root)).encode())
+              digest.update(hashlib.sha256(p.read_bytes()).digest())
+          old=json.loads(Path('.site-release.json').read_text())
+          old.update({
+            'mode':'public-static-read-only',
+            'source_repo':'Ghadiator/generic-agentic-validation',
+            'source_branch':'feat/governance-visual-atlas-20261103',
+            'source_commit':os.environ['SOURCE_SHA'],
+            'app_version':'7.5.17',
+            'output_digest_sha256':digest.hexdigest(),
+            'release_artifact_sha256':os.environ['ARTIFACT_SHA256'],
+            'published_at_utc':datetime.now(timezone.utc).isoformat(),
+            'backend_available':False,'live_ai_available':False,'live_approvals_available':False
+          })
+          Path('.site-release.json').write_text(json.dumps(old,indent=2)+'\n')
+          PY
+          python3 scripts/check-native-release.py
+          git diff --check
+      - name: Commit the public release
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then echo 'No changes'; exit 0; fi
+          git commit -m "deploy: GovernanceAsCode 7.5.17 supplier finding evidence accuracy with existing visual architecture and workbench retained"
+          git push origin HEAD:main
