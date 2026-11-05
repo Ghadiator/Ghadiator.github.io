@@ -34,7 +34,7 @@ jobs:
           grep -q 'Replay a case' /tmp/gac-7518/architecture/index.html
           grep -q 'Try a new case' /tmp/gac-7518/architecture/index.html
           grep -q 'Token economics' /tmp/gac-7518/token-economics/index.html
-          grep -q 'The business question' /tmp/gac-7518/index.html
+          grep -q 'Where time and money are at risk' /tmp/gac-7518/business-impact/index.html
           grep -q 'Grounded checks → bypass Tier-3 committee' /tmp/gac-7518/index.html
           grep -q 'Risk weights' /tmp/gac-7518/governance/index.html
           grep -q 'Six controls behind a bounded model budget' /tmp/gac-7518/token-economics/index.html
