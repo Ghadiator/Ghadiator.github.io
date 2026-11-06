@@ -1,0 +1,105 @@
+name: Verify governed human-agent collaboration Introduction visual
+on:
+  pull_request:
+    paths:
+      - "assets/governed-human-agent-collaboration-20261106.svg"
+      - "assets/governed-human-agent-collaboration-mobile-20261106.svg"
+      - "assets/introduction-order-and-kpis-20261106.css"
+      - ".github/workflows/verify-human-agent-visual-20261106.yml"
+  push:
+    branches: [main]
+    paths:
+      - "assets/governed-human-agent-collaboration-20261106.svg"
+      - "assets/governed-human-agent-collaboration-mobile-20261106.svg"
+      - "assets/introduction-order-and-kpis-20261106.css"
+      - ".github/workflows/verify-human-agent-visual-20261106.yml"
+permissions:
+  contents: read
+jobs:
+  static-visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify SVG syntax and non-executable content
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          for path in [
+              Path('assets/governed-human-agent-collaboration-20261106.svg'),
+              Path('assets/governed-human-agent-collaboration-mobile-20261106.svg')
+          ]:
+              data=path.read_text()
+              node=ET.fromstring(data)
+              assert node.tag.endswith('svg')
+              for bad in ('<script', '<foreignObject', 'javascript:', 'http://', 'https://'):
+                  assert bad not in data, (path, bad)
+              for required in ('Augmented', 'Human-led', 'Proponent', 'Opponent', 'CoVe', 'Judge', 'Analytics', 'Integrator', 'Reporter', 'Audit', 'Attacker'):
+                  assert required in data, (path, required)
+              print('Safe SVG:',path)
+          css=Path('assets/introduction-order-and-kpis-20261106.css').read_text()
+          assert '::before' in css
+          assert 'order:4 !important' in css
+          assert 'order:5 !important' in css
+          assert 'order:6 !important' in css
+          assert 'governed-human-agent-collaboration-mobile-20261106.svg' in css
+          print('CSS positioning and desktop/mobile assets verified')
+          PY
+      - name: Set up browser tooling
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-package-lock playwright-core@1.56.1
+          command -v google-chrome || command -v chromium
+      - name: Serve static checkout
+        shell: bash
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/gac-human-agent-http.log 2>&1 &
+          for n in $(seq 1 30); do curl -fsS http://127.0.0.1:8765/ -o /dev/null && exit 0; sleep 1; done
+          cat /tmp/gac-human-agent-http.log
+          exit 1
+      - name: Verify browser placement and capture desktop/mobile
+        shell: bash
+        run: |
+          node <<'JS'
+          const {chromium}=require('playwright-core');
+          const fs=require('node:fs');
+          (async()=>{
+            const executablePath=process.env.CHROME_BIN || '/usr/bin/google-chrome';
+            const browser=await chromium.launch({executablePath,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+            fs.mkdirSync('/tmp/gac-human-agent', {recursive:true});
+            for(const width of [1440,390]){
+              const page=await browser.newPage({viewport:{width,height:900},deviceScaleFactor:1});
+              await page.goto('http://127.0.0.1:8765/',{waitUntil:'networkidle'});
+              await page.locator('#overview-agent-strip').waitFor();
+              const data=await page.evaluate(()=>{
+                const root=document.querySelector('main .space-y-12:has(#introduction-title)');
+                const roster=document.querySelector('main .space-y-12:has(#introduction-title) aside[aria-labelledby="overview-agent-strip"], main .space-y-12:has(#introduction-title) section[aria-labelledby="overview-agent-strip"]');
+                if(!root||!roster)return null;
+                const pseudo=getComputedStyle(root,'::before');
+                const rosterStyle=getComputedStyle(roster);
+                return {image:pseudo.backgroundImage,display:pseudo.display,order:pseudo.order,width:pseudo.width,rosterOrder:rosterStyle.order,role:roster.tagName};
+              });
+              if(!data)throw new Error('Missing Introduction / roster at '+width);
+              if(data.display==='none'||data.order!=='4'||data.rosterOrder!=='5')throw new Error('Placement mismatch '+width+': '+JSON.stringify(data));
+              const expected=width===390?'collaboration-mobile-20261106.svg':'collaboration-20261106.svg';
+              if(!data.image.includes(expected))throw new Error('Wrong image '+width+': '+JSON.stringify(data));
+              const asset=await page.request.get('http://127.0.0.1:8765/assets/governed-human-agent-collaboration'+(width===390?'-mobile':'')+'-20261106.svg');
+              if(!asset.ok())throw new Error('Missing SVG '+width);
+              await page.screenshot({path:'/tmp/gac-human-agent/intro-'+width+'.png',fullPage:true});
+              console.log('PASS',width,data);
+              await page.close();
+            }
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Retain viewport evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: governed-human-agent-introduction-review
+          path: /tmp/gac-human-agent/*.png
+          if-no-files-found: ignore
+          retention-days: 5
