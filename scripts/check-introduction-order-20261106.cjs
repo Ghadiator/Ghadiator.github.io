@@ -67,6 +67,12 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
    },null,{timeout:8000});
    const top=await target.evaluate(el=>el.getBoundingClientRect().top);
    assert(top>=-80&&top<900,"KPI anchor must reach viewport after scrolling, position "+top);
+   assert.equal(await page.getByRole("heading",{name:"What exactly did the workflow automate?"}).count(),0,
+     "Old redundant interactive workflow section must not appear on Introduction");
+   assert.equal(await page.locator("#manual-workflow-title").count(),0,
+     "Old task comparison section must be removed, not merely hidden");
+   assert.equal(await page.locator("#gac-kpi-manual-comparison").count(),1,
+     "Business KPI comparison must remain visible");
    assert(!errors.length,"Browser errors: "+errors.join(" | "));
    const img=await page.request.get("http://127.0.0.1:8765/avatars/analytics-original-cropped.webp");
    assert.equal(img.status(),200,"Uploaded teal-hijab portrait unavailable");
