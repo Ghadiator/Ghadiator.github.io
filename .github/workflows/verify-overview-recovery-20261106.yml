@@ -1,0 +1,66 @@
+name: Verify restored photo avatars and supplier workflow headline
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/verify-overview-recovery-20261106.yml]
+permissions:
+  contents: read
+jobs:
+  visual-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-package-lock playwright-core@1.56.1
+          command -v google-chrome || command -v chromium
+      - name: Serve static public checkout
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/gac-server.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8765/ -o /dev/null && exit 0; sleep 1; done
+          cat /tmp/gac-server.log; exit 1
+      - name: Test headline and original photographic roster across breakpoints
+        run: |
+          mkdir -p /tmp/overview-screenshots
+          node - <<'JS'
+          const assert=require("node:assert/strict");
+          const {chromium}=require("playwright-core");
+          const fs=require("node:fs");
+          const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromium"].find(fs.existsSync);
+          (async()=>{
+           const browser=await chromium.launch({headless:true,executablePath:chrome,args:["--no-sandbox"]});
+           try{
+            for(const width of [390,768,1440]){
+             const page=await browser.newPage({viewport:{width,height:960},deviceScaleFactor:2});
+             const errors=[];
+             page.on("pageerror",e=>errors.push(e.message));
+             await page.goto("http://127.0.0.1:8765/",{waitUntil:"networkidle"});
+             const heading=await page.locator("#introduction-title").innerText();
+             assert(heading.startsWith("Supplier invoice validation."),heading);
+             const agent=page.locator('[aria-labelledby="overview-agent-strip"]');
+             assert.equal(await agent.locator('li strong').count(),8);
+             const labels=await agent.locator("li strong").allInnerTexts();
+             assert.deepEqual(labels,["Proponent","Opponent","Judge","Attacker","Analytics","Integrator","Audit","Reporter"]);
+             const backgrounds=await agent.locator('[role="img"]').evaluateAll(els=>els.map(e=>getComputedStyle(e).backgroundImage));
+             assert.equal(backgrounds.length,8);
+             assert(backgrounds.every(x=>x.includes("personas.svg")),"Original photographic portraits missing");
+             const patch=await page.locator('script[src*="agent-avatar-sharp-7519"]').count();
+             assert.equal(patch,0,"The destructive client-side mutation returned");
+             const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
+             assert(overflow<4,"Unexpected horizontal overflow: "+overflow);
+             assert.equal(errors.length,0,"Browser errors: "+errors.join(" | "));
+             await page.screenshot({path:`/tmp/overview-screenshots/overview-${width}.png`,fullPage:width!==1440});
+             console.log("PASS overview",width,"roles",labels.join(","),"headline",heading.slice(0,90));
+             await page.close();
+            }
+           }finally{await browser.close()}
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: overview-photo-recovery-screenshots
+          path: /tmp/overview-screenshots/*.png
+          if-no-files-found: ignore
+          retention-days: 3
