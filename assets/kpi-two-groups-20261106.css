@@ -21,3 +21,16 @@
 .gac-kpi-family-link a{color:#157669;text-decoration:underline;text-underline-offset:4px;font-weight:750;font-size:14px}
 @media(max-width:1000px){.gac-ai-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:680px){.gac-ai-family{padding:23px 17px}.gac-ai-grid{grid-template-columns:minmax(0,1fr)}.gac-ai-card{padding:16px}.gac-kpi-family-link{display:block}.gac-kpi-family-link a{display:inline-block;margin-top:12px}}
+
+/* The same category model appears at the beginning of Business Value & KPIs. */
+.gac-kpi-business-taxonomy{margin:0 0 22px;padding:28px 30px;border:1px solid #bfded7;border-radius:20px;background:#f2faf7;color:#254751}
+.gac-kpi-business-taxonomy>h2{font-size:clamp(24px,2.7vw,32px);font-weight:800;line-height:1.2;margin:10px 0 0;color:#1f4352}
+.gac-kpi-business-taxonomy>p:nth-of-type(2){margin:12px 0 0;font-size:15px;line-height:1.75;color:#567581;max-width:850px}
+.gac-kpi-business-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:22px}
+.gac-kpi-business-groups article{padding:22px;border:1px solid #cfdfdf;background:white;border-radius:14px;min-width:0}
+.gac-kpi-business-groups h3{font-size:19px;font-weight:750;color:#22525c;margin:0}
+.gac-kpi-business-groups ul{margin:14px 0 18px;padding-left:21px;list-style:disc}
+.gac-kpi-business-groups li{font-size:14px;line-height:1.8;color:#4b6d78}
+.gac-kpi-business-groups a{font-size:13px;font-weight:750;color:#177b71;text-decoration:underline;text-underline-offset:3px}
+.gac-kpi-business-taxonomy>.gac-ai-state{font-size:12px;margin-top:16px}
+@media(max-width:700px){.gac-kpi-business-taxonomy{padding:23px 16px}.gac-kpi-business-groups{grid-template-columns:minmax(0,1fr)}.gac-kpi-business-groups article{padding:17px}}
