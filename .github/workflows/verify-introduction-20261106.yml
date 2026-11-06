@@ -8,6 +8,8 @@ on:
       - assets/introduction-order-and-kpis-20261106.css
       - avatars/analytics-original-cropped.webp
       - index.html
+      - index.txt
+      - assets/kpi-manual-delta-20261106.css
 permissions:
   contents: read
 jobs:
