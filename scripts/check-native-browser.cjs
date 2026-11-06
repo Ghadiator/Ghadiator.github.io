@@ -73,6 +73,15 @@ const widths = [
    checks+=8;
 
    await page.goto(base+"/business-impact/",{waitUntil:"domcontentloaded"});
+   const manualLink=page.getByRole("link",{name:/View manual KPI baselines and governed changes/});
+   await manualLink.waitFor({state:"visible"});
+   await manualLink.click();
+   assert.equal(new URL(page.url()).hash,"#gac-kpi-manual-comparison",
+     viewport.label+": business tab must open the real manual-versus-governed KPI panel");
+   await page.locator('#gac-kpi-manual-comparison .gac-kpi-baseline').first().waitFor({state:"visible"});
+   assert.equal(await page.locator('#gac-kpi-manual-comparison .gac-kpi-pair').count(),6,
+     viewport.label+": six KPI change lanes must remain available");
+   await page.goto(base+"/business-impact/",{waitUntil:"domcontentloaded"});
    await page.getByRole("heading",{name:"Business value & KPI evidence"}).waitFor();
    await page.getByRole("heading",{name:"Where time and money are at risk"}).waitFor();
    await page.getByRole("heading",{name:/Six KPIs, with their improvement path/}).waitFor();
