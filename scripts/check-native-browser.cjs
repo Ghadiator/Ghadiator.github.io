@@ -128,8 +128,8 @@ const widths = [
    await modes.getByRole("button",{name:/Understand the workflow/}).click();
    const roster=page.getByRole("region",{name:"Architecture personas and authority boundaries"});
    await roster.waitFor({state:"visible"});
-   assert.equal(await roster.locator('button[aria-label^="Inspect "]').count(),10,
-     viewport.label+": four committee/verification plus six operational/human roles");
+   assert.equal(await roster.locator('button[aria-label^="Inspect "]').count(),8,
+     viewport.label+": three reasoning plus five operational roles; CoVe is a control");
    await roster.getByRole("button",{name:"Inspect Proponent scope and controls"}).click();
    const roleModal=page.getByRole("dialog",{name:"Proponent explanation"});
    await roleModal.waitFor({state:"visible"});
