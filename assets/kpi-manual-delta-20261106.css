@@ -56,3 +56,8 @@
 #gac-kpi-manual-comparison .gac-kpi-pair{padding:18px 13px;}
 #gac-kpi-manual-comparison .gac-kpi-footer{padding:20px;flex-direction:column;}
 }
+
+/* The retired compatibility stylesheet applied outer padding to any KPI section.
+   Reset that inherited patch so the new semantic header and before/after lanes
+   sit flush inside a single intentional frame. */
+main .space-y-12:has(#introduction-title) #gac-kpi-manual-comparison{padding:0!important;}
