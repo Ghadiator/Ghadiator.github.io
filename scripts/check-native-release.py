@@ -22,7 +22,7 @@ for route in ('','architecture','cases','case','audit','safety','red-team','gove
         target=ROOT/unquote(urlsplit(url).path).lstrip('/')
         assert target.exists() or (target/'index.html').exists(),(route,url)
 code_page=(ROOT/'governance-code'/'index.html').read_text()
-assert code_page.count('class="gc-control') == 8, "The published source browser must expose eight controls."
+assert code_page.count('class="gc-control"') == 7 and code_page.count('class="gc-control selected"') == 1, "The published source browser must expose eight controls."
 assert 'def resume(self, decision: Decision):' in code_page, "Human-gate implementation missing."
 assert 'test_gate_prevents_archive_and_unauthorised_decision' in code_page, "Human-gate test missing."
 assert (ROOT/'assets'/'governance-code-nav.js').is_file(), "Public nav link script missing."
