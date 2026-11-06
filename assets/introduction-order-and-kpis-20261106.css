@@ -1,0 +1,157 @@
+/* GovernanceAsCode — reviewed public Introduction adjustment (2026-11-06).
+   Pure CSS against the existing 7.5.19 static export, no DOM rewriting.
+   The source branch has native OverviewUseCase, OverviewWorkflowSlot and KPI
+   component updates; this stylesheet is a compatibility bridge until the
+   private Actions build runner is available. No KPI figures are fabricated. */
+
+/* Use precisely the owner's original teal-hijab Analytics image, not the
+   substitute portrait inside the generic eight-agent atlas. */
+[role="img"][aria-label="Analytics illustrated avatar"] {
+ background-image:url("/avatars/analytics-original-cropped.webp") !important;
+ background-position: center center !important;
+ background-size: cover !important;
+ background-repeat:no-repeat !important;
+}
+
+/* Parent overview retains the present desktop/sidebar product design. */
+main .space-y-12:has(#introduction-title) {
+ display:flex !important;
+ flex-direction:column !important;
+ gap:clamp(22px,3vw,36px) !important;
+}
+main .space-y-12:has(#introduction-title) > .grid:has(#introduction-title) {
+ display:contents !important;
+}
+main .space-y-12:has(#introduction-title) > .grid > section:has(#introduction-title) {
+ order:0 !important;
+}
+main .space-y-12:has(#introduction-title) > section:has(#overview-kpis) {
+ order:1 !important;
+ width:100% !important;
+ margin:0 !important;
+}
+
+/* The present static output has a grouped use-case and workflow component.
+   display:contents makes its children independent positions in the overview
+   without moving HTML nodes after hydration. */
+main .space-y-12:has(#introduction-title) > .space-y-10 {
+ display:contents !important;
+}
+main .space-y-12:has(#introduction-title) #use-case {
+ order:2 !important;
+ width:100% !important;
+ margin:0 !important;
+}
+main .space-y-12:has(#introduction-title) #manual-workflow-title,
+main .space-y-12:has(#introduction-title) #workflow-comparison {
+ order:3 !important;
+ width:100% !important;
+ margin:0 !important;
+}
+main .space-y-12:has(#introduction-title) > .grid > aside[aria-labelledby="overview-agent-strip"],
+main .space-y-12:has(#introduction-title) > section[aria-labelledby="overview-agent-strip"] {
+ order:4 !important;
+ width:100% !important;
+ margin:0 !important;
+}
+main .space-y-12:has(#introduction-title) > #engineering-map {
+ order:5 !important;
+ width:100% !important;
+ margin:0 !important;
+}
+
+/* The author requested the dedicated Safety Origins page, NOT a repeated
+   teaser at the end of the Introduction. Preserve /safety-origin itself. */
+main .space-y-12:has(#introduction-title) > section:has(a[href^="/safety-origin"]) {
+ display:none !important;
+}
+
+/* Existing technical task expander is archived in the editable source as a
+   standalone reference. Until it can be rebuilt, the public introduction
+   retains its two-column workflow header, NOT nine task rows or the open
+   three-column pain/technical-mechanism/governance-boundary explanations. */
+main .space-y-12:has(#introduction-title) #manual-workflow-title #journey-title > ol,
+main .space-y-12:has(#introduction-title) #manual-workflow-title #journey-title > div:last-child,
+main .space-y-12:has(#introduction-title) #manual-workflow-title #transformation {
+ display:none !important;
+}
+main .space-y-12:has(#introduction-title) #manual-workflow-title #journey-title::after {
+ content:"This space is reserved for the reviewed side-by-side manual versus governed agentic workflow visualization. Both retain the human decision.";
+ display:block;
+ padding:clamp(18px,2.5vw,30px);
+ font-size:15px;
+ line-height:1.7;
+ font-weight:500;
+ color:#244c57;
+ background:#f4fbf9;
+ border-top:1px solid #b9deda;
+}
+main .space-y-12:has(#introduction-title) #manual-workflow-title > header h2,
+main .space-y-12:has(#introduction-title) #workflow-visual-title {
+ font-size:clamp(27px,3vw,33px) !important;
+ line-height:1.25 !important;
+}
+main .space-y-12:has(#introduction-title) #manual-workflow-title > header p:last-child {
+ font-size:15px !important;
+ line-height:1.8 !important;
+}
+main .space-y-12:has(#introduction-title) #use-case > header h2,
+main .space-y-12:has(#introduction-title) #use-case-title {
+ font-size:clamp(28px,2.8vw,34px) !important;
+ line-height:1.2 !important;
+}
+main .space-y-12:has(#introduction-title) #use-case > header p:last-child {
+ font-size:16px !important;
+ line-height:1.75 !important;
+}
+main .space-y-12:has(#introduction-title) #use-case article h3 {
+ font-size:16px !important;
+}
+main .space-y-12:has(#introduction-title) #use-case article p {
+ font-size:14px !important;
+ line-height:1.65 !important;
+}
+
+/* The KPI comparison is core content, not tiny technical metadata. */
+main .space-y-12:has(#introduction-title) section:has(#overview-kpis) {
+ padding:clamp(20px,2.4vw,32px) !important;
+}
+main .space-y-12:has(#introduction-title) #overview-kpis {
+ font-size:clamp(29px,3vw,35px) !important;
+ line-height:1.18 !important;
+ letter-spacing:-.015em !important;
+}
+main .space-y-12:has(#introduction-title) section:has(#overview-kpis) > div:first-child > div > p:last-child {
+ font-size:15px !important;
+ line-height:1.7 !important;
+}
+main .space-y-12:has(#introduction-title) section:has(#overview-kpis) > ul {
+ gap:15px !important;
+ margin-top:24px !important;
+}
+main .space-y-12:has(#introduction-title) section:has(#overview-kpis) > ul > li {
+ padding:20px !important;
+}
+main .space-y-12:has(#introduction-title) section:has(#overview-kpis) > ul > li > div:first-child strong {
+ font-size:17px !important;
+ line-height:1.35 !important;
+}
+main .space-y-12:has(#introduction-title) section:has(#overview-kpis) > ul > li > div:nth-child(2) {
+ font-size:13px !important;
+ line-height:1.6 !important;
+ margin-top:14px !important;
+}
+main .space-y-12:has(#introduction-title) section:has(#overview-kpis) > ul > li > div:nth-child(2) p {
+ font-size:13px !important;
+ line-height:1.55 !important;
+}
+main .space-y-12:has(#introduction-title) section:has(#overview-kpis) > p:last-child {
+ font-size:13px !important;
+ line-height:1.75 !important;
+ margin-top:18px !important;
+}
+@media(max-width:650px) {
+ main .space-y-12:has(#introduction-title) section:has(#overview-kpis) > ul {
+  grid-template-columns:1fr !important;
+ }
+}
