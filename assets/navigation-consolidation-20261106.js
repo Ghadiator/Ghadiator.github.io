@@ -10,11 +10,11 @@ const grouped=[
  {heading:"START",items:[["/","Overview"],["/business-impact/","Business value & KPIs"],["/architecture/","Architecture"]]},
  {heading:"GOVERNANCE & DEFENCES",items:[["/ai-roles/","Personas"],["/ai-assurance/","Assurance"],["/red-team/","Failure Lab"]]},
  {heading:"VALIDATION & INSIGHTS",items:[["/cases/","Validation workspace"],["/dashboard/","Analytics"],["/token-economics/","Token Economics"]]},
- {heading:"ORIGINS",items:[["/safety-origin/","Safety Origins"],["/governance/","Framework Explorer"]]}
+ {heading:"ORIGINS",items:[["/safety-origin/","Safety Origins"],["/governance/","Framework Explorer"],["/governance-code/","Governance Code"]]}
 ];
 const tabs=[
  ["/tickets/","Document requests"],["/inbound/","Correspondence"],
- ["/monitor/","Scenario theater"],["/cases/","Cases"],["/audit/","Process audit"]
+ ["/monitor/","Scenario theater"],["/cases/","Cases"],["/audit/","Process audit"],["/upload/","Workbook lab"]
 ];
 function patch(){
  const nav=document.querySelector('nav.public-nav');
@@ -68,7 +68,7 @@ function tabsAndPool(){
  const pathname=location.pathname.replace(/\/$/,"")||"/";
  const main=document.querySelector("main#main-content");
  if(!main)return;
- if(["/tickets","/inbound","/monitor","/cases","/audit"].includes(pathname)
+ if(["/tickets","/inbound","/monitor","/cases","/audit","/upload"].includes(pathname)
    && !main.querySelector('[data-gac-workspace-tabs]')){
   const nav=document.createElement("nav");
   nav.dataset.gacWorkspaceTabs="true";
