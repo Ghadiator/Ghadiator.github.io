@@ -44,7 +44,8 @@ jobs:
              assert.deepEqual(labels,["Proponent","Opponent","Judge","Attacker","Analytics","Integrator","Audit","Reporter"]);
              const backgrounds=await agent.locator('[role="img"]').evaluateAll(els=>els.map(e=>getComputedStyle(e).backgroundImage));
              assert.equal(backgrounds.length,8);
-             assert(backgrounds.every(x=>x.includes("personas.svg")),"Original photographic portraits missing");
+             assert(backgrounds.filter(x=>x.includes("personas-hires.webp")).length>=7,"Seven photographic roles must retain the high-resolution source");
+             assert(backgrounds.some(x=>x.includes("analytics-original-cropped.webp")),"Original teal-hijab Analytics portrait missing");
              const patch=await page.locator('script[src*="agent-avatar-sharp-7519"]').count();
              assert.equal(patch,0,"The destructive client-side mutation returned");
              const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth);
