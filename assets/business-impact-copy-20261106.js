@@ -23,8 +23,51 @@
     }
     return !!(value || caveat);
   }
+  function compactKpiLayout() {
+    const taxonomy = document.querySelector(".gac-kpi-business-taxonomy");
+    if (!taxonomy) return;
+    const cards = taxonomy.querySelectorAll(".gac-kpi-business-groups article");
+    if (cards.length === 2) {
+      cards[0].id = "gac-business-kpis";
+      cards[1].id = "gac-ai-kpis";
+      const links = taxonomy.querySelectorAll("a[href^='/#']");
+      if (links[0]) links[0].href = "/business-impact/#gac-business-kpis";
+      if (links[1]) links[1].href = "/business-impact/#gac-ai-kpis";
+    }
+    // Preserve the six mechanism explanations, but do not repeat them as a
+    // giant always-expanded block after the compact KPI family catalogues.
+    const detailed = document.querySelector('section[aria-label="KPI scorecard and measurement method"]');
+    if (detailed && !detailed.closest("details")) {
+      const panel = document.createElement("details");
+      panel.className = "gac-kpi-method-details";
+      const summary = document.createElement("summary");
+      summary.textContent = "Explore manual-versus-governed mechanisms and measurement methods";
+      detailed.parentNode.insertBefore(panel,detailed);
+      panel.append(summary,detailed);
+    }
+    if (!taxonomy.querySelector(".gac-kpi-fixture-summary")) {
+      const reference = document.querySelector('section[aria-label="Supplier business profile"] article:nth-child(2)');
+      const values = reference && Array.from(reference.querySelectorAll("strong.font-mono")).map(n=>n.textContent.trim());
+      if (values && values.length >= 4) {
+        const container = document.createElement("div");
+        container.className = "gac-kpi-fixture-summary";
+        const labels = ["Recorded synthetic cases","Cases avoiding committee","Executed validation checks","Recorded events"];
+        values.slice(0,4).forEach((value,i)=>{
+          const card=document.createElement("div");
+          const num=document.createElement("strong"); num.textContent=value;
+          const label=document.createElement("span"); label.textContent=labels[i];
+          card.append(num,label);container.appendChild(card);
+        });
+        const note=document.createElement("p");
+        note.className="gac-kpi-fixture-note";
+        note.textContent="Observed reference-run counts, not measured manual-versus-AI gains; event count does not prove trace completeness.";
+        taxonomy.append(container,note);
+      }
+    }
+  }
   function afterHydration() {
     update();
+    compactKpiLayout();
     // Re-apply if the router remounts the page later, with bounded observation.
     const main = document.querySelector("main.public-main");
     if (!main) return;
