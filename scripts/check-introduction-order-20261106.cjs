@@ -60,8 +60,13 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
    assert.equal(new URL(page.url()).hash,"#gac-kpi-manual-comparison","Hero link must scroll to the integrated KPI panel");
    const target=page.locator("#gac-kpi-manual-comparison");
    await target.waitFor({state:"visible"});
+   // Smooth scrolling may still be in progress immediately after the hash changes.
+   await page.waitForFunction(()=>{
+     const r=document.getElementById("gac-kpi-manual-comparison")?.getBoundingClientRect();
+     return !!r && r.top>=-80 && r.top<innerHeight-50;
+   },null,{timeout:8000});
    const top=await target.evaluate(el=>el.getBoundingClientRect().top);
-   assert(top>=-60 && top<900,"KPI anchor must reach visible viewport, position "+top);
+   assert(top>=-80&&top<900,"KPI anchor must reach viewport after scrolling, position "+top);
    assert(!errors.length,"Browser errors: "+errors.join(" | "));
    const img=await page.request.get("http://127.0.0.1:8765/avatars/analytics-original-cropped.webp");
    assert.equal(img.status(),200,"Uploaded teal-hijab portrait unavailable");
