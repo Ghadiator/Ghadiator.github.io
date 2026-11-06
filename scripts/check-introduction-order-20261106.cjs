@@ -21,7 +21,8 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
       intro:rect('section:has(#introduction-title)'),
       kpi:rect('section:has(#overview-kpis)'),
       usecase:rect('#use-case'),
-      workflow:rect('#manual-workflow-title'),
+      workflowRetired:document.getElementById("manual-workflow-title")?getComputedStyle(document.getElementById("manual-workflow-title")).display==="none":true,
+      newVisualization:getComputedStyle(document.querySelector('main .space-y-12:has(#introduction-title)'),'::before').backgroundImage,
       agents:rect('[aria-labelledby="overview-agent-strip"]'),
       analyticsBg:p?getComputedStyle(p).backgroundImage:null,
       analyticsSize:p?{width:p.getBoundingClientRect().width,height:p.getBoundingClientRect().height}:null,
@@ -34,12 +35,12 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
       originalTokenClaim:k?.textContent?.includes('Possible all-AI calls'),
       hiddenSafety:safety?getComputedStyle(safety).display==="none":false,
       hiddenOldDetails:detail?!detail.getClientRects().length:true,
-      workflowPlaceholder:getComputedStyle(document.getElementById('journey-title'),'::after').content,
+
       overflow:document.documentElement.scrollWidth-innerWidth
     };
    });
-   for(const p of ["intro","kpi","usecase","workflow","agents"])assert(result[p],"Missing Introduction section "+p);
-   for(const [a,b] of [["intro","kpi"],["kpi","usecase"],["usecase","workflow"],["workflow","agents"]])
+   for(const p of ["intro","kpi","usecase","agents"])assert(result[p],"Missing Introduction section "+p);
+   for(const [a,b] of [["intro","kpi"],["kpi","usecase"],["usecase","agents"]])
     assert(result[a].bottom<=result[b].top+8,"Incorrect vertical order "+a+" before "+b+" "+JSON.stringify(result));
    assert(result.analyticsBg?.includes("analytics-original-cropped.webp"),"Original Analytics avatar not active");
    assert((result.analyticsSize?.width??0)>=95,"Analytics portrait too small");
@@ -52,7 +53,8 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
    assert(!result.originalTokenClaim,"Manual workflow cannot claim hypothetical AI token savings");
    assert(result.hiddenSafety,"Safety Origins teaser still visible on Introduction");
    assert(result.hiddenOldDetails,"Old Manual pain point / What changed / Governance boundary panels still visible");
-   assert(result.workflowPlaceholder?.includes("reserved"),"Manual-vs-agentic diagram slot missing");
+   assert(result.workflowRetired,"Old task-by-task workflow must remain retired");
+   assert(result.newVisualization?.includes("governed-human-agent-collaboration"),"New workflow visualization must remain visible");
    assert(result.overflow<4,"Horizontal overflow "+result.overflow);
    const kpiLink=page.getByRole("link",{name:/Compare the six manual and governed KPIs/});
    assert.equal(await kpiLink.count(),1,"KPI comparison must be discoverable immediately from the hero");
