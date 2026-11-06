@@ -33,6 +33,13 @@ const chrome=["/usr/bin/google-chrome","/usr/bin/chromium"].find(fs.existsSync);
    await page.goto("http://127.0.0.1:8765/business-impact/",{waitUntil:"networkidle"});
    const taxonomy=page.locator(".gac-kpi-business-taxonomy");
    await taxonomy.waitFor({state:"visible",timeout:15000});
+   await page.waitForFunction(() => document.querySelector("h1")?.closest("header")?.textContent?.includes("Supplier invoice validation combines routine calculations"), {timeout:10000});
+   const order=await page.evaluate(()=>{
+     const hero=document.querySelector("h1")?.closest("header")?.getBoundingClientRect();
+     const groups=document.querySelector(".gac-kpi-business-taxonomy")?.getBoundingClientRect();
+     return {heroTop:hero?.top,heroBottom:hero?.bottom,groupsTop:groups?.top};
+   });
+   assert(order.heroTop<order.groupsTop && order.heroBottom<=order.groupsTop+4,"The business case must appear above the KPI groups");
    assert.equal(await taxonomy.locator("article").count(),2);
    assert.equal(await taxonomy.locator("article").first().locator("li").count(),6);
    assert.equal(await taxonomy.locator("article").nth(1).locator("li").count(),7);
