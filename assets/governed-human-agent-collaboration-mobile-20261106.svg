@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1600" width="800" height="1600" role="img" aria-labelledby="title desc"><title id="title">Governed human-agent collaboration mobile</title><desc id="desc">AI-augmented supplier invoice review with human-led agent operations and human sign-off, conditional reasoning and independent assurance.</desc><defs><linearGradient id="t"><stop stop-color="#006a7b"/><stop offset="1" stop-color="#079e96"/></linearGradient></defs>
+<rect x="2" y="2" width="796" height="1596" rx="20" fill="#f8fcfc" stroke="#d5e7e8" stroke-width="1.5"/>
+<rect x="26" y="34" width="7" height="94" rx="4" fill="#069b93"/>
+<text x="51" y="67" text-anchor="start" fill="#113454" font-size="36" font-weight="850">Governed human–agent</text><text x="51" y="111" text-anchor="start" fill="#113454" font-size="36" font-weight="850">collaboration</text>
+<text x="50" y="154" text-anchor="start" fill="#57788b" font-size="22" font-weight="600">Supplier invoice validation · Human sign-off</text>
+<rect x="22" y="184" width="756" height="180" rx="16" fill="#f0f8fa" stroke="#badbe6" stroke-width="1.5"/>
+<text x="48" y="223" text-anchor="start" fill="#183f57" font-size="24" font-weight="800">AI collaboration mode</text>
+<rect x="45" y="238" width="165" height="50" rx="10" fill="#fff" stroke="#c9e0e6" stroke-width="1.5"/><text x="127.5" y="270" text-anchor="middle" fill="#607b8a" font-size="21" font-weight="500">Assisted</text>
+<rect x="216" y="238" width="238" height="50" rx="10" fill="url(#t)" stroke="#078a85" stroke-width="1.5"/><text x="335" y="270" text-anchor="middle" fill="#fff" font-size="21" font-weight="800">Augmented</text>
+<rect x="462" y="238" width="286" height="50" rx="10" fill="#fff" stroke="#c9e0e6" stroke-width="1.5"/><text x="605" y="270" text-anchor="middle" fill="#607b8a" font-size="21" font-weight="500">Autonomous</text>
+<text x="48" y="323" text-anchor="start" fill="#476c7d" font-size="21" font-weight="600">Operating model:</text><text x="245" y="323" text-anchor="start" fill="#047e80" font-size="23" font-weight="800">Human-led agent operations</text>
+<rect x="22" y="384" width="756" height="141" rx="15" fill="#f8fbfd" stroke="#c8dfe6" stroke-width="1.5"/>
+<rect x="22" y="384" width="203" height="141" rx="15" fill="#e7f1f7" stroke="#c8dfe6" stroke-width="1.5"/>
+<text x="42" y="425" text-anchor="start" fill="#163b59" font-size="22" font-weight="850">STRATEGIC</text><text x="42" y="454" text-anchor="start" fill="#163b59" font-size="22" font-weight="850">DECISION</text>
+<text x="42" y="503" text-anchor="start" fill="#177389" font-size="16" font-weight="800">HUMAN-LED</text>
+<circle cx="274" cy="454" r="32" fill="#e8f7fa" stroke="#b0d7d8" stroke-width="2"/><path d="M261 474q0-22 14-22t14 22" fill="none" stroke="#14607a" stroke-width="3"/><circle cx="275" cy="439" r="9" fill="#fff" stroke="#14607a" stroke-width="2"/>
+<text x="321" y="445" text-anchor="start" fill="#21495a" font-size="25" font-weight="800">Decision owner</text><text x="321" y="476" text-anchor="start" fill="#4f7480" font-size="18" font-weight="500">Sets boundaries and authorizes</text><text x="321" y="500" text-anchor="start" fill="#4f7480" font-size="18" font-weight="500">approve / reject / request change</text>
+<text x="398" y="555" text-anchor="middle" fill="#168d84" font-size="23" font-weight="750">↕    Supervision and escalation    ↕</text>
+<rect x="22" y="574" width="756" height="133" rx="15" fill="#ecfaf6" stroke="#b4ded8" stroke-width="1.5"/>
+<rect x="22" y="574" width="203" height="133" rx="15" fill="#ddf4ef" stroke="#b4ded8" stroke-width="1.5"/>
+<text x="42" y="614" text-anchor="start" fill="#153b57" font-size="21" font-weight="850">ORCHESTRATION</text><text x="42" y="641" text-anchor="start" fill="#153b57" font-size="21" font-weight="850">LAYER</text><text x="42" y="686" text-anchor="start" fill="#177389" font-size="16" font-weight="800">SUPERVISED</text>
+<text x="254" y="616" text-anchor="start" fill="#214958" font-size="25" font-weight="800">Case reviewer + routing</text><text x="254" y="648" text-anchor="start" fill="#4e7580" font-size="20" font-weight="500">Routine checks follow fixed rules;</text><text x="254" y="674" text-anchor="start" fill="#4e7580" font-size="20" font-weight="500">unresolved cases escalate for advice.</text>
+<text x="45" y="751" text-anchor="start" fill="#17485a" font-size="24" font-weight="850">EXECUTION &amp; AGENT SUPPORT</text>
+<rect x="23" y="777" width="367" height="91" rx="12" fill="#fff" stroke="#d0e3e5" stroke-width="1.5"/>
+<circle cx="57" cy="814" r="21" fill="#097e85" stroke="#097e85" stroke-width="2"/><text x="57" y="820" text-anchor="middle" fill="#fff" font-size="17" font-weight="800">01</text>
+<text x="88" y="815" text-anchor="start" fill="#1d4558" font-size="22" font-weight="800">Smart intake</text><text x="88" y="844" text-anchor="start" fill="#64818a" font-size="18" font-weight="600">Register submission</text>
+<rect x="409" y="777" width="367" height="91" rx="12" fill="#fff" stroke="#d0e3e5" stroke-width="1.5"/>
+<circle cx="443" cy="814" r="21" fill="#097e85" stroke="#097e85" stroke-width="2"/><text x="443" y="820" text-anchor="middle" fill="#fff" font-size="17" font-weight="800">02</text>
+<text x="474" y="815" text-anchor="start" fill="#1d4558" font-size="22" font-weight="800">Extract &amp; structure</text><text x="474" y="844" text-anchor="start" fill="#64818a" font-size="18" font-weight="600">Typed fields and checks</text>
+<rect x="23" y="880" width="367" height="91" rx="12" fill="#fff" stroke="#d0e3e5" stroke-width="1.5"/>
+<circle cx="57" cy="917" r="21" fill="#097e85" stroke="#097e85" stroke-width="2"/><text x="57" y="923" text-anchor="middle" fill="#fff" font-size="17" font-weight="800">03</text>
+<text x="88" y="918" text-anchor="start" fill="#1d4558" font-size="22" font-weight="800">Match evidence</text><text x="88" y="947" text-anchor="start" fill="#64818a" font-size="18" font-weight="600">PO, contract and rates</text>
+<rect x="409" y="880" width="367" height="91" rx="12" fill="#fff" stroke="#d0e3e5" stroke-width="1.5"/>
+<circle cx="443" cy="917" r="21" fill="#097e85" stroke="#097e85" stroke-width="2"/><text x="443" y="923" text-anchor="middle" fill="#fff" font-size="17" font-weight="800">04</text>
+<text x="474" y="918" text-anchor="start" fill="#1d4558" font-size="22" font-weight="800">Supplier checks</text><text x="474" y="947" text-anchor="start" fill="#64818a" font-size="18" font-weight="600">Limits and completeness</text>
+<rect x="23" y="983" width="367" height="91" rx="12" fill="#fff" stroke="#d0e3e5" stroke-width="1.5"/>
+<circle cx="57" cy="1020" r="21" fill="#097e85" stroke="#097e85" stroke-width="2"/><text x="57" y="1026" text-anchor="middle" fill="#fff" font-size="17" font-weight="800">05</text>
+<text x="88" y="1021" text-anchor="start" fill="#1d4558" font-size="22" font-weight="800">Exception reasoning</text><text x="88" y="1050" text-anchor="start" fill="#64818a" font-size="18" font-weight="600">Only if unresolved</text>
+<rect x="409" y="983" width="367" height="91" rx="12" fill="#fff" stroke="#d0e3e5" stroke-width="1.5"/>
+<circle cx="443" cy="1020" r="21" fill="#097e85" stroke="#097e85" stroke-width="2"/><text x="443" y="1026" text-anchor="middle" fill="#fff" font-size="17" font-weight="800">06</text>
+<text x="474" y="1021" text-anchor="start" fill="#1d4558" font-size="22" font-weight="800">Decision pack</text><text x="474" y="1050" text-anchor="start" fill="#64818a" font-size="18" font-weight="600">Verified findings</text>
+<rect x="23" y="1086" width="367" height="91" rx="12" fill="#fff2ec" stroke="#e9bda9" stroke-width="1.5"/>
+<circle cx="57" cy="1123" r="21" fill="#e98963" stroke="#e98963" stroke-width="2"/><text x="57" y="1129" text-anchor="middle" fill="#fff" font-size="17" font-weight="800">07</text>
+<text x="88" y="1124" text-anchor="start" fill="#1d4558" font-size="22" font-weight="800">Human decision</text><text x="88" y="1153" text-anchor="start" fill="#64818a" font-size="18" font-weight="600">Approve / reject / return</text>
+<rect x="409" y="1086" width="367" height="91" rx="12" fill="#fff" stroke="#d0e3e5" stroke-width="1.5"/>
+<circle cx="443" cy="1123" r="21" fill="#097e85" stroke="#097e85" stroke-width="2"/><text x="443" y="1129" text-anchor="middle" fill="#fff" font-size="17" font-weight="800">08</text>
+<text x="474" y="1124" text-anchor="start" fill="#1d4558" font-size="22" font-weight="800">Audit record</text><text x="474" y="1153" text-anchor="start" fill="#64818a" font-size="18" font-weight="600">Sources and history</text>
+<rect x="22" y="1214" width="756" height="140" rx="15" fill="#eaf9f6" stroke="#b8dcd6" stroke-width="1.5"/>
+<text x="44" y="1248" text-anchor="start" fill="#18475a" font-size="25" font-weight="850">Conditional agent reasoning</text>
+<text x="44" y="1282" text-anchor="start" fill="#087e7c" font-size="22" font-weight="750">Proponent + Opponent  →  CoVe  →  Judge</text>
+<text x="44" y="1310" text-anchor="start" fill="#587785" font-size="18" font-weight="500">Candidate claims are checked before advice reaches</text><text x="44" y="1333" text-anchor="start" fill="#587785" font-size="18" font-weight="500">the human reviewer. Judge never approves payment.</text>
+<rect x="22" y="1370" width="756" height="159" rx="15" fill="#f4fafc" stroke="#cbdfe6" stroke-width="1.5"/>
+<text x="44" y="1404" text-anchor="start" fill="#18475a" font-size="22" font-weight="850">Operational support &amp; independent assurance</text>
+<rect x="44" y="1420" width="155" height="41" rx="9" fill="#e6f7f2" stroke="#b9dfd6" stroke-width="1.5"/><text x="121" y="1447" text-anchor="middle" fill="#1c6367" font-size="19" font-weight="750">Analytics</text>
+<rect x="216" y="1420" width="155" height="41" rx="9" fill="#e6f7f2" stroke="#b9dfd6" stroke-width="1.5"/><text x="293" y="1447" text-anchor="middle" fill="#1c6367" font-size="19" font-weight="750">Integrator</text>
+<rect x="410" y="1420" width="155" height="41" rx="9" fill="#e6f7f2" stroke="#b9dfd6" stroke-width="1.5"/><text x="487" y="1447" text-anchor="middle" fill="#1c6367" font-size="19" font-weight="750">Reporter</text>
+<rect x="578" y="1420" width="155" height="41" rx="9" fill="#e6f7f2" stroke="#b9dfd6" stroke-width="1.5"/><text x="655" y="1447" text-anchor="middle" fill="#1c6367" font-size="19" font-weight="750">Audit</text>
+<text x="44" y="1497" text-anchor="start" fill="#62798b" font-size="18" font-weight="550">Attacker: isolated safeguards testing, outside case flow</text>
+<text x="400" y="1565" text-anchor="middle" fill="#087e7c" font-size="23" font-weight="850">AI supports the review. A person decides.</text>
+</svg>
