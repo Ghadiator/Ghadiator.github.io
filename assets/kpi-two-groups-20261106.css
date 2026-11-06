@@ -72,3 +72,40 @@ body:has(.gac-kpi-business-taxonomy) main.public-main > .space-y-9 > :not(header
   order:0;
   margin-top:0;
 }
+
+/* KPI content has one canonical home: Business Value & KPIs.
+   Hide obsolete duplicate KPI families on Introduction. This is a static
+   compatibility layer until the source-built Next.js export is released. */
+body:has(#introduction-title) #gac-kpi-manual-comparison,
+body:has(#introduction-title) #ai-governance-kpis,
+body:has(#introduction-title) .gac-kpi-family-link{
+ display:none!important;
+}
+body:has(#introduction-title) a[href="#gac-kpi-manual-comparison"]{
+ display:none!important;
+}
+/* Condense both KPI catalogues on the Business Value page. */
+body:has(.gac-kpi-business-taxonomy) .gac-kpi-business-taxonomy{
+ margin-bottom:8px;padding:22px 24px;
+}
+body:has(.gac-kpi-business-taxonomy) .gac-kpi-business-groups{
+ margin-top:14px;gap:12px;
+}
+body:has(.gac-kpi-business-taxonomy) .gac-kpi-business-groups article{
+ padding:16px 18px;
+}
+body:has(.gac-kpi-business-taxonomy) .gac-kpi-business-groups h3{
+ font-size:16px;
+}
+body:has(.gac-kpi-business-taxonomy) .gac-kpi-business-groups ul{
+ margin:9px 0 10px;
+}
+body:has(.gac-kpi-business-taxonomy) .gac-kpi-business-groups li{
+ font-size:13px;line-height:1.55;
+}
+/* The full secondary AI catalogue is duplicated by the compact Group B
+   list at the top of Business Value. Keep source-backed observations
+   elsewhere and avoid stacking seven repeated explanatory cards. */
+body:has(.gac-kpi-business-taxonomy) .gac-ai-family{
+ display:none!important;
+}
