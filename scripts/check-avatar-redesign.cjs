@@ -23,7 +23,7 @@ try{for(const width of [390,689,768,1080,1440]){
  });
  assert.equal(states.labels.length,8);assert.deepEqual(states.labels,["Proponent","Opponent","Judge","Attacker","Analytics","Integrator","Audit","Reporter"]);
  assert.equal(states.descriptions.length,8);assert(states.descriptions.every(s=>s.length>=30),"Role summaries are too vague: "+JSON.stringify(states.descriptions));
- assert.equal(states.pics.length,8);assert(states.pics.every(p=>p.bg.includes("personas-hires.webp")),"Not all portraits use the higher-res atlas");
+ assert.equal(states.pics.length,8);assert.equal(states.pics.filter(p=>p.bg.includes("personas-hires.webp")).length,7,"Seven original roles require the high-resolution atlas");assert.equal(states.pics.filter(p=>p.bg.includes("analytics-original-cropped.webp")).length,1,"Analytics must keep the owner-selected teal-hijab portrait");
  assert(states.pics.every(p=>p.w>=95&&p.h>=95),"Portrait too small "+JSON.stringify(states.pics));
  assert(states.hero&&states.kpi&&states.agents,"Missing sections");
  assert(states.hero.b<=states.kpi.y+4,"KPIs not immediately following business introduction");
