@@ -55,14 +55,20 @@ const widths = [
     // The eight-role layout replaces the historical four-role teaser.
     const agents=page.locator('[aria-labelledby="overview-agent-strip"]');
     await agents.waitFor({state:"visible"});
-    await agents.locator('[data-sharp="1"] svg').first().waitFor();
+    await agents.locator('[role="img"][aria-label$="illustrated avatar"]').first().waitFor();
     assert.equal(await agents.locator('li').count(),8,viewport.label+": all eight personas must appear");
     assert.equal(await agents.locator('li strong').count(),8,viewport.label+": all eight role captions must appear");
+    for(const name of ["Proponent","Opponent","Judge","Attacker","Analytics","Integrator","Audit","Reporter"]){
+      await agents.locator("li strong").filter({hasText:name}).first().waitFor();
+    }
+    assert.equal(await page.locator('script[src*="agent-avatar-sharp-7519"]').count(),0,viewport.label+": no client-side DOM override should run");
+    const headline=await page.locator("#introduction-title").textContent();
+    assert(headline?.startsWith("Supplier invoice validation."),viewport.label+": business use case must be clear at first glance");
     assert.equal(await page.locator('nav[aria-label="On this page"]').count(),0,
       viewport.label+": redundant Overview quick-access nav returned");
    assert.equal(await page.getByText("Technical directory",{exact:true}).count(),0,
      viewport.label+": redundant technical directory returned");
-   await page.getByRole("link",{name:/Meet each persona and inspect its limits/}).waitFor({state:"visible"});
+   await page.getByRole("link",{name:/Explore the three reasoning personas/}).waitFor({state:"visible"});
    checks+=8;
 
    await page.goto(base+"/business-impact/",{waitUntil:"domcontentloaded"});
