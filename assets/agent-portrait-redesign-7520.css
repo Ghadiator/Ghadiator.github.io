@@ -9,7 +9,8 @@ main .space-y-12:has(#introduction-title) > .grid:has(#introduction-title) {disp
 main .space-y-12:has(#introduction-title) > .grid > section:has(#introduction-title) {order:0; margin:0 !important; width:100%;}
 main .space-y-12:has(#introduction-title) > section:has(#overview-kpis) {order:1; margin:0 !important; width:100%;}
 main .space-y-12:has(#introduction-title) > .grid > aside[aria-labelledby="overview-agent-strip"] {order:2; margin:0 !important; width:100%;}
-main .space-y-12:has(#introduction-title) > .flex.justify-end {order:3; margin:0 !important;}
+/* The now-full agent panel already links to role details; remove the duplicate jump link. */
+main .space-y-12:has(#introduction-title) > .flex.justify-end {order:3; margin:0 !important; display:none !important;}
 main .space-y-12:has(#introduction-title) > .space-y-10 {order:4; margin:0 !important;}
 main .space-y-12:has(#introduction-title) > #engineering-map {order:5; margin-top:4px !important;}
 main .space-y-12:has(#introduction-title) > section:not(:has(#overview-kpis)):not(#engineering-map) {order:6;}
