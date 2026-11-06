@@ -1,0 +1,39 @@
+name: Verify supplier workflow and KPI Introduction layout
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/verify-introduction-20261106.yml
+      - scripts/check-introduction-order-20261106.cjs
+      - assets/introduction-order-and-kpis-20261106.css
+      - avatars/analytics-original-cropped.webp
+      - index.html
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser dependency
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-package-lock playwright-core@1.56.1
+          command -v google-chrome || command -v chromium
+      - name: Serve verified published checkout
+        shell: bash
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/intro-http.log 2>&1 &
+          for n in $(seq 1 30); do curl -fsS http://127.0.0.1:8765/ -o /dev/null && exit 0; sleep 1; done
+          cat /tmp/intro-http.log; exit 1
+      - name: Run real-browser content, image and geometry assertions
+        run: node scripts/check-introduction-order-20261106.cjs
+      - name: Retain desktop, tablet and mobile review captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-introduction-20261106-review
+          path: /tmp/gac-intro-check/*.png
+          if-no-files-found: ignore
+          retention-days: 3
