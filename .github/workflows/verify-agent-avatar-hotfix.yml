@@ -76,7 +76,7 @@ jobs:
                 assert(x.documentOverflow<4,"No horizontal overflow");
                 assert.deepEqual(x.labels,["Proponent","Opponent","Judge","Attacker","Analytics","Integrator","Audit","Reporter"]);
                 assert.equal(errors.length,0,"No browser exceptions "+errors.join(" | "));
-                if(width===768)await page.screenshot({path:"/tmp/agent-avatar-tablet.png",fullPage:false});
+                if(width===768)await panel.screenshot({path:"/tmp/agent-avatar-tablet.png"});
                 await page.goto("http://127.0.0.1:8765/ai-roles/",{waitUntil:"load"});
                 await page.locator('[data-sharp="1"] svg').first().waitFor({timeout:15000});
                 assert((await page.locator('[data-sharp="1"] svg').count())>=8,"Detailed roles share the same vector artwork");
@@ -86,3 +86,11 @@ jobs:
             } finally {await browser.close();}
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
+      - name: Save visual acceptance screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eight-agent-responsive-frontend
+          path: /tmp/agent-avatar-tablet.png
+          if-no-files-found: ignore
+          retention-days: 3
