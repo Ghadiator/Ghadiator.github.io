@@ -1,0 +1,37 @@
+name: Verify two KPI families on published static site
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/verify-kpi-families-20261106.yml
+      - scripts/check-kpi-two-groups.cjs
+      - index.html
+      - index.txt
+      - business-impact/index.html
+      - business-impact/index.txt
+      - assets/kpi-two-groups-20261106.css
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-package-lock playwright-core@1.56.1
+      - name: Serve published static HTML, data and assets
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/kpi-server.log 2>&1 &
+          for i in $(seq 1 35); do curl -fsS http://127.0.0.1:8765/ -o /dev/null && exit 0; sleep 1; done
+          cat /tmp/kpi-server.log; exit 1
+      - name: Exercise hydrated KPI groups on three viewport widths
+        run: node scripts/check-kpi-two-groups.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: separate-kpi-families-visual-evidence
+          path: /tmp/gac-kpi-families/*.png
+          if-no-files-found: ignore
+          retention-days: 3
