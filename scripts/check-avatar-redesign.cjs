@@ -16,11 +16,13 @@ try{for(const width of [390,689,768,1080,1440]){
   const agent=document.querySelector('aside[aria-labelledby="overview-agent-strip"]');
   const pics=[...agent.querySelectorAll('[role="img"]')].map(x=>{let a=x.getBoundingClientRect();return {w:a.width,h:a.height,bg:getComputedStyle(x).backgroundImage}});
   const labels=[...agent.querySelectorAll("li strong")].map(e=>e.textContent.trim());
-  return {hero:bounds(hero),kpi:bounds(kpi),agents:bounds(agent),pics,labels,
+  const descriptions=[...agent.querySelectorAll("li")].map(li=>li.querySelector("a > span:last-child")?.textContent.trim()||"");
+  return {hero:bounds(hero),kpi:bounds(kpi),agents:bounds(agent),pics,labels,descriptions,
    horizontalOverflow:document.documentElement.scrollWidth-innerWidth,
    portraitStylesheets:[...document.querySelectorAll("link[rel='stylesheet']")].map(a=>a.href).filter(h=>h.includes("agent-portrait-redesign"))};
  });
  assert.equal(states.labels.length,8);assert.deepEqual(states.labels,["Proponent","Opponent","Judge","Attacker","Analytics","Integrator","Audit","Reporter"]);
+ assert.equal(states.descriptions.length,8);assert(states.descriptions.every(s=>s.length>=30),"Role summaries are too vague: "+JSON.stringify(states.descriptions));
  assert.equal(states.pics.length,8);assert(states.pics.every(p=>p.bg.includes("personas-hires.webp")),"Not all portraits use the higher-res atlas");
  assert(states.pics.every(p=>p.w>=95&&p.h>=95),"Portrait too small "+JSON.stringify(states.pics));
  assert(states.hero&&states.kpi&&states.agents,"Missing sections");
