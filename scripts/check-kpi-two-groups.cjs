@@ -33,6 +33,12 @@ const chrome=["/usr/bin/google-chrome","/usr/bin/chromium"].find(fs.existsSync);
    assert.equal(await taxonomy.locator("article").count(),2);
    assert.equal(await taxonomy.locator("article").first().locator("li").count(),6);
    assert.equal(await taxonomy.locator("article").nth(1).locator("li").count(),7);
+   await page.waitForFunction(()=>!!document.querySelector(".gac-kpi-fixture-summary"),{timeout:12000});
+   assert.equal(await page.locator(".gac-kpi-fixture-summary > div").count(),4,"Actual recorded fixture totals are required");
+   assert.equal(await page.locator(".gac-kpi-method-details").count(),1,"Detailed manual comparison must be collapsed, not removed");
+   assert.equal(await page.locator(".gac-kpi-method-details").evaluate(el=>el.open),false);
+   assert.equal(await taxonomy.locator(".gac-kpi-business-groups a").first().getAttribute("href"),"/business-impact/#gac-business-kpis");
+
    const groupCards=taxonomy.locator("article");
    assert(await groupCards.first().isVisible());
    assert(await groupCards.nth(1).isVisible());
