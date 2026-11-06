@@ -14,7 +14,7 @@ const expectedNav = [
   "Overview", "Business value & KPIs", "Architecture",
   "Personas", "Assurance", "Failure Lab",
   "Validation workspace", "Analytics", "Token Economics",
-  "Safety Origins", "Framework Explorer"
+  "Safety Origins", "Framework Explorer", "Governance Code"
 ];
 const widths = [
  {width:390,height:844,label:"mobile"},
@@ -51,8 +51,8 @@ const widths = [
    // Preserve all deep links while exposing a single workspace navigation entry.
    await page.goto(base+"/cases/",{waitUntil:"networkidle"});
    await page.locator('[data-gac-workspace-tabs]').waitFor({state:"visible",timeout:12000});
-   assert.equal(await page.locator('[data-gac-workspace-tabs] a').count(),5,
-    "Consolidated workspace must retain document requests, correspondence, scenarios, cases and process audit");
+   assert.equal(await page.locator('[data-gac-workspace-tabs] a').count(),6,
+    "Consolidated workspace must retain requests, correspondence, scenarios, cases, audit and workbook lab");
    await page.goto(base+"/dashboard/",{waitUntil:"networkidle"});
    await page.locator('[data-gac-legacy-pool]').waitFor({state:"visible",timeout:12000});
    assert.equal(await page.locator('[data-gac-legacy-pool] a[href="/pool-analytics/"]').count(),1);
