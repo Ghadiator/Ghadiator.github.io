@@ -11,10 +11,10 @@ const routes = [
   "/audit/", "/pool-analytics/", "/upload/", "/integration/"
 ];
 const expectedNav = [
-  "Overview", "Business value & KPIs", "Architecture", "Personas", "Framework Explorer", "Governance Code", "Assurance",
-  "Failure Lab", "Cases", "Analytics", "Token Economics",
-  "Document requests", "Incoming correspondence", "Scenario theater",
-  "Process audit", "Pool analytics", "Local workbook lab", "Safety Origins"
+  "Overview", "Business value & KPIs", "Architecture",
+  "Personas", "Assurance", "Failure Lab",
+  "Validation workspace", "Analytics", "Token Economics",
+  "Safety Origins", "Framework Explorer"
 ];
 const widths = [
  {width:390,height:844,label:"mobile"},
@@ -44,9 +44,19 @@ const widths = [
    }
    await page.goto(base+"/",{waitUntil:"domcontentloaded"});
    await page.locator('nav.public-nav a[href="/governance-code/"]').waitFor({state:"attached",timeout:12000});
-   const nav=page.locator('nav[aria-label="Main navigation"] a span');
+   await page.locator('[data-gac-consolidated-nav]').waitFor({state:"visible",timeout:15000});
+   const nav=page.locator('nav[aria-label="Main navigation"] [data-gac-consolidated-nav] a span');
    const labels=(await nav.allTextContents()).map(x=>x.trim());
-   assert.deepEqual(labels,expectedNav,viewport.label+": nav must retain ten top-level topics plus source-workbench subsection");
+   assert.deepEqual(labels,expectedNav,viewport.label+": navigation must consolidate five workbench views, pool analytics and Origins");
+   // Preserve all deep links while exposing a single workspace navigation entry.
+   await page.goto(base+"/cases/",{waitUntil:"networkidle"});
+   await page.locator('[data-gac-workspace-tabs]').waitFor({state:"visible",timeout:12000});
+   assert.equal(await page.locator('[data-gac-workspace-tabs] a').count(),5,
+    "Consolidated workspace must retain document requests, correspondence, scenarios, cases and process audit");
+   await page.goto(base+"/dashboard/",{waitUntil:"networkidle"});
+   await page.locator('[data-gac-legacy-pool]').waitFor({state:"visible",timeout:12000});
+   assert.equal(await page.locator('[data-gac-legacy-pool] a[href="/pool-analytics/"]').count(),1);
+   checks+=3;
    // New source-and-test explorer must use genuine excerpts and work without an API.
    await page.locator('nav.public-nav a[href="/governance-code/"]').waitFor({state:"attached"});
    if(viewport.width >= 1024) await page.getByRole("link",{name:"Governance Code",exact:true}).first().click();
