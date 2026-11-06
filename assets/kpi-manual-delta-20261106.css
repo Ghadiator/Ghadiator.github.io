@@ -1,0 +1,58 @@
+/* Public static 7.5.19 compatibility bridge for native KPI redesign (2026-11-06).
+   Semantic HTML + matching Next Flight data; never invent baseline numbers or bar
+   lengths. Native source-of-truth is OverviewKpiBridge.tsx on the feature branch. */
+#gac-kpi-manual-comparison{
+ --gac-ink:#203f4d;--gac-muted:#55727e;--gac-teal:#187b6e;
+ width:100%;border:1px solid #c4deda;background:#f4faf8;
+ border-radius:22px;overflow:hidden;box-shadow:0 10px 32px rgba(29,77,72,.055);
+ font-size:15px;
+}
+#gac-kpi-manual-comparison *{box-sizing:border-box;}
+#gac-kpi-manual-comparison .gac-kpi-head{padding:30px 32px;border-bottom:1px solid #d4e7e4;background:white;}
+#gac-kpi-manual-comparison .gac-kpi-eyebrow{margin:0;color:#287b72;font-weight:800;font-size:12px;letter-spacing:.13em;text-transform:uppercase;}
+#gac-kpi-manual-comparison #overview-kpis{font-family:inherit;max-width:900px;margin:10px 0 0;color:#203f4d;font-size:clamp(29px,3.3vw,36px);line-height:1.18;letter-spacing:-.018em;font-weight:800;}
+#gac-kpi-manual-comparison .gac-kpi-deck{max-width:900px;margin:14px 0 0;color:#536f79;font-size:15px;line-height:1.7;}
+#gac-kpi-manual-comparison .gac-kpi-body{padding:26px 32px 34px;}
+#gac-kpi-manual-comparison .gac-kpi-section-head{display:flex;align-items:flex-start;gap:13px;margin-bottom:20px;}
+#gac-kpi-manual-comparison .gac-kpi-step{width:42px;height:42px;flex:none;display:grid;place-items:center;border-radius:12px;background:#e5edf2;color:#28516a;font-weight:800;font-size:15px;}
+#gac-kpi-manual-comparison .gac-kpi-section-head.-teal .gac-kpi-step{background:#d9f3eb;color:#176b62;}
+#gac-kpi-manual-comparison .gac-kpi-mini{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#557882;margin:0;}
+#gac-kpi-manual-comparison .gac-kpi-section-head h3{font-size:21px;line-height:1.35;margin:2px 0 0;color:#244454;font-weight:750;}
+#gac-kpi-manual-comparison .gac-kpi-baselines{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0;padding:0;list-style:none;}
+#gac-kpi-manual-comparison .gac-kpi-baseline{min-width:0;padding:19px;border:1px solid #d5e0e5;border-radius:13px;background:#fff;}
+#gac-kpi-manual-comparison .gac-kpi-baseline-head{display:flex;align-items:flex-start;gap:11px;}
+#gac-kpi-manual-comparison .gac-kpi-num{display:grid;place-items:center;flex:none;width:29px;height:29px;border-radius:50%;border:1px solid #c4d3dd;background:#f0f4f7;color:#3b6478;font-size:12px;font-weight:800;}
+#gac-kpi-manual-comparison .gac-kpi-baseline h4{font-size:17px;line-height:1.35;color:#254556;margin:1px 0 0;font-weight:750;}
+#gac-kpi-manual-comparison .gac-kpi-metric{color:#657b86;font-size:12px;line-height:1.45;margin:5px 0 0;}
+#gac-kpi-manual-comparison .gac-kpi-manual{color:#4c6876;font-size:14px;line-height:1.65;margin:17px 0 0;}
+#gac-kpi-manual-comparison .gac-kpi-unknown{border-top:1px solid #e3e9ec;margin:13px 0 0;padding:9px 0 0;color:#82715b;font-size:12px;font-weight:650;}
+#gac-kpi-manual-comparison .gac-kpi-second{margin-top:37px;}
+#gac-kpi-manual-comparison .gac-kpi-list{list-style:none;margin:0;padding:0;border:1px solid #c5dfda;border-radius:16px;background:#fff;overflow:hidden;}
+#gac-kpi-manual-comparison .gac-kpi-pair{padding:21px 24px;}
+#gac-kpi-manual-comparison .gac-kpi-pair+.gac-kpi-pair{border-top:1px solid #e1ebe9;}
+#gac-kpi-manual-comparison .gac-kpi-pair-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+#gac-kpi-manual-comparison .gac-kpi-pair-head h4{font-size:17px;color:#234554;margin:0;font-weight:750;}
+#gac-kpi-manual-comparison .gac-kpi-pair-head h4 span{font-size:12px;color:#679087;margin-right:10px;font-weight:800;}
+#gac-kpi-manual-comparison .gac-kpi-target{padding:6px 11px;border-radius:999px;border:1px solid #baded4;background:#e8f7f1;color:#136c5c;font-size:12px;font-weight:750;}
+#gac-kpi-manual-comparison .gac-kpi-target.-neutral{color:#365c68;background:#edf3f5;border-color:#c9d8de;}
+#gac-kpi-manual-comparison .gac-kpi-transition{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1.14fr);gap:12px;align-items:center;}
+#gac-kpi-manual-comparison .gac-kpi-from,#gac-kpi-manual-comparison .gac-kpi-to{padding:14px 16px;min-height:94px;border-radius:10px;}
+#gac-kpi-manual-comparison .gac-kpi-from{background:#f3f6f8;border:1px solid #dce5ea;color:#4c6573;}
+#gac-kpi-manual-comparison .gac-kpi-to{background:#e9f8f2;border:1px solid #b9dfd4;color:#225d57;}
+#gac-kpi-manual-comparison .gac-kpi-from p,#gac-kpi-manual-comparison .gac-kpi-to p{margin:0;font-size:14px;line-height:1.6;}
+#gac-kpi-manual-comparison .gac-kpi-to p:first-child{font-weight:650;}
+#gac-kpi-manual-comparison .gac-kpi-mechanism{margin-top:7px!important;color:#467a74;font-size:12px!important;}
+#gac-kpi-manual-comparison .gac-kpi-arrow{text-align:center;font-size:25px;font-weight:700;color:#228e80;}
+#gac-kpi-manual-comparison .gac-kpi-source-label{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:0 0 5px!important;}
+#gac-kpi-manual-comparison .gac-kpi-footer{padding:22px 32px;background:#fff;border-top:1px solid #cfdfda;display:flex;align-items:flex-start;justify-content:space-between;gap:22px;}
+#gac-kpi-manual-comparison .gac-kpi-footer p{margin:0;color:#54737b;line-height:1.7;font-size:13px;max-width:840px;}
+#gac-kpi-manual-comparison .gac-kpi-footer a{color:#23786d;font-size:13px;font-weight:750;text-decoration:underline;text-underline-offset:4px;white-space:nowrap;}
+@media(max-width:1060px){#gac-kpi-manual-comparison .gac-kpi-baselines{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:720px){#gac-kpi-manual-comparison .gac-kpi-baselines{grid-template-columns:1fr;}
+#gac-kpi-manual-comparison .gac-kpi-transition{grid-template-columns:minmax(0,1fr);gap:3px;}
+#gac-kpi-manual-comparison .gac-kpi-arrow{transform:rotate(90deg);line-height:1;margin:7px 0;}
+#gac-kpi-manual-comparison .gac-kpi-head{padding:25px 20px;}
+#gac-kpi-manual-comparison .gac-kpi-body{padding:22px 16px 26px;}
+#gac-kpi-manual-comparison .gac-kpi-pair{padding:18px 13px;}
+#gac-kpi-manual-comparison .gac-kpi-footer{padding:20px;flex-direction:column;}
+}
