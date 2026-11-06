@@ -206,3 +206,9 @@ main .space-y-12:has(#introduction-title) > #engineering-map {
     border-radius:14px;
   }
 }
+
+/* Retired task-by-task comparison: keep DOM only until the static 7.5.19
+   client bundle is rebuilt. Removing the server HTML alone creates React
+   hydration error #418; the editable Introduction already omits this block.
+   The independently prepared manual-vs-agentic visual slot stays intact. */
+main #manual-workflow-title { display:none !important; }
