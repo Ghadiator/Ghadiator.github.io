@@ -64,6 +64,19 @@
       "deployment_boundary": "Protected backend not verified as deployed; source CI remains blocked",
       "browser_validation": "https://github.com/Ghadiator/Ghadiator.github.io/actions/runs/42210247958",
       "source_reference": "Generic_Agentic_Validation_Code/3_development_documentation/KPI_LIVE_MEASUREMENT_CONTRACT.md"
+    },
+    "governance_code_20261106": {
+      "date_utc": "2026-11-06",
+      "release_type": "Public static compatibility patch (not a full native Next.js rebuild)",
+      "public_route": "/governance-code/",
+      "public_navigation": "Lightweight client-side link insertion, preserving existing compiled React and evidence data",
+      "source_scope": "Eight allowlisted excerpts from supplier_review/models.py, supplier_review/workflow.py and supplier_review/tests/test_workflow.py",
+      "source_ref": "feat/governance-visual-atlas-20261103",
+      "original_source_code_pr": "https://github.com/Ghadiator/generic-agentic-validation/pull/73",
+      "public_review_pr": "https://github.com/Ghadiator/Ghadiator.github.io/pull/89",
+      "known_limits": "Scripted supplier fixtures, in-memory audit, reviewer allowlist; not live AI, production authentication, durable storage or certification",
+      "deployed_native_bundle": false,
+      "backend_modified": false
     }
   }
 }
