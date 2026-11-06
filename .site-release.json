@@ -22,7 +22,7 @@
     "verified_browser_checks": 253,
     "verification_run": "https://github.com/Ghadiator/Ghadiator.github.io/actions/runs/42143540376",
     "visual_run": "https://github.com/Ghadiator/Ghadiator.github.io/actions/runs/42143540371",
-    "note": "Original 7.5.19 artifact SHA and output SHA identify only the compiled baseline. The 2026-11-06 semantic KPI redesign is a separately verified public patch with matching static HTML and React Flight data; editable source branch updated, protected Oracle application not redeployed.",
+    "note": "The original 7.5.19 artifact digest identifies the compiled baseline; two-KPI-group public HTML/RSC/CSS changes are separately patched and browser-verified. Private backend was not deployed by this publication.",
     "latest_update_utc": "2026-11-06",
     "analytics_image": "avatars/analytics-original-cropped.webp",
     "analytics_image_sha256": "c35bea685d3f01027a5d007a857f6e4ddebda2edbb2e8f301562b259950fdc8d",
@@ -53,6 +53,17 @@
       "preserved_baseline": "7.5.19 and existing public KPI fixes",
       "live_ai_available": false,
       "live_approvals_available": false
+    },
+    "kpi_framework_20261106": {
+      "business_kpi_count": 6,
+      "ai_governance_kpi_count": 7,
+      "first_group": "Existing business outcomes with manual vs AI-assisted comparison",
+      "second_group": "New AI economics, assurance and governance observability",
+      "static_frontend": "Public Pages: definitions only, no protected telemetry and no invented gains",
+      "protected_backend": "Senior-only /api/kpis/governed-workflow source branch: partial recorded observations with explicit nulls",
+      "deployment_boundary": "Protected backend not verified as deployed; source CI remains blocked",
+      "browser_validation": "https://github.com/Ghadiator/Ghadiator.github.io/actions/runs/42210247958",
+      "source_reference": "Generic_Agentic_Validation_Code/3_development_documentation/KPI_LIVE_MEASUREMENT_CONTRACT.md"
     }
   }
 }
