@@ -54,6 +54,14 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
    assert(result.hiddenOldDetails,"Old Manual pain point / What changed / Governance boundary panels still visible");
    assert(result.workflowPlaceholder?.includes("reserved"),"Manual-vs-agentic diagram slot missing");
    assert(result.overflow<4,"Horizontal overflow "+result.overflow);
+   const kpiLink=page.getByRole("link",{name:/Compare the six manual and governed KPIs/});
+   assert.equal(await kpiLink.count(),1,"KPI comparison must be discoverable immediately from the hero");
+   await kpiLink.click();
+   assert.equal(new URL(page.url()).hash,"#gac-kpi-manual-comparison","Hero link must scroll to the integrated KPI panel");
+   const target=page.locator("#gac-kpi-manual-comparison");
+   await target.waitFor({state:"visible"});
+   const top=await target.evaluate(el=>el.getBoundingClientRect().top);
+   assert(top>=-60 && top<innerHeight,"KPI anchor must reach visible viewport, position "+top);
    assert(!errors.length,"Browser errors: "+errors.join(" | "));
    const img=await page.request.get("http://127.0.0.1:8765/avatars/analytics-original-cropped.webp");
    assert.equal(img.status(),200,"Uploaded teal-hijab portrait unavailable");
