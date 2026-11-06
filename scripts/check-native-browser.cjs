@@ -52,16 +52,17 @@ const widths = [
      "Tier 2 falsely claims AI is bypassed");
    await map.getByText("Grounded checks → bypass Tier-3 committee").waitFor();
    await map.getByText("Tier 2").first().waitFor();
-   // Keep four succinct role cards on Overview, not the entire operations roster.
-   const teaser=page.getByRole("region",{name:"Reasoning personas and their verification boundary"});
-   await teaser.waitFor({state:"visible"});
-   assert.equal(await teaser.locator('button[aria-label^="Inspect "]').count(),4,
-     viewport.label+": Overview teaser must remain concise");
-   assert.equal(await page.locator('nav[aria-label="On this page"]').count(),0,
-     viewport.label+": redundant Overview quick-access nav returned");
+    // The eight-role layout replaces the historical four-role teaser.
+    const agents=page.locator('[aria-labelledby="overview-agent-strip"]');
+    await agents.waitFor({state:"visible"});
+    await agents.locator('[data-sharp="1"] svg').first().waitFor();
+    assert.equal(await agents.locator('li').count(),8,viewport.label+": all eight personas must appear");
+    assert.equal(await agents.locator('li strong').count(),8,viewport.label+": all eight role captions must appear");
+    assert.equal(await page.locator('nav[aria-label="On this page"]').count(),0,
+      viewport.label+": redundant Overview quick-access nav returned");
    assert.equal(await page.getByText("Technical directory",{exact:true}).count(),0,
      viewport.label+": redundant technical directory returned");
-   await page.getByRole("link",{name:/Inspect each role and ask it questions/}).waitFor({state:"visible"});
+   await page.getByRole("link",{name:/Meet each persona and inspect its limits/}).waitFor({state:"visible"});
    checks+=8;
 
    await page.goto(base+"/business-impact/",{waitUntil:"domcontentloaded"});
