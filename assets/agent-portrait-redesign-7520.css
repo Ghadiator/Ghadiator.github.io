@@ -100,8 +100,11 @@ aside[aria-labelledby="overview-agent-strip"] > p,
 aside[aria-labelledby="overview-agent-strip"] > a {
  font-size:12px !important; line-height:1.7 !important; margin-top:20px !important;
 }
-@media(max-width:1260px) {
- aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 {grid-template-columns:repeat(3,minmax(0,1fr)) !important;}
+@media(min-width:711px) and (max-width:1260px) {
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 {grid-template-columns:repeat(6,minmax(0,1fr)) !important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li {grid-column:span 2 !important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li:nth-child(4) {grid-column:2/span 2 !important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li:nth-child(5) {grid-column:4/span 2 !important;}
  aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li [role="img"] {width:132px!important;height:132px!important;}
 }
 @media(max-width:1000px) {
@@ -111,6 +114,11 @@ aside[aria-labelledby="overview-agent-strip"] > a {
 @media(max-width:710px) {
  aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 {grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
  aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li [role="img"] {width:112px!important;height:112px!important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li:last-child {grid-column:1/-1!important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li:last-child > a {display:grid!important;grid-template-columns:112px minmax(0,1fr)!important;grid-template-rows:auto auto!important;text-align:left!important;justify-content:center!important;align-content:center!important;column-gap:18px!important;row-gap:3px!important;min-height:156px!important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li:last-child [role="img"] {grid-column:1!important;grid-row:1/span 2!important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li:last-child strong {grid-column:2!important;grid-row:1!important;align-self:end!important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li:last-child a > span:last-child:not([role="img"]) {grid-column:2!important;grid-row:2!important;align-self:start!important;}
  aside[aria-labelledby="overview-agent-strip"] li strong {font-size:15px!important;}
 }
 @media(max-width:470px) {
