@@ -212,3 +212,55 @@ main .space-y-12:has(#introduction-title) > #engineering-map {
    hydration error #418; the editable Introduction already omits this block.
    The independently prepared manual-vs-agentic visual slot stays intact. */
 main #manual-workflow-title { display:none !important; }
+
+
+/* Standalone MANUAL workflow before the pre-existing KPI Group A panel.
+   Deliberately uses a flex-item pseudo-element rather than injecting markup
+   into a hydrated legacy Next.js export; native source contains a real
+   semantic <section> and <picture>. The KPI panel stays a distinct card.
+   Source of visual truth: /assets/manual-supplier-invoice-workflow-*.svg */
+main .space-y-12:has(#gac-kpi-manual-comparison)::after {
+  content: "" / "Manual supplier invoice validation today. Seven human-led steps: receive and triage; read and enter data; match documents; question exceptions; prepare findings; human decision; update and archive. Pain points and accountable roles appear in the illustration.";
+  display: block !important;
+  order: 1 !important;
+  flex: 0 0 auto !important;
+  align-self: stretch !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 2048 / 615;
+  min-height: 0;
+  margin: 6px 0 8px !important;
+  padding: 0 !important;
+  border-radius: 20px;
+  background: #fff url("/assets/manual-supplier-invoice-workflow-20261106.svg") center / 100% 100% no-repeat;
+  box-shadow: 0 12px 32px rgba(18,67,82,.065);
+}
+main .space-y-12:has(#gac-kpi-manual-comparison) > #gac-kpi-manual-comparison,
+main .space-y-12:has(#gac-kpi-manual-comparison) > section:has(#overview-kpis) {
+  order: 2 !important;
+}
+main .space-y-12:has(#gac-kpi-manual-comparison) #use-case {
+  order: 3 !important;
+}
+main .space-y-12:has(#gac-kpi-manual-comparison) #manual-workflow-title,
+main .space-y-12:has(#gac-kpi-manual-comparison) #workflow-comparison {
+  order: 4 !important;
+}
+main .space-y-12:has(#gac-kpi-manual-comparison)::before {
+  order: 5 !important;
+}
+main .space-y-12:has(#gac-kpi-manual-comparison) > .grid > aside[aria-labelledby="overview-agent-strip"],
+main .space-y-12:has(#gac-kpi-manual-comparison) > section[aria-labelledby="overview-agent-strip"] {
+  order: 6 !important;
+}
+main .space-y-12:has(#gac-kpi-manual-comparison) > #engineering-map {
+  order: 7 !important;
+}
+@media(max-width:760px) {
+  main .space-y-12:has(#gac-kpi-manual-comparison)::after {
+    aspect-ratio: 750 / 1608;
+    margin: 0 0 8px !important;
+    border-radius: 14px;
+    background-image: url("/assets/manual-supplier-invoice-workflow-mobile-20261106.svg");
+  }
+}

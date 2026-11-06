@@ -1,77 +1,115 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="750" height="1235" viewBox="0 0 750 1235" role="img" aria-labelledby="title desc"><title id="title">Manual supplier invoice validation - mobile</title><desc id="desc">The seven manual supplier invoice validation stages, with pain points and human ownership, laid out vertically.</desc>
-<rect x="3" y="3" width="744" height="1229" rx="23" fill="#f5f9fd" stroke="#cfe3ee" stroke-width="1.4"/>
-<rect x="19" y="20" width="712" height="112" rx="15" fill="#e5f0f6" stroke="#cde0e8" stroke-width="1.4"/>
-<rect x="32" y="34" width="189" height="81" rx="12" fill="#103e59" stroke="#103e59" stroke-width="1.4"/><text x="126" y="66" text-anchor="middle" font-size="21" font-weight="850" fill="#fff">MANUAL</text><text x="126" y="93" text-anchor="middle" font-size="21" font-weight="850" fill="#fff">WORKFLOW</text>
-<text x="256" y="72" text-anchor="start" font-size="20" font-weight="600" fill="#305670">People perform each check</text><text x="256" y="100" text-anchor="start" font-size="20" font-weight="600" fill="#305670">Hand-offs · Emails · Multiple systems</text>
-<rect x="19" y="148" width="712" height="145" rx="14" fill="#fff" stroke="#cde1e8" stroke-width="1.4"/>
-<rect x="29" y="157" width="76" height="127" rx="11" fill="#e6f5fb" stroke="#cfe6f0" stroke-width="1.4"/>
-<circle cx="68" cy="195" r="22" fill="#fff" stroke="#bbdfe9" stroke-width="2"/><text x="68" y="204" text-anchor="middle" font-size="21" font-weight="850" fill="#133f5a">1</text>
-<circle cx="68" cy="250" r="22" fill="#e5f6fc" stroke="#bedde8" stroke-width="2"/>
-<path d="M41 232h54v38h-54z M41 233l27 22 27 -22" fill="none" stroke="#103c5a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="78" y="220" width="18" height="19" rx="2" fill="#fff" stroke="#12415d" stroke-width="2.5"/><path d="M81 229l5 5 7 -9" fill="none" stroke="#f0784c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="125" y="185" text-anchor="start" font-size="26" font-weight="800" fill="#173b55">Receive &amp; triage</text>
-<text x="125" y="211" text-anchor="start" font-size="19" font-weight="500" fill="#58778c">Open incoming emails · and register requests</text>
-<rect x="125" y="227" width="265" height="31" rx="13" fill="#fff0e9" stroke="#fff0e9" stroke-width="1.4"/><text x="258" y="248" text-anchor="middle" font-size="17" font-weight="750" fill="#c9653d">Email overload</text>
-<text x="410" y="248" text-anchor="start" font-size="17" font-weight="650" fill="#234c61">Intake coordinator</text>
-<text x="125" y="277" text-anchor="start" font-size="16" font-weight="600" fill="#315e72">Human-led step</text>
-<rect x="19" y="302" width="712" height="145" rx="14" fill="#fff" stroke="#cde1e8" stroke-width="1.4"/>
-<rect x="29" y="311" width="76" height="127" rx="11" fill="#e6f5fb" stroke="#cfe6f0" stroke-width="1.4"/>
-<circle cx="68" cy="349" r="22" fill="#fff" stroke="#bbdfe9" stroke-width="2"/><text x="68" y="358" text-anchor="middle" font-size="21" font-weight="850" fill="#133f5a">2</text>
-<circle cx="68" cy="404" r="22" fill="#e5f6fc" stroke="#bedde8" stroke-width="2"/>
-<rect x="46" y="373" width="44" height="62" rx="5" fill="#e8f7fc" stroke="#10415d" stroke-width="3"/><path d="M58 390h21 M58 401h21 M58 413l10 9 10 -9" fill="none" stroke="#f0784c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="125" y="339" text-anchor="start" font-size="26" font-weight="800" fill="#173b55">Read &amp; enter data</text>
-<text x="125" y="365" text-anchor="start" font-size="19" font-weight="500" fill="#58778c">Copy invoice details · into spreadsheets</text>
-<rect x="125" y="381" width="265" height="31" rx="13" fill="#fff0e9" stroke="#fff0e9" stroke-width="1.4"/><text x="258" y="402" text-anchor="middle" font-size="17" font-weight="750" fill="#c9653d">Manual re-entry</text>
-<text x="410" y="402" text-anchor="start" font-size="17" font-weight="650" fill="#234c61">AP administrator</text>
-<text x="125" y="431" text-anchor="start" font-size="16" font-weight="600" fill="#315e72">Human-led step</text>
-<rect x="19" y="456" width="712" height="145" rx="14" fill="#fff" stroke="#cde1e8" stroke-width="1.4"/>
-<rect x="29" y="465" width="76" height="127" rx="11" fill="#e6f5fb" stroke="#cfe6f0" stroke-width="1.4"/>
-<circle cx="68" cy="503" r="22" fill="#fff" stroke="#bbdfe9" stroke-width="2"/><text x="68" y="512" text-anchor="middle" font-size="21" font-weight="850" fill="#133f5a">3</text>
-<circle cx="68" cy="558" r="22" fill="#e5f6fc" stroke="#bedde8" stroke-width="2"/>
-<rect x="38" y="532" width="35" height="48" rx="4" fill="#ebf9fd" stroke="#10415d" stroke-width="3"/><rect x="57" y="543" width="35" height="48" rx="4" fill="#fff" stroke="#10415d" stroke-width="3"/><path d="M66 564l7 7 14 -16" fill="none" stroke="#f0784c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="125" y="493" text-anchor="start" font-size="26" font-weight="800" fill="#173b55">Match documents</text>
-<text x="125" y="519" text-anchor="start" font-size="19" font-weight="500" fill="#58778c">Compare invoice, PO, · contract and terms</text>
-<rect x="125" y="535" width="265" height="31" rx="13" fill="#fff0e9" stroke="#fff0e9" stroke-width="1.4"/><text x="258" y="556" text-anchor="middle" font-size="17" font-weight="750" fill="#c9653d">Scattered sources</text>
-<text x="410" y="556" text-anchor="start" font-size="17" font-weight="650" fill="#234c61">Contract analyst</text>
-<text x="125" y="585" text-anchor="start" font-size="16" font-weight="600" fill="#315e72">Human-led step</text>
-<rect x="19" y="610" width="712" height="145" rx="14" fill="#fff" stroke="#cde1e8" stroke-width="1.4"/>
-<rect x="29" y="619" width="76" height="127" rx="11" fill="#e6f5fb" stroke="#cfe6f0" stroke-width="1.4"/>
-<circle cx="68" cy="657" r="22" fill="#fff" stroke="#bbdfe9" stroke-width="2"/><text x="68" y="666" text-anchor="middle" font-size="21" font-weight="850" fill="#133f5a">4</text>
-<circle cx="68" cy="712" r="22" fill="#e5f6fc" stroke="#bedde8" stroke-width="2"/>
-<circle cx="63" cy="705" r="24" fill="#eaf8ff" stroke="#10415d" stroke-width="3"/><path d="M80 723l20 21" fill="none" stroke="#10415d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M63 693v15" fill="none" stroke="#ef784d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="63" cy="716" r="2" fill="#ef784d" stroke="#ef784d" stroke-width="2"/>
-<text x="125" y="647" text-anchor="start" font-size="26" font-weight="800" fill="#173b55">Question exceptions</text>
-<text x="125" y="673" text-anchor="start" font-size="19" font-weight="500" fill="#58778c">Inspect discrepancies · and chase clarifications</text>
-<rect x="125" y="689" width="265" height="31" rx="13" fill="#fff0e9" stroke="#fff0e9" stroke-width="1.4"/><text x="258" y="710" text-anchor="middle" font-size="17" font-weight="750" fill="#c9653d">Slow follow-ups</text>
-<text x="410" y="710" text-anchor="start" font-size="17" font-weight="650" fill="#234c61">Quality checker</text>
-<text x="125" y="739" text-anchor="start" font-size="16" font-weight="600" fill="#315e72">Human-led step</text>
-<rect x="19" y="764" width="712" height="145" rx="14" fill="#fff" stroke="#cde1e8" stroke-width="1.4"/>
-<rect x="29" y="773" width="76" height="127" rx="11" fill="#e6f5fb" stroke="#cfe6f0" stroke-width="1.4"/>
-<circle cx="68" cy="811" r="22" fill="#fff" stroke="#bbdfe9" stroke-width="2"/><text x="68" y="820" text-anchor="middle" font-size="21" font-weight="850" fill="#133f5a">5</text>
-<circle cx="68" cy="866" r="22" fill="#e5f6fc" stroke="#bedde8" stroke-width="2"/>
-<rect x="46" y="836" width="45" height="56" rx="4" fill="#fff" stroke="#10415d" stroke-width="3.7"/><path d="M56 850h24 M56 860h20 M56 872h12" fill="none" stroke="#10415d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="87" cy="883" r="11" fill="#fff" stroke="#f0784c" stroke-width="3"/><path d="M82 882l4 4 7 -9" fill="none" stroke="#f0784c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="125" y="801" text-anchor="start" font-size="26" font-weight="800" fill="#173b55">Prepare findings</text>
-<text x="125" y="827" text-anchor="start" font-size="19" font-weight="500" fill="#58778c">Write a case summary · with supporting files</text>
-<rect x="125" y="843" width="265" height="31" rx="13" fill="#fff0e9" stroke="#fff0e9" stroke-width="1.4"/><text x="258" y="864" text-anchor="middle" font-size="17" font-weight="750" fill="#c9653d">Repetitive reporting</text>
-<text x="410" y="864" text-anchor="start" font-size="17" font-weight="650" fill="#234c61">Case preparer</text>
-<text x="125" y="893" text-anchor="start" font-size="16" font-weight="600" fill="#315e72">Human-led step</text>
-<rect x="19" y="918" width="712" height="145" rx="14" fill="#fff" stroke="#cde1e8" stroke-width="1.4"/>
-<rect x="29" y="927" width="76" height="127" rx="11" fill="#e6f5fb" stroke="#cfe6f0" stroke-width="1.4"/>
-<circle cx="68" cy="965" r="22" fill="#fff" stroke="#bbdfe9" stroke-width="2"/><text x="68" y="974" text-anchor="middle" font-size="21" font-weight="850" fill="#133f5a">6</text>
-<circle cx="68" cy="1020" r="22" fill="#e5f6fc" stroke="#bedde8" stroke-width="2"/>
-<circle cx="68" cy="999" r="12" fill="#eff8fb" stroke="#10415d" stroke-width="3"/><path d="M46 1047v-10q0 -20 22 -20t22 20v10" fill="none" stroke="#10415d" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="90" cy="1033" r="13" fill="#fff" stroke="#f0784c" stroke-width="3"/><path d="M84 1032l5 5 8 -10" fill="none" stroke="#f0784c" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="125" y="955" text-anchor="start" font-size="26" font-weight="800" fill="#173b55">Human decision</text>
-<text x="125" y="981" text-anchor="start" font-size="19" font-weight="500" fill="#58778c">Review, approve, · reject or request info</text>
-<rect x="125" y="997" width="265" height="31" rx="13" fill="#fff0e9" stroke="#fff0e9" stroke-width="1.4"/><text x="258" y="1018" text-anchor="middle" font-size="17" font-weight="750" fill="#c9653d">Approval bottleneck</text>
-<text x="410" y="1018" text-anchor="start" font-size="17" font-weight="650" fill="#234c61">Decision owner</text>
-<text x="125" y="1047" text-anchor="start" font-size="16" font-weight="600" fill="#315e72">Human-led step</text>
-<rect x="19" y="1072" width="712" height="145" rx="14" fill="#fff" stroke="#cde1e8" stroke-width="1.4"/>
-<rect x="29" y="1081" width="76" height="127" rx="11" fill="#e6f5fb" stroke="#cfe6f0" stroke-width="1.4"/>
-<circle cx="68" cy="1119" r="22" fill="#fff" stroke="#bbdfe9" stroke-width="2"/><text x="68" y="1128" text-anchor="middle" font-size="21" font-weight="850" fill="#133f5a">7</text>
-<circle cx="68" cy="1174" r="22" fill="#e5f6fc" stroke="#bedde8" stroke-width="2"/>
-<rect x="39" y="1147" width="60" height="43" rx="3" fill="#fff" stroke="#10415d" stroke-width="3.5"/><path d="M53 1160h31 M53 1170h24 M53 1179h15 M68 1191v11 M56 1203h24" fill="none" stroke="#10415d" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="94" cy="1194" r="12" fill="#fff" stroke="#f0784c" stroke-width="3"/><path d="M89 1194l4 4 6 -9" fill="none" stroke="#f0784c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-<text x="125" y="1109" text-anchor="start" font-size="26" font-weight="800" fill="#173b55">Update &amp; archive</text>
-<text x="125" y="1135" text-anchor="start" font-size="19" font-weight="500" fill="#58778c">Rekey ERP details · and save evidence</text>
-<rect x="125" y="1151" width="265" height="31" rx="13" fill="#fff0e9" stroke="#fff0e9" stroke-width="1.4"/><text x="258" y="1172" text-anchor="middle" font-size="17" font-weight="750" fill="#c9653d">Weak traceability</text>
-<text x="410" y="1172" text-anchor="start" font-size="17" font-weight="650" fill="#234c61">Records / audit clerk</text>
-<text x="125" y="1201" text-anchor="start" font-size="16" font-weight="600" fill="#315e72">Human-led step</text>
-<text x="375" y="1220" text-anchor="middle" font-size="18" font-weight="600" fill="#58798b">Manual process · Seven human-owned stages</text>
+<svg xmlns="http://www.w3.org/2000/svg" font-family="Barlow, Segoe UI, Arial, sans-serif" width="750" height="1608" viewBox="0 0 750 1608" role="img" aria-labelledby="title desc"><title id="title">Manual supplier invoice validation today – mobile</title><desc id="desc">Seven sequential human-owned manual supplier invoice checking steps with pain points and accountable roles.</desc>
+<defs><linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b2639"/><stop offset="1" stop-color="#16495c"/></linearGradient><linearGradient id="teal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#068d85"/><stop offset="1" stop-color="#00a49a"/></linearGradient><linearGradient id="header" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#f1f9f9"/></linearGradient><filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#174e5c" flood-opacity=".08"/></filter></defs>
+<rect x="2" y="2" width="746" height="1604" rx="24" fill="#fff" stroke="#cbdedc" stroke-width="2"/>
+<rect x="26" y="26" width="6" height="123" rx="3" fill="#009a90" stroke="#009a90" stroke-width="1.5"/>
+<text x="50" y="54" text-anchor="start" font-size="19" font-weight="850" letter-spacing="1.1" fill="#13887c">BEFORE AUTOMATION / HUMAN-LED</text>
+<text x="50" y="94" text-anchor="start" font-size="32" font-weight="820" letter-spacing="0" fill="#173647">Supplier invoice validation</text>
+<text x="50" y="132" text-anchor="start" font-size="22" font-weight="500" letter-spacing="0" fill="#67818d">Seven manual steps · One human decision</text>
+<path d="M27 166H722" stroke="#dcebea" stroke-width="2"/>
+<rect x="23" y="183" width="704" height="183" rx="14" fill="#fff" stroke="#d2e4e6" stroke-width="1.5"/>
+<rect x="23" y="183" width="704" height="56" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="23" y="225" width="704" height="15" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="57" cy="212" r="19" fill="#d8f3eb" stroke="none" stroke-width="1.7"/>
+<text x="57" y="219" text-anchor="middle" font-size="21" font-weight="800" letter-spacing="0" fill="#007470">1</text>
+<text x="93" y="219" text-anchor="start" font-size="25" font-weight="760" letter-spacing="0" fill="#fff">Receive &amp; triage</text>
+<circle cx="83" cy="295" r="44" fill="#eaf8f8" stroke="#ceeced" stroke-width="2.5"/>
+<g transform="translate(83 295) scale(0.79)"><rect x="-23" y="-16" width="46" height="34" rx="5" fill="none" stroke="#0e5066" stroke-width="3"/><path d="M-23 -14 L0 3 23 -14" fill="none" stroke="#0e5066" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><rect x="7" y="-30" width="22" height="21" rx="4" fill="#fff" stroke="#0e5066" stroke-width="2.5"/><path d="M12 -19 l6 6 8 -11" fill="none" stroke="#eb815a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="147" y="274" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">Open incoming emails</text><text x="147" y="299" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">and register requests</text>
+<rect x="147" y="306" width="282" height="34" rx="17" fill="#fff1e9" stroke="none" stroke-width="0"/>
+<path d="M162 316l8 13h-16z" fill="none" stroke="#dc764e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="178" y="328" text-anchor="start" font-size="18" font-weight="770" letter-spacing="0" fill="#c15d37">Email overload</text>
+<circle cx="462" cy="322" r="8" fill="none" stroke="#426778" stroke-width="2"/><path d="M449 342q0 -14 13 -14t13 14" fill="none" stroke="#426778" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="487" y="331" text-anchor="start" font-size="17" font-weight="700" letter-spacing="0" fill="#244e63">Intake coordinator</text>
+<path d="M374 368v8" fill="none" stroke="#069c90" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="23" y="379" width="704" height="183" rx="14" fill="#fff" stroke="#d2e4e6" stroke-width="1.5"/>
+<rect x="23" y="379" width="704" height="56" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="23" y="421" width="704" height="15" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="57" cy="408" r="19" fill="#d8f3eb" stroke="none" stroke-width="1.7"/>
+<text x="57" y="415" text-anchor="middle" font-size="21" font-weight="800" letter-spacing="0" fill="#007470">2</text>
+<text x="93" y="415" text-anchor="start" font-size="25" font-weight="760" letter-spacing="0" fill="#fff">Read &amp; enter data</text>
+<circle cx="83" cy="491" r="44" fill="#eaf8f8" stroke="#ceeced" stroke-width="2.5"/>
+<g transform="translate(83 491) scale(0.79)"><rect x="-20" y="-29" width="40" height="59" rx="4" fill="#fff" stroke="#0e5066" stroke-width="3.5"/><path d="M-10 -15h20m-20 10h20m-20 11h17" fill="none" stroke="#0e5066" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><path d="M-10 20l10 -9 10 9" fill="none" stroke="#ed8659" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="147" y="470" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">Copy invoice details</text><text x="147" y="495" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">into spreadsheets</text>
+<rect x="147" y="502" width="282" height="34" rx="17" fill="#fff1e9" stroke="none" stroke-width="0"/>
+<path d="M162 512l8 13h-16z" fill="none" stroke="#dc764e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="178" y="524" text-anchor="start" font-size="18" font-weight="770" letter-spacing="0" fill="#c15d37">Manual re-entry</text>
+<circle cx="462" cy="518" r="8" fill="none" stroke="#426778" stroke-width="2"/><path d="M449 538q0 -14 13 -14t13 14" fill="none" stroke="#426778" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="487" y="527" text-anchor="start" font-size="17" font-weight="700" letter-spacing="0" fill="#244e63">AP administrator</text>
+<path d="M374 564v8" fill="none" stroke="#069c90" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="23" y="575" width="704" height="183" rx="14" fill="#fff" stroke="#d2e4e6" stroke-width="1.5"/>
+<rect x="23" y="575" width="704" height="56" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="23" y="617" width="704" height="15" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="57" cy="604" r="19" fill="#d8f3eb" stroke="none" stroke-width="1.7"/>
+<text x="57" y="611" text-anchor="middle" font-size="21" font-weight="800" letter-spacing="0" fill="#007470">3</text>
+<text x="93" y="611" text-anchor="start" font-size="25" font-weight="760" letter-spacing="0" fill="#fff">Match documents</text>
+<circle cx="83" cy="687" r="44" fill="#eaf8f8" stroke="#ceeced" stroke-width="2.5"/>
+<g transform="translate(83 687) scale(0.79)"><rect x="-28" y="-21" width="34" height="49" rx="4" fill="#f9ffff" stroke="#0e5066" stroke-width="3"/><rect x="-9" y="-29" width="37" height="51" rx="4" fill="#fff" stroke="#0e5066" stroke-width="3"/><path d="M-1 0 l8 8 13 -16" fill="none" stroke="#eb8357" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="147" y="666" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">Compare invoice, PO,</text><text x="147" y="691" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">contract and terms</text>
+<rect x="147" y="698" width="282" height="34" rx="17" fill="#fff1e9" stroke="none" stroke-width="0"/>
+<path d="M162 708l8 13h-16z" fill="none" stroke="#dc764e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="178" y="720" text-anchor="start" font-size="18" font-weight="770" letter-spacing="0" fill="#c15d37">Scattered sources</text>
+<circle cx="462" cy="714" r="8" fill="none" stroke="#426778" stroke-width="2"/><path d="M449 734q0 -14 13 -14t13 14" fill="none" stroke="#426778" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="487" y="723" text-anchor="start" font-size="17" font-weight="700" letter-spacing="0" fill="#244e63">Contract analyst</text>
+<path d="M374 760v8" fill="none" stroke="#069c90" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="23" y="771" width="704" height="183" rx="14" fill="#fff" stroke="#d2e4e6" stroke-width="1.5"/>
+<rect x="23" y="771" width="704" height="56" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="23" y="813" width="704" height="15" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="57" cy="800" r="19" fill="#d8f3eb" stroke="none" stroke-width="1.7"/>
+<text x="57" y="807" text-anchor="middle" font-size="21" font-weight="800" letter-spacing="0" fill="#007470">4</text>
+<text x="93" y="807" text-anchor="start" font-size="25" font-weight="760" letter-spacing="0" fill="#fff">Question exceptions</text>
+<circle cx="83" cy="883" r="44" fill="#eaf8f8" stroke="#ceeced" stroke-width="2.5"/>
+<g transform="translate(83 883) scale(0.79)"><circle cx="-5" cy="-7" r="21" fill="none" stroke="#0e5066" stroke-width="3.2"/><path d="M11 10l20 19" fill="none" stroke="#0e5066" stroke-width="4.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M-5 -18v14" fill="none" stroke="#ec8154" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="-5" cy="3" r="2" fill="#ec8154" stroke="none" stroke-width="1.7"/></g>
+<text x="147" y="862" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">Inspect discrepancies</text><text x="147" y="887" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">and chase clarifications</text>
+<rect x="147" y="894" width="282" height="34" rx="17" fill="#fff1e9" stroke="none" stroke-width="0"/>
+<path d="M162 904l8 13h-16z" fill="none" stroke="#dc764e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="178" y="916" text-anchor="start" font-size="18" font-weight="770" letter-spacing="0" fill="#c15d37">Slow follow-ups</text>
+<circle cx="462" cy="910" r="8" fill="none" stroke="#426778" stroke-width="2"/><path d="M449 930q0 -14 13 -14t13 14" fill="none" stroke="#426778" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="487" y="919" text-anchor="start" font-size="17" font-weight="700" letter-spacing="0" fill="#244e63">Quality checker</text>
+<path d="M374 956v8" fill="none" stroke="#069c90" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="23" y="967" width="704" height="183" rx="14" fill="#fff" stroke="#d2e4e6" stroke-width="1.5"/>
+<rect x="23" y="967" width="704" height="56" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="23" y="1009" width="704" height="15" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="57" cy="996" r="19" fill="#d8f3eb" stroke="none" stroke-width="1.7"/>
+<text x="57" y="1003" text-anchor="middle" font-size="21" font-weight="800" letter-spacing="0" fill="#007470">5</text>
+<text x="93" y="1003" text-anchor="start" font-size="25" font-weight="760" letter-spacing="0" fill="#fff">Prepare findings</text>
+<circle cx="83" cy="1079" r="44" fill="#eaf8f8" stroke="#ceeced" stroke-width="2.5"/>
+<g transform="translate(83 1079) scale(0.79)"><rect x="-23" y="-27" width="47" height="58" rx="5" fill="#fff" stroke="#0e5066" stroke-width="3.3"/><path d="M-12 -14h23m-23 11h23m-23 10h15" fill="none" stroke="#0e5066" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/><circle cx="19" cy="21" r="12" fill="#fff" stroke="#ed8659" stroke-width="2.8"/><path d="M13 21l4 4 7 -9" fill="none" stroke="#ed8659" stroke-width="2.9" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="147" y="1058" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">Write a case summary</text><text x="147" y="1083" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">with supporting files</text>
+<rect x="147" y="1090" width="282" height="34" rx="17" fill="#fff1e9" stroke="none" stroke-width="0"/>
+<path d="M162 1100l8 13h-16z" fill="none" stroke="#dc764e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="178" y="1112" text-anchor="start" font-size="18" font-weight="770" letter-spacing="0" fill="#c15d37">Repetitive reporting</text>
+<circle cx="462" cy="1106" r="8" fill="none" stroke="#426778" stroke-width="2"/><path d="M449 1126q0 -14 13 -14t13 14" fill="none" stroke="#426778" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="487" y="1115" text-anchor="start" font-size="17" font-weight="700" letter-spacing="0" fill="#244e63">Case preparer</text>
+<path d="M374 1152v8" fill="none" stroke="#069c90" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="23" y="1163" width="704" height="183" rx="14" fill="#fff" stroke="#d2e4e6" stroke-width="1.5"/>
+<rect x="23" y="1163" width="704" height="56" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="23" y="1205" width="704" height="15" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="57" cy="1192" r="19" fill="#d8f3eb" stroke="none" stroke-width="1.7"/>
+<text x="57" y="1199" text-anchor="middle" font-size="21" font-weight="800" letter-spacing="0" fill="#007470">6</text>
+<text x="93" y="1199" text-anchor="start" font-size="25" font-weight="760" letter-spacing="0" fill="#fff">Human decision</text>
+<circle cx="83" cy="1275" r="44" fill="#eaf8f8" stroke="#ceeced" stroke-width="2.5"/>
+<g transform="translate(83 1275) scale(0.79)"><circle cx="-2" cy="-18" r="12" fill="none" stroke="#0e5066" stroke-width="3"/><path d="M-23 26v-9q0 -20 21 -20t21 20v9" fill="none" stroke="#0e5066" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="22" cy="13" r="14" fill="#fff" stroke="#ec8154" stroke-width="2.8"/><path d="M15 13l5 5 8 -10" fill="none" stroke="#ec8154" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="147" y="1254" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">Review, approve,</text><text x="147" y="1279" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">reject or request info</text>
+<rect x="147" y="1286" width="282" height="34" rx="17" fill="#fff1e9" stroke="none" stroke-width="0"/>
+<path d="M162 1296l8 13h-16z" fill="none" stroke="#dc764e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="178" y="1308" text-anchor="start" font-size="18" font-weight="770" letter-spacing="0" fill="#c15d37">Approval bottleneck</text>
+<circle cx="462" cy="1302" r="8" fill="none" stroke="#426778" stroke-width="2"/><path d="M449 1322q0 -14 13 -14t13 14" fill="none" stroke="#426778" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="487" y="1311" text-anchor="start" font-size="17" font-weight="700" letter-spacing="0" fill="#244e63">Decision owner</text>
+<path d="M374 1348v8" fill="none" stroke="#069c90" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="23" y="1359" width="704" height="183" rx="14" fill="#fff" stroke="#d2e4e6" stroke-width="1.5"/>
+<rect x="23" y="1359" width="704" height="56" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="23" y="1401" width="704" height="15" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="57" cy="1388" r="19" fill="#d8f3eb" stroke="none" stroke-width="1.7"/>
+<text x="57" y="1395" text-anchor="middle" font-size="21" font-weight="800" letter-spacing="0" fill="#007470">7</text>
+<text x="93" y="1395" text-anchor="start" font-size="25" font-weight="760" letter-spacing="0" fill="#fff">Update &amp; archive</text>
+<circle cx="83" cy="1471" r="44" fill="#eaf8f8" stroke="#ceeced" stroke-width="2.5"/>
+<g transform="translate(83 1471) scale(0.79)"><rect x="-28" y="-25" width="56" height="41" rx="4" fill="#fff" stroke="#0e5066" stroke-width="3"/><path d="M-16 -13h30M-16 -2h22M-16 9h13 M0 17v10 M-12 27h24" fill="none" stroke="#0e5066" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/><circle cx="24" cy="21" r="12" fill="#fff" stroke="#ec8154" stroke-width="2.8"/><path d="M18 20l4 4 7 -9" fill="none" stroke="#ec8154" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="147" y="1450" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">Rekey ERP details</text><text x="147" y="1475" text-anchor="start" font-size="19" font-weight="540" letter-spacing="0" fill="#567682">and save evidence</text>
+<rect x="147" y="1482" width="282" height="34" rx="17" fill="#fff1e9" stroke="none" stroke-width="0"/>
+<path d="M162 1492l8 13h-16z" fill="none" stroke="#dc764e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="178" y="1504" text-anchor="start" font-size="18" font-weight="770" letter-spacing="0" fill="#c15d37">Weak traceability</text>
+<circle cx="462" cy="1498" r="8" fill="none" stroke="#426778" stroke-width="2"/><path d="M449 1518q0 -14 13 -14t13 14" fill="none" stroke="#426778" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="487" y="1507" text-anchor="start" font-size="17" font-weight="700" letter-spacing="0" fill="#244e63">Records / audit clerk</text>
+<circle cx="42" cy="1582" r="12" fill="#e8f7f2" stroke="#aedbcf" stroke-width="2"/><path d="M37 1582l4 4 7 -9" fill="none" stroke="#047b73" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="66" y="1588" text-anchor="start" font-size="18" font-weight="650" letter-spacing="0" fill="#567a83">Human sign-off retained</text>
 </svg>

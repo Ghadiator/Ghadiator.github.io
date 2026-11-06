@@ -92,6 +92,20 @@
       "acceptance_run": "https://github.com/Ghadiator/Ghadiator.github.io/actions/runs/42217872897",
       "no_new_runtime_claims": true,
       "baseline_bundle_unchanged": true
+    },
+    "manual_workflow_standalone_redesign": {
+      "date_utc": "2026-11-06",
+      "intent": "Separate manual supplier invoice workflow from the Group A business KPI section, restyle to match the public site while preserving seven steps, pain points and human owners.",
+      "public_rendering": "Root-level CSS-generated standalone flex item, before the existing KPI section; existing Next.js HTML and React Flight remain untouched.",
+      "previous_problem": "Earlier workflow pseudo-element was inside the Group A KPI panel.",
+      "desktop_asset": "assets/manual-supplier-invoice-workflow-20261106.svg",
+      "mobile_asset": "assets/manual-supplier-invoice-workflow-mobile-20261106.svg",
+      "stylesheet": "assets/introduction-order-and-kpis-20261106.css",
+      "kpi_style": "assets/kpi-manual-delta-20261106.css (embedded manual pseudo-element disabled)",
+      "native_source_branch": "feat/manual-workflow-website-style-20261106",
+      "test_run": "https://github.com/Ghadiator/Ghadiator.github.io/actions/runs/42219646605",
+      "static_release_baseline_preserved": true,
+      "no_backend_change": true
     }
   }
 }

@@ -62,27 +62,6 @@
    sit flush inside a single intentional frame. */
 main .space-y-12:has(#introduction-title) #gac-kpi-manual-comparison{padding:0!important;}
 
-
-/* Nov 6, 2026: Owner-approved MANUAL-ONLY supplier check visualization.
-   This is the upper, human-operated row from the proposed before/after visual.
-   Place it before the unchanged KPI Group A eyebrow and heading. Static Pages
-   fallback; native React source has an accessible <picture> section. */
-#gac-kpi-manual-comparison::before {
-  content: "" / "Manual supplier invoice validation today: receive and triage; read and enter data; match documents; question exceptions; prepare findings; human decision; update and archive. Manual pain points include email overload, re-entry, scattered sources, slow follow-ups, repetitive reporting, approval delays and weak traceability.";
-  display: block;
-  width: calc(100% - 32px);
-  margin: 16px 16px 0;
-  aspect-ratio: 2048 / 366;
-  flex: 0 0 auto;
-  border-radius: 14px;
-  border: 1px solid #c9e1e9;
-  background: #f5f9fd url("/assets/manual-supplier-invoice-workflow-20261106.svg") center / 100% 100% no-repeat;
-}
-@media (max-width: 720px) {
-  #gac-kpi-manual-comparison::before {
-    width: calc(100% - 20px);
-    margin: 10px 10px 0;
-    aspect-ratio: 750 / 1235;
-    background-image: url("/assets/manual-supplier-invoice-workflow-mobile-20261106.svg");
-  }
-}
+/* The supplier workflow is a separate preceding section (Introduction root
+   generated visual on the public 7.5.19 export), not part of Group A KPI. */
+#gac-kpi-manual-comparison::before { content: none !important; display: none !important; }
