@@ -61,7 +61,7 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
    const target=page.locator("#gac-kpi-manual-comparison");
    await target.waitFor({state:"visible"});
    const top=await target.evaluate(el=>el.getBoundingClientRect().top);
-   assert(top>=-60 && top<innerHeight,"KPI anchor must reach visible viewport, position "+top);
+   assert(top>=-60 && top<900,"KPI anchor must reach visible viewport, position "+top);
    assert(!errors.length,"Browser errors: "+errors.join(" | "));
    const img=await page.request.get("http://127.0.0.1:8765/avatars/analytics-original-cropped.webp");
    assert.equal(img.status(),200,"Uploaded teal-hijab portrait unavailable");
