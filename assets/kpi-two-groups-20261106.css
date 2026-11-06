@@ -44,3 +44,31 @@
    part of Group B even before the next complete Next.js source rebuild. */
 section[aria-label="KPI scorecard and measurement method"] [role="group"] button:last-child{border-color:#91ccbe!important;background:#eef9f5!important}
 section[aria-label="KPI scorecard and measurement method"] [role="group"] button:last-child::after{content:"AI KPI";border:1px solid #b6ddd3;border-radius:6px;padding:2px 5px;font-size:10px;font-weight:750;white-space:nowrap;color:#25776b}
+
+/* Business impact page: lead with the business question and evidence boundary,
+   then the two KPI families, then the detailed explorer. This keeps the
+   original React stream intact until the next source-built static release. */
+body:has(.gac-kpi-business-taxonomy) main.public-main {
+  display:flex;
+  flex-direction:column;
+  gap:22px;
+}
+body:has(.gac-kpi-business-taxonomy) main.public-main > .space-y-9 {
+  display:contents;
+}
+body:has(.gac-kpi-business-taxonomy) main.public-main > .space-y-9 > header {
+  order:-3;
+  margin-top:0;
+}
+body:has(.gac-kpi-business-taxonomy) main.public-main > .gac-kpi-business-taxonomy {
+  order:-2;
+  margin-top:0;
+}
+body:has(.gac-kpi-business-taxonomy) main.public-main > .mb-4 {
+  order:-1;
+  margin:0;
+}
+body:has(.gac-kpi-business-taxonomy) main.public-main > .space-y-9 > :not(header) {
+  order:0;
+  margin-top:0;
+}
