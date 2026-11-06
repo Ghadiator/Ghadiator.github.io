@@ -1,0 +1,122 @@
+/* GovernanceAsCode — eight agent photographic-card correction.
+   No DOM rewrites, no scripts, no changed approval semantics.
+   Restore meaningful visual hierarchy and high-DPI artwork. */
+:root { --gac-portrait-border:#bedade; --gac-portrait-accent:#0e7773; }
+/* Retain the original visual story, but let KPI and agent panels use the full
+   content width: business problem, KPI, persona responsibilities, workflow. */
+main .space-y-12:has(#introduction-title) { display:flex !important; flex-direction:column !important; gap:28px !important; }
+main .space-y-12:has(#introduction-title) > .grid:has(#introduction-title) {display:contents !important;}
+main .space-y-12:has(#introduction-title) > .grid > section:has(#introduction-title) {order:0; margin:0 !important; width:100%;}
+main .space-y-12:has(#introduction-title) > section:has(#overview-kpis) {order:1; margin:0 !important; width:100%;}
+main .space-y-12:has(#introduction-title) > .grid > aside[aria-labelledby="overview-agent-strip"] {order:2; margin:0 !important; width:100%;}
+main .space-y-12:has(#introduction-title) > .flex.justify-end {order:3; margin:0 !important;}
+main .space-y-12:has(#introduction-title) > .space-y-10 {order:4; margin:0 !important;}
+main .space-y-12:has(#introduction-title) > #engineering-map {order:5; margin-top:4px !important;}
+main .space-y-12:has(#introduction-title) > section:not(:has(#overview-kpis)):not(#engineering-map) {order:6;}
+/* Restore high-resolution photographic atlas for all persona badges, including
+   the original teal-hijab Analytics identity. This wins over inline CSS from
+   previously compiled React without mutating the DOM or hydration payload. */
+[role="img"][aria-label$=" illustrated avatar"] {
+ background-image:url('/avatars/personas-hires.webp') !important;
+ background-repeat:no-repeat !important;
+ background-size:400% 200% !important;
+ image-rendering:auto !important;
+}
+/* The roster is a full-width feature, not a compressed right-sidebar widget. */
+aside[aria-labelledby="overview-agent-strip"] {
+ display:block !important; height:auto !important; padding:clamp(20px,2.7vw,34px) !important;
+ background:linear-gradient(130deg,#f4faf9,#f6fbfc) !important;
+ border:1px solid #c4dde2 !important; border-radius:22px !important;
+ box-shadow:0 9px 30px rgba(20,60,75,.07) !important;
+}
+aside[aria-labelledby="overview-agent-strip"] > div:first-child {margin-bottom:24px !important;}
+aside[aria-labelledby="overview-agent-strip"] h2#overview-agent-strip {
+ font-size:clamp(26px,2.5vw,34px) !important; line-height:1.13 !important;
+ letter-spacing:-.02em !important; margin-top:8px !important;
+}
+aside[aria-labelledby="overview-agent-strip"] > div:first-child > p:last-child {
+ font-size:14px !important; line-height:1.7 !important; max-width:780px !important; margin-top:10px !important;
+}
+aside[aria-labelledby="overview-agent-strip"] > div:not(:first-child) { margin-top:24px !important; }
+aside[aria-labelledby="overview-agent-strip"] h3 {font-size:12px !important; letter-spacing:.13em !important;}
+aside[aria-labelledby="overview-agent-strip"] h3 + span {font-size:12px !important;}
+aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-3,
+aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 {
+ display:grid !important; gap:16px !important; margin-top:14px !important;
+}
+aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-3 {grid-template-columns:repeat(3,minmax(0,1fr)) !important;}
+aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 {grid-template-columns:repeat(5,minmax(0,1fr)) !important;}
+aside[aria-labelledby="overview-agent-strip"] li {
+ padding:0 !important; border-radius:16px !important; overflow:hidden !important;
+ border:1px solid var(--gac-portrait-border) !important; background:white !important;
+ box-shadow:0 4px 12px rgba(21,74,85,.04) !important;
+ transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease !important;
+}
+aside[aria-labelledby="overview-agent-strip"] li:hover {
+ transform:translateY(-2px); border-color:#69b9b6 !important;
+ box-shadow:0 8px 24px rgba(21,74,85,.11) !important;
+}
+aside[aria-labelledby="overview-agent-strip"] li > a {
+ display:flex !important; flex-direction:column !important; align-items:center !important;
+ justify-content:flex-start !important; gap:10px !important;
+ padding:15px !important; width:100% !important; height:100% !important;
+ text-decoration:none !important; color:inherit !important;
+}
+aside[aria-labelledby="overview-agent-strip"] li [role="img"] {
+ width:clamp(105px,9.5vw,142px) !important;
+ height:clamp(105px,9.5vw,142px) !important;
+ display:block !important; flex:none !important;
+ border:1px solid #add5d9 !important; border-radius:12px !important;
+ background-color:#e2f2f2 !important;
+ box-shadow:0 1px 2px rgba(17,73,91,.09) !important;
+}
+aside[aria-labelledby="overview-agent-strip"] li strong {
+ display:block !important; font-size:16px !important; line-height:1.35 !important;
+ font-weight:750 !important; letter-spacing:-.01em !important; color:#153d50 !important;
+}
+aside[aria-labelledby="overview-agent-strip"] li > a > span:last-child:not([role="img"]) {
+ display:block !important; font-size:12px !important; line-height:1.55 !important;
+ color:#587581 !important; text-wrap:pretty !important; max-width:20rem !important;
+}
+aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-3 li > a {
+ display:grid !important; grid-template-columns:minmax(105px,140px) 1fr !important;
+ grid-template-rows:auto auto !important; text-align:left !important;
+ align-content:center !important; align-items:center !important;
+ column-gap:16px !important; row-gap:3px !important; min-height:172px !important;
+}
+aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-3 li [role="img"] {
+ grid-column:1 !important; grid-row:1 / span 2 !important; width:100% !important;
+ height:auto !important; aspect-ratio:1 !important;
+}
+aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-3 li strong {
+ grid-column:2 !important; grid-row:1 !important; align-self:end !important;
+}
+aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-3 li > a > span:last-child {
+ grid-column:2 !important; grid-row:2 !important; align-self:start !important;
+}
+aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li > a {min-height:233px !important;}
+aside[aria-labelledby="overview-agent-strip"] > p,
+aside[aria-labelledby="overview-agent-strip"] > a {
+ font-size:12px !important; line-height:1.7 !important; margin-top:20px !important;
+}
+@media(max-width:1260px) {
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 {grid-template-columns:repeat(3,minmax(0,1fr)) !important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li [role="img"] {width:132px!important;height:132px!important;}
+}
+@media(max-width:1000px) {
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-3 {grid-template-columns:1fr !important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-3 li > a {grid-template-columns:128px 1fr !important;min-height:150px!important;}
+}
+@media(max-width:710px) {
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 {grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li [role="img"] {width:112px!important;height:112px!important;}
+ aside[aria-labelledby="overview-agent-strip"] li strong {font-size:15px!important;}
+}
+@media(max-width:470px) {
+ aside[aria-labelledby="overview-agent-strip"] {padding:15px!important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-3 li > a {grid-template-columns:95px 1fr!important;padding:11px!important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-3 li [role="img"] {width:95px!important;height:95px!important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li > a {min-height:210px!important;padding:9px!important;}
+ aside[aria-labelledby="overview-agent-strip"] ul.grid-cols-5 li [role="img"] {width:100px!important;height:100px!important;}
+}
+@media(prefers-reduced-motion:reduce){aside[aria-labelledby="overview-agent-strip"] li{transition:none!important;}}
