@@ -43,6 +43,7 @@ const widths = [
     checks++;
    }
    await page.goto(base+"/",{waitUntil:"domcontentloaded"});
+   await page.locator('nav.public-nav a[href="/governance-code/"]').waitFor({state:"attached",timeout:12000});
    const nav=page.locator('nav[aria-label="Main navigation"] a span');
    const labels=(await nav.allTextContents()).map(x=>x.trim());
    assert.deepEqual(labels,expectedNav,viewport.label+": nav must retain ten top-level topics plus source-workbench subsection");
