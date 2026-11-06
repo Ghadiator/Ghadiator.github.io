@@ -42,9 +42,10 @@ jobs:
               print('Safe SVG:',path)
           css=Path('assets/introduction-order-and-kpis-20261106.css').read_text()
           assert '::before' in css
-          assert 'order:4 !important' in css
-          assert 'order:5 !important' in css
-          assert 'order:6 !important' in css
+          assert 'order: 5 !important' in css
+          assert 'order: 6 !important' in css
+          assert 'order: 7 !important' in css
+          assert 'Standalone MANUAL workflow' in css
           assert 'governed-human-agent-collaboration-mobile-20261106.svg' in css
           print('CSS positioning and desktop/mobile assets verified')
           PY
@@ -84,7 +85,7 @@ jobs:
                 return {image:pseudo.backgroundImage,display:pseudo.display,order:pseudo.order,width:pseudo.width,rosterOrder:rosterStyle.order,role:roster.tagName};
               });
               if(!data)throw new Error('Missing Introduction / roster at '+width);
-              if(data.display==='none'||data.order!=='4'||data.rosterOrder!=='5')throw new Error('Placement mismatch '+width+': '+JSON.stringify(data));
+              if(data.display==='none'||data.order!=='5'||data.rosterOrder!=='6')throw new Error('Placement mismatch '+width+': '+JSON.stringify(data));
               const expected=width===390?'collaboration-mobile-20261106.svg':'collaboration-20261106.svg';
               if(!data.image.includes(expected))throw new Error('Wrong image '+width+': '+JSON.stringify(data));
               const asset=await page.request.get('http://127.0.0.1:8765/assets/governed-human-agent-collaboration'+(width===390?'-mobile':'')+'-20261106.svg');
