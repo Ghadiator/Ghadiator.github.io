@@ -17,11 +17,17 @@
   "post_release_correction": {
     "date_utc": "2026-11-06",
     "baseline_version": "7.5.19",
-    "scope": "Public HTML + RSC text correction and historical photographic avatar restoration; no private backend code deployed",
+    "scope": "Public CSS-only Introduction layout/typography correction with exact user-supplied Analytics portrait; no private backend deployed",
     "reviewed_public_commit": "b190f5585d44f05fef64dfd17a4e6c5fdfaedd4b",
     "verified_browser_checks": 253,
     "verification_run": "https://github.com/Ghadiator/Ghadiator.github.io/actions/runs/42143540376",
     "visual_run": "https://github.com/Ghadiator/Ghadiator.github.io/actions/runs/42143540371",
-    "note": "The release_artifact_sha256 and output_digest_sha256 fields identify the original 7.5.19 compiled baseline, not a fresh build containing this public post-release text/spacing correction."
+    "note": "Original 7.5.19 release_artifact_sha256 and output_digest_sha256 refer only to the baseline compiled artifact, not this CSS-only public patch. Native source changes await a private build runner; the workflow visual remains a reserved slot.",
+    "latest_update_utc": "2026-11-06",
+    "analytics_image": "avatars/analytics-original-cropped.webp",
+    "analytics_image_sha256": "c35bea685d3f01027a5d007a857f6e4ddebda2edbb2e8f301562b259950fdc8d",
+    "intro_stylesheet": "assets/introduction-order-and-kpis-20261106.css",
+    "visual_verification_run": "https://github.com/Ghadiator/Ghadiator.github.io/actions/runs/42178903096",
+    "regression_run": "https://github.com/Ghadiator/Ghadiator.github.io/actions/runs/42178903123"
   }
 }
