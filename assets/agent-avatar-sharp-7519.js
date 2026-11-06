@@ -70,7 +70,7 @@
  }
  function fix(){
   document.querySelectorAll('[role="img"][aria-label$="illustrated avatar"]').forEach(el=>{
-   if(el.getAttribute('data-sharp')==='1')return;
+   if(el.getAttribute('data-sharp')==='1'&&el.querySelector('svg'))return;
    const name=(el.getAttribute("aria-label")||"").replace(" illustrated avatar","").trim();
    if(!roles[name])return;
    el.innerHTML=portrait(name);el.setAttribute('data-sharp','1');el.classList.add('gac-patched-avatar');
@@ -88,5 +88,7 @@
   }
  }
  const boot=()=>{fix();const root=document.body;if(!root)return;let pending=false;const ob=new MutationObserver(()=>{if(pending)return;pending=true;requestAnimationFrame(()=>{pending=false;fix()})});ob.observe(root,{childList:true,subtree:true});};
- if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot,{once:true});else boot();
+ // Let Next.js hydrate the original markup before applying this static release override.
+ if(document.readyState==="complete")setTimeout(boot,250);
+ else window.addEventListener("load",()=>setTimeout(boot,250),{once:true});
 })();
