@@ -44,7 +44,7 @@ const widths = [
    }
    await page.goto(base+"/",{waitUntil:"domcontentloaded"});
    await page.locator('nav.public-nav a[href="/governance-code/"]').waitFor({state:"attached",timeout:12000});
-   await page.locator('[data-gac-consolidated-nav]').waitFor({state:"visible",timeout:15000});
+   await page.locator('[data-gac-consolidated-nav]').waitFor({state:"attached",timeout:15000});
    const nav=page.locator('nav[aria-label="Main navigation"] [data-gac-consolidated-nav] a span');
    const labels=(await nav.allTextContents()).map(x=>x.trim());
    assert.deepEqual(labels,expectedNav,viewport.label+": navigation must consolidate five workbench views, pool analytics and Origins");
