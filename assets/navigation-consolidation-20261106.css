@@ -1,0 +1,17 @@
+/* Compatibility layer for the 7.5.19 published site; native source owns
+   the final version. No routes or recorded evidence removed. */
+nav.public-nav:has([data-gac-consolidated-nav]) > section[data-gac-old-nav]{display:none!important;}
+nav.public-nav [data-gac-consolidated-nav] section{display:block;}
+nav.public-nav [data-gac-consolidated-nav] section[hidden]{display:none!important;}
+nav.public-nav [data-gac-consolidated-nav] a[hidden]{display:none!important;}
+.gac-workspace-tabs{margin:0 0 24px;padding:17px 20px;border:1px solid #b8d9d3;border-radius:16px;background:#eff9f6;color:#234b56;}
+.gac-workspace-tabs strong{display:block;font-size:16px;font-weight:750;margin-bottom:12px;}
+.gac-workspace-tabs>div{display:flex;flex-wrap:wrap;gap:8px;}
+.gac-workspace-tabs a{display:inline-flex;align-items:center;border:1px solid #b4d4cd;border-radius:9px;padding:9px 12px;background:white;font-size:13px;font-weight:650;color:#285d5e;text-decoration:none;}
+.gac-workspace-tabs a[aria-current="page"]{border-color:#2a8779;background:#dff3ed;color:#176c62;font-weight:800;}
+.gac-workspace-tabs a:hover{background:#e8f6f1;}
+.gac-legacy-pool{margin:24px 0 0;padding:20px;border:1px solid #c8ded8;border-radius:14px;background:#f4faf8;}
+.gac-legacy-pool summary{cursor:pointer;font-size:17px;font-weight:750;color:#20596a;}
+.gac-legacy-pool p{margin:10px 0;font-size:13px;line-height:1.65;color:#5b7280;}
+.gac-legacy-pool a{font-size:13px;font-weight:750;text-decoration:underline;color:#19776b;}
+@media(max-width:640px){.gac-workspace-tabs{padding:13px}.gac-workspace-tabs a{padding:8px 10px;font-size:12px}}
