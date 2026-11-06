@@ -2,7 +2,7 @@ name: Verify restored photo avatars and supplier workflow headline
 on:
   push:
     branches: [main]
-    paths: [.github/workflows/verify-overview-recovery-20261106.yml]
+    paths: [.github/workflows/verify-overview-recovery-20261106.yml, index.html, index.txt]
 permissions:
   contents: read
 jobs:
