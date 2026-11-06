@@ -166,3 +166,43 @@ main .space-y-12:has(#introduction-title) section:has(#overview-kpis) > p:last-c
   grid-template-columns:1fr !important;
  }
 }
+
+
+/* 2026-11-06 · Approved governed human-agent collaboration visualization.
+   The public 7.5.19 export cannot be rebuilt while its private Actions runner
+   fails before startup. This CSS inserts the verified STATIC public illustration
+   between the owner-managed workflow slot and the eight-agent roster without
+   modifying the compiled React HTML or its Flight data.
+   The editable native React component remains in the private source branch. */
+main .space-y-12:has(#introduction-title)::before {
+  content: "" / "Governed human-agent collaboration: AI-augmented supplier invoice review with human-led agent operations, conditional Proponent, Opponent, CoVe and Judge advice, four read-only operational assistants, independent Attacker assurance and final human approval.";
+  display:block !important;
+  order:4 !important;
+  flex:0 0 auto !important;
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio:1800 / 1060;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:20px;
+  background-image:url("/assets/governed-human-agent-collaboration-20261106.svg");
+  background-repeat:no-repeat;
+  background-position:center center;
+  background-size:100% 100%;
+  box-shadow:0 12px 32px rgba(18,67,82,.055);
+}
+main .space-y-12:has(#introduction-title) > .grid > aside[aria-labelledby="overview-agent-strip"],
+main .space-y-12:has(#introduction-title) > section[aria-labelledby="overview-agent-strip"] {
+  order:5 !important;
+}
+main .space-y-12:has(#introduction-title) > #engineering-map {
+  order:6 !important;
+}
+@media(max-width:760px){
+  main .space-y-12:has(#introduction-title)::before {
+    aspect-ratio:800 / 1600;
+    background-image:url("/assets/governed-human-agent-collaboration-mobile-20261106.svg");
+    border-radius:14px;
+  }
+}
