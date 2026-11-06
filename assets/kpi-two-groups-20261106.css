@@ -1,0 +1,23 @@
+/* KPI taxonomy, 2026-11-06: dedicated business outcomes versus AI-created
+   observability requirements. Applies to native SSR and hydrated content. */
+#gac-kpi-manual-comparison .gac-kpi-eyebrow{font-size:13px!important;font-weight:800;letter-spacing:.12em;color:#1e786d;text-transform:uppercase}
+#gac-kpi-manual-comparison #overview-kpis{font-size:clamp(29px,3vw,39px)!important}
+#gac-kpi-manual-comparison .gac-kpi-baseline h4{font-size:17px!important}
+.gac-ai-family{border:1px solid #b5dcd4;border-radius:22px;background:#f0f9f6;box-shadow:0 10px 32px rgba(29,77,72,.045);padding:30px 32px;scroll-margin-top:95px;color:#254753}
+.gac-ai-head{max-width:920px;margin-bottom:24px}
+.gac-ai-eyebrow{margin:0;font-size:13px;letter-spacing:.13em;font-weight:800;text-transform:uppercase;color:#26796e}
+.gac-ai-head h2{font-family:inherit;margin:11px 0 0;font-size:clamp(29px,3.2vw,38px);line-height:1.15;font-weight:800;letter-spacing:-.025em;color:#204757}
+.gac-ai-head>p:last-child{margin:13px 0 0;font-size:15px;line-height:1.75;color:#56737c}
+.gac-ai-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.gac-ai-card{background:#fff;border:1px solid #cde5df;border-radius:14px;padding:20px;min-width:0}
+.gac-ai-number{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;background:#dcf2ea;color:#186c61;font-size:12px;font-weight:800;width:35px;height:35px}
+.gac-ai-card h3{margin:14px 0 0;font-size:17px;line-height:1.35;font-weight:750;color:#234856}
+.gac-ai-card p{margin:10px 0 0;font-size:14px;line-height:1.65;color:#506d78}
+.gac-ai-state{display:block;margin:14px 0 0;padding-top:10px;border-top:1px solid #e1ece9;font-size:12px;line-height:1.5;font-weight:650;color:#687f89}
+.gac-ai-note{margin:22px 0 0;font-size:13px;line-height:1.75;color:#54737d}
+.gac-kpi-family-link{border:1px solid #b5dcd4;border-radius:14px;background:#edf9f5;padding:16px 19px;margin:18px 0;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;color:#244856}
+.gac-kpi-family-link strong{font-size:17px;line-height:1.4}
+.gac-kpi-family-link p{font-size:13px;line-height:1.7;color:#567682;margin:5px 0 0}
+.gac-kpi-family-link a{color:#157669;text-decoration:underline;text-underline-offset:4px;font-weight:750;font-size:14px}
+@media(max-width:1000px){.gac-ai-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.gac-ai-family{padding:23px 17px}.gac-ai-grid{grid-template-columns:minmax(0,1fr)}.gac-ai-card{padding:16px}.gac-kpi-family-link{display:block}.gac-kpi-family-link a{display:inline-block;margin-top:12px}}
