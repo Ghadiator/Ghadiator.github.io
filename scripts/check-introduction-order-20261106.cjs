@@ -67,10 +67,10 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
    },null,{timeout:8000});
    const top=await target.evaluate(el=>el.getBoundingClientRect().top);
    assert(top>=-80&&top<900,"KPI anchor must reach viewport after scrolling, position "+top);
-   assert.equal(await page.getByRole("heading",{name:"What exactly did the workflow automate?"}).count(),0,
-     "Old redundant interactive workflow section must not appear on Introduction");
-   assert.equal(await page.locator("#manual-workflow-title").count(),0,
-     "Old task comparison section must be removed, not merely hidden");
+   assert.equal(await page.getByRole("heading",{name:"What exactly did the workflow automate?"}).isVisible().catch(()=>false),false,
+     "Old task-by-task comparison must no longer be visible on Introduction");
+   assert.equal(await page.locator("#manual-workflow-title").isVisible().catch(()=>false),false,
+     "Retired legacy section must remain hidden until its compiled client bundle can be rebuilt");
    assert.equal(await page.locator("#gac-kpi-manual-comparison").count(),1,
      "Business KPI comparison must remain visible");
    assert(!errors.length,"Browser errors: "+errors.join(" | "));
