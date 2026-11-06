@@ -70,9 +70,13 @@
  }
  function fix(){
   document.querySelectorAll('[role="img"][aria-label$="illustrated avatar"]').forEach(el=>{
-   if(el.getAttribute('data-sharp')==='1'&&el.querySelector('svg'))return;
    const name=(el.getAttribute("aria-label")||"").replace(" illustrated avatar","").trim();
    if(!roles[name])return;
+   // 7.5.19's compiled cards rendered an empty <strong> despite correct role
+   // metadata. Restore the actual role name, not just its illustration.
+   const label=el.closest('li')?.querySelector('strong');
+   if(label && !label.textContent?.trim())label.textContent=name;
+   if(el.getAttribute('data-sharp')==='1'&&el.querySelector('svg'))return;
    el.innerHTML=portrait(name);el.setAttribute('data-sharp','1');el.classList.add('gac-patched-avatar');
    el.style.backgroundImage="none";el.style.backgroundSize="auto";
   });
