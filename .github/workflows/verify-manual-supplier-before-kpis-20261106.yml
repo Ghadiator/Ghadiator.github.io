@@ -73,13 +73,13 @@ jobs:
              const top=k.getBoundingClientRect().top;
              const header=k.querySelector('.gac-kpi-head');
              const heading=k.querySelector('#overview-kpis');
-             return {image:pseudo.backgroundImage,height:parseFloat(pseudo.height),display:pseudo.display,margin:parseFloat(pseudo.marginTop),top,headerTop:header.getBoundingClientRect().top,headerText:header.innerText,heading:heading.innerText,overflow:getComputedStyle(k).overflow};
+             return {image:pseudo.backgroundImage,height:parseFloat(pseudo.height),display:pseudo.display,margin:parseFloat(pseudo.marginTop),top,headerTop:header.getBoundingClientRect().top,headerText:header.textContent,heading:heading.textContent,overflow:getComputedStyle(k).overflow};
             });
             if(!a)throw new Error('KPI panel missing');
             const expected=width===390?'manual-supplier-invoice-workflow-mobile-20261106.svg':'manual-supplier-invoice-workflow-20261106.svg';
             if(!a.image.includes(expected))throw new Error('Wrong asset '+width+': '+JSON.stringify(a));
             if(a.height < (width===390?450:100))throw new Error('Manual illustration invisible: '+JSON.stringify(a));
-            if(!a.headerText.includes('Pre-existing business KPIs')||!a.heading.includes('Group A'))throw new Error('KPI text modified');
+            if(!a.headerText.includes('Pre-existing business KPIs')||!a.heading.includes('Group A'))throw new Error('KPI text modified: '+JSON.stringify(a));
             if(a.headerTop < a.top+a.height-2)throw new Error('Manual row not above KPI header: '+JSON.stringify(a));
             const response=await page.request.get('http://127.0.0.1:8765/assets/'+expected);
             if(!response.ok())throw new Error('Missing public vector');
