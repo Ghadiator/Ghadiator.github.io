@@ -13,8 +13,8 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
     const rect=id=>{const el=document.querySelector(id);const r=el?.getBoundingClientRect();return r?{top:r.top+scrollY,bottom:r.bottom+scrollY,width:r.width}:null};
     const p=document.querySelector('[role="img"][aria-label="Analytics illustrated avatar"]');
     const k=document.querySelector('section:has(#overview-kpis)');
-    const kStrong=k?.querySelector('ul li strong');
-    const kDetail=k?.querySelector('ul li > div:nth-child(2)');
+    const kStrong=k?.querySelector('.gac-kpi-baseline h4');
+    const kDetail=k?.querySelector('.gac-kpi-baseline .gac-kpi-manual');
     const safety=document.querySelector('main .space-y-12:has(#introduction-title)>section:has(a[href^="/safety-origin"])');
     const detail=document.querySelector('[id^="task-detail-"]');
     return {
@@ -27,6 +27,11 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
       analyticsSize:p?{width:p.getBoundingClientRect().width,height:p.getBoundingClientRect().height}:null,
       kpiTitlePx:kStrong?parseFloat(getComputedStyle(kStrong).fontSize):null,
       kpiDetailPx:kDetail?parseFloat(getComputedStyle(kDetail).fontSize):null,
+      manualCount:k?.querySelectorAll('.gac-kpi-baseline').length,
+      comparisonCount:k?.querySelectorAll('.gac-kpi-pair').length,
+      manualBeforeChange:!!(k?.querySelector('.gac-kpi-baselines')?.compareDocumentPosition(k?.querySelector('.gac-kpi-list'))&Node.DOCUMENT_POSITION_FOLLOWING),
+      oldCallout:!![...document.querySelectorAll('strong')].find(e=>e.textContent?.includes('Why it matters:')),
+      originalTokenClaim:k?.textContent?.includes('Possible all-AI calls'),
       hiddenSafety:safety?getComputedStyle(safety).display==="none":false,
       hiddenOldDetails:detail?!detail.getClientRects().length:true,
       workflowPlaceholder:getComputedStyle(document.getElementById('journey-title'),'::after').content,
@@ -40,6 +45,11 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
    assert((result.analyticsSize?.width??0)>=95,"Analytics portrait too small");
    assert((result.kpiTitlePx??0)>=16,"KPI title still tiny");
    assert((result.kpiDetailPx??0)>=13,"KPI explanations still tiny");
+   assert.equal(result.manualCount,6,"Six manual KPI baselines must be shown");
+   assert.equal(result.comparisonCount,6,"Each manual KPI needs a visual improvement path");
+   assert(result.manualBeforeChange,"Manual KPIs must be listed before governed changes");
+   assert(!result.oldCallout,"Why it matters callout must be deleted");
+   assert(!result.originalTokenClaim,"Manual workflow cannot claim hypothetical AI token savings");
    assert(result.hiddenSafety,"Safety Origins teaser still visible on Introduction");
    assert(result.hiddenOldDetails,"Old Manual pain point / What changed / Governance boundary panels still visible");
    assert(result.workflowPlaceholder?.includes("reserved"),"Manual-vs-agentic diagram slot missing");
