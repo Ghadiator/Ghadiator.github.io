@@ -34,3 +34,13 @@
 .gac-kpi-business-groups a{font-size:13px;font-weight:750;color:#177b71;text-decoration:underline;text-underline-offset:3px}
 .gac-kpi-business-taxonomy>.gac-ai-state{font-size:12px;margin-top:16px}
 @media(max-width:700px){.gac-kpi-business-taxonomy{padding:23px 16px}.gac-kpi-business-groups{grid-template-columns:minmax(0,1fr)}.gac-kpi-business-groups article{padding:17px}}
+
+/* One evidence disclaimer per family is clearer than repeating it in all
+   seven cards. The source boundary remains in the section footer. */
+.gac-ai-card .gac-ai-state{display:none}
+@media(min-width:1001px){.gac-ai-grid .gac-ai-card:last-child{grid-column:2}}
+@media(min-width:701px) and (max-width:1000px){.gac-ai-grid .gac-ai-card:last-child{grid-column:1/-1;max-width:460px;justify-self:center;width:100%}}
+/* The historical interactive scorecard spans categories. Token demand is
+   part of Group B even before the next complete Next.js source rebuild. */
+section[aria-label="KPI scorecard and measurement method"] [role="group"] button:last-child{border-color:#91ccbe!important;background:#eef9f5!important}
+section[aria-label="KPI scorecard and measurement method"] [role="group"] button:last-child::after{content:"AI KPI";border:1px solid #b6ddd3;border-radius:6px;padding:2px 5px;font-size:10px;font-weight:750;white-space:nowrap;color:#25776b}
