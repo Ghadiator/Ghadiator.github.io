@@ -91,9 +91,20 @@ main .space-y-12:has(#introduction-title) #workflow-visual-title {
  font-size:clamp(27px,3vw,33px) !important;
  line-height:1.25 !important;
 }
+/* The compiled interim page describes selecting the archived task expander.
+   Since that expander is deliberately absent from Introduction, replace only
+   its stale explanatory caption visually until the source build is available.
+   The editable TSX contains the proper semantic copy. */
 main .space-y-12:has(#introduction-title) #manual-workflow-title > header p:last-child {
+ font-size:0 !important;
+ line-height:0 !important;
+}
+main .space-y-12:has(#introduction-title) #manual-workflow-title > header p:last-child::after {
+ content:"The reviewed manual-versus-agentic workflow illustration will appear here. It will contrast who carries out document collection, source checks and exception review—while keeping the final decision with a named human.";
+ display:block;
  font-size:15px !important;
- line-height:1.8 !important;
+ line-height:1.75 !important;
+ color:#557580;
 }
 main .space-y-12:has(#introduction-title) #use-case > header h2,
 main .space-y-12:has(#introduction-title) #use-case-title {
