@@ -13,7 +13,20 @@ if(location.pathname.replace(/\/$/,"")===target.slice(0,-1))link.setAttribute('a
 after.insertAdjacentElement('afterend',link);
 }
 function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(ensure)}}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensure,{once:true});else ensure();
-new MutationObserver(schedule).observe(document.documentElement,{childList:true,subtree:true});
-window.addEventListener('pageshow',ensure);
+// Next.js hydrates the published shell after DOMContentLoaded. Inserting
+// nodes before hydration caused React #418 recoveries across the site.
+// Wait until window.load and a post-load settling interval; only then
+// watch for later React navigation replacing the sidebar.
+let started=false;
+function start(){
+  if(started)return;started=true;
+  window.setTimeout(()=>{
+    ensure();
+    const nav=document.querySelector("nav.public-nav");
+    if(nav)new MutationObserver(schedule).observe(nav,{childList:true,subtree:true});
+  },2000);
+}
+if(document.readyState==='complete')start();
+else window.addEventListener('load',start,{once:true});
+window.addEventListener('pageshow',()=>{if(started)window.setTimeout(ensure,2000)});
 })();
