@@ -1,0 +1,100 @@
+name: Verify manual supplier workflow before business KPI Group A
+on:
+  pull_request:
+    paths:
+      - "assets/manual-supplier-invoice-workflow-20261106.svg"
+      - "assets/manual-supplier-invoice-workflow-mobile-20261106.svg"
+      - "assets/kpi-manual-delta-20261106.css"
+      - ".github/workflows/verify-manual-supplier-before-kpis-20261106.yml"
+  push:
+    branches: [main]
+    paths:
+      - "assets/manual-supplier-invoice-workflow-20261106.svg"
+      - "assets/manual-supplier-invoice-workflow-mobile-20261106.svg"
+      - "assets/kpi-manual-delta-20261106.css"
+      - ".github/workflows/verify-manual-supplier-before-kpis-20261106.yml"
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check vector correctness and content boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          for p in [Path('assets/manual-supplier-invoice-workflow-20261106.svg'),Path('assets/manual-supplier-invoice-workflow-mobile-20261106.svg')]:
+              data=p.read_text()
+              root=ET.fromstring(data)
+              assert root.tag.endswith('svg')
+              for name in ['Receive &amp; triage','Read &amp; enter data','Match documents','Question exceptions','Prepare findings','Human decision','Update &amp; archive','Email overload','Approval bottleneck','Weak traceability']:
+                  assert name in data, (str(p),name)
+              for forbidden in ['AI-ASSISTED WORKFLOW','AUTOMATED WORKFLOW','AI-generated summary','<script','<foreignObject']:
+                  assert forbidden not in data, (str(p),forbidden)
+              print('Manual-only SVG verified:',p)
+          css=Path('assets/kpi-manual-delta-20261106.css').read_text()
+          assert '#gac-kpi-manual-comparison::before' in css
+          assert 'manual-supplier-invoice-workflow-mobile-20261106.svg' in css
+          assert 'manual-supplier-invoice-workflow-20261106.svg' in css
+          print('Pre-KPI styling verified')
+          PY
+      - name: Install browser library
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-package-lock playwright-core@1.56.1
+          command -v google-chrome || command -v chromium
+      - name: Serve published files
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/gac-manual-http.log 2>&1 &
+          for n in $(seq 1 30); do curl -fsS http://127.0.0.1:8765/ -o /dev/null && exit 0; sleep 1; done
+          cat /tmp/gac-manual-http.log; exit 1
+      - name: Validate manual row directly precedes original KPI header
+        run: |
+          node <<'JS'
+          const {chromium}=require('playwright-core');
+          const cp=require('child_process');
+          const fs=require('fs');
+          (async()=>{
+           const executablePath=cp.execFileSync('sh',['-c','command -v google-chrome || command -v chromium']).toString().trim();
+           const browser=await chromium.launch({executablePath,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
+           fs.mkdirSync('/tmp/gac-manual', {recursive:true});
+           for(const width of [1440,390]){
+            const page=await browser.newPage({viewport:{width,height:900}});
+            await page.goto('http://127.0.0.1:8765/',{waitUntil:'networkidle'});
+            const a=await page.evaluate(()=>{
+             const k=document.querySelector('#gac-kpi-manual-comparison');
+             if(!k)return null;
+             const pseudo=getComputedStyle(k,'::before');
+             const top=k.getBoundingClientRect().top;
+             const header=k.querySelector('.gac-kpi-head');
+             const heading=k.querySelector('#overview-kpis');
+             return {image:pseudo.backgroundImage,height:parseFloat(pseudo.height),display:pseudo.display,margin:parseFloat(pseudo.marginTop),top,headerTop:header.getBoundingClientRect().top,headerText:header.innerText,heading:heading.innerText,overflow:getComputedStyle(k).overflow};
+            });
+            if(!a)throw new Error('KPI panel missing');
+            const expected=width===390?'manual-supplier-invoice-workflow-mobile-20261106.svg':'manual-supplier-invoice-workflow-20261106.svg';
+            if(!a.image.includes(expected))throw new Error('Wrong asset '+width+': '+JSON.stringify(a));
+            if(a.height < (width===390?450:100))throw new Error('Manual illustration invisible: '+JSON.stringify(a));
+            if(!a.headerText.includes('Pre-existing business KPIs')||!a.heading.includes('Group A'))throw new Error('KPI text modified');
+            if(a.headerTop < a.top+a.height-2)throw new Error('Manual row not above KPI header: '+JSON.stringify(a));
+            const response=await page.request.get('http://127.0.0.1:8765/assets/'+expected);
+            if(!response.ok())throw new Error('Missing public vector');
+            await page.locator('#gac-kpi-manual-comparison').screenshot({path:'/tmp/gac-manual/kpis-'+width+'.png'});
+            console.log('PASS',width,JSON.stringify(a));
+            await page.close();
+           }
+           await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - name: Keep desktop and mobile preview captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: manual-workflow-before-kpis-review
+          path: /tmp/gac-manual/*.png
+          if-no-files-found: ignore
+          retention-days: 5
