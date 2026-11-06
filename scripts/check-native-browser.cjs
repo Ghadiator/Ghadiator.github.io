@@ -68,7 +68,8 @@ const widths = [
       viewport.label+": redundant Overview quick-access nav returned");
    assert.equal(await page.getByText("Technical directory",{exact:true}).count(),0,
      viewport.label+": redundant technical directory returned");
-   await page.getByRole("link",{name:/Explore the three reasoning personas/}).waitFor({state:"visible"});
+   await page.getByRole("link",{name:/Meet each persona and inspect its limits/}).waitFor({state:"visible"});
+    assert.equal(await page.getByRole("link",{name:/Explore the three reasoning personas/}).isVisible().catch(()=>false),false,"Duplicate persona quick link should remain hidden");
    checks+=8;
 
    await page.goto(base+"/business-impact/",{waitUntil:"domcontentloaded"});
