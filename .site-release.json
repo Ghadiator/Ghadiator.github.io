@@ -77,6 +77,21 @@
       "known_limits": "Scripted supplier fixtures, in-memory audit, reviewer allowlist; not live AI, production authentication, durable storage or certification",
       "deployed_native_bundle": false,
       "backend_modified": false
+    },
+    "manual_workflow_before_kpis": {
+      "date_utc": "2026-11-06",
+      "placement": "Before 'Pre-existing business KPIs · manual versus AI-assisted' / 'Group A — Business outcomes improved by AI' on the public homepage",
+      "public_patch_mode": "Manual-only desktop/mobile SVG displayed as CSS generated content; no existing markup or Flight payload replaced",
+      "vector_artwork": "Seven-stage visual adaptation of user-supplied upper manual workflow row; automated row excluded",
+      "public_assets": [
+        "assets/manual-supplier-invoice-workflow-20261106.svg",
+        "assets/manual-supplier-invoice-workflow-mobile-20261106.svg"
+      ],
+      "stylesheet": "assets/kpi-manual-delta-20261106.css",
+      "editable_source_branch": "feat/manual-row-before-kpis-20261106",
+      "acceptance_run": "https://github.com/Ghadiator/Ghadiator.github.io/actions/runs/42217872897",
+      "no_new_runtime_claims": true,
+      "baseline_bundle_unchanged": true
     }
   }
 }
