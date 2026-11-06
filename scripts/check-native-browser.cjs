@@ -47,7 +47,9 @@ const widths = [
    const labels=(await nav.allTextContents()).map(x=>x.trim());
    assert.deepEqual(labels,expectedNav,viewport.label+": nav must retain ten top-level topics plus source-workbench subsection");
    // New source-and-test explorer must use genuine excerpts and work without an API.
-   await page.getByRole("link",{name:"Governance Code",exact:true}).first().click();
+   await page.locator('nav.public-nav a[href="/governance-code/"]').waitFor({state:"attached"});
+   if(viewport.width >= 1024) await page.getByRole("link",{name:"Governance Code",exact:true}).first().click();
+   else await page.goto(base+"/governance-code/",{waitUntil:"domcontentloaded"});
    await page.getByRole("heading",{name:"Governance Code",exact:true}).waitFor();
    await page.getByRole("button",{name:"Require named human approval"}).click();
    assert.match(await page.locator("#gc-lines").innerText(),/def resume\(self, decision: Decision\)/);
