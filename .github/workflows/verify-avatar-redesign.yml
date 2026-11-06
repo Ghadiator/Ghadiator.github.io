@@ -1,0 +1,31 @@
+name: Visual acceptance · high-resolution eight AI agents
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/verify-avatar-redesign.yml, assets/agent-portrait-redesign-7520.css, scripts/check-avatar-redesign.cjs, index.html, ai-roles/index.html, architecture/index.html, avatars/personas-hires.webp]
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-package-lock playwright-core@1.56.1
+          command -v google-chrome || command -v chromium
+      - name: Serve published static checkout
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/gac-agent-test.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8765/ -o /dev/null && exit 0; sleep 1; done
+          cat /tmp/gac-agent-test.log; exit 1
+      - name: Browser acceptance and screenshots
+        run: node scripts/check-avatar-redesign.cjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: high-resolution-eight-agent-review
+          path: /tmp/gac-avatar-redesign/*.png
+          if-no-files-found: ignore
+          retention-days: 3
