@@ -5,13 +5,13 @@ const { chromium } = require("playwright-core");
 const fs = require("node:fs");
 const base = process.env.BASE_URL || "http://127.0.0.1:8765";
 const routes = [
-  "/", "/business-impact/", "/architecture/", "/ai-roles/", "/governance/", "/ai-assurance/",
+  "/", "/business-impact/", "/architecture/", "/ai-roles/", "/governance/", "/governance-code/", "/ai-assurance/",
   "/red-team/", "/cases/", "/dashboard/", "/token-economics/", "/safety-origin/",
   "/tickets/", "/tickets/new/", "/ticket/", "/inbound/", "/monitor/",
   "/audit/", "/pool-analytics/", "/upload/", "/integration/"
 ];
 const expectedNav = [
-  "Overview", "Business value & KPIs", "Architecture", "Personas", "Framework Explorer", "Assurance",
+  "Overview", "Business value & KPIs", "Architecture", "Personas", "Framework Explorer", "Governance Code", "Assurance",
   "Failure Lab", "Cases", "Analytics", "Token Economics",
   "Document requests", "Incoming correspondence", "Scenario theater",
   "Process audit", "Pool analytics", "Local workbook lab", "Safety Origins"
@@ -46,6 +46,19 @@ const widths = [
    const nav=page.locator('nav[aria-label="Main navigation"] a span');
    const labels=(await nav.allTextContents()).map(x=>x.trim());
    assert.deepEqual(labels,expectedNav,viewport.label+": nav must retain ten top-level topics plus source-workbench subsection");
+   // New source-and-test explorer must use genuine excerpts and work without an API.
+   await page.getByRole("link",{name:"Governance Code",exact:true}).first().click();
+   await page.getByRole("heading",{name:"Governance Code",exact:true}).waitFor();
+   await page.getByRole("button",{name:"Require named human approval"}).click();
+   assert.match(await page.locator("#gc-lines").innerText(),/def resume\(self, decision: Decision\)/);
+   await page.getByRole("tab",{name:"Test"}).click();
+   assert.match(await page.locator("#gc-lines").innerText(),/test_gate_prevents_archive_and_unauthorised_decision/);
+   await page.getByRole("button",{name:"Exclude hostile supplier instructions"}).click();
+   assert.match(await page.locator("#gc-lines").innerText(),/supplier_note/);
+   const size=await page.evaluate(()=>({body:document.documentElement.scrollWidth,width:window.innerWidth}));
+   assert.ok(size.body<=size.width+1,viewport.label+": Governance Code must not overflow horizontally");
+   checks+=5;
+   await page.goto(base+"/",{waitUntil:"domcontentloaded"});
    const map=page.locator('section[aria-label="Interactive three-tier validation and governance infographic"]');
    await map.waitFor({state:"visible"});
    assert.equal(await map.getByText("Grounded facts → bypass AI").count(),0,
