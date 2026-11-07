@@ -1,0 +1,27 @@
+/* Trace-grounded committee fidelity layer. Does not alter recorded events. */
+.gac-committee-banner{margin:16px 0 18px;padding:15px 18px;border:1px solid #b7d9ce;border-radius:12px;background:#f1faf6;color:#285d63;font-size:12px;line-height:1.6;}
+.gac-committee-banner strong{display:block;font-size:14px;margin-bottom:4px;}
+.gac-committee-banner p{margin:0;}
+.gac-committee-summary{border:1px solid #b5d6ce;background:#edf7f3;color:#285c60;border-radius:10px;margin:13px;padding:13px 15px;font-size:12px;font-weight:680;line-height:1.7;}
+.gac-committee-matrix{margin:12px 13px 18px;padding:14px;border:1px solid #d0e3df;background:#fbfefd;border-radius:12px;color:#365763;}
+.gac-committee-matrix h3{font-size:15px;font-weight:750;color:#245667;margin:0 0 8px;}
+.gac-committee-note{font-size:11px;line-height:1.7;color:#57777c;margin:7px 0;}
+.gac-committee-scroll{overflow-x:auto;border:1px solid #d9e8e3;border-radius:10px;background:white;}
+.gac-committee-table{width:100%;border-collapse:collapse;min-width:700px;font-size:12px;text-align:left;}
+.gac-committee-table td,.gac-committee-table th{padding:12px 11px;border-bottom:1px solid #e5eeeb;vertical-align:top;line-height:1.55;}
+.gac-committee-table thead th{color:#2b5361;background:#eaf4f0;font-size:11px;text-transform:uppercase;letter-spacing:.03em;}
+.gac-committee-table tbody th{color:#305463;font-weight:720;width:17%;}
+.gac-committee-table tbody td:nth-child(3){color:#4d6771;width:29%;}
+.gac-committee-table tbody td:nth-child(4){min-width:190px;}
+.gac-committee-table tbody td strong{display:block;color:#305f68;}
+.gac-committee-detail,.gac-committee-seq{display:block;margin-top:4px;color:#607c83;font-size:11px;line-height:1.55;}
+.gac-committee-seq{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:10px;}
+.gac-state-chip{display:inline-block;padding:2px 7px;border-radius:5px;font-size:11px;font-weight:700;background:#e4f6ed;color:#20685d;}
+.gac-state-chip[data-state=later]{background:#f8f1dd;color:#755d29;}
+.gac-state-chip[data-state=not-invoked]{background:#eef0f2;color:#64717b;}
+.gac-committee-wait,.gac-committee-absent{color:#697f82;font-size:11px;}
+[data-node=opponent][data-gac-evidence-state=not-invoked],
+[data-node=proponent][data-gac-evidence-state=not-invoked],
+[data-node=firewall][data-gac-evidence-state=not-invoked],
+[data-node=judge][data-gac-evidence-state=not-invoked]{filter:grayscale(1);opacity:.5!important;}
+@media(max-width:680px){.gac-committee-banner{margin:12px 0;padding:12px}.gac-committee-matrix{margin:12px 5px;padding:10px}.gac-committee-summary{margin:10px 5px}.gac-committee-table{font-size:11px;}}
