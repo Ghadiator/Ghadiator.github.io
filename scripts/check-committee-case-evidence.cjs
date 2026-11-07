@@ -39,7 +39,10 @@ for(const item of matrix.cases){
   assert.ok(verification.seq<expected.find(e=>e.kind==="committee.judge.argument").seq,item.slug+" CoVe must precede Judge");
  }
  if(fail){assert.equal(o,false,item.slug+" failed adapter cannot emit an Opponent proposal");assert.equal(v,false,item.slug+" admission failure cannot be a successful CoVe");}
- counts[category]++;
+ if(category==="both_arguments")counts.both++;
+ else if(category==="proponent_only")counts.proponent_only++;
+ else if(category==="opponent_only")counts.opponent_only++;
+ else counts.no_role++;
  if(v)counts.verify++;
  if(fail)counts.fail++;
 }
