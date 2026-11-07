@@ -1,0 +1,51 @@
+{
+  "schema": "gac.recorded_fixture_evidence.v1",
+  "scope": "synthetic_fixture_only",
+  "source": "Generic_Agentic_Validation_Code/review_frontend/public/data/cases.json",
+  "source_git_blob_sha": "0a60ad3044c06d37e21fbef1a3bd6218044643c6",
+  "units": {
+    "recorded_cases": "cases",
+    "committee_cases": "cases",
+    "no_committee_cases": "cases",
+    "reviewer_gate_cases": "cases",
+    "validation_checks": "checks",
+    "emitted_events": "events",
+    "multi_attempt_cases": "cases",
+    "zero_attempt_cases": "cases"
+  },
+  "counts": {
+    "recorded_cases": 15,
+    "committee_cases": 6,
+    "no_committee_cases": 9,
+    "reviewer_gate_cases": 14,
+    "validation_checks": 208,
+    "emitted_events": 571,
+    "multi_attempt_cases": 2,
+    "zero_attempt_cases": 1
+  },
+  "ratios": {
+    "scripted_committee_routing": {
+      "numerator": 6,
+      "denominator": 15,
+      "value_pct": 40,
+      "limitation": "models_invoked flag records scripted-committee routing, not paid provider usage"
+    },
+    "reviewer_gate_reached": {
+      "numerator": 14,
+      "denominator": 15,
+      "value_pct": 93.33,
+      "limitation": "gate reached, not a human approval or intervention measurement"
+    }
+  },
+  "not_measured": [
+    "manual_reviewer_touch_minutes",
+    "manual_resolution_time",
+    "manual_cost_per_invoice",
+    "provider_input_output_tokens",
+    "provider_invoiced_cost",
+    "unsupported_claim_denominator",
+    "human_override_denominator",
+    "complete_trace_denominator"
+  ],
+  "caveat": "Synthetic recorded case statistics, not measured manual-versus-governed productivity or production ROI. Attempt counts are not treated as resubmission rates; event count is not completeness."
+}
