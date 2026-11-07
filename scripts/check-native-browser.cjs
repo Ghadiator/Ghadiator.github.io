@@ -72,6 +72,42 @@ const widths = [
    assert.match(await page.locator('[data-gac-token-measures]').innerText(),/No provider-model usage events in synthetic fixtures/);
    assert.match(await page.locator('[data-gac-token-measures]').innerText(),/Live token pool/);
    checks+=11;
+   if(viewport.label==="desktop"){
+    await page.emulateMedia({reducedMotion:"reduce"});
+    await page.goto(base+"/architecture/",{waitUntil:"networkidle"});
+    await page.locator('[data-gac-module-evidence]').waitFor({state:"visible",timeout:20000});
+    assert.equal(await page.locator('path[data-gac-proponent-cove]').count(),1,
+      "Proponent must converge on the pre-Judge evidence boundary");
+    assert.equal(await page.locator('path[data-route="proponent→judge"]').isVisible(),false,
+      "Old unverified direct Proponent→Judge bypass must be hidden");
+    const matrix=JSON.parse(fs.readFileSync("data/committee-case-evidence.json","utf8"));
+    for(const caseRow of matrix.cases){
+      await page.locator('select[aria-label="Recorded scenario"]').selectOption(caseRow.slug);
+      const slider=page.locator('input.deck-scrub[type="range"]');
+      await slider.focus();
+      await slider.press("End");
+      await page.waitForFunction(({title,number})=>{
+        const e=document.querySelector('[data-gac-case-classification]');
+        return !!e&&e.textContent.includes(title)&&e.textContent.includes("event "+number+"/"+number);
+      },{title:caseRow.title,number:caseRow.event_count},{timeout:15000});
+      const table=page.locator('[data-gac-module-evidence] tbody tr');
+      assert.equal(await table.count(),4,caseRow.slug+": module evidence must include four exact roles");
+      const proponent=table.nth(0),opponent=table.nth(1),verification=table.nth(2),judge=table.nth(3);
+      assert.equal(await proponent.locator('[data-state]').getAttribute("data-state"),
+        caseRow.proponent_recorded?"recorded":"not-invoked",caseRow.slug+": proponent status");
+      assert.equal(await opponent.locator('[data-state]').getAttribute("data-state"),
+        caseRow.opponent_recorded?"recorded":"not-invoked",caseRow.slug+": opponent status");
+      assert.equal(await verification.locator('[data-state]').getAttribute("data-state"),
+        caseRow.pre_judge_cove_recorded||caseRow.failure?"recorded":"not-invoked",caseRow.slug+": firewall status");
+      assert.equal(await judge.locator('[data-state]').getAttribute("data-state"),
+        caseRow.judge_recorded?"recorded":"not-invoked",caseRow.slug+": judge status");
+      if(caseRow.failure){
+        assert.match(await verification.innerText(),/failed|budget|adapter|discarded/i,
+          caseRow.slug+": failure must not appear as successful claim verification");
+      }
+      checks+=5;
+    }
+   }
    await page.goto(base+"/dashboard/",{waitUntil:"networkidle"});
    await page.locator('[data-gac-legacy-pool]').waitFor({state:"visible",timeout:12000});
    assert.equal(await page.locator('[data-gac-legacy-pool] a[href="/pool-analytics/"]').count(),1);
