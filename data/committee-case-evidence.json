@@ -1,0 +1,455 @@
+{
+  "schema": "gac.committee_case_evidence.v1",
+  "scope": "recorded_supplier_fixtures_only",
+  "source": "data/scenarios/<slug>.json",
+  "provenance": "Derived from the exact exported scenario event kinds and seq/label/detail. No simulated event invented.",
+  "note": "Supplier fixtures use scripted stand-ins, not live provider models. The proponent narrative is NOT separately verified by pre-Judge CoVe in these historical events; only Opponent structured proposals are verified.",
+  "counts": {
+    "cases": 15,
+    "both": 4,
+    "proponent_only": 2,
+    "opponent_only": 0,
+    "no_role": 9,
+    "verified_case_count": 4,
+    "failed_admission_cases": 2
+  },
+  "cases": [
+    {
+      "slug": "supplier_adapter_failure",
+      "title": "Proposal adapter fails → opponent contributes nothing",
+      "group": "Committee limits",
+      "route": "EXCEPTION_REVIEW",
+      "terminal": "Approved",
+      "event_count": 40,
+      "models_invoked_flag": true,
+      "proponent_recorded": true,
+      "opponent_recorded": false,
+      "pre_judge_cove_recorded": false,
+      "judge_recorded": true,
+      "failure": "committee.adapter_failed",
+      "classification": "proponent_only",
+      "outputs": [
+        {
+          "seq": 29,
+          "kind": "committee.proponent.argument",
+          "node": "proponent",
+          "label": "Proponent: contractual checks passed",
+          "detail": "INV-2026-082 is within the EUR 15000.00 cap and uses approved rates.",
+          "sub": null
+        },
+        {
+          "seq": 30,
+          "kind": "committee.adapter_failed",
+          "node": "firewall",
+          "label": "Proposal adapter failed — no findings admitted",
+          "detail": "RuntimeError; the case continues to an authorised reviewer with zero proposals.",
+          "sub": "v.check"
+        },
+        {
+          "seq": 31,
+          "kind": "committee.judge.argument",
+          "node": "judge",
+          "label": "Judge packages verified evidence",
+          "detail": "0 verified finding(s); 0 unsupported finding(s) removed. A reviewer retains decision authority.",
+          "sub": null
+        }
+      ],
+      "limitations": "No successful CoVe result; the adapter/budget rejected the Opponent proposals."
+    },
+    {
+      "slug": "supplier_clean",
+      "title": "Matching invoice → reviewer approval",
+      "group": "Standard review",
+      "route": "CONTRACT_CLEAR",
+      "terminal": "Approved",
+      "event_count": 35,
+      "models_invoked_flag": false,
+      "proponent_recorded": false,
+      "opponent_recorded": false,
+      "pre_judge_cove_recorded": false,
+      "judge_recorded": false,
+      "failure": null,
+      "classification": "no_agent_argument",
+      "outputs": [],
+      "limitations": "No claim-level committee verification event recorded."
+    },
+    {
+      "slug": "supplier_currency_mismatch",
+      "title": "Currency mismatch → rejection",
+      "group": "Contract checks",
+      "route": "CONTRACT_FAILED",
+      "terminal": "Rejected",
+      "event_count": 36,
+      "models_invoked_flag": false,
+      "proponent_recorded": false,
+      "opponent_recorded": false,
+      "pre_judge_cove_recorded": false,
+      "judge_recorded": false,
+      "failure": null,
+      "classification": "no_agent_argument",
+      "outputs": [],
+      "limitations": "No claim-level committee verification event recorded."
+    },
+    {
+      "slug": "supplier_duplicate",
+      "title": "Duplicate invoice → rejection",
+      "group": "Contract checks",
+      "route": "CONTRACT_FAILED",
+      "terminal": "Rejected",
+      "event_count": 36,
+      "models_invoked_flag": false,
+      "proponent_recorded": false,
+      "opponent_recorded": false,
+      "pre_judge_cove_recorded": false,
+      "judge_recorded": false,
+      "failure": null,
+      "classification": "no_agent_argument",
+      "outputs": [],
+      "limitations": "No claim-level committee verification event recorded."
+    },
+    {
+      "slug": "supplier_injection",
+      "title": "Supplier instruction excluded",
+      "group": "Adversarial controls",
+      "route": "EXCEPTION_REVIEW",
+      "terminal": "Approved",
+      "event_count": 42,
+      "models_invoked_flag": true,
+      "proponent_recorded": true,
+      "opponent_recorded": true,
+      "pre_judge_cove_recorded": true,
+      "judge_recorded": true,
+      "failure": null,
+      "classification": "both_arguments",
+      "outputs": [
+        {
+          "seq": 29,
+          "kind": "committee.proponent.argument",
+          "node": "proponent",
+          "label": "Proponent: contractual checks passed",
+          "detail": "INV-2026-082 is within the EUR 15000.00 cap and uses approved rates.",
+          "sub": null
+        },
+        {
+          "seq": 30,
+          "kind": "committee.opponent.argument",
+          "node": "opponent",
+          "label": "Opponent proposes a finding",
+          "detail": "Invoice total is 30.0% against the prior period of EUR 10000.00, above the agreed 20% threshold. Request a service-volume explanation.",
+          "sub": null
+        },
+        {
+          "seq": 31,
+          "kind": "verification.result",
+          "node": "firewall",
+          "label": "Claim verified",
+          "detail": "volume_variance: source INV-2026-082; claimed observation 0.3; matches computed evidence; the finding is restated from that evidence",
+          "sub": "v.check"
+        },
+        {
+          "seq": 32,
+          "kind": "committee.judge.argument",
+          "node": "judge",
+          "label": "Judge packages verified evidence",
+          "detail": "1 verified finding(s); 0 unsupported finding(s) removed. A reviewer retains decision authority.",
+          "sub": null
+        }
+      ],
+      "limitations": "Recorded verification.result checks structured Opponent claims; historical fixture does not emit independent Proponent-argument verification."
+    },
+    {
+      "slug": "supplier_invalid",
+      "title": "Malformed submission rejected at intake",
+      "group": "Invoice checks",
+      "route": null,
+      "terminal": "Intake_rejected",
+      "event_count": 9,
+      "models_invoked_flag": false,
+      "proponent_recorded": false,
+      "opponent_recorded": false,
+      "pre_judge_cove_recorded": false,
+      "judge_recorded": false,
+      "failure": null,
+      "classification": "no_agent_argument",
+      "outputs": [],
+      "limitations": "No claim-level committee verification event recorded."
+    },
+    {
+      "slug": "supplier_invented_narrative",
+      "title": "Invented narrative replaced by evidence",
+      "group": "Adversarial controls",
+      "route": "EXCEPTION_REVIEW",
+      "terminal": "Approved",
+      "event_count": 42,
+      "models_invoked_flag": true,
+      "proponent_recorded": true,
+      "opponent_recorded": true,
+      "pre_judge_cove_recorded": true,
+      "judge_recorded": true,
+      "failure": null,
+      "classification": "both_arguments",
+      "outputs": [
+        {
+          "seq": 29,
+          "kind": "committee.proponent.argument",
+          "node": "proponent",
+          "label": "Proponent: contractual checks passed",
+          "detail": "INV-2026-082 is within the EUR 15000.00 cap and uses approved rates.",
+          "sub": null
+        },
+        {
+          "seq": 30,
+          "kind": "committee.opponent.argument",
+          "node": "opponent",
+          "label": "Opponent proposes a finding",
+          "detail": "The supplier admitted on a call that it knowingly overbilled and agreed to repay.",
+          "sub": null
+        },
+        {
+          "seq": 31,
+          "kind": "verification.result",
+          "node": "firewall",
+          "label": "Claim verified — wording replaced by checked evidence",
+          "detail": "volume_variance: source INV-2026-082; claimed observation 0.3; matches computed evidence; the finding is restated from that evidence",
+          "sub": "v.check"
+        },
+        {
+          "seq": 32,
+          "kind": "committee.judge.argument",
+          "node": "judge",
+          "label": "Judge packages verified evidence",
+          "detail": "1 verified finding(s); 0 unsupported finding(s) removed. A reviewer retains decision authority.",
+          "sub": null
+        }
+      ],
+      "limitations": "Recorded verification.result checks structured Opponent claims; historical fixture does not emit independent Proponent-argument verification."
+    },
+    {
+      "slug": "supplier_missing_document",
+      "title": "Missing service report → correction",
+      "group": "Correction loop",
+      "route": "CONTRACT_CLEAR",
+      "terminal": "Approved",
+      "event_count": 54,
+      "models_invoked_flag": false,
+      "proponent_recorded": false,
+      "opponent_recorded": false,
+      "pre_judge_cove_recorded": false,
+      "judge_recorded": false,
+      "failure": null,
+      "classification": "no_agent_argument",
+      "outputs": [],
+      "limitations": "No claim-level committee verification event recorded."
+    },
+    {
+      "slug": "supplier_over_limit",
+      "title": "Spending limit exceeded → rejection",
+      "group": "Contract checks",
+      "route": "CONTRACT_FAILED",
+      "terminal": "Rejected",
+      "event_count": 36,
+      "models_invoked_flag": false,
+      "proponent_recorded": false,
+      "opponent_recorded": false,
+      "pre_judge_cove_recorded": false,
+      "judge_recorded": false,
+      "failure": null,
+      "classification": "no_agent_argument",
+      "outputs": [],
+      "limitations": "No claim-level committee verification event recorded."
+    },
+    {
+      "slug": "supplier_pending",
+      "title": "Review gate holds an unresolved case",
+      "group": "Human oversight",
+      "route": "CONTRACT_CLEAR",
+      "terminal": "Awaiting_reviewer",
+      "event_count": 30,
+      "models_invoked_flag": false,
+      "proponent_recorded": false,
+      "opponent_recorded": false,
+      "pre_judge_cove_recorded": false,
+      "judge_recorded": false,
+      "failure": null,
+      "classification": "no_agent_argument",
+      "outputs": [],
+      "limitations": "No claim-level committee verification event recorded."
+    },
+    {
+      "slug": "supplier_proposal_budget",
+      "title": "Too many proposals → all discarded",
+      "group": "Committee limits",
+      "route": "EXCEPTION_REVIEW",
+      "terminal": "Approved",
+      "event_count": 40,
+      "models_invoked_flag": true,
+      "proponent_recorded": true,
+      "opponent_recorded": false,
+      "pre_judge_cove_recorded": false,
+      "judge_recorded": true,
+      "failure": "committee.budget_exceeded",
+      "classification": "proponent_only",
+      "outputs": [
+        {
+          "seq": 29,
+          "kind": "committee.proponent.argument",
+          "node": "proponent",
+          "label": "Proponent: contractual checks passed",
+          "detail": "INV-2026-082 is within the EUR 15000.00 cap and uses approved rates.",
+          "sub": null
+        },
+        {
+          "seq": 30,
+          "kind": "committee.budget_exceeded",
+          "node": "firewall",
+          "label": "Proposal budget exceeded — all proposals discarded",
+          "detail": "5 proposals exceed the limit of 4; none entered verification.",
+          "sub": "v.check"
+        },
+        {
+          "seq": 31,
+          "kind": "committee.judge.argument",
+          "node": "judge",
+          "label": "Judge packages verified evidence",
+          "detail": "0 verified finding(s); 0 unsupported finding(s) removed. A reviewer retains decision authority.",
+          "sub": null
+        }
+      ],
+      "limitations": "No successful CoVe result; the adapter/budget rejected the Opponent proposals."
+    },
+    {
+      "slug": "supplier_rate_correction",
+      "title": "Incorrect rate → correction → approval",
+      "group": "Correction loop",
+      "route": "CONTRACT_CLEAR",
+      "terminal": "Approved",
+      "event_count": 64,
+      "models_invoked_flag": false,
+      "proponent_recorded": false,
+      "opponent_recorded": false,
+      "pre_judge_cove_recorded": false,
+      "judge_recorded": false,
+      "failure": null,
+      "classification": "no_agent_argument",
+      "outputs": [],
+      "limitations": "No claim-level committee verification event recorded."
+    },
+    {
+      "slug": "supplier_total_mismatch",
+      "title": "Invoice total mismatch → correction request",
+      "group": "Invoice checks",
+      "route": "INVOICE_CHECK_FAILED",
+      "terminal": "Awaiting_supplier",
+      "event_count": 24,
+      "models_invoked_flag": false,
+      "proponent_recorded": false,
+      "opponent_recorded": false,
+      "pre_judge_cove_recorded": false,
+      "judge_recorded": false,
+      "failure": null,
+      "classification": "no_agent_argument",
+      "outputs": [],
+      "limitations": "No claim-level committee verification event recorded."
+    },
+    {
+      "slug": "supplier_unsupported_claim",
+      "title": "Unsupported AI finding removed",
+      "group": "Adversarial controls",
+      "route": "EXCEPTION_REVIEW",
+      "terminal": "Approved",
+      "event_count": 41,
+      "models_invoked_flag": true,
+      "proponent_recorded": true,
+      "opponent_recorded": true,
+      "pre_judge_cove_recorded": true,
+      "judge_recorded": true,
+      "failure": null,
+      "classification": "both_arguments",
+      "outputs": [
+        {
+          "seq": 29,
+          "kind": "committee.proponent.argument",
+          "node": "proponent",
+          "label": "Proponent: contractual checks passed",
+          "detail": "INV-2026-082 is within the EUR 15000.00 cap and uses approved rates.",
+          "sub": null
+        },
+        {
+          "seq": 30,
+          "kind": "committee.opponent.argument",
+          "node": "opponent",
+          "label": "Opponent proposes a finding",
+          "detail": "An additional EUR 900 charge should cause rejection.",
+          "sub": null
+        },
+        {
+          "seq": 31,
+          "kind": "verification.result",
+          "node": "firewall",
+          "label": "Unsupported claim removed",
+          "detail": "unsupported_charge: source INV-2026-082; claimed observation 900; does not match allowed evidence",
+          "sub": "v.check"
+        },
+        {
+          "seq": 32,
+          "kind": "committee.judge.argument",
+          "node": "judge",
+          "label": "Judge packages verified evidence",
+          "detail": "0 verified finding(s); 1 unsupported finding(s) removed. A reviewer retains decision authority.",
+          "sub": null
+        }
+      ],
+      "limitations": "Recorded verification.result checks structured Opponent claims; historical fixture does not emit independent Proponent-argument verification."
+    },
+    {
+      "slug": "supplier_variance_review",
+      "title": "Unusual service volume → reviewer approval",
+      "group": "Exception review",
+      "route": "EXCEPTION_REVIEW",
+      "terminal": "Approved",
+      "event_count": 42,
+      "models_invoked_flag": true,
+      "proponent_recorded": true,
+      "opponent_recorded": true,
+      "pre_judge_cove_recorded": true,
+      "judge_recorded": true,
+      "failure": null,
+      "classification": "both_arguments",
+      "outputs": [
+        {
+          "seq": 29,
+          "kind": "committee.proponent.argument",
+          "node": "proponent",
+          "label": "Proponent: contractual checks passed",
+          "detail": "INV-2026-082 is within the EUR 15000.00 cap and uses approved rates.",
+          "sub": null
+        },
+        {
+          "seq": 30,
+          "kind": "committee.opponent.argument",
+          "node": "opponent",
+          "label": "Opponent proposes a finding",
+          "detail": "Invoice total is 30.0% against the prior period of EUR 10000.00, above the agreed 20% threshold. Request a service-volume explanation.",
+          "sub": null
+        },
+        {
+          "seq": 31,
+          "kind": "verification.result",
+          "node": "firewall",
+          "label": "Claim verified",
+          "detail": "volume_variance: source INV-2026-082; claimed observation 0.3; matches computed evidence; the finding is restated from that evidence",
+          "sub": "v.check"
+        },
+        {
+          "seq": 32,
+          "kind": "committee.judge.argument",
+          "node": "judge",
+          "label": "Judge packages verified evidence",
+          "detail": "1 verified finding(s); 0 unsupported finding(s) removed. A reviewer retains decision authority.",
+          "sub": null
+        }
+      ],
+      "limitations": "Recorded verification.result checks structured Opponent claims; historical fixture does not emit independent Proponent-argument verification."
+    }
+  ]
+}
