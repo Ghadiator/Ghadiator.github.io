@@ -4,7 +4,7 @@
  */
 (function(){
 "use strict";
-const PAGE=(location.pathname.replace(/\/$/,"")||"/");
+const PAGE=(location.pathname.endsWith("/")?location.pathname.slice(0,-1):location.pathname)||"/";
 if(PAGE!=="/architecture")return;
 const SOURCE="/data/committee-case-evidence.json";
 const NS="http://www.w3.org/2000/svg";
