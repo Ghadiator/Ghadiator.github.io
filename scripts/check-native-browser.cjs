@@ -74,7 +74,7 @@ const widths = [
    checks+=11;
    if(viewport.label==="desktop"){
     await page.emulateMedia({reducedMotion:"reduce"});
-    await page.goto(base+"/architecture/",{waitUntil:"networkidle"});
+    await page.goto(base+"/architecture/#recorded",{waitUntil:"networkidle"});
     await page.locator('[data-gac-module-evidence]').waitFor({state:"visible",timeout:20000});
     assert.equal(await page.locator('path[data-gac-proponent-cove]').count(),1,
       "Proponent must converge on the pre-Judge evidence boundary");
