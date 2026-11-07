@@ -1,0 +1,170 @@
+/* Frontend-only evidence release: post-hydration, no API requests, no real-case data.
+ * The native backend and its migrations remain protected and unmerged.
+ */
+(function(){
+"use strict";
+const PATH=location.pathname.replace(/\/$/,"")||"/";
+const EVIDENCE="/data/recorded-kpi-evidence.json";
+const APP="https://aigovernanceascodelab.com/";
+const fmt=n=>Number(n).toLocaleString("en-GB");
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const business=[
+ ["Reviewer touch time","Active reviewer minutes per eligible invoice","No timed manual and governed review observations"],
+ ["Resolution time","Receipt-to-human-decision hours per decided invoice","No comparable complete decision timestamps"],
+ ["First-submission validation pass rate","Passed initial validations / eligible initial submissions","Fixture final states cannot prove a first-submission pass"],
+ ["Cases needing resubmission","Cases with confirmed resubmission / eligible cases","Attempt counts are not a verified resubmission denominator"],
+ ["Evidence completeness","Cases meeting all versioned required-source criteria / evaluated cases","A complete mandatory-evidence checklist was not recorded"],
+ ["Cost per invoice","(Reviewer labour + inference + infrastructure + rework) / decided invoices","No case-level labour or billed charges"]
+];
+const ai=[
+ ["Conditional reasoning escalation","Committee-routed paths / eligible recorded cases","40%","6 / 15","Scripted routing flag; not live inference usage"],
+ ["Model tokens and provider costs","Provider input/output token totals and validated rate-card estimate","0 provider tokens","0 provider calls","Recorded fixtures use scripted roles; does not describe real-case usage or billed charges"],
+ ["Unsupported-claim detection","Verified unsupported model claims / independently evaluated claims",null,null,"Missing evaluated model claim denominator"],
+ ["Human override rate","Human decisions diverging from paired recorded AI recommendations / paired decisions",null,null,"Gate reached is not an override"],
+ ["Guardrail intervention rate","Blocked or modified guarded steps / eligible guard evaluations",null,null,"No complete guard-evaluation denominator"],
+ ["Decision trace completeness","Decisions satisfying mandatory trace checklist / evaluated decisions",null,null,"571 emitted events do not establish trace completeness"],
+ ["Agentic execution error rate","Failed AI-supported executions / eligible AI-supported executions",null,null,"Generic fixture failures are not model-execution errors"]
+];
+function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
+function attach(parent,html){const node=document.createElement("div");node.innerHTML=html;parent.append(node);return node;}
+function section(parent,title,desc){const s=el("section","gac-measured-section");const h=el("h2","gac-measured-heading",title);s.append(h);if(desc)s.append(el("p","gac-measured-detail",desc));parent.append(s);return s;}
+function metricCards(parent,records){
+ const grid=el("div","gac-measured-grid");
+ records.forEach(([label,val,detail])=>{const card=el("article","gac-measured-card");card.append(el("strong","gac-measured-value",String(val)),el("span","gac-measured-label",label));if(detail)card.append(el("small","gac-measured-note",detail));grid.append(card);});
+ parent.append(grid);
+}
+function createCases(data,main){
+ if(main.querySelector("[data-gac-origin-panel]"))return;
+ const nav=main.querySelector("[data-gac-workspace-tabs]");
+ const panel=el("section","gac-mode-panel");panel.dataset.gacOriginPanel="true";
+ const heading=el("h2","gac-measured-heading","Validation workspace · two evidence origins");
+ const row=el("div","gac-mode-selector");
+ const recorded=el("button","gac-mode-button","Recorded Cases");
+ const real=el("button","gac-mode-button","Real Cases");
+ for(const btn of [recorded,real])btn.type="button";
+ const expl=el("p","gac-measured-detail","");
+ const content=el("div","gac-mode-content");
+ const realPane=el("section","gac-real-pane");
+ realPane.append(el("h3","","Protected operational cases"),el("p","","Real supplier requests, correspondence, validated runs, human decisions and audit records are not published on GitHub Pages."));
+ const a=el("a","gac-measured-link","Open authenticated Real Cases");a.href=APP;realPane.append(a);
+ const cards=section(content,"Observed synthetic executions","These values are recomputed from the published fixture captures. They do not establish manual time savings, provider charges or production ROI.");
+ metricCards(cards,[
+ ["Recorded cases",fmt(data.counts.recorded_cases)],
+ ["Validation checks",fmt(data.counts.validation_checks)],
+ ["Recorded events",fmt(data.counts.emitted_events)],
+ ["Scripted committee routing","40%","6 / 15 recorded cases"],
+ ["Reviewer gate reached","93.33%","14 / 15 cases; not a human override"],
+ ["No committee","60%","9 / 15 recorded cases"]
+ ]);
+ const foot=el("p","gac-measured-detail","Source: recorded supplier case fixtures; audit-event volume is not trace completeness, and attempt counts are not treated as resubmission.");
+ content.append(foot);
+ panel.append(heading,row,expl,content,realPane);
+ row.append(recorded,real);
+ if(nav)nav.insertAdjacentElement("beforebegin",panel);else main.prepend(panel);
+ // Leave the legacy rendered synthetic case gallery intact and hide it only
+ // when the user explicitly selects the protected Real Cases mode.
+ const referenceChildren=[...main.children].filter(x=>x!==panel&&x!==nav);
+ const setMode=mode=>{
+  const isReal=mode==="real";
+  recorded.setAttribute("aria-pressed",String(!isReal));
+  real.setAttribute("aria-pressed",String(isReal));
+  expl.textContent=isReal?"Real Cases are protected; no case identifiers, private documents, model usage or operations can be loaded on this static site.":"Synthetic reference cases and their recorded evidence. No real supplier invoices, provider calls or approvals.";
+  content.hidden=isReal;realPane.hidden=!isReal;
+  if(nav)nav.hidden=isReal;
+  referenceChildren.forEach(c=>{c.hidden=isReal;});
+  if(isReal)history.replaceState(null,"",location.pathname+"#real-cases");
+  else history.replaceState(null,"",location.pathname+"#recorded-cases");
+ };
+ recorded.addEventListener("click",()=>setMode("recorded"));
+ real.addEventListener("click",()=>setMode("real"));
+ setMode(location.hash==="#real-cases"?"real":"recorded");
+}
+function addTable(parent,title,items){
+ const sec=section(parent,title);
+ const wrapper=el("div","gac-table-scroll");const table=el("table","gac-measured-table");
+ const head=el("thead");const tr=el("tr");
+ for(const v of ["KPI","Manual cohort","Recorded AI / governed","Evidence basis"]){tr.append(el("th","",v));}
+ head.append(tr);table.append(head);const body=el("tbody");
+ for(const item of items){
+ const [name,definition,value,denominator,limitation]=item;
+ const line=el("tr");line.append(el("th","",name));
+ line.append(el("td","","Not measured"));
+ const result=el("td");result.append(el("strong","",value==null?"Not measured":value));
+ if(denominator)result.append(el("small","gac-cell-sub",denominator));
+ line.append(result);
+ const evidence=el("td");evidence.append(el("span","",definition));evidence.append(el("small","gac-cell-sub",limitation));
+ line.append(evidence);body.append(line);
+ }
+ table.append(body);wrapper.append(table);sec.append(wrapper);
+}
+function createBusiness(data,main){
+ if(main.querySelector("[data-gac-measured-business]"))return;
+ const box=el("div","gac-measured-block");box.dataset.gacMeasuredBusiness="true";
+ const intro=section(box,"Measured KPI comparison · Recorded vs Real","A value is shown only when the required source and denominator exist. Recorded examples are synthetic; the manual and protected real-case cohorts have not been measured in this public release.");
+ metricCards(intro,[
+  ["Recorded cases",fmt(data.counts.recorded_cases)],
+  ["Committee routing","40%","6 / 15 scripted cases"],
+  ["Reviewer gate","93.33%","14 / 15 fixture cases"],
+  ["Source checks",fmt(data.counts.validation_checks)]
+ ]);
+ addTable(box,"Group A · Business performance",business.map(([name,definition,reason])=>[name,definition,null,null,reason]));
+ addTable(box,"Group B · AI operations and governance",ai);
+ const details=el("details","gac-measured-literature");
+ details.append(el("summary","","Published manual-process references (context, not matched baselines)"));
+ const p=el("p","","APQC reports a cross-industry full accounts-payable invoice-processing cost benchmark; Ardent Partners reports full accounts-payable cycle-time benchmarks. They refer to a broader process than this supplier validation workflow and cannot be used as measured manual-reviewer observations or to calculate ROI.");
+ details.append(p);
+ const links=el("p");
+ const l1=el("a","gac-measured-link","APQC invoice processing benchmarks");l1.href="https://www.apqc.org/";l1.rel="noopener noreferrer";l1.target="_blank";
+ const l2=el("a","gac-measured-link","Ardent Partners ePayables research");l2.href="https://ardentpartners.com/";l2.rel="noopener noreferrer";l2.target="_blank";
+ links.append(l1,document.createTextNode(" · "),l2);details.append(links);
+ box.append(details);
+ const existing=main.querySelector(".gac-kpi-business-taxonomy");
+ if(existing)existing.insertAdjacentElement("afterend",box);else main.prepend(box);
+}
+function createTokens(data,main){
+ if(main.querySelector("[data-gac-token-measures]"))return;
+ const box=el("div","gac-measured-block");box.dataset.gacTokenMeasures="true";
+ const top=section(box,"Token pool and model consumption · recorded evidence","This public GitHub Pages build contains scripted examples, not actual provider inference records. Zero fixture API calls is a known scenario property; real provider usage is unavailable here.");
+ metricCards(top,[
+ ["Recorded committee routes","6 / 15","Scripted roles, not provider calls"],
+ ["Provider model calls","0","Only in these scripted fixtures"],
+ ["Provider input tokens","0","No provider model invoked by these fixtures"],
+ ["Provider output tokens","0","No provider model invoked by these fixtures"],
+ ["Real provider billing","Not available","No reconciled invoices or production usage records"],
+ ["Live token pool","Protected","TPM, RPM, dispatches and key counts require authentication"]
+ ]);
+ const sec=section(box,"Consumption by model · source-aware","No provider model was invoked in these recorded synthetic cases. Per-model input/output tokens and cost estimates are available only when a real model-usage event exists in the protected server.");
+ const wrapper=el("div","gac-table-scroll");
+ const table=el("table","gac-measured-table");
+ const tr=el("tr");for(const t of ["Model","Calls","Input tokens","Output tokens","Estimated EUR cost","Evidence"]){tr.append(el("th","",t));}
+ const head=el("thead");head.append(tr);table.append(head);
+ const tbody=el("tbody");const row=el("tr");const cell=el("td");cell.colSpan=6;cell.textContent="No provider-model usage events in synthetic fixtures. No model-by-model cost figures are invented.";row.append(cell);tbody.append(row);table.append(tbody);wrapper.append(table);sec.append(wrapper);
+ const detail=el("details","gac-measured-literature");
+ detail.append(el("summary","","How the protected token pool is measured"));
+ detail.append(el("p","","For authenticated live runs: attribute each successful model call to its actual provider/model, sum provider-reported input/output tokens, show calls per model and rate-card estimated costs, and compare TPM/RPM occupancy to configured per-provider limits. The current native backend story is process-scoped and resets on restart. Configured free-tier prices are not verified billing."));
+ const link=el("a","gac-measured-link","Open protected Token Economics");link.href=APP;detail.append(link);box.append(detail);
+ const heading=main.querySelector("h1");
+ if(heading){const lead=main.querySelector(".page-lead");(lead||heading).insertAdjacentElement("afterend",box);}else main.prepend(box);
+}
+let attempts=0,stopped=false;
+async function mount(){
+ if(stopped)return;
+ const main=document.querySelector("main#main-content");
+ if(!main||!main.querySelector("h1"))return;
+ try{
+  const resp=await fetch(EVIDENCE,{cache:"no-cache",credentials:"omit"});
+  if(!resp.ok)return;
+  const data=await resp.json();
+  if(data.scope!=="synthetic_fixture_only"||data.source_git_blob_sha!=="0a60ad3044c06d37e21fbef1a3bd6218044643c6")return;
+  if(PATH==="/cases")createCases(data,main);
+  if(PATH==="/business-impact")createBusiness(data,main);
+  if(PATH==="/token-economics")createTokens(data,main);
+  stopped=true;
+ }catch(_e){/* No substitute numbers on fetch failure. */}
+}
+function wait(){if(++attempts>45)return;void mount();if(!stopped)setTimeout(wait,350);}
+if(["/cases","/business-impact","/token-economics"].includes(PATH)){
+ if(document.readyState==="complete")setTimeout(wait,850);
+ else window.addEventListener("load",()=>setTimeout(wait,850),{once:true});
+}
+})();
