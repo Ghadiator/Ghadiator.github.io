@@ -53,6 +53,25 @@ const widths = [
    await page.locator('[data-gac-workspace-tabs]').waitFor({state:"visible",timeout:12000});
    assert.equal(await page.locator('[data-gac-workspace-tabs] a').count(),6,
     "Consolidated workspace must retain requests, correspondence, scenarios, cases, audit and workbook lab");
+   // Recorded/Real split must never expose static fixtures as operational data.
+   await page.locator('[data-gac-origin-panel]').waitFor({state:"visible",timeout:15000});
+   assert.match(await page.locator('[data-gac-origin-panel]').innerText(),/208/);
+   assert.match(await page.locator('[data-gac-origin-panel]').innerText(),/571/);
+   await page.locator('[data-gac-origin-panel] button').filter({hasText:"Real Cases"}).click();
+   await page.locator('.gac-real-pane').waitFor({state:"visible"});
+   assert.equal(await page.locator('[data-gac-workspace-tabs]').isVisible(),false,"Static examples must be hidden while Real Cases mode selected");
+   assert.equal(await page.locator('.gac-real-pane a[href^="https://aigovernanceascodelab.com/"]').count(),1);
+   await page.locator('[data-gac-origin-panel] button').filter({hasText:"Recorded Cases"}).click();
+   await page.getByRole("heading",{name:"From collection to the case record"}).waitFor({state:"visible"});
+   await page.goto(base+"/business-impact/",{waitUntil:"networkidle"});
+   await page.locator('[data-gac-measured-business]').waitFor({state:"visible",timeout:15000});
+   assert.equal(await page.locator('[data-gac-measured-business] .gac-measured-table tbody tr').count(),13,"Six business and seven AI governance rows must survive");
+   assert.match(await page.locator('[data-gac-measured-business]').innerText(),/40%/);
+   await page.goto(base+"/token-economics/",{waitUntil:"networkidle"});
+   await page.locator('[data-gac-token-measures]').waitFor({state:"visible",timeout:15000});
+   assert.match(await page.locator('[data-gac-token-measures]').innerText(),/No provider-model usage events in synthetic fixtures/);
+   assert.match(await page.locator('[data-gac-token-measures]').innerText(),/Live token pool/);
+   checks+=11;
    await page.goto(base+"/dashboard/",{waitUntil:"networkidle"});
    await page.locator('[data-gac-legacy-pool]').waitFor({state:"visible",timeout:12000});
    assert.equal(await page.locator('[data-gac-legacy-pool] a[href="/pool-analytics/"]').count(),1);
