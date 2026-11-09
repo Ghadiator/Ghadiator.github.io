@@ -29,3 +29,13 @@
 .gac-mode-content[hidden],.gac-real-pane[hidden],main#main-content > [hidden],nav[data-gac-workspace-tabs][hidden]{display:none!important;}
 @media(min-width:900px){.gac-measured-grid{grid-template-columns:repeat(4,minmax(0,1fr));}}
 @media(max-width:600px){.gac-mode-panel,.gac-measured-block{padding:14px;margin:16px 0}.gac-mode-selector{grid-template-columns:1fr}.gac-mode-button{min-height:47px}.gac-measured-heading{font-size:17px}.gac-measured-value{font-size:23px}}
+
+/* One transparent qualification up front; detailed caveats stay collapsed. */
+.gac-kpi-representative-note{margin:0 0 20px;padding:16px 19px;border-left:3px solid #378c7b;border-radius:9px;background:#e9f5f0;color:#285b5b;}
+.gac-kpi-representative-note strong{display:block;font-size:14px;font-weight:750;line-height:1.5;}
+.gac-kpi-representative-note p{margin:5px 0 0;font-size:12px;line-height:1.75;color:#4e6d71;}
+[data-gac-measured-business] .gac-measured-table{min-width:580px;}
+[data-gac-measured-business] .gac-measured-table tbody td:nth-child(2){width:34%;}
+[data-gac-measured-business] .gac-measured-table tbody td:nth-child(3){width:32%;}
+[data-gac-measured-business] .gac-measured-table .gac-measured-link{font-weight:600;}
+@media(max-width:600px){.gac-kpi-representative-note{padding:13px 14px;}}
