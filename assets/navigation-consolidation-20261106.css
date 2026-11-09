@@ -15,3 +15,7 @@ nav.public-nav [data-gac-consolidated-nav] a[hidden]{display:none!important;}
 .gac-legacy-pool p{margin:10px 0;font-size:13px;line-height:1.65;color:#5b7280;}
 .gac-legacy-pool a{font-size:13px;font-weight:750;text-decoration:underline;color:#19776b;}
 @media(max-width:640px){.gac-workspace-tabs{padding:13px}.gac-workspace-tabs a{padding:8px 10px;font-size:12px}}
+
+/* Keep legacy sections hidden even when Next.js remounts the nav between SPA transitions. */
+html[data-gac-nav-enabled="true"] nav.public-nav > section{display:none!important;}
+html[data-gac-nav-enabled="true"] nav.public-nav > [data-gac-consolidated-nav]{display:block!important;}
