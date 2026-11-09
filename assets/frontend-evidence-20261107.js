@@ -16,15 +16,21 @@ const business=[
  ["Evidence completeness","Cases meeting all versioned required-source criteria / evaluated cases","A complete mandatory-evidence checklist was not recorded"],
  ["Cost per invoice","(Reviewer labour + inference + infrastructure + rework) / decided invoices","No case-level labour or billed charges"]
 ];
-const ai=[
- ["Conditional reasoning escalation","Committee-routed paths / eligible recorded cases","40%","6 / 15","Scripted routing flag; not live inference usage"],
- ["Model tokens and provider costs","Provider input/output token totals and validated rate-card estimate","0 provider tokens","0 provider calls","Recorded fixtures use scripted roles; does not describe real-case usage or billed charges"],
- ["Unsupported-claim detection","Verified unsupported model claims / independently evaluated claims",null,null,"Missing evaluated model claim denominator"],
- ["Human override rate","Human decisions diverging from paired recorded AI recommendations / paired decisions",null,null,"Gate reached is not an override"],
- ["Guardrail intervention rate","Blocked or modified guarded steps / eligible guard evaluations",null,null,"No complete guard-evaluation denominator"],
- ["Decision trace completeness","Decisions satisfying mandatory trace checklist / evaluated decisions",null,null,"571 emitted events do not establish trace completeness"],
- ["Agentic execution error rate","Failed AI-supported executions / eligible AI-supported executions",null,null,"Generic fixture failures are not model-execution errors"]
-];
+// The measured Group B rows are built from archived synthetic case evidence,
+// not inferred from generic validation-event volume or provider usage.
+const metricPct=(n,d)=>d?((100*n/d).toFixed(1).replace(/\\.0$/,"")+"%"):"Not measured";
+function governanceMetrics(g){
+ const m=g.metrics;
+ return [
+  ["Discrepancy flagging",m.discrepancy_flagged_cases+" cases",m.discrepancy_flagged_cases+" / "+m.discrepancy_denominator+" valid cases · rule or contract failures detected; independent accuracy not scored"],
+  ["Contract cross-check coverage",metricPct(m.contract_crosscheck_cases,m.contract_crosscheck_denominator),m.contract_crosscheck_cases+" / "+m.contract_crosscheck_denominator+" valid cases · one invoice failed earlier checks"],
+  ["History-aware resubmissions",metricPct(m.updated_cases_with_recalled_prior_version,m.updated_cases),m.updated_cases_with_recalled_prior_version+" / "+m.updated_cases+" revised cases · prior submission history attached"],
+  ["Selective committee escalation",metricPct(m.committee_routed_cases,m.recorded_cases),m.committee_routed_cases+" exceptions escalated · "+m.committee_skipped_cases+" / "+m.recorded_cases+" bypassed scripted committee; escalation correctness unscored"],
+  ["Claim grounding and containment",m.cove_claim_decisions+" checks",m.cove_supported_or_restated+" claims supported/restated · "+m.cove_unsupported_blocked+" unsupported claim removed · scripted Opponent findings"],
+  ["Human review safeguard",metricPct(m.reviewer_gated_cases,m.reviewer_gate_denominator),m.reviewer_gated_cases+" / "+m.reviewer_gate_denominator+" valid cases reached reviewer gate · not a count of approvals"],
+  ["Case trace availability",metricPct(m.trace_available_cases,m.recorded_cases),m.trace_available_cases+" / "+m.recorded_cases+" cases have event histories · not a complete-trace audit score"]
+ ];
+}
 function el(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
 function attach(parent,html){const node=document.createElement("div");node.innerHTML=html;parent.append(node);return node;}
 function section(parent,title,desc){const s=el("section","gac-measured-section");const h=el("h2","gac-measured-heading",title);s.append(h);if(desc)s.append(el("p","gac-measured-detail",desc));parent.append(s);return s;}
@@ -79,7 +85,7 @@ function createCases(data,main){
  real.addEventListener("click",()=>setMode("real"));
  setMode(location.hash==="#real-cases"?"real":"recorded");
 }
-function addBusinessTable(parent,items,manual){
+function addBusinessTable(parent,items,manual,g){
  const sec=section(parent,"Group A · Business performance");
  const wrapper=el("div","gac-table-scroll");const table=el("table","gac-measured-table");
  const head=el("thead");const tr=el("tr");
@@ -94,48 +100,58 @@ function addBusinessTable(parent,items,manual){
   link.href=lit.url;link.target="_blank";link.rel="noopener noreferrer";benchmark.append(link);
   line.append(benchmark);
   const governed=el("td");
-  governed.append(el("strong","","Not measured"));
-  governed.append(el("small","gac-cell-sub","No recorded time, full-case quality denominator or case-level labour cost"));
+  const m=g.metrics;
+  // Related observations can support a useful process proxy, but they must
+  // not be relabelled as full business-outcome measures.
+  const values={
+   "First-submission validation pass rate":[(m.valid_intake_cases-m.discrepancy_flagged_cases)+"/"+m.valid_intake_cases+" clean checks",
+     "First-attempt rule/contract check proxy, not complete first-pass approval"],
+   "Cases needing resubmission":[m.updated_cases+"/"+m.valid_intake_cases+" revised ("+metricPct(m.updated_cases,m.valid_intake_cases)+")",
+     "Actual repeated submissions; not necessarily avoidable rework"]
+  };
+  const related=values[name];
+  governed.append(el("strong","",related?related[0]:"Not measured"));
+  governed.append(el("small","gac-cell-sub",related?related[1]:"Outcome not captured in these scripted records"));
   line.append(governed);body.append(line);
  }
  table.append(body);wrapper.append(table);sec.append(wrapper);
 }
 function addAiTable(parent,items){
- const sec=section(parent,"Group B · AI operations and governance");
+ const sec=section(parent,"Group B · AI-assistance and governance evidence");
  const wrapper=el("div","gac-table-scroll");const table=el("table","gac-measured-table");
  const head=el("thead");const tr=el("tr");
- for(const v of ["AI-specific KPI","Our workflow · recorded","Evidence"]){tr.append(el("th","",v));}
+ for(const v of ["Governance capability","Recorded result","What the result establishes"]){tr.append(el("th","",v));}
  head.append(tr);table.append(head);const body=el("tbody");
- for(const [name,definition,value,denominator] of items){
+ for(const [name,value,evidence] of items){
   const line=el("tr");line.append(el("th","",name));
-  const result=el("td");result.append(el("strong","",value==null?"Not measured":value));
-  if(denominator)result.append(el("small","gac-cell-sub",denominator));
-  line.append(result);
-  line.append(el("td","",definition));body.append(line);
+  const result=el("td");result.append(el("strong","",value));line.append(result);
+  line.append(el("td","",evidence));body.append(line);
  }
  table.append(body);wrapper.append(table);sec.append(wrapper);
 }
-function createBusiness(data,main,manual){
+function createBusiness(data,main,manual,g){
  if(main.querySelector("[data-gac-measured-business]"))return;
  const box=el("div","gac-measured-block");box.dataset.gacMeasuredBusiness="true";
  const note=el("div","gac-kpi-representative-note");
- note.append(el("strong","","Representative comparison · not a measured efficiency gain"));
- note.append(el("p","","Manual figures are published industry examples of invoice processing; our figures come from 15 scripted supplier-validation cases. They illustrate different processes and are not a direct like-for-like comparison. No time savings or ROI are claimed."));
+ note.append(el("strong","","Illustrating potential time savings and ROI for similar invoice-processing workflows"));
+ note.append(el("p","","Industry benchmarks help illustrate where AI-assisted invoice review may create potential efficiency and ROI opportunities. Our 15 recorded synthetic cases demonstrate checking, escalation, history recall and human oversight; the figures are representative, not measured productivity savings or a financial ROI forecast."));
  box.append(note);
- const intro=section(box,"What our recorded workflow actually executed");
+ const m=g.metrics;
+ const intro=section(box,"What our workflow demonstrated",
+  "Recorded synthetic supplier cases · outcomes from checks, case history, CoVe and routing—not provider-model accuracy or measured labour savings.");
  metricCards(intro,[
-  ["Recorded cases",fmt(data.counts.recorded_cases),"Synthetic cases"],
-  ["Validation checks",fmt(data.counts.validation_checks),"Recorded checks"],
-  ["Workflow events",fmt(data.counts.emitted_events),"Recorded events"],
-  ["Committee escalation",data.ratios.scripted_committee_routing.value_pct+"%","6 / 15 cases"],
-  ["Reviewer gate reached",data.ratios.reviewer_gate_reached.value_pct+"%","14 / 15 cases"],
-  ["No committee",((data.counts.no_committee_cases/data.counts.recorded_cases)*100).toFixed(0)+"%","9 / 15 cases"]
+  ["Discrepancies flagged",m.discrepancy_flagged_cases+"/"+m.discrepancy_denominator+" cases","Rules or approved-contract comparison"],
+  ["Contract comparisons",m.contract_crosscheck_cases+"/"+m.contract_crosscheck_denominator+" cases","Approved reference evaluated"],
+  ["Prior versions recalled",m.updated_cases_with_recalled_prior_version+"/"+m.updated_cases+" revisions","Historical context attached"],
+  ["Committee bypass",metricPct(m.committee_skipped_cases,m.recorded_cases),m.committee_skipped_cases+"/"+m.recorded_cases+" cases used no scripted committee"],
+  ["CoVe claim checks",m.cove_claim_decisions+" checks",m.cove_unsupported_blocked+" unsupported claim removed"],
+  ["Human review gate",m.reviewer_gated_cases+"/"+m.reviewer_gate_denominator+" cases","All valid-intake cases retained oversight"]
  ]);
- addBusinessTable(box,business,manual);
- addAiTable(box,ai);
+ addBusinessTable(box,business,manual,g);
+ addAiTable(box,governanceMetrics(g));
  const details=el("details","gac-measured-literature");
  details.append(el("summary","","Methods, limitations and research sources"));
- details.append(el("p","","Our case counts, check counts and event counts are reproducible observations from synthetic fixtures. The workflow does not record manual reviewer touch time, actual business resolution time, case-level paid processing cost or the denominators required for several quality KPIs. The industry values include broader accounts-payable measures and selected proxies (first-time PO-line matching, exceptions and PO coverage). Do not subtract them to estimate savings."));
+ details.append(el("p","","The displayed capability results were recomputed from all 15 scripted supplier case records, including recorded invoice and contract check outcomes, history.attached events, CoVe claim decisions and reviewer routing. They demonstrate system behaviours, not independently validated detection accuracy, correctly targeted escalations, causal efficiency gains or provider model performance. The manual figures describe broader accounts-payable populations, including proxies for first-pass matching, exceptions and purchase-order coverage. A future matched study could test potential ROI, but these fixtures cannot quantify it."));
  for(const ref of manual.entries){
   const p=el("p","",ref.name+": "+ref.basis+" ");
   const link=el("a","gac-measured-link",ref.source+" ("+ref.year+")");
@@ -193,7 +209,14 @@ async function mount(){
       literature.entries?.length!==business.length ||
       !business.every(([name],i)=>literature.entries[i]?.name===name) ||
       literature.entries.some(e=>e.comparable!==false))return;
-   createBusiness(data,main,literature);
+   const governanceResponse=await fetch("/data/synthetic-governance-metrics.json",{cache:"no-cache",credentials:"omit"});
+   if(!governanceResponse.ok)return;
+   const governance=await governanceResponse.json();
+   if(governance.schema!=="gac.derived_synthetic_governance_metrics.v1" ||
+      governance.scope!=="recorded_scripted_supplier_fixtures_only" ||
+      governance.cases_blob_sha!==data.source_git_blob_sha ||
+      governance.metrics?.recorded_cases!==data.counts.recorded_cases)return;
+   createBusiness(data,main,literature,governance);
   }
   if(PATH==="/token-economics")createTokens(data,main);
   stopped=true;
