@@ -48,6 +48,71 @@ const widths = [
    const nav=page.locator('nav[aria-label="Main navigation"] [data-gac-consolidated-nav] a span');
    const labels=(await nav.allTextContents()).map(x=>x.trim());
    assert.deepEqual(labels,expectedNav,viewport.label+": navigation must consolidate five workbench views, pool analytics and Origins");
+   // Check the user-reported SPA regression by CLICKING every sidebar group,
+   // not just opening every URL through page.goto (which used to mask it).
+   if(viewport.label==="desktop"){
+    const sidebarRoutes=[
+     ["/","Overview"],["/business-impact/","Business value & KPIs"],
+     ["/architecture/","Architecture"],["/ai-roles/","Personas"],
+     ["/ai-assurance/","Assurance"],["/red-team/","Failure Lab"],
+     ["/cases/","Validation workspace"],["/dashboard/","Analytics"],
+     ["/token-economics/","Token Economics"],["/safety-origin/","Safety Origins"],
+     ["/governance/","Framework Explorer"],["/governance-code/","Governance Code"]
+    ];
+    async function checkConsolidatedNav(href,label){
+     await page.locator('[data-gac-consolidated-nav]').waitFor({state:"visible",timeout:15000});
+     assert.equal(await page.locator('nav.public-nav > section:visible').count(),0,
+       "Old nav sections reappeared on "+href);
+     assert.equal(await page.locator('[data-gac-consolidated-nav]').count(),1,
+       "Duplicated or missing new nav on "+href);
+     const text=(await page.locator('[data-gac-consolidated-nav] a span').allTextContents()).map(x=>x.trim());
+     assert.deepEqual(text,expectedNav,"Navigation arrangement changed at "+href);
+     assert.equal(await page.locator('[data-gac-consolidated-nav] a[aria-current="page"]').count(),1,
+       "Exactly one sidebar item should be active at "+href);
+     assert.equal(await page.locator('[data-gac-consolidated-nav] a[aria-current="page"] span').innerText(),label,
+       "Wrong active sidebar tab at "+href);
+     checks+=4;
+    }
+    for(const [href,label] of sidebarRoutes){
+     await page.locator('[data-gac-consolidated-nav] a[href="'+href+'"]').click();
+     await page.waitForURL(url=>url.pathname===href,{timeout:15000});
+     await checkConsolidatedNav(href,label);
+    }
+    // Exercise six links within the workspace, and navigation back to its hub.
+    await page.locator('[data-gac-consolidated-nav] a[href="/cases/"]').click();
+    const workspaces=["/tickets/","/inbound/","/monitor/","/cases/","/audit/","/upload/"];
+    for(const href of workspaces){
+     await page.locator('[data-gac-workspace-tabs] a[href="'+href+'"]').click();
+     await page.waitForURL(url=>url.pathname===href,{timeout:15000});
+     await page.locator('[data-gac-workspace-tabs]').waitFor({state:"visible"});
+     assert.equal(await page.locator('[data-gac-workspace-tabs] a').count(),6);
+     assert.equal(await page.locator('[data-gac-workspace-tabs] a[aria-current="page"]').getAttribute("href"),href);
+     await checkConsolidatedNav(href,"Validation workspace");
+     checks+=2;
+    }
+    await page.goBack({waitUntil:"domcontentloaded"});
+    await page.locator('[data-gac-workspace-tabs]').waitFor({state:"visible"});
+    await checkConsolidatedNav("/audit/","Validation workspace");
+    // Navigate using a source-rendered Next.js Link to catch history.pushState
+    // and React sidebar remounts that a full document navigation cannot test.
+    await page.goto(base+"/",{waitUntil:"networkidle"});
+    const appLink=page.locator('main#main-content a[href="/ai-roles/"]').first();
+    await appLink.waitFor({state:"visible"});
+    await appLink.click();
+    await page.waitForURL(url=>url.pathname==="/ai-roles/",{timeout:15000});
+    await checkConsolidatedNav("/ai-roles/","Personas");
+    // Deep links retained for compatibility must not revive old nav sections.
+    for(const href of ["/tickets/new/","/ticket/","/case/","/pool-analytics/","/integration/","/analytics/","/safety/"]){
+     const response=await page.goto(base+href,{waitUntil:"networkidle"});
+     assert.equal(response?.status(),200,href+" deep link");
+     await page.locator('[data-gac-consolidated-nav]').waitFor({state:"visible",timeout:15000});
+     assert.equal(await page.locator('nav.public-nav > section:visible').count(),0,
+       "Legacy navigation revived on deep link "+href);
+     assert.deepEqual((await page.locator('[data-gac-consolidated-nav] a span').allTextContents()).map(x=>x.trim()),
+       expectedNav,"Old sidebar arrangement on "+href);
+     checks+=3;
+    }
+   }
    // Preserve all deep links while exposing a single workspace navigation entry.
    await page.goto(base+"/cases/",{waitUntil:"networkidle"});
    await page.locator('[data-gac-workspace-tabs]').waitFor({state:"visible",timeout:12000});
