@@ -67,6 +67,9 @@ const widths = [
        "Duplicated or missing new nav on "+href);
      const text=(await page.locator('[data-gac-consolidated-nav] a span').allTextContents()).map(x=>x.trim());
      assert.deepEqual(text,expectedNav,"Navigation arrangement changed at "+href);
+     const codeNavIcon=page.locator('[data-gac-consolidated-nav] a[href="/governance-code/"] svg[data-gac-code-icon="true"]');
+     assert.equal(await codeNavIcon.count(),1,"Governance Code must have one distinct code-brackets icon on "+href);
+     assert.equal(await codeNavIcon.locator("path").count(),3,"Governance Code icon must render fully on "+href);
      assert.equal(await page.locator('[data-gac-consolidated-nav] a[aria-current="page"]').count(),1,
        "Exactly one sidebar item should be active at "+href);
      assert.equal(await page.locator('[data-gac-consolidated-nav] a[aria-current="page"] span').innerText(),label,
