@@ -132,8 +132,9 @@ function tabsAndPool(){
  // Reconcile both the route and the sidebar DOM, without rewriting React-owned
  // sections. Child-list observation catches a newly remounted sidebar.
 let queued=false;
+let hydrated=false;
 function schedule(){
- if(queued)return;
+ if(!hydrated||queued)return;
  queued=true;
  requestAnimationFrame(()=>{
   queued=false;
@@ -153,7 +154,13 @@ const observer=new MutationObserver(records=>{
    n.querySelector?.("nav.public-nav,main#main-content")))))schedule();
 });
 observer.observe(document.documentElement,{childList:true,subtree:true});
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",schedule,{once:true});
-else schedule();
-window.addEventListener("load",schedule);
+// The pinned Next.js build must hydrate BEFORE any compatibility-layer
+// DOM insertions. Prior eager DOMContentLoaded updates triggered React #418.
+// Subsequent SPA navigations are safe to reconcile immediately.
+function activate(){
+ if(hydrated)return;
+ window.setTimeout(()=>{hydrated=true;schedule();},800);
+}
+if(document.readyState==="complete")activate();
+else window.addEventListener("load",activate,{once:true});
 })();
