@@ -165,8 +165,10 @@ const widths = [
    assert.equal(await businessTables.nth(1).locator('thead th').count(),3,
       "AI Group B must not have a manual cohort column");
    assert.doesNotMatch(await businessTables.nth(1).locator('thead').innerText(),/manual/i);
-   assert.equal(await businessTables.nth(1).locator('tbody td').filter({hasText:"Not measured"}).count()>0,true,
-     "AI-only unmeasured values cannot be fabricated");
+   assert.match(await businessTables.nth(1).innerText(),/independent accuracy not scored/);
+   assert.match(await businessTables.nth(1).innerText(),/escalation correctness unscored/);
+   assert.match(await page.locator('[data-gac-measured-business] details').innerText(),
+     /not independently validated detection accuracy/);
    checks+=20;
 
    await page.goto(base+"/token-economics/",{waitUntil:"networkidle"});
