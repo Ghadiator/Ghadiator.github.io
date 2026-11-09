@@ -134,17 +134,28 @@ const widths = [
    assert.match(await page.locator('[data-gac-measured-business]').innerText(),/40%/);
    const notice=page.locator('[data-gac-measured-business] .gac-kpi-representative-note');
    assert.equal(await notice.count(),1,"Exactly one prominent representative-data qualification");
-   assert.match(await notice.innerText(),/published industry examples/);
-   assert.match(await notice.innerText(),/No time savings or ROI are claimed/);
+   assert.match(await notice.innerText(),/potential time savings and ROI/i);
+   assert.match(await notice.innerText(),/not measured productivity savings/i);
    const observedCards=page.locator('[data-gac-measured-business] .gac-measured-card');
    assert.equal(await observedCards.count(),6);
    const observedCopy=await observedCards.allInnerTexts();
-   for(const metric of ["15","208","571","40%","93.33%","60%"])
-     assert.ok(observedCopy.some(text=>text.includes(metric)),"Missing actual fixture evidence "+metric);
+   for(const metric of ["6/14 cases","13/14 cases","2/2 revisions","60%","4 checks","14/14 cases"])
+     assert.ok(observedCopy.some(text=>text.includes(metric)),"Missing relevant governance evidence "+metric);
+   assert.doesNotMatch(observedCopy.join(" "),/Workflow events|Validation checks/,
+     "Generic activity counters must not be promoted as business value KPIs");
    const businessTables=page.locator('[data-gac-measured-business] .gac-measured-table');
    assert.equal(await businessTables.count(),2,"Group A and Group B use separate semantic tables");
    assert.equal(await businessTables.nth(0).locator("tbody tr").count(),6,"Six published manual AP benchmark rows");
    assert.equal(await businessTables.nth(1).locator("tbody tr").count(),7,"Seven AI-only governance rows");
+   for(const measure of ["Discrepancy flagging","Contract cross-check coverage","History-aware resubmissions",
+     "Selective committee escalation","Claim grounding and containment","Human review safeguard",
+     "Case trace availability"]){
+     assert.match(await businessTables.nth(1).innerText(),new RegExp(measure));
+   }
+   assert.match(await businessTables.nth(1).innerText(),/independent accuracy not scored/);
+   assert.match(await businessTables.nth(1).innerText(),/escalation correctness unscored/);
+   assert.match(await businessTables.nth(0).innerText(),/8\/14 clean checks/);
+   assert.match(await businessTables.nth(0).innerText(),/2\/14 revised/);
    for(const marker of ["41 min / invoice","9.15 days / invoice","75% first-time PO-line match",
       "14% invoice exceptions","61% PO-linked invoices","$9.40 / invoice"]){
      assert.ok((await businessTables.nth(0).innerText()).includes(marker),"Missing sourced manual benchmark "+marker);
