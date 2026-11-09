@@ -18,7 +18,7 @@ const business=[
 ];
 // The measured Group B rows are built from archived synthetic case evidence,
 // not inferred from generic validation-event volume or provider usage.
-const metricPct=(n,d)=>d?((100*n/d).toFixed(1).replace(/\\.0$/,"")+"%"):"Not measured";
+const metricPct=(n,d)=>d?(Number((100*n/d).toFixed(1))+"%"):"Not measured";
 function governanceMetrics(g){
  const m=g.metrics;
  return [
