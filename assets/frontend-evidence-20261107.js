@@ -79,44 +79,67 @@ function createCases(data,main){
  real.addEventListener("click",()=>setMode("real"));
  setMode(location.hash==="#real-cases"?"real":"recorded");
 }
-function addTable(parent,title,items){
- const sec=section(parent,title);
+function addBusinessTable(parent,items,manual){
+ const sec=section(parent,"Group A · Business performance",
+  "External manual AP benchmarks are published values, not observations from our workflow. Proxy measures are explicitly labelled; no business uplift is calculated.");
  const wrapper=el("div","gac-table-scroll");const table=el("table","gac-measured-table");
  const head=el("thead");const tr=el("tr");
- for(const v of ["KPI","Manual cohort","Recorded AI / governed","Evidence basis"]){tr.append(el("th","",v));}
+ for(const v of ["Business KPI","Published manual AP reference","Recorded AI / governed","Measurement boundary"]){tr.append(el("th","",v));}
  head.append(tr);table.append(head);const body=el("tbody");
- for(const item of items){
- const [name,definition,value,denominator,limitation]=item;
- const line=el("tr");line.append(el("th","",name));
- line.append(el("td","","Not measured"));
- const result=el("td");result.append(el("strong","",value==null?"Not measured":value));
- if(denominator)result.append(el("small","gac-cell-sub",denominator));
- line.append(result);
- const evidence=el("td");evidence.append(el("span","",definition));evidence.append(el("small","gac-cell-sub",limitation));
- line.append(evidence);body.append(line);
+ for(let i=0;i<items.length;i++){
+  const [name,definition,reason]=items[i];
+  const lit=manual.entries[i];
+  const line=el("tr");line.append(el("th","",name));
+  const benchmark=el("td");
+  const main=el("strong","gac-literature-value",lit.display);
+  benchmark.append(main);
+  benchmark.append(el("small","gac-cell-sub","Published "+lit.year+" · "+(lit.basis.startsWith("proxy:")?"Industry proxy — not the same KPI":"Broader AP process — not a matched baseline")));
+  const link=el("a","gac-measured-link",lit.source+" · "+lit.location);link.href=lit.url;link.target="_blank";link.rel="noopener noreferrer";benchmark.append(link);
+  line.append(benchmark);
+  const governed=el("td");governed.append(el("strong","","Not measured"));
+  governed.append(el("small","gac-cell-sub","No equivalent production or timed AI-assisted cohort"));line.append(governed);
+  const boundary=el("td");boundary.append(el("span","",definition));
+  boundary.append(el("small","gac-cell-sub",lit.basis));
+  boundary.append(el("small","gac-cell-sub",reason));line.append(boundary);
+  body.append(line);
  }
  table.append(body);wrapper.append(table);sec.append(wrapper);
 }
-function createBusiness(data,main){
+function addAiTable(parent,items){
+ const sec=section(parent,"Group B · AI operations and governance",
+  "AI-specific KPIs have no manual-process column. Values represent recorded synthetic executions only when evidence exists.");
+ const wrapper=el("div","gac-table-scroll");const table=el("table","gac-measured-table");
+ const head=el("thead");const tr=el("tr");
+ for(const v of ["AI-specific KPI","Recorded observation","Measurement and evidence"]){tr.append(el("th","",v));}
+ head.append(tr);table.append(head);const body=el("tbody");
+ for(const [name,definition,value,denominator,limitation] of items){
+  const line=el("tr");line.append(el("th","",name));
+  const result=el("td");result.append(el("strong","",value==null?"Not measured":value));
+  if(denominator)result.append(el("small","gac-cell-sub",denominator));
+  line.append(result);
+  const evidence=el("td");evidence.append(el("span","",definition));evidence.append(el("small","gac-cell-sub",limitation));line.append(evidence);body.append(line);
+ }
+ table.append(body);wrapper.append(table);sec.append(wrapper);
+}
+function createBusiness(data,main,manual){
  if(main.querySelector("[data-gac-measured-business]"))return;
  const box=el("div","gac-measured-block");box.dataset.gacMeasuredBusiness="true";
- const intro=section(box,"Measured KPI comparison · Recorded vs Real","A value is shown only when the required source and denominator exist. Recorded examples are synthetic; the manual and protected real-case cohorts have not been measured in this public release.");
+ const intro=section(box,"Business benchmarks and measured AI-governance evidence",
+  "Group A: published external AP benchmarks with figures, scope and source. Group B: AI-only observations—no manual counterpart. The external figures are not matched manual cases and must not be subtracted from our recorded runs.");
  metricCards(intro,[
   ["Recorded cases",fmt(data.counts.recorded_cases)],
   ["Committee routing","40%","6 / 15 scripted cases"],
   ["Reviewer gate","93.33%","14 / 15 fixture cases"],
   ["Source checks",fmt(data.counts.validation_checks)]
  ]);
- addTable(box,"Group A · Business performance",business.map(([name,definition,reason])=>[name,definition,null,null,reason]));
- addTable(box,"Group B · AI operations and governance",ai);
+ addBusinessTable(box,business,manual);
+ addAiTable(box,ai);
  const details=el("details","gac-measured-literature");
- details.append(el("summary","","Published manual-process references (context, not matched baselines)"));
- const p=el("p","","APQC reports a cross-industry full accounts-payable invoice-processing cost benchmark; Ardent Partners reports full accounts-payable cycle-time benchmarks. They refer to a broader process than this supplier validation workflow and cannot be used as measured manual-reviewer observations or to calculate ROI.");
- details.append(p);
- const links=el("p");
- const l1=el("a","gac-measured-link","APQC invoice processing benchmarks");l1.href="https://www.apqc.org/";l1.rel="noopener noreferrer";l1.target="_blank";
- const l2=el("a","gac-measured-link","Ardent Partners ePayables research");l2.href="https://ardentpartners.com/";l2.rel="noopener noreferrer";l2.target="_blank";
- links.append(l1,document.createTextNode(" · "),l2);details.append(links);
+ details.append(el("summary","","Research methodology and additional AP reference"));
+ details.append(el("p","","The six values use supplier-invoice and accounts-payable benchmarks collected from different organisations. Review time, exceptions, PO matching and purchase-order coverage have different numerators or process boundaries than our six workflow KPIs. No manual reference is a matched company baseline, and no numeric AI savings, ROI, or uplift has been inferred."));
+ const ref=manual.other_reference;
+ const p=el("p","",ref.display+" · "+ref.year+" · "+ref.limitation);details.append(p);
+ const link=el("a","gac-measured-link",ref.source);link.href=ref.url;link.rel="noopener noreferrer";link.target="_blank";details.append(link);
  box.append(details);
  const existing=main.querySelector(".gac-kpi-business-taxonomy");
  if(existing)existing.insertAdjacentElement("afterend",box);else main.prepend(box);
@@ -157,7 +180,17 @@ async function mount(){
   const data=await resp.json();
   if(data.scope!=="synthetic_fixture_only"||data.source_git_blob_sha!=="0a60ad3044c06d37e21fbef1a3bd6218044643c6")return;
   if(PATH==="/cases")createCases(data,main);
-  if(PATH==="/business-impact")createBusiness(data,main);
+  if(PATH==="/business-impact"){
+   const literatureResponse=await fetch("/data/manual-ap-literature-benchmarks.json",{cache:"no-cache",credentials:"omit"});
+   if(!literatureResponse.ok)return;
+   const literature=await literatureResponse.json();
+   if(literature.schema!=="gac.manual_ap_literature.v1" ||
+      literature.scope!=="published_external_process_benchmarks_not_company_manual_cohort" ||
+      literature.entries?.length!==business.length ||
+      !business.every(([name],i)=>literature.entries[i]?.name===name) ||
+      literature.entries.some(e=>e.comparable!==false))return;
+   createBusiness(data,main,literature);
+  }
   if(PATH==="/token-economics")createTokens(data,main);
   stopped=true;
  }catch(_e){/* No substitute numbers on fetch failure. */}
