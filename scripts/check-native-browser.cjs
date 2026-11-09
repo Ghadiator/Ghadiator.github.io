@@ -167,8 +167,9 @@ const widths = [
    assert.doesNotMatch(await businessTables.nth(1).locator('thead').innerText(),/manual/i);
    assert.match(await businessTables.nth(1).innerText(),/independent accuracy not scored/);
    assert.match(await businessTables.nth(1).innerText(),/escalation correctness unscored/);
-   assert.match(await page.locator('[data-gac-measured-business] details').innerText(),
-     /not independently validated detection accuracy/);
+   const methods=page.locator('[data-gac-measured-business] details');
+   await methods.locator('summary').click();
+   assert.match(await methods.innerText(),/not independently validated detection accuracy/);
    checks+=20;
 
    await page.goto(base+"/token-economics/",{waitUntil:"networkidle"});
