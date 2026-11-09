@@ -50,6 +50,24 @@ function searchNav(root){
  if(input&&!searchHandler){searchHandler=()=>filter();input.addEventListener("input",searchHandler);}
  filter();
 }
+// Give Governance Code its own Code2 (brackets) icon. Some pinned static
+// routes omit this link from the original sidebar; a cloned icon is therefore
+// not reliable. Create the same SVG on every route and SPA remount.
+function ensureGovernanceCodeIcon(root){
+ const link=[...root.querySelectorAll("a[href]")].find(a=>normalized(new URL(a.href).pathname)==="/governance-code/");
+ if(!link)return;
+ const existing=link.querySelector("svg");
+ if(existing?.dataset.gacCodeIcon==="true")return;
+ const ns="http://www.w3.org/2000/svg";
+ const svg=document.createElementNS(ns,"svg");
+ for(const [key,value] of Object.entries({width:"17",height:"17",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor","stroke-width":"2","stroke-linecap":"round","stroke-linejoin":"round","aria-hidden":"true"}))svg.setAttribute(key,value);
+ svg.dataset.gacCodeIcon="true";
+ svg.classList.add("lucide","lucide-code-2");
+ for(const d of ["m18 16 4-4-4-4","m6 8-4 4 4 4","m14.5 4-5 16"]){
+  const p=document.createElementNS(ns,"path");p.setAttribute("d",d);svg.appendChild(p);
+ }
+ if(existing)existing.replaceWith(svg);else link.prepend(svg);
+}
 function patch(){
  const nav=document.querySelector("nav.public-nav");
  if(!nav)return;
@@ -83,6 +101,7 @@ function patch(){
  // not just those present in the first document load.
  old.forEach(section=>{if(!section.hasAttribute("data-gac-old-nav"))section.setAttribute("data-gac-old-nav","true");});
  document.documentElement.dataset.gacNavEnabled="true";
+ ensureGovernanceCodeIcon(root);
  updateActive(root);
  searchNav(root);
 }
