@@ -57,7 +57,7 @@ original=[]
 for row in governance['per_case']:
     source=ROOT/'data'/'scenarios'/f"{row['slug']}.json"
     blob=source.read_bytes()
-    actual_sha=sha1(f"blob {len(blob)}\\0".encode()+blob).hexdigest()
+    actual_sha=sha1(f"blob {len(blob)}\0".encode()+blob).hexdigest()
     assert actual_sha==row['scenario_blob_sha'],row['slug']
     case=by_case[row['slug']]
     events=json.loads(blob)['events']
