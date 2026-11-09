@@ -34,7 +34,7 @@
     },
     {
       "id": "first_submission_pass_rate",
-      "name": "First-submission validation pass",
+      "name": "First-submission validation pass rate",
       "display": "75% first-time PO-line match",
       "value": 75,
       "unit": "percent of invoice line items",
