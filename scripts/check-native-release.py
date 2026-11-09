@@ -30,4 +30,16 @@ manifest=json.loads((ROOT/'.site-release.json').read_text())
 assert len(manifest['source_commit'])==40
 assert manifest['backend_available'] is False
 assert (ROOT/'.nojekyll').exists()
+# External AP benchmarks are research reference, not observed manual cohorts.
+benchmark=json.loads((ROOT/'data/manual-ap-literature-benchmarks.json').read_text())
+assert benchmark['scope']=='published_external_process_benchmarks_not_company_manual_cohort'
+names=['Reviewer touch time','Resolution time','First-submission validation pass rate',
+       'Cases needing resubmission','Evidence completeness','Cost per invoice']
+assert [row['name'] for row in benchmark['entries']]==names
+assert [row['value'] for row in benchmark['entries']]==[41,9.15,75,14,61,9.4]
+assert all(row['comparable'] is False and row['url'].startswith('https://') for row in benchmark['entries'])
+js=(ROOT/'assets/frontend-evidence-20261107.js').read_text()
+assert 'addBusinessTable' in js and 'addAiTable' in js
+assert 'published_external_process_benchmarks_not_company_manual_cohort' in js
+assert (ROOT/'business-impact'/'index.html').exists()
 print('Compiled routes, assets, visible vocabulary and truthful release metadata verified.')
