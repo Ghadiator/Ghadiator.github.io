@@ -1,0 +1,101 @@
+{
+  "schema": "gac.manual_ap_literature.v1",
+  "updated_at": "2026-11-09",
+  "scope": "published_external_process_benchmarks_not_company_manual_cohort",
+  "disclaimer": "Published AP and supplier invoice benchmarks. Different populations, denominators and scope from protected supplier validation. Do not treat as local observed manual outcomes, comparable ROI or causal uplift.",
+  "entries": [
+    {
+      "id": "reviewer_touch_minutes",
+      "name": "Reviewer touch time",
+      "display": "41 min / invoice",
+      "value": 41,
+      "unit": "minutes per supplier invoice",
+      "basis": "published survey; full supplier invoice handling time, NOT active reviewer touch time",
+      "year": 2024,
+      "source": "Tipalti / Insight Avenue, From Manual to Modern",
+      "url": "https://tipalti.com/wp-content/uploads/2024/08/from-manual-to-modern.pdf",
+      "location": "p. 4, Insight 01",
+      "population": "600 high-growth business decision-makers, US/UK/Europe; March 2024",
+      "comparable": false
+    },
+    {
+      "id": "resolution_time",
+      "name": "Resolution time",
+      "display": "9.15 days / invoice",
+      "value": 9.15,
+      "unit": "calendar days per invoice",
+      "basis": "published AP process cycle time; receipt-to-approval/processing, NOT this application's receipt-to-human-decision duration",
+      "year": 2024,
+      "source": "Ardent Partners, State of ePayables 2024",
+      "url": "https://d15fjz85703yz4.cloudfront.net/7117/2227/2612/ardent-partners-state-of-epayables-2024-money-never-sleeps-PAX-NA-SRR-2406-2585.pdf",
+      "location": "Table 1, p. 20",
+      "population": "212 AP professionals and organisations",
+      "comparable": false
+    },
+    {
+      "id": "first_submission_pass_rate",
+      "name": "First-submission validation pass",
+      "display": "75% first-time PO-line match",
+      "value": 75,
+      "unit": "percent of invoice line items",
+      "basis": "proxy: APQC median of purchase-order-linked invoice LINE ITEMS matched first time; not whole-invoice first-pass validation",
+      "year": 2026,
+      "source": "APQC Open Standards Benchmarking, measure 102149",
+      "url": "https://www.apqc.org/resources/benchmarking/open-standards-benchmarking/measures/percentage-invoice-line-items-are",
+      "location": "Cross-industry benchmark, 4,438 organisations",
+      "population": "APQC cross-industry, sample size 4,438",
+      "comparable": false
+    },
+    {
+      "id": "resubmission_share",
+      "name": "Cases needing resubmission",
+      "display": "14% invoice exceptions",
+      "value": 14,
+      "unit": "percent of AP invoices",
+      "basis": "proxy: AP invoice exceptions (missing information, errors or bottlenecks). Does NOT mean supplier resubmission.",
+      "year": 2024,
+      "source": "Ardent Partners, State of ePayables 2024",
+      "url": "https://d15fjz85703yz4.cloudfront.net/7117/2227/2612/ardent-partners-state-of-epayables-2024-money-never-sleeps-PAX-NA-SRR-2406-2585.pdf",
+      "location": "Table 1, p. 20",
+      "population": "212 AP professionals and organisations",
+      "comparable": false
+    },
+    {
+      "id": "evidence_completeness",
+      "name": "Evidence completeness",
+      "display": "61% PO-linked invoices",
+      "value": 61,
+      "unit": "percent of AP invoices",
+      "basis": "proxy: invoices linked to a purchase order, ONE form of supporting reference; not the percentage satisfying a complete required-evidence checklist.",
+      "year": 2024,
+      "source": "Ardent Partners, State of ePayables 2024",
+      "url": "https://d15fjz85703yz4.cloudfront.net/7117/2227/2612/ardent-partners-state-of-epayables-2024-money-never-sleeps-PAX-NA-SRR-2406-2585.pdf",
+      "location": "Table 1, p. 20",
+      "population": "212 AP professionals and organisations",
+      "comparable": false
+    },
+    {
+      "id": "cost_per_invoice",
+      "name": "Total validation cost per invoice",
+      "display": "$9.40 / invoice",
+      "value": 9.4,
+      "unit": "USD per fully processed AP invoice",
+      "basis": "published mean full accounts-payable invoice processing cost; not validation-only, not euros; includes labour, systems and overhead.",
+      "year": 2024,
+      "source": "Ardent Partners, State of ePayables 2024",
+      "url": "https://d15fjz85703yz4.cloudfront.net/7117/2227/2612/ardent-partners-state-of-epayables-2024-money-never-sleeps-PAX-NA-SRR-2406-2585.pdf",
+      "location": "Table 1, p. 20",
+      "population": "212 AP professionals and organisations",
+      "comparable": false
+    }
+  ],
+  "other_reference": {
+    "display": "$6.00 median full AP cost / invoice",
+    "value": 6,
+    "unit": "USD per full AP invoice",
+    "year": 2026,
+    "source": "APQC, cross-industry median, n=5,846",
+    "url": "https://www.apqc.org/What-Is-the-Average-Cost-to-Process-an-Invoice",
+    "limitation": "Not equivalent to Ardent's 2024 average; separate year, sample and statistic."
+  }
+}
