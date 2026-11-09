@@ -132,6 +132,23 @@ const widths = [
    await page.locator('[data-gac-measured-business]').waitFor({state:"visible",timeout:15000});
    assert.equal(await page.locator('[data-gac-measured-business] .gac-measured-table tbody tr').count(),13,"Six business and seven AI governance rows must survive");
    assert.match(await page.locator('[data-gac-measured-business]').innerText(),/40%/);
+   const businessTables=page.locator('[data-gac-measured-business] .gac-measured-table');
+   assert.equal(await businessTables.count(),2,"Group A and Group B use separate semantic tables");
+   assert.equal(await businessTables.nth(0).locator("tbody tr").count(),6,"Six published manual AP benchmark rows");
+   assert.equal(await businessTables.nth(1).locator("tbody tr").count(),7,"Seven AI-only governance rows");
+   for(const marker of ["41 min / invoice","9.15 days / invoice","75% first-time PO-line match",
+      "14% invoice exceptions","61% PO-linked invoices","$9.40 / invoice"]){
+     assert.ok((await businessTables.nth(0).innerText()).includes(marker),"Missing sourced manual benchmark "+marker);
+   }
+   assert.equal(await businessTables.nth(0).locator('tbody a[href^="https://"]').count(),6,
+      "All six manual benchmarks must link to a published source");
+   assert.equal(await businessTables.nth(1).locator('thead th').count(),3,
+      "AI Group B must not have a manual cohort column");
+   assert.doesNotMatch(await businessTables.nth(1).locator('thead').innerText(),/manual/i);
+   assert.equal(await businessTables.nth(1).locator('tbody td').filter({hasText:"Not measured"}).count()>0,true,
+     "AI-only unmeasured values cannot be fabricated");
+   checks+=12;
+
    await page.goto(base+"/token-economics/",{waitUntil:"networkidle"});
    await page.locator('[data-gac-token-measures]').waitFor({state:"visible",timeout:15000});
    assert.match(await page.locator('[data-gac-token-measures]').innerText(),/No provider-model usage events in synthetic fixtures/);
