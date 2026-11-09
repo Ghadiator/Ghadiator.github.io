@@ -76,7 +76,7 @@
     },
     {
       "id": "cost_per_invoice",
-      "name": "Total validation cost per invoice",
+      "name": "Cost per invoice",
       "display": "$9.40 / invoice",
       "value": 9.4,
       "unit": "USD per fully processed AP invoice",
