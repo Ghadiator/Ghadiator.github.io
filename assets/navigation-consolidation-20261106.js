@@ -109,7 +109,7 @@ function tabsAndPool(){
  if(workspace){
   const rail=main.querySelector('[data-gac-workspace-tabs]');
   rail?.querySelectorAll("a[href]").forEach(a=>{
-   if(a.pathname.replace(/\\/$/,"")===pathname)a.setAttribute("aria-current","page");
+   if((a.pathname.endsWith("/")?a.pathname.slice(0,-1):a.pathname)===pathname)a.setAttribute("aria-current","page");
    else a.removeAttribute("aria-current");
   });
  }
