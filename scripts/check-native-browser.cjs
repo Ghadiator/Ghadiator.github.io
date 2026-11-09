@@ -132,6 +132,15 @@ const widths = [
    await page.locator('[data-gac-measured-business]').waitFor({state:"visible",timeout:15000});
    assert.equal(await page.locator('[data-gac-measured-business] .gac-measured-table tbody tr').count(),13,"Six business and seven AI governance rows must survive");
    assert.match(await page.locator('[data-gac-measured-business]').innerText(),/40%/);
+   const notice=page.locator('[data-gac-measured-business] .gac-kpi-representative-note');
+   assert.equal(await notice.count(),1,"Exactly one prominent representative-data qualification");
+   assert.match(await notice.innerText(),/published industry examples/);
+   assert.match(await notice.innerText(),/No time savings or ROI are claimed/);
+   const observedCards=page.locator('[data-gac-measured-business] .gac-measured-card');
+   assert.equal(await observedCards.count(),6);
+   const observedCopy=await observedCards.allInnerTexts();
+   for(const metric of ["15","208","571","40%","93.33%","60%"])
+     assert.ok(observedCopy.some(text=>text.includes(metric)),"Missing actual fixture evidence "+metric);
    const businessTables=page.locator('[data-gac-measured-business] .gac-measured-table');
    assert.equal(await businessTables.count(),2,"Group A and Group B use separate semantic tables");
    assert.equal(await businessTables.nth(0).locator("tbody tr").count(),6,"Six published manual AP benchmark rows");
@@ -147,7 +156,7 @@ const widths = [
    assert.doesNotMatch(await businessTables.nth(1).locator('thead').innerText(),/manual/i);
    assert.equal(await businessTables.nth(1).locator('tbody td').filter({hasText:"Not measured"}).count()>0,true,
      "AI-only unmeasured values cannot be fabricated");
-   checks+=12;
+   checks+=20;
 
    await page.goto(base+"/token-economics/",{waitUntil:"networkidle"});
    await page.locator('[data-gac-token-measures]').waitFor({state:"visible",timeout:15000});
