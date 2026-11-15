@@ -5,7 +5,7 @@ const { chromium } = require("playwright-core");
 const fs = require("node:fs");
 const base = process.env.BASE_URL || "http://127.0.0.1:8765";
 const routes = [
-  "/", "/business-impact/", "/architecture/", "/ai-roles/", "/governance/", "/governance-code/", "/ai-assurance/",
+  "/", "/introduction/", "/business-impact/", "/architecture/", "/ai-roles/", "/governance/", "/governance-code/", "/ai-assurance/",
   "/red-team/", "/cases/", "/dashboard/", "/token-economics/", "/safety-origin/",
   "/tickets/", "/tickets/new/", "/ticket/", "/inbound/", "/monitor/",
   "/audit/", "/pool-analytics/", "/upload/", "/integration/"
@@ -52,18 +52,49 @@ const widths = [
    assert.equal((await page.locator("#lab-coverage").textContent())?.trim(),"Gap → human");
    await page.locator("#lab-reset").click();
    assert.equal((await page.locator("#lab-coverage").textContent())?.trim(),"Required kinds present");
-   checks+=4;
+   // Prevent the white stand-alone sidebar regression. The learning route
+   // must have the same DOM shell, grouped links, dark gradient and icons.
+   await page.locator('[data-gac-consolidated-nav]').waitFor({state:"attached",timeout:12000});
+   assert.equal(await page.locator(".public-shell").count(),1);
+   assert.equal(await page.locator(".public-sidebar").count(),1);
+   assert.equal(await page.locator(".side, .page-shell").count(),0,
+     "Standalone white sidebar must not return");
+   assert.deepEqual((await page.locator('[data-gac-consolidated-nav] a span').allTextContents()).map(x=>x.trim()),
+     expectedNav,"Context page navigation should use the native canonical menu");
+   assert.equal(await page.locator('[data-gac-consolidated-nav] a svg').count(),expectedNav.length,
+     "Context page must show all original navigation icons");
+   const contextSidebarStyle=await page.locator(".public-sidebar").evaluate(el=>{
+     const s=getComputedStyle(el);return {background:s.backgroundImage,color:s.color,width:s.width};
+   });
+   assert.match(contextSidebarStyle.background,/linear-gradient/,
+     "Context sidebar must use the native dark gradient, not white");
+   if(viewport.width<1024){
+     await page.locator("#menu-toggle").click();
+     assert.equal(await page.locator(".public-sidebar.is-open").isVisible(),true,
+       "Context mobile navigation should open the native panel");
+     await page.locator("#menu-toggle").click();
+     assert.equal(await page.locator(".public-sidebar").isVisible(),false,
+       "Context mobile navigation should close");
+   }
+   checks+=11;
    await page.goto(base+"/",{waitUntil:"domcontentloaded"});
    await page.locator('nav.public-nav a[href="/governance-code/"]').waitFor({state:"attached",timeout:12000});
    await page.locator('[data-gac-consolidated-nav]').waitFor({state:"attached",timeout:15000});
    const nav=page.locator('nav[aria-label="Main navigation"] [data-gac-consolidated-nav] a span');
    const labels=(await nav.allTextContents()).map(x=>x.trim());
    assert.deepEqual(labels,expectedNav,viewport.label+": navigation must consolidate five workbench views, pool analytics and Origins");
+   const nativeSidebarStyle=await page.locator(".public-sidebar").evaluate(el=>{
+     const s=getComputedStyle(el);return {background:s.backgroundImage,color:s.color,width:s.width};
+   });
+   assert.deepEqual(contextSidebarStyle,nativeSidebarStyle,
+     viewport.label+": context and original pages must share exactly the same sidebar styling");
+   checks++;
    // Check the user-reported SPA regression by CLICKING every sidebar group,
    // not just opening every URL through page.goto (which used to mask it).
    if(viewport.label==="desktop"){
     const sidebarRoutes=[
-     ["/","Overview"],["/business-impact/","Business value & KPIs"],
+     ["/","Overview"],["/context-engineering/","Context Engineering"],
+     ["/business-impact/","Business value & KPIs"],
      ["/architecture/","Architecture"],["/ai-roles/","Personas"],
      ["/ai-assurance/","Assurance"],["/red-team/","Failure Lab"],
      ["/cases/","Validation workspace"],["/dashboard/","Analytics"],
@@ -92,6 +123,10 @@ const widths = [
      await page.waitForURL(url=>url.pathname===href,{timeout:15000});
      await checkConsolidatedNav(href,label);
     }
+    // Explicitly check the previously unpatched introduction alias.
+    const introduction=await page.goto(base+"/introduction/",{waitUntil:"networkidle"});
+    assert.equal(introduction?.status(),200);
+    await checkConsolidatedNav("/introduction/","Overview");
     // Exercise six links within the workspace, and navigation back to its hub.
     await page.locator('[data-gac-consolidated-nav] a[href="/cases/"]').click();
     const workspaces=["/tickets/","/inbound/","/monitor/","/cases/","/audit/","/upload/"];
