@@ -12,7 +12,7 @@ const routes = [
 ];
 const expectedNav = [
   "Overview", "Business value & KPIs", "Architecture",
-  "Personas", "Assurance", "Failure Lab",
+  "Personas", "Context Engineering", "Assurance", "Failure Lab",
   "Validation workspace", "Analytics", "Token Economics",
   "Safety Origins", "Framework Explorer", "Governance Code"
 ];
@@ -42,6 +42,17 @@ const widths = [
     assert.ok(h?.trim(),viewport.label+" "+route+" missing heading");
     checks++;
    }
+   // The context-engineering route is an intentionally standalone static
+   // learning page: it uses the same design system but is not a Next.js app.
+   const learning = await page.goto(base+"/context-engineering/",{waitUntil:"domcontentloaded"});
+   assert.equal(learning?.status(),200,viewport.label+" context-engineering HTTP");
+   await page.locator("#lab-coverage").waitFor({state:"visible"});
+   assert.equal((await page.locator("#lab-coverage").textContent())?.trim(),"Required kinds present");
+   await page.locator("#lab-withdraw").check();
+   assert.equal((await page.locator("#lab-coverage").textContent())?.trim(),"Gap → human");
+   await page.locator("#lab-reset").click();
+   assert.equal((await page.locator("#lab-coverage").textContent())?.trim(),"Required kinds present");
+   checks+=4;
    await page.goto(base+"/",{waitUntil:"domcontentloaded"});
    await page.locator('nav.public-nav a[href="/governance-code/"]').waitFor({state:"attached",timeout:12000});
    await page.locator('[data-gac-consolidated-nav]').waitFor({state:"attached",timeout:15000});
