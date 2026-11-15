@@ -12,7 +12,7 @@ const read = relative => fs.readFileSync(path.join(root,relative),"utf8");
 const page=read("context-engineering/index.html");
 const css=read("assets/context-engineering-20261115.css");
 const script=read("assets/context-engineering-20261115.js");
-const nav=read("assets/public-sidebar-navigation-20261114.js");
+const nav=read("assets/navigation-consolidation-20261106.js");
 
 const requiredIds=[
  "main-content","page-title","memory-title","lab","lab-task","lab-case",
@@ -26,8 +26,9 @@ for(const route of ["/architecture/","/ai-assurance/","/safety-origin/"])
   assert(page.includes('href="'+route+'"'),"Missing navigation: "+route);
 assert(page.includes("synthetic browser simulation"),"Must disclose static simulation");
 assert(page.includes("AI-First Organization"),"Source attribution missing");
-assert(nav.includes('contextTarget = "/context-engineering/"'),"Sidebar link missing");
-assert(nav.includes("2000"),"Nav link must not patch before React hydration");
+assert(nav.includes('["/context-engineering/","Context Engineering"]'),"Visible consolidated sidebar link missing");
+assert(nav.includes('ensureContextIcon(root)'),"Context sidebar icon missing");
+assert(nav.includes('if(!hydrated||queued)return;'),"Nav link must not patch before React hydration");
 assert(css.includes("@media(max-width:750px)"),"Responsive small screen missing");
 assert(!/\bfetch\s*\(/.test(script),"Public lab may not fetch protected resources");
 assert(!/localStorage|sessionStorage|document\.cookie|XMLHttpRequest/.test(script),
