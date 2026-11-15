@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a293b">
+  <meta name="description" content="An interactive, safety-inspired guide to context engineering, short-term and long-term agent memory, knowledge governance and human oversight.">
+  <title>Context Engineering · Governance as Code</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/context-engineering-20261115.css">
+  <script src="/assets/context-engineering-20261115.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="mobile-head">
+    <a class="brand-mobile" href="/">Governance <strong>as Code</strong></a>
+    <button type="button" id="menu-toggle" aria-controls="site-nav" aria-expanded="false">☰ <span>Explore</span></button>
+  </header>
+  <div class="page-shell">
+    <aside class="side" id="site-nav" aria-label="Website navigation">
+      <a class="side-brand" href="/">Governance <strong>AS CODE</strong></a>
+      <p class="side-tagline">From safety engineering<br>to accountable AI systems.</p>
+      <nav aria-label="Main navigation">
+        <p class="nav-group">START</p>
+        <a href="/">Overview</a>
+        <a href="/business-impact/">Business value &amp; KPIs</a>
+        <a href="/architecture/">Architecture</a>
+        <p class="nav-group">GOVERNANCE &amp; DEFENCES</p>
+        <a class="current" aria-current="page" href="/context-engineering/">Context engineering</a>
+        <a href="/ai-roles/">Personas</a>
+        <a href="/governance/">Framework explorer</a>
+        <a href="/ai-assurance/">Assurance</a>
+        <a href="/red-team/">Failure lab</a>
+        <a href="/governance-code/">Governance code</a>
+        <p class="nav-group">RECORDS &amp; ANALYTICS</p>
+        <a href="/cases/">Cases</a>
+        <a href="/audit/">Process audit</a>
+        <a href="/token-economics/">Token economics</a>
+        <p class="nav-group">ORIGINS</p>
+        <a href="/safety-origin/">Safety origins</a>
+      </nav>
+      <p class="side-note">Public read-only reference.<br>No connection to private case data.</p>
+    </aside>
+    <main id="main-content" tabindex="-1">
+      <div class="page-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Overview</a><span aria-hidden="true">/</span><span>Context engineering</span></nav>
+        <section class="hero" aria-labelledby="page-title">
+          <div class="hero-copy">
+            <p class="eyebrow">Governance as Code / Knowledge architecture</p>
+            <h1 id="page-title">The model is only as trustworthy as <em>the context it receives.</em></h1>
+            <p class="hero-lead">A safety-engineering perspective on selecting, verifying and maintaining the knowledge an AI agent needs—without turning a draft, an old decision or an external document into unquestioned authority.</p>
+            <div class="hero-tags"><span>Long-term memory</span><span>Runtime context</span><span>Human approval</span><span>Evidence provenance</span></div>
+          </div>
+          <div class="hero-art" role="img" aria-label="Three governed knowledge stores feed a bounded runtime context, then a verification gate and human reviewer.">
+            <div class="flow-label">KNOWLEDGE SUPPLY</div>
+            <div class="flow-sources"><span>SEMANTIC<br><small>Domain facts</small></span><span>EPISODIC<br><small>Prior events</small></span><span>PROCEDURAL<br><small>Task rules</small></span></div>
+            <div class="flow-join" aria-hidden="true">↓ &nbsp; curated, scoped, current &nbsp; ↓</div>
+            <div class="flow-window"><small>NEXT STEP</small><strong>Short-term context</strong><span>instructions + verified facts + tools + selected evidence</span></div>
+            <div class="flow-join" aria-hidden="true">↓</div>
+            <div class="flow-verify">Evidence checks <span>→</span> Human decision</div>
+          </div>
+          <p class="hero-footnote">Architecture explanation and synthetic browser simulation—not a live memory service or production approval system.</p>
+        </section>
+
+        <div class="section-links" aria-label="On this page">
+          <a href="#mental-model">Memory map</a><a href="#lab">Try the context lab</a><a href="#lifecycle">Knowledge lifecycle</a><a href="#operating-model">Operating model</a><a href="#assurance">Assurance gates</a>
+        </div>
+
+        <section id="mental-model" class="content-section" aria-labelledby="memory-title">
+          <div class="section-heading"><p class="eyebrow">01 / Distinguish the layers</p><h2 id="memory-title">Long-term memory is not the context window.</h2><p>Long-term memory stores knowledge on demand. Short-term memory is the limited, case-specific working material presented for the current step. More data is not automatically better context.</p></div>
+          <div class="memory-grid">
+            <article class="memory-card semantic"><span class="card-index">LTM / 01</span><div class="memory-symbol" aria-hidden="true">◇</div><h3>Semantic memory</h3><p>What is true about the domain: approved terms, baselines, definitions and applicable requirements.</p><div class="memory-example"><b>Supplier example</b><span>Approved fee ceiling and its effective period</span></div><p class="memory-boundary">Control: source owner, approved version, validity and scope.</p></article>
+            <article class="memory-card episodic"><span class="card-index">LTM / 02</span><div class="memory-symbol" aria-hidden="true">↺</div><h3>Episodic memory</h3><p>What happened before: submissions, exceptions, verification trails and reviewer actions.</p><div class="memory-example"><b>Supplier example</b><span>A previous invoice correction and the reviewer’s concern</span></div><p class="memory-boundary">Control: case isolation; history is not automatically a policy.</p></article>
+            <article class="memory-card procedural"><span class="card-index">LTM / 03</span><div class="memory-symbol" aria-hidden="true">≡</div><h3>Procedural memory</h3><p>How to perform the task: approved processes, deterministic checks, approved tools and escalation rules.</p><div class="memory-example"><b>Supplier example</b><span>Validate arithmetic before interpreting a disputed rate</span></div><p class="memory-boundary">Control: instructions and permissions come from trusted code, not retrieved prose.</p></article>
+          </div>
+          <div class="working-memory">
+            <div><span class="working-icon" aria-hidden="true">◎</span><div><h3>Short-term memory / runtime window</h3><p>Trusted role instructions + this case’s verified facts + permitted tools + selected long-term evidence + bounded recent conversation.</p></div></div>
+            <strong>Right evidence, right step, right case.</strong>
+          </div>
+        </section>
+
+        <section id="lab" class="content-section lab-section" aria-labelledby="lab-title">
+          <div class="section-heading"><p class="eyebrow">02 / Interactive model · browser-only</p><h2 id="lab-title">Try the context compiler.</h2><p>Change the task, case, reader role and evidence budget. The synthetic examples demonstrate why an agent should exclude unapproved, expired, irrelevant or out-of-scope material even when it is available.</p></div>
+          <div class="lab-frame">
+            <div class="lab-toolbar">
+              <label>Task<select id="lab-task"><option value="fee">Validate an invoice fee</option><option value="resubmission">Review a resubmission</option><option value="audit">Reconstruct a decision</option></select></label>
+              <label>Case<select id="lab-case"><option value="A">Case A</option><option value="B">Case B</option></select></label>
+              <label>Reader role<select id="lab-role"><option value="reviewer">Reviewer</option><option value="auditor">Auditor</option></select></label>
+              <label>Evidence budget<select id="lab-budget"><option value="2">Focused · 2 sources</option><option value="3" selected>Balanced · 3 sources</option><option value="5">Expanded · 5 sources</option></select></label>
+            </div>
+            <div class="lab-actions"><label class="checkbox-label"><input id="lab-withdraw" type="checkbox"> Simulate withdrawal of the approved fee policy</label><button type="button" id="lab-reset">Reset scenario</button></div>
+            <div class="lab-overview" role="status" aria-live="polite" aria-atomic="true"><div><small>ADMITTED SOURCES</small><strong id="lab-admitted">—</strong></div><div><small>EXCLUDED SOURCES</small><strong id="lab-excluded">—</strong></div><div><small>REQUIRED COVERAGE</small><strong id="lab-coverage">—</strong></div></div>
+            <div class="lab-columns">
+              <section aria-labelledby="candidate-title"><div class="lab-column-head"><h3 id="candidate-title">Available knowledge candidates</h3><span>synthetic records</span></div><div id="lab-candidates" class="record-list"></div></section>
+              <section aria-labelledby="window-title"><div class="lab-column-head"><h3 id="window-title">Assembled runtime context</h3><span>selected for next action</span></div><div id="lab-window" class="context-panel"></div><div id="lab-reasons" class="decision-reasons"></div></section>
+            </div>
+            <div class="lab-notice"><strong>This is a teaching simulation.</strong> All records are fabricated locally; no model, database, approval service or server call is made. The source-status gates illustrate the proposed compiler interface rather than proving it has been integrated into the public website or production Tier-3 workflow. The budget counts whole evidence items, not model tokens.</div>
+          </div>
+        </section>
+
+        <section id="lifecycle" class="content-section" aria-labelledby="lifecycle-title">
+          <div class="section-heading"><p class="eyebrow">03 / Make corporate knowledge trustworthy</p><h2 id="lifecycle-title">Knowledge has a lifecycle, not just a vector index.</h2><p>An agent should consume auditable operational knowledge. Ideas and plans still matter, but belong to a different status than records used for decisions.</p></div>
+          <ol class="pipeline" aria-label="Governed knowledge lifecycle"><li><b>01</b><strong>Create</strong><span>An owner records a candidate claim and original source.</span></li><li><b>02</b><strong>Share</strong><span>Experts challenge details, scope and contradictions.</span></li><li><b>03</b><strong>Integrate</strong><span>Check permissions, semantics, versions and completeness.</span></li><li><b>04</b><strong>Publish</strong><span>Human approval creates an accountable operational record.</span></li><li><b>05</b><strong>Utilize</strong><span>Retrieve only task-relevant, valid, authorized knowledge.</span></li></ol>
+          <div class="lifecycle-split">
+            <div class="status-example good"><span>Eligible after controls</span><strong>Operational and current</strong><p>Owned · source-cited · reviewed · approved · case/role scoped · within its validity period</p></div>
+            <div class="status-example warn"><span>Not authoritative context</span><strong>Drafts, proposals and stale records</strong><p>Useful for research or review queues—but never silently treated as established policy or verified evidence.</p></div>
+          </div>
+          <div class="signal-strip"><h3>Three signals keep knowledge current</h3><div><p><b>Contribution signal</b><span>The knowledge owner reports a change.</span></p><p><b>Downstream signal</b><span>An agent or reviewer finds a missing or contradictory source.</span></p><p><b>Process signal</b><span>A scheduled governance rule requires fresh review.</span></p></div><small>Each signal creates work for the accountable owner; it does not authorize autonomous policy changes.</small></div>
+        </section>
+
+        <section id="operating-model" class="content-section" aria-labelledby="operating-title">
+          <div class="section-heading"><p class="eyebrow">04 / AI-first is process redesign</p><h2 id="operating-title">Start with the outcome. Trace down to the systems.</h2><p>The lecture’s “skin, meat, skeleton” view helps reveal the process and data that must be understood before replacing a workflow step with an agent.</p></div>
+          <div class="anatomy">
+            <article><span class="anatomy-tag">SKIN / OUTCOME</span><h3>A defensible human decision</h3><p>A reviewer understands the exception, the evidence and the available response.</p></article>
+            <span class="anatomy-arrow" aria-hidden="true">↓</span>
+            <article><span class="anatomy-tag">MEAT / PROCESS</span><h3>Verified, reviewable steps</h3><p>Intake → deterministic checks → baseline comparison → evidence challenge → human disposition.</p></article>
+            <span class="anatomy-arrow" aria-hidden="true">↓</span>
+            <article><span class="anatomy-tag">SKELETON / SYSTEMS</span><h3>Controlled capabilities</h3><p>Submission schemas, approved source records, tool contracts, case history, audit events and reviewer controls.</p></article>
+          </div>
+          <div class="operating-grid">
+            <article><span>HUMAN-LED</span><h3>Intent &amp; authority</h3><p>Owners define the outcomes, policy boundaries, risk appetite and reviewer decision rights.</p></article>
+            <article><span>CO-LED</span><h3>Orchestration</h3><p>Humans and controlled workflow logic route uncertainty, exceptions and escalations.</p></article>
+            <article><span>AI-ASSISTED EXECUTION</span><h3>Bounded tasks</h3><p>Agents may retrieve, compare, propose and explain; deterministic tools verify what can be verified.</p></article>
+          </div>
+          <div class="five-pillars"><h3>Five organizational dimensions must move together</h3><div><span>Structures &amp; roles</span><span>Talent &amp; capabilities</span><span>Culture &amp; purpose</span><span>Governance &amp; steering</span><span>Technology foundations</span></div><p>The lecture emphasizes people, organization and processes—not model capability alone—as the decisive integration challenge. The 70/30 framing is conceptual, not a measured ratio for this project.</p></div>
+        </section>
+
+        <section id="assurance" class="content-section" aria-labelledby="assurance-title">
+          <div class="section-heading"><p class="eyebrow">05 / Where safety thinking helps</p><h2 id="assurance-title">Treat context selection as an assurance argument.</h2><p>Trace a decision back to the right source, version, owner, scope and verification method. Preserve the distinction between an AI recommendation and an authorized human action.</p></div>
+          <div class="assurance-grid">
+            <article><span class="assurance-num">01</span><h3>Source authority</h3><p>Is this an approved operational fact, or an attractive but unsupported claim?</p></article>
+            <article><span class="assurance-num">02</span><h3>Memory boundaries</h3><p>Are episodic records restricted to the correct case and least-privilege role?</p></article>
+            <article><span class="assurance-num">03</span><h3>Freshness</h3><p>Does the exact revision remain effective, or must its owner review it?</p></article>
+            <article><span class="assurance-num">04</span><h3>Context budget</h3><p>Were relevant complete sources selected rather than noisy or truncated fragments?</p></article>
+            <article><span class="assurance-num">05</span><h3>Independent checks</h3><p>Do deterministic calculations and Chain-of-Verification support the model’s claims?</p></article>
+            <article><span class="assurance-num">06</span><h3>Human decision</h3><p>Is escalation visible, the reviewer attributable, and final approval still human-controlled?</p></article>
+          </div>
+          <div class="truth-table"><h3>What exists versus what is being developed</h3><div class="truth-row"><strong>Existing backend concepts</strong><p>Case-continuity history, compact prior-run digests, contract clause retrieval, deterministic rules, case isolation, CoVe and human decision boundaries.</p></div><div class="truth-row"><strong>Proposed integration</strong><p>Enterprise knowledge publication registry, owner-approved source lifecycle, shared refresh queues and governed context compilation wired into live agent runs.</p></div><div class="truth-row"><strong>Public website today</strong><p>A read-only, synthetic learning space. The interactive compiler here is a browser simulation, not a claim of live memory retrieval, deployment or enterprise approval.</p></div></div>
+        </section>
+
+        <section class="closing" aria-labelledby="closing-title"><div><p class="eyebrow">Explore the wider assurance system</p><h2 id="closing-title">A useful model needs the right context.<br>A trustworthy system needs the right controls.</h2><p>The point is not to automate every judgment. It is to make information, uncertainty, verification and human accountability explicit.</p></div><div class="closing-actions"><a href="/architecture/">Explore the architecture <span aria-hidden="true">↗</span></a><a href="/ai-assurance/">See assurance controls <span aria-hidden="true">↗</span></a><a href="/safety-origin/">Safety engineering origins <span aria-hidden="true">↗</span></a></div></section>
+        <footer class="source-foot"><p><strong>Learning source:</strong> TUM × BCG, <i>AI Value Creation — AI-First Organization</i>, 2 July 2026 (Nina Kataeva and Alan Grimm), slides discussing context engineering, memory, knowledge management and AI-first process design. This page is an independent technical interpretation and does not reproduce or imply endorsement of the original lecture.</p><p><strong>Implementation distinction:</strong> Browser examples are synthetic; protected backend data and GitHub development branches are not connected to this public page.</p><p>Governance as Code · Independent knowledge-sharing from a functional-safety perspective</p></footer>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
