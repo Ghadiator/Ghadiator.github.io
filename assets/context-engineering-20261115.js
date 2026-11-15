@@ -202,22 +202,22 @@
   });
   render();
 
-  const menu=byId("menu-toggle"),side=byId("site-nav");
+  const menu=byId("menu-toggle"),side=byId("site-navigation");
   if(menu && side){
     menu.addEventListener("click",()=>{
-      const open=!side.classList.contains("open");
-      side.classList.toggle("open",open);
+      const open=!side.classList.contains("is-open");
+      side.classList.toggle("is-open",open);
       menu.setAttribute("aria-expanded",String(open));
     });
     side.addEventListener("click",event=>{
       if(event.target instanceof Element && event.target.closest("a[href]")){
-        side.classList.remove("open");
+        side.classList.remove("is-open");
         menu.setAttribute("aria-expanded","false");
       }
     });
     document.addEventListener("keydown",event=>{
-      if(event.key==="Escape" && side.classList.contains("open")){
-        side.classList.remove("open");menu.setAttribute("aria-expanded","false");menu.focus();
+      if(event.key==="Escape" && side.classList.contains("is-open")){
+        side.classList.remove("is-open");menu.setAttribute("aria-expanded","false");menu.focus();
       }
     });
   }
