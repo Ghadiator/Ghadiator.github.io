@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-gac-static-shell="true">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,41 +7,46 @@
   <meta name="description" content="An interactive, safety-inspired guide to context engineering, short-term and long-term agent memory, knowledge governance and human oversight.">
   <title>Context Engineering · Governance as Code</title>
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <!-- Match the published native workbench shell, not a separate white sidebar. -->
+  <link rel="stylesheet" href="/_next/static/css/6cfd3d61adeec9f6.css">
+  <link rel="stylesheet" href="/_next/static/css/0cd0e3fdebdcc732.css">
+  <link rel="stylesheet" href="/assets/navigation-consolidation-20261106.css">
   <link rel="stylesheet" href="/assets/context-engineering-20261115.css">
+  <script src="/assets/navigation-consolidation-20261106.js" defer></script>
   <script src="/assets/context-engineering-20261115.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#main-content">Skip to content</a>
-  <header class="mobile-head">
-    <a class="brand-mobile" href="/">Governance <strong>as Code</strong></a>
-    <button type="button" id="menu-toggle" aria-controls="site-nav" aria-expanded="false">☰ <span>Explore</span></button>
-  </header>
-  <div class="page-shell">
-    <aside class="side" id="site-nav" aria-label="Website navigation">
-      <a class="side-brand" href="/">Governance <strong>AS CODE</strong></a>
-      <p class="side-tagline">From safety engineering<br>to accountable AI systems.</p>
-      <nav aria-label="Main navigation">
-        <p class="nav-group">START</p>
-        <a href="/">Overview</a>
-        <a href="/business-impact/">Business value &amp; KPIs</a>
-        <a href="/architecture/">Architecture</a>
-        <p class="nav-group">GOVERNANCE &amp; DEFENCES</p>
-        <a class="current" aria-current="page" href="/context-engineering/">Context engineering</a>
-        <a href="/ai-roles/">Personas</a>
-        <a href="/governance/">Framework explorer</a>
-        <a href="/ai-assurance/">Assurance</a>
-        <a href="/red-team/">Failure lab</a>
-        <a href="/governance-code/">Governance code</a>
-        <p class="nav-group">RECORDS &amp; ANALYTICS</p>
-        <a href="/cases/">Cases</a>
-        <a href="/audit/">Process audit</a>
-        <a href="/token-economics/">Token economics</a>
-        <p class="nav-group">ORIGINS</p>
-        <a href="/safety-origin/">Safety origins</a>
-      </nav>
-      <p class="side-note">Public read-only reference.<br>No connection to private case data.</p>
+  <div class="public-shell">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="mobile-topbar">
+      <a class="font-semibold" href="/">Governance <span class="text-accent-700">as Code</span></a>
+      <button class="menu-toggle" type="button" id="menu-toggle" aria-controls="site-navigation" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 5h16M4 12h16M4 19h16"></path>
+        </svg>
+        Explore
+      </button>
+    </header>
+    <aside class="public-sidebar" id="site-navigation" aria-label="Site navigation">
+      <a class="public-brand" href="/">Governance<span>AS CODE</span></a>
+      <p class="sidebar-purpose">From safety engineering<br>to accountable AI systems.</p>
+      <label class="nav-search">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m21 21-4.34-4.34"></path>
+          <circle cx="11" cy="11" r="8"></circle>
+        </svg>
+        <input aria-label="Find a section" placeholder="Find a section…" autocomplete="off">
+      </label>
+      <nav aria-label="Main navigation" class="public-nav"></nav>
+      <div class="sidebar-foot">A working study in governance.<br><span>Supplier-invoice examples.</span></div>
     </aside>
-    <main id="main-content" tabindex="-1">
+    <div class="public-body">
+      <header class="public-topbar">
+        <nav aria-label="Breadcrumb"><a href="/">Governance as Code</a><span aria-hidden="true">/</span><strong>Context Engineering</strong></nav>
+        <a class="reference-pill" href="/integration/"><span></span>Recorded examples</a>
+      </header>
+      <div class="context-public-banner">Public read-only reference · Synthetic knowledge records · No live AI, API, approval or persistence on GitHub Pages</div>
+    <main id="main-content" tabindex="-1" class="public-main">
       <div class="page-content">
         <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Overview</a><span aria-hidden="true">/</span><span>Context engineering</span></nav>
         <section class="hero" aria-labelledby="page-title">
@@ -142,6 +147,8 @@
         <footer class="source-foot"><p><strong>Learning source:</strong> TUM × BCG, <i>AI Value Creation — AI-First Organization</i>, 2 July 2026 (Nina Kataeva and Alan Grimm), slides discussing context engineering, memory, knowledge management and AI-first process design. This page is an independent technical interpretation and does not reproduce or imply endorsement of the original lecture.</p><p><strong>Implementation distinction:</strong> Browser examples are synthetic; protected backend data and GitHub development branches are not connected to this public page.</p><p>Governance as Code · Independent knowledge-sharing from a functional-safety perspective</p></footer>
       </div>
     </main>
+      <footer class="public-footer"><span>Functional safety × AI governance · Knowledge sharing</span><span>Synthetic reference evidence · Human decision authority</span></footer>
+    </div>
   </div>
 </body>
 </html>

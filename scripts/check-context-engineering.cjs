@@ -13,6 +13,24 @@ const page=read("context-engineering/index.html");
 const css=read("assets/context-engineering-20261115.css");
 const script=read("assets/context-engineering-20261115.js");
 const nav=read("assets/navigation-consolidation-20261106.js");
+const intro=read("introduction/index.html");
+const navCss=read("assets/navigation-consolidation-20261106.css");
+assert(page.includes('class="public-shell"'),"Use the original workbench shell");
+assert(page.includes('class="public-sidebar"'),"Native dark sidebar missing");
+assert(page.includes('class="public-topbar"'),"Native topbar missing");
+assert(page.includes('class="public-nav"'),"Shared navigation mount missing");
+assert(!page.includes('class="side"'),"Standalone white navigation returned");
+assert(!page.includes('class="page-shell"'),"Legacy white shell returned");
+assert(page.includes('data-gac-static-shell="true"'),"Static shell mode missing");
+assert(page.includes('/_next/static/css/0cd0e3fdebdcc732.css'),"Native sidebar styles not included");
+assert(page.includes('/assets/navigation-consolidation-20261106.js'),"Shared sidebar script missing");
+assert(page.includes('/assets/navigation-consolidation-20261106.css'),"Shared sidebar CSS missing");
+assert(intro.includes('/assets/navigation-consolidation-20261106.js'),"Introduction missing nav script");
+assert(intro.includes('/assets/navigation-consolidation-20261106.css'),"Introduction missing nav styles");
+assert(navCss.includes("gac-legacy-nav-fallback"),"Legacy sidebar flash prevention missing");
+assert(nav.includes('gacStaticShell==="true"'),"Shared script must initialize static sidebar");
+assert(nav.includes('ensureStaticIcons(root)'),"Canonical icon fallback missing");
+
 
 const requiredIds=[
  "main-content","page-title","memory-title","lab","lab-task","lab-case",
