@@ -8,7 +8,7 @@
 "use strict";
 const grouped=[
  {heading:"START",items:[["/","Overview"],["/business-impact/","Business value & KPIs"],["/architecture/","Architecture"]]},
- {heading:"GOVERNANCE & DEFENCES",items:[["/ai-roles/","Personas"],["/ai-assurance/","Assurance"],["/red-team/","Failure Lab"]]},
+ {heading:"GOVERNANCE & DEFENCES",items:[["/ai-roles/","Personas"],["/context-engineering/","Context Engineering"],["/ai-assurance/","Assurance"],["/red-team/","Failure Lab"]]},
  {heading:"VALIDATION & INSIGHTS",items:[["/cases/","Validation workspace"],["/dashboard/","Analytics"],["/token-economics/","Token Economics"]]},
  {heading:"ORIGINS",items:[["/safety-origin/","Safety Origins"],["/governance/","Framework Explorer"],["/governance-code/","Governance Code"]]}
 ];
@@ -68,6 +68,19 @@ function ensureGovernanceCodeIcon(root){
  }
  if(existing)existing.replaceWith(svg);else link.prepend(svg);
 }
+function ensureContextIcon(root){
+ const link=[...root.querySelectorAll("a[href]")].find(a=>normalized(new URL(a.href).pathname)==="/context-engineering/");
+ if(!link || link.querySelector("svg"))return;
+ const ns="http://www.w3.org/2000/svg";
+ const svg=document.createElementNS(ns,"svg");
+ for(const [key,value] of Object.entries({width:"17",height:"17",viewBox:"0 0 24 24",fill:"none",stroke:"currentColor","stroke-width":"2","stroke-linecap":"round","stroke-linejoin":"round","aria-hidden":"true"}))svg.setAttribute(key,value);
+ svg.dataset.gacContextIcon="true";
+ svg.classList.add("lucide","lucide-book-open-check");
+ for(const d of ["M12 7v14","M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v8","m16 19 2 2 4-4"]){
+  const p=document.createElementNS(ns,"path");p.setAttribute("d",d);svg.appendChild(p);
+ }
+ link.prepend(svg);
+}
 function patch(){
  const nav=document.querySelector("nav.public-nav");
  if(!nav)return;
@@ -102,6 +115,7 @@ function patch(){
  old.forEach(section=>{if(!section.hasAttribute("data-gac-old-nav"))section.setAttribute("data-gac-old-nav","true");});
  document.documentElement.dataset.gacNavEnabled="true";
  ensureGovernanceCodeIcon(root);
+ ensureContextIcon(root);
  updateActive(root);
  searchNav(root);
 }

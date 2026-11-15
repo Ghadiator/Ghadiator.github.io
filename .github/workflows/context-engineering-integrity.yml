@@ -1,0 +1,54 @@
+name: Context engineering public reference integrity
+
+on:
+  pull_request:
+    paths:
+      - 'context-engineering/**'
+      - 'assets/context-engineering-20261115.*'
+      - 'assets/navigation-consolidation-20261106.js'
+      - 'scripts/check-native-browser.cjs'
+      - 'scripts/check-context-engineering.cjs'
+      - '.github/workflows/context-engineering-integrity.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'context-engineering/**'
+      - 'assets/context-engineering-20261115.*'
+      - 'assets/navigation-consolidation-20261106.js'
+      - 'scripts/check-native-browser.cjs'
+      - 'scripts/check-context-engineering.cjs'
+      - '.github/workflows/context-engineering-integrity.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate syntax, evidence boundary and context lab interactions
+        run: |
+          node --check assets/context-engineering-20261115.js
+          node --check assets/navigation-consolidation-20261106.js
+          node --check scripts/check-context-engineering.cjs
+          node scripts/check-context-engineering.cjs
+      - name: Confirm published boundary remains read-only
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          o=json.loads(Path('.site-release.json').read_text())
+          assert o['mode']=='public-static-read-only'
+          assert o['backend_available'] is False
+          assert o['live_ai_available'] is False
+          assert o['live_approvals_available'] is False
+          html=Path('context-engineering/index.html').read_text()
+          assert '<form' not in html.lower()
+          assert 'No connection to private case data' in html
+          print('Public boundary preserved')
+          PY
