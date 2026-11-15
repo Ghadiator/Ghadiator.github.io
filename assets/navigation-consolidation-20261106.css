@@ -19,3 +19,16 @@ nav.public-nav [data-gac-consolidated-nav] a[hidden]{display:none!important;}
 /* Keep legacy sections hidden even when Next.js remounts the nav between SPA transitions. */
 html[data-gac-nav-enabled="true"] nav.public-nav > section{display:none!important;}
 html[data-gac-nav-enabled="true"] nav.public-nav > [data-gac-consolidated-nav]{display:block!important;}
+
+/* Avoid showing the old multi-group menu during React hydration. When the
+   canonical nav is ready, it replaces the old menu. If JavaScript is broken,
+   the original navigation returns after a short fallback delay. */
+@keyframes gac-legacy-nav-fallback {
+  to {visibility:visible;opacity:1;pointer-events:auto}
+}
+html:not([data-gac-static-shell="true"]) nav.public-nav:not(:has([data-gac-consolidated-nav])) > section {
+  visibility:hidden;
+  opacity:0;
+  pointer-events:none;
+  animation:gac-legacy-nav-fallback 0s 4s forwards;
+}
