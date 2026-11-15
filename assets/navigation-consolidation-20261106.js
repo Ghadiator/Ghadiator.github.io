@@ -24,7 +24,8 @@ function updateActive(root){
  const path=currentPath();
  root.querySelectorAll("a[href]").forEach(link=>{
   const href=normalized(new URL(link.href).pathname);
-  const active=href==="/cases/"?tabs.some(([p])=>p===path):href===path;
+  const active=href==="/cases/"?tabs.some(([p])=>p===path):
+   (href==="/"&&path==="/introduction/")||href===path;
   if(active)link.setAttribute("aria-current","page");
   else link.removeAttribute("aria-current");
  });
