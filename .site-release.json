@@ -107,5 +107,28 @@
       "static_release_baseline_preserved": true,
       "no_backend_change": true
     }
+  },
+  "public_static_compatibility_2026_11_18": {
+    "release_type": "read-only static HTML/CSS/JS adaptation of updated source, not a new Next.js export",
+    "source_repo": "Ghadiator/generic-agentic-validation",
+    "source_pr": "https://github.com/Ghadiator/generic-agentic-validation/pull/82",
+    "source_feature_commit": "1643afe42f4056ca9b1cd4f07624fffc9847367f",
+    "routes": [
+      "/",
+      "/introduction/",
+      "/context-engineering/",
+      "/use-case-assessment/"
+    ],
+    "content": [
+      "six-step supplier-invoice business use-case visual",
+      "invoice context provenance and required-source lab",
+      "12 answered RMF Map-Measure-Manage questions",
+      "13 answered oversight/accountability policies"
+    ],
+    "evidence": "entirely synthetic educational examples",
+    "privacy_and_security": "no backend, model inference, user submission, authentication bypass or approvals",
+    "native_build_released": false,
+    "baseline_compiled_version": "7.5.19",
+    "no_existing_pages_removed": true
   }
 }
