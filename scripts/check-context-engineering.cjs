@@ -22,9 +22,11 @@ assert((assessment.match(/class="gac-assess-card"/g)||[]).length===25,
 assert(assessment.includes("No live AI, API, approval or persistence"),
   "Assessment public-only boundary missing");
 const overview=read("index.html");
-assert(overview.includes("/assets/overview-invoice-public-20261118.js"),"Overview business journey script missing");
+assert(overview.includes('/assets/overview-invoice-public-20261118.css'),
+  "Overview stylesheet missing");
 const introAlias=read("introduction/index.html");
-assert(introAlias.includes("/assets/overview-invoice-public-20261118.js"),"Introduction alias journey missing");
+assert(introAlias.includes('/assets/overview-invoice-public-20261118.css'),
+  "Introduction alias stylesheet missing");
 const overviewStyles=read("assets/overview-invoice-public-20261118.css");
 const overviewSvg=read("assets/overview-invoice-journey-20261118.svg");
 const overviewMobileSvg=read("assets/overview-invoice-journey-mobile-20261118.svg");
