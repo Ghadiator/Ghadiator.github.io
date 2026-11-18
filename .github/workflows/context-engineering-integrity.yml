@@ -51,7 +51,7 @@ jobs:
           assert o['live_approvals_available'] is False
           html=Path('context-engineering/index.html').read_text()
           assert '<form' not in html.lower()
-          assert 'class="public-sidebar"' in html
-          assert 'No live AI, API, approval or persistence' in html
+          assert 'class="public-sidebar' in html
+          assert 'No live AI, API, approval, upload or persistence on GitHub Pages' in html
           print('Public boundary preserved')
           PY
