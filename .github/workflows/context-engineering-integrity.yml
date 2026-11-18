@@ -52,6 +52,7 @@ jobs:
           html=Path('context-engineering/index.html').read_text()
           assert '<form' not in html.lower()
           assert 'class="public-sidebar' in html
-          assert 'No live AI, API, approval, upload or persistence on GitHub Pages' in html
+          # The 7.6.x banner, or (from ADR-192) the shell link to /scope-and-limits.
+          assert 'No live AI, API, approval, upload or persistence on GitHub Pages' in html or 'href="/scope-and-limits"' in html
           print('Public boundary preserved')
           PY

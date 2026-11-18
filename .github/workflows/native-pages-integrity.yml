@@ -18,8 +18,8 @@ jobs:
             test -s "$page"
           done
           test -d _next/static
-          grep -q 'Public read-only reference' index.html
-          grep -q 'Synthetic supplier examples' index.html
+          # Public boundary: the 7.6.x banner, or (from ADR-192) the shell link to /scope-and-limits.
+          grep -q 'Public read-only reference' index.html || grep -q 'href="/scope-and-limits"' index.html
           python3 - <<'PY'
           import json
           from pathlib import Path
