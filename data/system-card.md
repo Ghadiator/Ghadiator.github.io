@@ -6,19 +6,19 @@ This card is **auto-derived** from the runtime topology (`validation_workflow.to
 
 ### 1(a) — Intended purpose
 
-Validate insurance Validation Collection (VC) submissions received from Network Insurers (NIs) against contract baselines (CRM + Pricing) and known anomaly patterns. Produce an *advisory* verdict for an underwriting (reviewer) analyst to act on. The system is **advisory only** — under §11.2.1 of `process_semantics.md`, the machine never sets `VALIDATION_approved` / `VALIDATION_rejected` directly; only a human reviewer analyst, via `node_final_decision`, has that authority.
+Validate supplier Validation Collection (VC) submissions received from suppliers (NIs) against contract baselines (CRM + Pricing) and known anomaly patterns. Produce an *advisory* verdict for a reviewer analyst to act on. The system is **advisory only** — under §11.2.1 of `process_semantics.md`, the machine never sets `VALIDATION_approved` / `VALIDATION_rejected` directly; only a human reviewer analyst, via `node_final_decision`, has that authority.
 
 ### 1(b) — Out-of-scope uses
 
 - Approving or rejecting a VC autonomously — the system is advisory.
 - Replacing the reviewer's domain judgement; the LLM committee is one input.
 - Pricing decisions, broker negotiation, or contract drafting — those are upstream of the system.
-- Use on AI-system categories outside the trained domain (mock-data corpus is Medical + Protection lines of business only).
+- Use on AI-system categories outside the trained domain (mock-data corpus is Usage + Capacity lines of business only).
 - Use without a Title-III-compliant deployer organisation behind the reviewer — the system needs a human in the loop *with the authority + training* to act on its advisory output.
 
 ### 1(c) — Intended deployer
 
-the underwriting team (insurance contract validation)
+the supplier accounting team (supplier contract validation)
 
 ### 2 — Validation cascade (system architecture)
 
@@ -218,7 +218,13 @@ Ruleset version ID at card-build time: `(none)`. The policy snapshot binds the t
 - ADR-186 — A reviewer catalog authorises the signature; Access authorises the person
 - ADR-187 — Four eyes are two NAMES when there is no login
 - ADR-188 — The downloadable example is a published claim, so its breadth is asserted
+- ADR-189 — The AI roles page states its authority rule once and draws one plain figure
+- ADR-190 — Overview and Business Value: source decides the order, each fact appears once
+- ADR-191 — The sidebar groups by purpose, and every canvas block names its real contract
+- ADR-192 — The site has one short disclaimer page
+- ADR-193 — The engine's input models take the generalised names
+- ADR-194 — One domain vocabulary, with no legacy read path
 
 ---
 
-_Build metadata (excluded from drift fingerprint):_ `built_at=2026-11-16T11:50:10.117275+00:00`
+_Build metadata (excluded from drift fingerprint):_ `built_at=2026-11-18T23:16:51.056375+00:00`

@@ -18,8 +18,9 @@ jobs:
             test -s "$page"
           done
           test -d _next/static
-          grep -q 'Public read-only reference' index.html
-          grep -q 'Synthetic supplier examples' index.html
+          # ADR-192: every page carries one link to the site's limits page.
+          grep -q 'href="/scope-and-limits"' index.html
+          test -s scope-and-limits/index.html
           python3 - <<'PY'
           import json
           from pathlib import Path
