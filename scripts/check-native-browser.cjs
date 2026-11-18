@@ -6,8 +6,8 @@
  * asserted at build time (review_frontend/scripts/check-public-static.mjs and
  * check-target-release.mjs). This suite checks what only a browser can see on
  * the published output: every route renders, no page errors, no /api calls,
- * no horizontal overflow, and the three evidence overlays that are still
- * served from assets/ (not yet ported to source) actually render.
+ * no horizontal overflow, and the three recorded-evidence panels (rendered
+ * from source since 7.6.6) actually render.
  */
 "use strict";
 const assert = require("node:assert/strict");
@@ -26,10 +26,6 @@ const widths = [
   { width: 1440, height: 900, label: "desktop" }
 ];
 const settle = page => page.waitForTimeout(1500);
-// Known defect, present on the hand-patched 7.5.19 site too: an evidence table
-// on /ai-assurance is 25px wider than a 390px phone. Fix it in source, then
-// delete this entry. Any NEW overflow still fails.
-const KNOWN_OVERFLOW = new Set(["mobile /ai-assurance/"]);
 
 (async () => {
   const chrome = process.env.CHROME_PATH || ["/usr/bin/google-chrome", "/usr/bin/chromium"].find(fs.existsSync);
@@ -54,12 +50,11 @@ const KNOWN_OVERFLOW = new Set(["mobile /ai-assurance/"]);
         assert.ok(heading?.trim(), `${viewport.label} ${route}: missing h1`);
         await settle(page);
         const size = await page.evaluate(() => ({ body: document.body.scrollWidth, width: innerWidth }));
-        if (!KNOWN_OVERFLOW.has(`${viewport.label} ${route}`))
-          assert.ok(size.body <= size.width + 1, `${viewport.label} ${route}: horizontal overflow ${size.body}>${size.width}`);
+        assert.ok(size.body <= size.width + 1, `${viewport.label} ${route}: horizontal overflow ${size.body}>${size.width}`);
         checks++;
       }
 
-      // ── Overlays still served from assets/ must render ──
+      // ── Recorded-evidence panels must render ──
       await page.goto(base + "/architecture/", { waitUntil: "load" });
       await page.locator("[data-gac-committee-audit]").waitFor({ state: "attached", timeout: 15000 });
       assert.match(await page.locator("[data-gac-committee-audit]").innerText(), /4\/15 cases record both arguments/,
