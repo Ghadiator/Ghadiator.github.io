@@ -31,7 +31,7 @@ const widths = [
    const context=await browser.newContext({viewport:{width:viewport.width,height:viewport.height}});
    const page=await context.newPage();
    const errors=[],api=[];
-   page.on("pageerror",e=>errors.push(e.message));
+   page.on("pageerror",e=>errors.push(page.url()+" :: "+e.message));
    page.on("request",r=>{if(new URL(r.url()).pathname.startsWith("/api/"))api.push(r.url())});
    for(const route of routes){
     const response=await page.goto(base+route,{waitUntil:"domcontentloaded",timeout:45000});
