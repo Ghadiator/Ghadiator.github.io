@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="Barlow, Segoe UI, Arial, sans-serif" width="2048" height="615" viewBox="0 0 2048 615" role="img" aria-labelledby="title desc"><title id="title">Manual supplier invoice validation today</title><desc id="desc">Seven-step manual supplier review before AI-assisted validation, with each human activity, pain point and accountable role shown.</desc>
+<defs><linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b2639"/><stop offset="1" stop-color="#16495c"/></linearGradient><linearGradient id="teal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#068d85"/><stop offset="1" stop-color="#00a49a"/></linearGradient><linearGradient id="header" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#f1f9f9"/></linearGradient><filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="6" flood-color="#174e5c" flood-opacity=".08"/></filter></defs>
+<rect x="2" y="2" width="2044" height="610" rx="24" fill="#fff" stroke="#cbdedc" stroke-width="2"/>
+<rect x="27" y="24" width="6" height="92" rx="3" fill="#009a90" stroke="#009a90" stroke-width="1.5"/>
+<text x="56" y="47" text-anchor="start" font-size="18" font-weight="800" letter-spacing="1.5" fill="#17877d">BEFORE AUTOMATION  /  HUMAN-LED PROCESS</text>
+<text x="56" y="95" text-anchor="start" font-size="44" font-weight="800" letter-spacing="0" fill="#173647">Supplier invoice validation today</text>
+<text x="56" y="127" text-anchor="start" font-size="22" font-weight="500" letter-spacing="0" fill="#67818d">Seven manual checks, repeated hand-offs and a named human decision owner</text>
+<rect x="1692" y="36" width="324" height="48" rx="24" fill="#e9f7f4" stroke="#c4e5dc" stroke-width="1.5"/>
+<circle cx="1724" cy="60" r="11" fill="#008b82" stroke="none" stroke-width="1.7"/>
+<path d="M1719 60l4 4 6 -8" fill="none" stroke="#fff" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1750" y="67" text-anchor="start" font-size="19" font-weight="750" letter-spacing="0" fill="#157166">No autonomous approval</text>
+<path d="M39 145H2008" stroke="#d9e8e8" stroke-width="2"/>
+<g filter="url(#shadow)"><rect x="31" y="163" width="267" height="394" rx="15" fill="#ffffff" stroke="#d5e3e7" stroke-width="1.6"/></g>
+<rect x="32" y="164" width="265" height="60" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="32" y="205" width="265" height="20" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="58" cy="194" r="18" fill="#d4f5ec" stroke="none" stroke-width="1.7"/>
+<text x="58" y="200" text-anchor="middle" font-size="19" font-weight="850" letter-spacing="0" fill="#006e71">1</text>
+<text x="86" y="200" text-anchor="start" font-size="20" font-weight="760" letter-spacing="0" fill="#fff">Receive &amp; triage</text>
+<circle cx="164.5" cy="310" r="63" fill="#e9f7f9" stroke="#cde7e8" stroke-width="4"/>
+<circle cx="164.5" cy="310" r="54" fill="#f9fcfc" stroke="#f9fcfc" stroke-width="1"/>
+<g transform="translate(164.5 310) scale(1.1)"><rect x="-23" y="-16" width="46" height="34" rx="5" fill="none" stroke="#0e5066" stroke-width="3"/><path d="M-23 -14 L0 3 23 -14" fill="none" stroke="#0e5066" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><rect x="7" y="-30" width="22" height="21" rx="4" fill="#fff" stroke="#0e5066" stroke-width="2.5"/><path d="M12 -19 l6 6 8 -11" fill="none" stroke="#eb815a" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="164.5" y="410" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">Open incoming emails</text><text x="164.5" y="436" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">and register requests</text>
+<rect x="45" y="460" width="239" height="35" rx="17" fill="#fff1e9" stroke="#fff1e9" stroke-width="0"/>
+<path d="M60 468l8 15h-16z" fill="none" stroke="#db7047" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="171.5" y="483" text-anchor="middle" font-size="17" font-weight="750" letter-spacing="0" fill="#c45c32">Email overload</text>
+<path d="M48 513H281" stroke="#e6eeee" stroke-width="1.6"/>
+<circle cx="60" cy="535" r="7" fill="none" stroke="#40647a" stroke-width="2.5"/><path d="M50 548q0 -10 10 -10t10 10" fill="none" stroke="#40647a" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="79" y="543" text-anchor="start" font-size="16" font-weight="730" letter-spacing="0" fill="#294f63">Intake coordinator</text>
+<circle cx="308.5" cy="338" r="15" fill="url(#teal)" stroke="#fff" stroke-width="2"/>
+<path d="M302.5 338h11 m-5 -5l5 5 -5 5" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<g filter="url(#shadow)"><rect x="319" y="163" width="267" height="394" rx="15" fill="#ffffff" stroke="#d5e3e7" stroke-width="1.6"/></g>
+<rect x="320" y="164" width="265" height="60" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="320" y="205" width="265" height="20" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="346" cy="194" r="18" fill="#d4f5ec" stroke="none" stroke-width="1.7"/>
+<text x="346" y="200" text-anchor="middle" font-size="19" font-weight="850" letter-spacing="0" fill="#006e71">2</text>
+<text x="374" y="200" text-anchor="start" font-size="20" font-weight="760" letter-spacing="0" fill="#fff">Read &amp; enter data</text>
+<circle cx="452.5" cy="310" r="63" fill="#e9f7f9" stroke="#cde7e8" stroke-width="4"/>
+<circle cx="452.5" cy="310" r="54" fill="#f9fcfc" stroke="#f9fcfc" stroke-width="1"/>
+<g transform="translate(452.5 310) scale(1.1)"><rect x="-20" y="-29" width="40" height="59" rx="4" fill="#fff" stroke="#0e5066" stroke-width="3.5"/><path d="M-10 -15h20m-20 10h20m-20 11h17" fill="none" stroke="#0e5066" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/><path d="M-10 20l10 -9 10 9" fill="none" stroke="#ed8659" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="452.5" y="410" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">Copy invoice details</text><text x="452.5" y="436" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">into spreadsheets</text>
+<rect x="333" y="460" width="239" height="35" rx="17" fill="#fff1e9" stroke="#fff1e9" stroke-width="0"/>
+<path d="M348 468l8 15h-16z" fill="none" stroke="#db7047" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="459.5" y="483" text-anchor="middle" font-size="17" font-weight="750" letter-spacing="0" fill="#c45c32">Manual re-entry</text>
+<path d="M336 513H569" stroke="#e6eeee" stroke-width="1.6"/>
+<circle cx="348" cy="535" r="7" fill="none" stroke="#40647a" stroke-width="2.5"/><path d="M338 548q0 -10 10 -10t10 10" fill="none" stroke="#40647a" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="367" y="543" text-anchor="start" font-size="16" font-weight="730" letter-spacing="0" fill="#294f63">AP administrator</text>
+<circle cx="596.5" cy="338" r="15" fill="url(#teal)" stroke="#fff" stroke-width="2"/>
+<path d="M590.5 338h11 m-5 -5l5 5 -5 5" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<g filter="url(#shadow)"><rect x="607" y="163" width="267" height="394" rx="15" fill="#ffffff" stroke="#d5e3e7" stroke-width="1.6"/></g>
+<rect x="608" y="164" width="265" height="60" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="608" y="205" width="265" height="20" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="634" cy="194" r="18" fill="#d4f5ec" stroke="none" stroke-width="1.7"/>
+<text x="634" y="200" text-anchor="middle" font-size="19" font-weight="850" letter-spacing="0" fill="#006e71">3</text>
+<text x="662" y="200" text-anchor="start" font-size="20" font-weight="760" letter-spacing="0" fill="#fff">Match documents</text>
+<circle cx="740.5" cy="310" r="63" fill="#e9f7f9" stroke="#cde7e8" stroke-width="4"/>
+<circle cx="740.5" cy="310" r="54" fill="#f9fcfc" stroke="#f9fcfc" stroke-width="1"/>
+<g transform="translate(740.5 310) scale(1.1)"><rect x="-28" y="-21" width="34" height="49" rx="4" fill="#f9ffff" stroke="#0e5066" stroke-width="3"/><rect x="-9" y="-29" width="37" height="51" rx="4" fill="#fff" stroke="#0e5066" stroke-width="3"/><path d="M-1 0 l8 8 13 -16" fill="none" stroke="#eb8357" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="740.5" y="410" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">Compare invoice, PO,</text><text x="740.5" y="436" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">contract and terms</text>
+<rect x="621" y="460" width="239" height="35" rx="17" fill="#fff1e9" stroke="#fff1e9" stroke-width="0"/>
+<path d="M636 468l8 15h-16z" fill="none" stroke="#db7047" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="747.5" y="483" text-anchor="middle" font-size="17" font-weight="750" letter-spacing="0" fill="#c45c32">Scattered sources</text>
+<path d="M624 513H857" stroke="#e6eeee" stroke-width="1.6"/>
+<circle cx="636" cy="535" r="7" fill="none" stroke="#40647a" stroke-width="2.5"/><path d="M626 548q0 -10 10 -10t10 10" fill="none" stroke="#40647a" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="655" y="543" text-anchor="start" font-size="16" font-weight="730" letter-spacing="0" fill="#294f63">Contract analyst</text>
+<circle cx="884.5" cy="338" r="15" fill="url(#teal)" stroke="#fff" stroke-width="2"/>
+<path d="M878.5 338h11 m-5 -5l5 5 -5 5" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<g filter="url(#shadow)"><rect x="895" y="163" width="267" height="394" rx="15" fill="#ffffff" stroke="#d5e3e7" stroke-width="1.6"/></g>
+<rect x="896" y="164" width="265" height="60" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="896" y="205" width="265" height="20" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="922" cy="194" r="18" fill="#d4f5ec" stroke="none" stroke-width="1.7"/>
+<text x="922" y="200" text-anchor="middle" font-size="19" font-weight="850" letter-spacing="0" fill="#006e71">4</text>
+<text x="950" y="200" text-anchor="start" font-size="20" font-weight="760" letter-spacing="0" fill="#fff">Question exceptions</text>
+<circle cx="1028.5" cy="310" r="63" fill="#e9f7f9" stroke="#cde7e8" stroke-width="4"/>
+<circle cx="1028.5" cy="310" r="54" fill="#f9fcfc" stroke="#f9fcfc" stroke-width="1"/>
+<g transform="translate(1028.5 310) scale(1.1)"><circle cx="-5" cy="-7" r="21" fill="none" stroke="#0e5066" stroke-width="3.2"/><path d="M11 10l20 19" fill="none" stroke="#0e5066" stroke-width="4.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M-5 -18v14" fill="none" stroke="#ec8154" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="-5" cy="3" r="2" fill="#ec8154" stroke="none" stroke-width="1.7"/></g>
+<text x="1028.5" y="410" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">Inspect discrepancies</text><text x="1028.5" y="436" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">and chase clarifications</text>
+<rect x="909" y="460" width="239" height="35" rx="17" fill="#fff1e9" stroke="#fff1e9" stroke-width="0"/>
+<path d="M924 468l8 15h-16z" fill="none" stroke="#db7047" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1035.5" y="483" text-anchor="middle" font-size="17" font-weight="750" letter-spacing="0" fill="#c45c32">Slow follow-ups</text>
+<path d="M912 513H1145" stroke="#e6eeee" stroke-width="1.6"/>
+<circle cx="924" cy="535" r="7" fill="none" stroke="#40647a" stroke-width="2.5"/><path d="M914 548q0 -10 10 -10t10 10" fill="none" stroke="#40647a" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="943" y="543" text-anchor="start" font-size="16" font-weight="730" letter-spacing="0" fill="#294f63">Quality checker</text>
+<circle cx="1172.5" cy="338" r="15" fill="url(#teal)" stroke="#fff" stroke-width="2"/>
+<path d="M1166.5 338h11 m-5 -5l5 5 -5 5" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<g filter="url(#shadow)"><rect x="1183" y="163" width="267" height="394" rx="15" fill="#ffffff" stroke="#d5e3e7" stroke-width="1.6"/></g>
+<rect x="1184" y="164" width="265" height="60" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="1184" y="205" width="265" height="20" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="1210" cy="194" r="18" fill="#d4f5ec" stroke="none" stroke-width="1.7"/>
+<text x="1210" y="200" text-anchor="middle" font-size="19" font-weight="850" letter-spacing="0" fill="#006e71">5</text>
+<text x="1238" y="200" text-anchor="start" font-size="20" font-weight="760" letter-spacing="0" fill="#fff">Prepare findings</text>
+<circle cx="1316.5" cy="310" r="63" fill="#e9f7f9" stroke="#cde7e8" stroke-width="4"/>
+<circle cx="1316.5" cy="310" r="54" fill="#f9fcfc" stroke="#f9fcfc" stroke-width="1"/>
+<g transform="translate(1316.5 310) scale(1.1)"><rect x="-23" y="-27" width="47" height="58" rx="5" fill="#fff" stroke="#0e5066" stroke-width="3.3"/><path d="M-12 -14h23m-23 11h23m-23 10h15" fill="none" stroke="#0e5066" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/><circle cx="19" cy="21" r="12" fill="#fff" stroke="#ed8659" stroke-width="2.8"/><path d="M13 21l4 4 7 -9" fill="none" stroke="#ed8659" stroke-width="2.9" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="1316.5" y="410" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">Write a case summary</text><text x="1316.5" y="436" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">with supporting files</text>
+<rect x="1197" y="460" width="239" height="35" rx="17" fill="#fff1e9" stroke="#fff1e9" stroke-width="0"/>
+<path d="M1212 468l8 15h-16z" fill="none" stroke="#db7047" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1323.5" y="483" text-anchor="middle" font-size="17" font-weight="750" letter-spacing="0" fill="#c45c32">Repetitive reporting</text>
+<path d="M1200 513H1433" stroke="#e6eeee" stroke-width="1.6"/>
+<circle cx="1212" cy="535" r="7" fill="none" stroke="#40647a" stroke-width="2.5"/><path d="M1202 548q0 -10 10 -10t10 10" fill="none" stroke="#40647a" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1231" y="543" text-anchor="start" font-size="16" font-weight="730" letter-spacing="0" fill="#294f63">Case preparer</text>
+<circle cx="1460.5" cy="338" r="15" fill="url(#teal)" stroke="#fff" stroke-width="2"/>
+<path d="M1454.5 338h11 m-5 -5l5 5 -5 5" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<g filter="url(#shadow)"><rect x="1471" y="163" width="267" height="394" rx="15" fill="#ffffff" stroke="#d5e3e7" stroke-width="1.6"/></g>
+<rect x="1472" y="164" width="265" height="60" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="1472" y="205" width="265" height="20" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="1498" cy="194" r="18" fill="#d4f5ec" stroke="none" stroke-width="1.7"/>
+<text x="1498" y="200" text-anchor="middle" font-size="19" font-weight="850" letter-spacing="0" fill="#006e71">6</text>
+<text x="1526" y="200" text-anchor="start" font-size="20" font-weight="760" letter-spacing="0" fill="#fff">Human decision</text>
+<circle cx="1604.5" cy="310" r="63" fill="#e9f7f9" stroke="#cde7e8" stroke-width="4"/>
+<circle cx="1604.5" cy="310" r="54" fill="#f9fcfc" stroke="#f9fcfc" stroke-width="1"/>
+<g transform="translate(1604.5 310) scale(1.1)"><circle cx="-2" cy="-18" r="12" fill="none" stroke="#0e5066" stroke-width="3"/><path d="M-23 26v-9q0 -20 21 -20t21 20v9" fill="none" stroke="#0e5066" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="22" cy="13" r="14" fill="#fff" stroke="#ec8154" stroke-width="2.8"/><path d="M15 13l5 5 8 -10" fill="none" stroke="#ec8154" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="1604.5" y="410" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">Review, approve,</text><text x="1604.5" y="436" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">reject or request info</text>
+<rect x="1485" y="460" width="239" height="35" rx="17" fill="#fff1e9" stroke="#fff1e9" stroke-width="0"/>
+<path d="M1500 468l8 15h-16z" fill="none" stroke="#db7047" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1611.5" y="483" text-anchor="middle" font-size="17" font-weight="750" letter-spacing="0" fill="#c45c32">Approval bottleneck</text>
+<path d="M1488 513H1721" stroke="#e6eeee" stroke-width="1.6"/>
+<circle cx="1500" cy="535" r="7" fill="none" stroke="#40647a" stroke-width="2.5"/><path d="M1490 548q0 -10 10 -10t10 10" fill="none" stroke="#40647a" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1519" y="543" text-anchor="start" font-size="16" font-weight="730" letter-spacing="0" fill="#294f63">Decision owner</text>
+<circle cx="1748.5" cy="338" r="15" fill="url(#teal)" stroke="#fff" stroke-width="2"/>
+<path d="M1742.5 338h11 m-5 -5l5 5 -5 5" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+<g filter="url(#shadow)"><rect x="1759" y="163" width="267" height="394" rx="15" fill="#ffffff" stroke="#d5e3e7" stroke-width="1.6"/></g>
+<rect x="1760" y="164" width="265" height="60" rx="14" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<rect x="1760" y="205" width="265" height="20" rx="0" fill="url(#navy)" stroke="none" stroke-width="0"/>
+<circle cx="1786" cy="194" r="18" fill="#d4f5ec" stroke="none" stroke-width="1.7"/>
+<text x="1786" y="200" text-anchor="middle" font-size="19" font-weight="850" letter-spacing="0" fill="#006e71">7</text>
+<text x="1814" y="200" text-anchor="start" font-size="20" font-weight="760" letter-spacing="0" fill="#fff">Update &amp; archive</text>
+<circle cx="1892.5" cy="310" r="63" fill="#e9f7f9" stroke="#cde7e8" stroke-width="4"/>
+<circle cx="1892.5" cy="310" r="54" fill="#f9fcfc" stroke="#f9fcfc" stroke-width="1"/>
+<g transform="translate(1892.5 310) scale(1.1)"><rect x="-28" y="-25" width="56" height="41" rx="4" fill="#fff" stroke="#0e5066" stroke-width="3"/><path d="M-16 -13h30M-16 -2h22M-16 9h13 M0 17v10 M-12 27h24" fill="none" stroke="#0e5066" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/><circle cx="24" cy="21" r="12" fill="#fff" stroke="#ec8154" stroke-width="2.8"/><path d="M18 20l4 4 7 -9" fill="none" stroke="#ec8154" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/></g>
+<text x="1892.5" y="410" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">Rekey ERP details</text><text x="1892.5" y="436" text-anchor="middle" font-size="20" font-weight="500" letter-spacing="0" fill="#597582">and save evidence</text>
+<rect x="1773" y="460" width="239" height="35" rx="17" fill="#fff1e9" stroke="#fff1e9" stroke-width="0"/>
+<path d="M1788 468l8 15h-16z" fill="none" stroke="#db7047" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1899.5" y="483" text-anchor="middle" font-size="17" font-weight="750" letter-spacing="0" fill="#c45c32">Weak traceability</text>
+<path d="M1776 513H2009" stroke="#e6eeee" stroke-width="1.6"/>
+<circle cx="1788" cy="535" r="7" fill="none" stroke="#40647a" stroke-width="2.5"/><path d="M1778 548q0 -10 10 -10t10 10" fill="none" stroke="#40647a" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="1807" y="543" text-anchor="start" font-size="16" font-weight="730" letter-spacing="0" fill="#294f63">Records / audit clerk</text>
+<circle cx="50" cy="581" r="13" fill="#e8f7f2" stroke="#addad0" stroke-width="2"/><path d="M44 582l5 5 8 -10" fill="none" stroke="#047b73" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>
+<text x="74" y="588" text-anchor="start" font-size="18" font-weight="600" letter-spacing="0" fill="#597784">Same business controls · Human responsibility retained · No AI involved in the manual baseline</text>
+</svg>
