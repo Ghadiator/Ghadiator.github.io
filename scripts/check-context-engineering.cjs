@@ -25,8 +25,16 @@ const overview=read("index.html");
 assert(overview.includes("/assets/overview-invoice-public-20261118.js"),"Overview business journey script missing");
 const introAlias=read("introduction/index.html");
 assert(introAlias.includes("/assets/overview-invoice-public-20261118.js"),"Introduction alias journey missing");
-const overviewScript=read("assets/overview-invoice-public-20261118.js");
-assert(overviewScript.includes("An invoice arrives"),"Invoice workflow illustration missing");
+const overviewStyles=read("assets/overview-invoice-public-20261118.css");
+const overviewSvg=read("assets/overview-invoice-journey-20261118.svg");
+const overviewMobileSvg=read("assets/overview-invoice-journey-mobile-20261118.svg");
+assert(overviewStyles.includes('#use-case::before'),"Overview must use hydration-safe CSS artwork");
+assert(overviewSvg.includes("From supplier documents to an accountable human decision"),
+  "Desktop invoice-flow visual missing");
+assert(overviewMobileSvg.includes("Six controlled steps. One human decision."),
+  "Mobile invoice-flow visual missing");
+assert(!overview.includes('/assets/overview-invoice-public-20261118.js'),
+  "Do not reintroduce client-side React DOM injection on pinned static Next.js");
 
 const navCss=read("assets/navigation-consolidation-20261106.css");
 assert(page.includes('class="public-shell"'),"Use the original workbench shell");
