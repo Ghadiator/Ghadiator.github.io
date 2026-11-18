@@ -1,7 +1,7 @@
 /* Public static compatibility: SVG illustration only.
    No DOM mutation or React-hydration interference with pinned v7.5.19. */
-main .space-y-12:has(#introduction-title) #use-case{order:1!important}
-main .space-y-12:has(#introduction-title) section:has(#overview-kpis){order:2!important}
+/* Preserve the established hero → KPI → use-case → agent order.
+   The new explanatory visual is inside the use-case block, not a sibling. */
 main .space-y-12:has(#introduction-title) #use-case::before{
   content:"";display:block!important;width:100%;aspect-ratio:1440 / 835;
   border:1px solid #bedbd5;border-radius:22px;
