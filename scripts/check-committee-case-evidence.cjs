@@ -48,11 +48,12 @@ for(const item of matrix.cases){
 }
 assert.deepEqual([counts.both,counts.proponent_only,counts.opponent_only,counts.no_role,counts.verify,counts.fail],[4,2,0,9,4,2]);
 assert.deepEqual([matrix.counts.both,matrix.counts.proponent_only,matrix.counts.opponent_only,matrix.counts.no_role,matrix.counts.verified_case_count,matrix.counts.failed_admission_cases],[4,2,0,9,4,2]);
-const html=fs.readFileSync(path.join(root,"architecture/index.html"),"utf8");
-assert.match(html,/committee-replay-fidelity-20261107\.js/);
-assert.match(html,/committee-replay-fidelity-20261107\.css/);
-const overlay=fs.readFileSync(path.join(root,"assets/committee-replay-fidelity-20261107.js"),"utf8");
-assert.match(overlay,/data-gac-proponent-cove/);
-assert.match(overlay,/proponent→judge/);
-assert.match(overlay,/committee-case-evidence\.json/);
-console.log("PASS: all 15 recorded committee traces match original Proponent/Opponent/CoVe/Judge events; 4 both, 2 Proponent-only, 9 none, 2 proposal failures.");
+// Since 7.6.6 the banner renders from source (CommitteeRouteAudit), not from
+// the committee-replay-fidelity overlay. Its numbers must match this matrix.
+const html=fs.readFileSync(path.join(root,"architecture/index.html"),"utf8").replace(/<!-- -->/g,"");
+const banner=html.match(/data-gac-committee-audit="true">([\s\S]*?)<\/aside>/);
+assert.ok(banner,"Architecture must render the committee route audit banner");
+const {both,proponent_only,no_role}=matrix.counts, n=matrix.cases.length;
+for(const phrase of [`${both}/${n} cases record both arguments`,`${proponent_only}/${n}`,`${no_role}/${n} never entered the`])
+ assert.ok(banner[1].includes(phrase),"Committee banner must state: "+phrase);
+console.log("PASS: all 15 recorded committee traces match original Proponent/Opponent/CoVe/Judge events; 4 both, 2 Proponent-only, 9 none, 2 proposal failures; the Architecture banner states the same split.");
