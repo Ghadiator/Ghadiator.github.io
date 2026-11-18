@@ -22,10 +22,11 @@ for route in ('','use-case-assessment','architecture','cases','case','audit','sa
         target=ROOT/unquote(urlsplit(url).path).lstrip('/')
         assert target.exists() or (target/'index.html').exists(),(route,url)
 code_page=(ROOT/'governance-code'/'index.html').read_text()
-assert code_page.count('class="gc-control"') == 7 and code_page.count('class="gc-control selected"') == 1, "The published source browser must expose eight controls."
+# Native build (source 7.6.5+): one toggle button per mechanism, exactly one pressed.
+assert len(re.findall(r'<button[^>]*aria-pressed="(?:true|false)"', code_page)) == 8 and code_page.count('aria-pressed="true"') == 1, "The published source browser must expose eight controls."
 assert 'def resume(self, decision: Decision):' in code_page, "Human-gate implementation missing."
 assert 'test_gate_prevents_archive_and_unauthorised_decision' in code_page, "Human-gate test missing."
-assert (ROOT/'assets'/'governance-code-nav.js').is_file(), "Public nav link script missing."
+assert 'href="/governance-code"' in (ROOT/'index.html').read_text(), "Governance Code missing from native navigation."
 manifest=json.loads((ROOT/'.site-release.json').read_text())
 assert len(manifest['source_commit'])==40
 assert manifest['backend_available'] is False
