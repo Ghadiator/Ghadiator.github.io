@@ -62,7 +62,7 @@ const settle = page => page.waitForTimeout(1500);
 
       await page.goto(base + "/token-economics/", { waitUntil: "load" });
       await page.locator("[data-gac-token-measures]").waitFor({ state: "attached", timeout: 15000 });
-      assert.match(await page.locator("[data-gac-token-measures]").innerText(), /No provider-model usage events in synthetic fixtures/);
+      assert.match(await page.locator("[data-gac-token-measures]").innerText(), /No provider-model usage events in (synthetic fixtures|these cases)/);
 
       await page.goto(base + "/cases/", { waitUntil: "load" });
       await page.locator("[data-gac-origin-panel]").waitFor({ state: "attached", timeout: 15000 });
@@ -71,8 +71,8 @@ const settle = page => page.waitForTimeout(1500);
 
       // ── Native content that carries the governance story ──
       await page.goto(base + "/business-impact/", { waitUntil: "load" });
-      await page.locator("[data-gac-measured-business]").waitFor({ state: "attached", timeout: 15000 });
-      for (const group of ["Group A · Business performance", "Group B · AI-assistance and governance evidence"])
+      // 8.0.0 Business Value rework: old KPIs and the new AI-created KPIs.
+      for (const group of ["Business KPIs the governed workflow aims to improve", "New risks, new KPIs, and their results"])
         assert.ok((await page.locator("main h2").allTextContents()).some(t => t.includes(group)), "Missing KPI family: " + group);
 
       await page.goto(base + "/governance-code/", { waitUntil: "load" });
