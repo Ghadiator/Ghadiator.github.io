@@ -40,8 +40,10 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
     };
    });
    for(const p of ["intro","kpi","usecase","agents"])assert(result[p],"Missing Introduction section "+p);
-   for(const [a,b] of [["intro","kpi"],["kpi","usecase"],["usecase","agents"]])
-    assert(result[a].bottom<=result[b].top+8,"Incorrect vertical order "+a+" before "+b+" "+JSON.stringify(result));
+   for(const [a,b] of [["intro","usecase"],["usecase","agents"]])
+    assert(result[a].bottom<=result[b].top+8,"Incorrect visible Overview order "+a+" before "+b+" "+JSON.stringify(result));
+   assert.equal(result.kpi.width,0,
+     "The historical Introduction KPI duplicate is intentionally hidden; the catalogue belongs to Business Value");
    assert(result.analyticsBg?.includes("analytics-original-cropped.webp"),"Original Analytics avatar not active");
    assert((result.analyticsSize?.width??0)>=95,"Analytics portrait too small");
    assert((result.kpiTitlePx??0)>=16,"KPI title still tiny");
@@ -56,25 +58,28 @@ const chrome=process.env.CHROME_PATH||["/usr/bin/google-chrome","/usr/bin/chromi
    assert(result.workflowRetired,"Old task-by-task workflow must remain retired");
    assert(result.newVisualization?.includes("governed-human-agent-collaboration"),"New workflow visualization must remain visible");
    assert(result.overflow<4,"Horizontal overflow "+result.overflow);
-   const kpiLink=page.getByRole("link",{name:/Compare the six manual and governed KPIs/});
-   assert.equal(await kpiLink.count(),1,"KPI comparison must be discoverable immediately from the hero");
-   await kpiLink.click();
-   assert.equal(new URL(page.url()).hash,"#gac-kpi-manual-comparison","Hero link must scroll to the integrated KPI panel");
-   const target=page.locator("#gac-kpi-manual-comparison");
-   await target.waitFor({state:"visible"});
-   // Smooth scrolling may still be in progress immediately after the hash changes.
-   await page.waitForFunction(()=>{
-     const r=document.getElementById("gac-kpi-manual-comparison")?.getBoundingClientRect();
-     return !!r && r.top>=-80 && r.top<innerHeight-50;
-   },null,{timeout:8000});
-   const top=await target.evaluate(el=>el.getBoundingClientRect().top);
-   assert(top>=-80&&top<900,"KPI anchor must reach viewport after scrolling, position "+top);
+   const invoiceSvg=await page.locator("#use-case").evaluate(el=>
+     getComputedStyle(el,"::before").backgroundImage);
+   assert(invoiceSvg.includes("overview-invoice-journey"),
+     "Published Overview must display the six-stage source-backed supplier invoice visual");
+   assert.equal(await page.locator("#gac-kpi-manual-comparison").isVisible(),false,
+     "Obsolete KPI duplicate must not appear on the Introduction");
    assert.equal(await page.getByRole("heading",{name:"What exactly did the workflow automate?"}).isVisible().catch(()=>false),false,
-     "Old task-by-task comparison must no longer be visible on Introduction");
+     "Retired old task-by-task comparison must remain hidden");
    assert.equal(await page.locator("#manual-workflow-title").isVisible().catch(()=>false),false,
-     "Retired legacy section must remain hidden until its compiled client bundle can be rebuilt");
-   assert.equal(await page.locator("#gac-kpi-manual-comparison").count(),1,
-     "Business KPI comparison must remain visible");
+     "Old legacy task expander must remain hidden until a native source build replaces it");
+   // Verify the intended canonical KPI destination independently rather than
+   // asserting the intentionally hidden Introduction duplicate is visible.
+   const canonical=await page.goto("http://127.0.0.1:8765/business-impact/",{waitUntil:"networkidle",timeout:45000});
+   assert.equal(canonical?.status(),200,"Canonical business KPI page unavailable");
+   const family=page.locator(".gac-kpi-business-groups");
+   await family.waitFor({state:"visible"});
+   assert.equal(await family.locator(":scope > article").count(),2,"KPI families no longer separated");
+   assert((await family.innerText()).includes("Reviewer touch time"),
+     "Manual KPI definition lost from the Business Value page");
+   const publicBanner=page.locator("main#main-content");
+   assert((await publicBanner.innerText()).includes("production ROI"),
+     "Business Value must distinguish illustrative data from measured ROI");
    assert(!errors.length,"Browser errors: "+errors.join(" | "));
    const img=await page.request.get("http://127.0.0.1:8765/avatars/analytics-original-cropped.webp");
    assert.equal(img.status(),200,"Uploaded teal-hijab portrait unavailable");

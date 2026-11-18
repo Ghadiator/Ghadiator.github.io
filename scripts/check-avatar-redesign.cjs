@@ -26,15 +26,24 @@ try{for(const width of [390,689,768,1080,1440]){
  assert.equal(states.pics.length,8);assert.equal(states.pics.filter(p=>p.bg.includes("personas-hires.webp")).length,7,"Seven original roles require the high-resolution atlas");assert.equal(states.pics.filter(p=>p.bg.includes("analytics-original-cropped.webp")).length,1,"Analytics must keep the owner-selected teal-hijab portrait");
  assert(states.pics.every(p=>p.w>=95&&p.h>=95),"Portrait too small "+JSON.stringify(states.pics));
  assert(states.hero&&states.kpi&&states.agents,"Missing sections");
- assert(states.hero.b<=states.kpi.y+4,"KPIs not immediately following business introduction");
- assert(states.kpi.b<=states.agents.y+4,"Agents not below KPI explanation");
+ // The canonical KPI catalogue moved to /business-impact; the older
+ // Overview duplicate remains mounted for the pinned React export but hidden.
+ assert.equal(states.kpi.w,0,"Obsolete KPI duplicate must remain hidden on Overview");
+ assert(states.hero.b<=states.agents.y+4,"Agents must follow the business introduction");
  assert(states.horizontalOverflow<4,"Horizontal overflow "+states.horizontalOverflow);
  assert(states.portraitStylesheets.length>=1,"New portrait CSS not present");
  assert(!errors.length,"Page errors: "+errors.join(" | "));
  const folder="/tmp/gac-avatar-redesign";fs.mkdirSync(folder,{recursive:true});
  await roster.screenshot({path:path.join(folder,"agents-"+width+".png")});
  await page.screenshot({path:path.join(folder,"introduction-"+width+".png"),fullPage:false});
- console.log("PASS responsive roster",width,"avatars",states.pics.map(p=>Math.round(p.w)).join(","),"KPI order","card width",Math.round(states.agents.w));
+ const dedicated=await page.goto("http://127.0.0.1:8765/business-impact/",{waitUntil:"networkidle",timeout:45000});
+ assert.equal(dedicated?.status(),200,"Dedicated KPI page must remain available");
+ await page.locator(".gac-kpi-business-groups").waitFor({state:"visible"});
+ assert.equal(await page.locator(".gac-kpi-business-groups > article").count(),2,
+   "Both business and governance KPI families must remain available");
+ assert((await page.locator(".gac-kpi-business-groups").innerText()).includes("Reviewer touch time"),
+   "Business KPI category lost its reviewer-time measure");
+ console.log("PASS responsive roster",width,"avatars",states.pics.map(p=>Math.round(p.w)).join(","),"canonical KPI page","card width",Math.round(states.agents.w));
  await page.close();
 }
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});
