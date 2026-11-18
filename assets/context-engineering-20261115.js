@@ -6,17 +6,17 @@
   "use strict";
   const tasks = {
     fee: {
-      label: "Validate the fee and invoice",
+      label: "Check invoiced rate against approved contract",
       terms: ["fee","invoice","cap","verification","rate","check"],
       requires: ["semantic","procedural"]
     },
     resubmission: {
-      label: "Review the previous correction and resubmission",
+      label: "Review a corrected supplier invoice",
       terms: ["prior","correction","resubmission","reviewer","check"],
       requires: ["episodic","procedural"]
     },
     audit: {
-      label: "Audit the decision and verification trail",
+      label: "Reconstruct an accountable invoice-review decision",
       terms: ["audit","decision","trace","verification","reviewer"],
       requires: ["episodic","procedural"]
     }
@@ -28,6 +28,13 @@
       tags:["fee","invoice","cap","rate","check"],caseId:null,
       roles:["reviewer","auditor"],state:"published",expired:false,
       content:"Effective fee cap in the approved contract record; verify the applicable revision."
+    },
+    {
+      id:"rate-card",title:"Signed supplier rate card, current revision",kind:"semantic",
+      source:"Approved supplier agreement · revision 7",owner:"Contract owner",
+      tags:["fee","invoice","rate","check","verification"],caseId:null,
+      roles:["reviewer","auditor"],state:"published",expired:false,
+      content:"Verify the signed rate and effective period, independent of the supplier invoice."
     },
     {
       id:"prior-a",title:"Prior reviewer correction",kind:"episodic",
@@ -44,28 +51,28 @@
       content:"An unrelated case history must never enter a different case's model context."
     },
     {
-      id:"verify-procedure",title:"Verified check procedure",kind:"procedural",
+      id:"verify-procedure",title:"Trusted invoice arithmetic and contract-check procedure",kind:"procedural",
       source:"Controls library · revision 6",owner:"Process owner",
       tags:["fee","invoice","verification","check","resubmission","reviewer"],caseId:null,
       roles:["reviewer","auditor"],state:"published",expired:false,
       content:"Validate required fields and arithmetic first; then check applicable contract evidence."
     },
     {
-      id:"audit-procedure",title:"Audit trail procedure",kind:"procedural",
+      id:"audit-procedure",title:"Human review and audit-trail procedure",kind:"procedural",
       source:"Assurance library · revision 2",owner:"Assurance owner",
       tags:["audit","decision","trace","verification","reviewer"],caseId:null,
       roles:["reviewer","auditor"],state:"published",expired:false,
       content:"Preserve input version, evidence sources, verifier results and signed human disposition."
     },
     {
-      id:"draft-policy",title:"Proposed higher fee cap",kind:"semantic",
+      id:"draft-policy",title:"Supplier-suggested fee increase (draft)",kind:"semantic",
       source:"Working proposal · not effective",owner:"Policy author",
       tags:["fee","invoice","cap","rate"],caseId:null,
       roles:["reviewer","auditor"],state:"draft",expired:false,
       content:"Proposed future policy, not an approved operating fact."
     },
     {
-      id:"expired-rate",title:"Superseded rate card",kind:"semantic",
+      id:"expired-rate",title:"Expired supplier rate card",kind:"semantic",
       source:"Archive · former rate revision",owner:"Pricing owner",
       tags:["fee","rate","invoice","cap"],caseId:null,
       roles:["reviewer","auditor"],state:"published",expired:true,
@@ -143,21 +150,29 @@
     const evaluated = records.map(record => ({
       record,...assess(record, config)
     }));
+    // Require exact source records: another semantic item cannot replace the rate card.
+    const previous=config.caseId==="A"?"prior-a":"prior-b";
+    const required=task.value==="fee"
+      ? ["fee-policy","rate-card","verify-procedure"]
+      :task.value==="resubmission"
+      ? [previous,"verify-procedure"]
+      :[previous,"audit-procedure"];
     const eligible = evaluated.filter(item => !item.reason)
-      .sort((a,b) => b.score-a.score || a.record.id.localeCompare(b.record.id));
+      .sort((a,b)=>Number(required.includes(b.record.id))-Number(required.includes(a.record.id))
+        || b.score-a.score || a.record.id.localeCompare(b.record.id));
     const chosenIds = new Set(eligible.slice(0,config.budget).map(item=>item.record.id));
     for (const item of evaluated) {
       item.selected=chosenIds.has(item.record.id);
       if (!item.reason && !item.selected) item.reason="Outside evidence budget";
     }
     const selected = eligible.slice(0,config.budget);
-    const missing = config.task.requires.filter(kind=>!selected.some(item=>item.record.kind===kind));
+    const missing = required.filter(id=>!selected.some(item=>item.record.id===id));
 
     const candidateList=byId("lab-candidates");
     candidateList.replaceChildren(...evaluated.map(item=>displayRecord(item.record,item)));
     byId("lab-admitted").textContent=String(selected.length);
     byId("lab-excluded").textContent=String(evaluated.length-selected.length);
-    byId("lab-coverage").textContent=missing.length ? "Gap → human" : "Required kinds present";
+    byId("lab-coverage").textContent=missing.length ? "Gap → human" : "Required records present";
 
     const windowPanel=byId("lab-window");
     const trusted = node("div");
@@ -177,9 +192,9 @@
       windowPanel.append(div);
     });
     if(missing.length){
-      windowPanel.append(node("p","missing","Evidence gap: "+missing.join(", ")+". Escalate for accountable human review."));
+      windowPanel.append(node("p","missing","Evidence gap: "+missing.map(id=>records.find(r=>r.id===id)?.title||id).join(", ")+". Missing required records: stop or escalate for human review."));
     } else {
-      windowPanel.append(node("p","","Next step: check claims against approved sources; any business approval remains human-controlled."));
+      windowPanel.append(node("p","","Required records are available for this example; context eligibility is not proof of a correct invoice decision. A human reviewer retains approval authority."));
     }
     const reasons=byId("lab-reasons");
     const detail=node("div");

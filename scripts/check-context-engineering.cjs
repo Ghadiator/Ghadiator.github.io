@@ -14,6 +14,30 @@ const css=read("assets/context-engineering-20261115.css");
 const script=read("assets/context-engineering-20261115.js");
 const nav=read("assets/navigation-consolidation-20261106.js");
 const intro=read("introduction/index.html");
+const assessment=read("use-case-assessment/index.html");
+assert(assessment.includes("id=\"map-section\"") && assessment.includes("id=\"measure-section\"") && assessment.includes("id=\"manage-section\""),
+  "Use case assessment must have distinct Map, Measure, Manage sections");
+assert((assessment.match(/class="gac-assess-card"/g)||[]).length===25,
+  "The public assessment must render all 12 answered intake + 13 policy questions");
+assert(assessment.includes("No live AI, API, approval or persistence"),
+  "Assessment public-only boundary missing");
+const overview=read("index.html");
+assert(overview.includes('/assets/overview-invoice-public-20261118.css'),
+  "Overview stylesheet missing");
+const introAlias=read("introduction/index.html");
+assert(introAlias.includes('/assets/overview-invoice-public-20261118.css'),
+  "Introduction alias stylesheet missing");
+const overviewStyles=read("assets/overview-invoice-public-20261118.css");
+const overviewSvg=read("assets/overview-invoice-journey-20261118.svg");
+const overviewMobileSvg=read("assets/overview-invoice-journey-mobile-20261118.svg");
+assert(overviewStyles.includes('#use-case::before'),"Overview must use hydration-safe CSS artwork");
+assert(overviewSvg.includes("From supplier documents to an accountable human decision"),
+  "Desktop invoice-flow visual missing");
+assert(overviewMobileSvg.includes("Six controlled steps. One human decision."),
+  "Mobile invoice-flow visual missing");
+assert(!overview.includes('/assets/overview-invoice-public-20261118.js'),
+  "Do not reintroduce client-side React DOM injection on pinned static Next.js");
+
 const navCss=read("assets/navigation-consolidation-20261106.css");
 assert(page.includes('class="public-shell"'),"Use the original workbench shell");
 assert(page.includes('class="public-sidebar"'),"Native dark sidebar missing");
@@ -91,7 +115,7 @@ vm.runInNewContext(script,{document,console,Element:FakeElement});
 const control=id=>controls[id];
 const change=(id,value)=>{control(id).value=value;control(id).fire();};
 assert.equal(control("lab-admitted").textContent,"3");
-assert.equal(control("lab-coverage").textContent,"Required kinds present");
+assert.equal(control("lab-coverage").textContent,"Required records present");
 assert(strings(control("lab-window")).includes("Approved fee ceiling"));
 assert(!strings(control("lab-candidates")).includes("Previous decision from Case B"),
   "Cross-case details leaked into candidate list");
@@ -101,13 +125,13 @@ assert(!strings(control("lab-reasons")).includes("Previous decision from Case B"
 control("lab-withdraw").checked=true;
 control("lab-withdraw").fire();
 assert.equal(control("lab-coverage").textContent,"Gap → human");
-assert(strings(control("lab-window")).includes("Evidence gap: semantic"),
+assert(strings(control("lab-window")).includes("Evidence gap: Approved fee ceiling"),
   "Removing authoritative knowledge must trigger a missing memory warning");
 
 control("lab-withdraw").checked=false;
 control("lab-withdraw").fire();
 change("lab-task","audit");
-assert(strings(control("lab-window")).includes("Audit trail procedure"));
+assert(strings(control("lab-window")).includes("audit-trail procedure"));
 assert(strings(control("lab-window")).includes("Prior reviewer correction"),
   "Correct case history must be available for an audit task");
 change("lab-case","B");
@@ -120,7 +144,7 @@ change("lab-task","fee");
 change("lab-budget","2");
 assert.equal(control("lab-admitted").textContent,"2");
 control("lab-reset").fire("click");
-assert.equal(control("lab-coverage").textContent,"Required kinds present");
+assert.equal(control("lab-coverage").textContent,"Required records present");
 assert.equal(control("lab-admitted").textContent,"3");
 
 console.log("Context Engineering: static routes, attribution, role/case isolation, source withdrawal, budget and controls passed.");

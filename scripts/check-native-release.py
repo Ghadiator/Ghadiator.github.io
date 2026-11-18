@@ -14,7 +14,7 @@ class Page(HTMLParser):
         if tag in ('script','style'): self.skip=max(0,self.skip-1)
     def handle_data(self,text):
         if not self.skip:self.text.append(text)
-for route in ('','architecture','cases','case','audit','safety','red-team','governance','governance-code','ai-roles','token-economics','integration','upload','safety-origin'):
+for route in ('','use-case-assessment','architecture','cases','case','audit','safety','red-team','governance','governance-code','ai-roles','token-economics','integration','upload','safety-origin'):
     path=ROOT/route/'index.html'
     page=Page();page.feed(path.read_text())
     assert not re.search(r'\b(medical|insurance|insurer|policyholder|premium|reinsurance)\b',' '.join(page.text),re.I),route

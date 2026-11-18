@@ -4,14 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0a293b">
-  <meta name="description" content="An interactive, safety-inspired guide to context engineering, short-term and long-term agent memory, knowledge governance and human oversight.">
-  <title>Context Engineering · Governance as Code</title>
+  <meta name="description" content="How supplier invoices are checked with trusted contracts, rate cards, case history and appropriate context engineering controls.">
+  <title>Context Engineering for supplier invoices · Governance as Code</title>
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
   <!-- Match the published native workbench shell, not a separate white sidebar. -->
   <link rel="stylesheet" href="/_next/static/css/6cfd3d61adeec9f6.css">
   <link rel="stylesheet" href="/_next/static/css/0cd0e3fdebdcc732.css">
   <link rel="stylesheet" href="/assets/navigation-consolidation-20261106.css">
   <link rel="stylesheet" href="/assets/context-engineering-20261115.css">
+  <link rel="stylesheet" href="/assets/context-invoice-public-20261118.css">
   <script src="/assets/navigation-consolidation-20261106.js" defer></script>
   <script src="/assets/context-engineering-20261115.js" defer></script>
 </head>
@@ -51,16 +52,16 @@
         <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Overview</a><span aria-hidden="true">/</span><span>Context engineering</span></nav>
         <section class="hero" aria-labelledby="page-title">
           <div class="hero-copy">
-            <p class="eyebrow">Governance as Code / Knowledge architecture</p>
-            <h1 id="page-title">The model is only as trustworthy as <em>the context it receives.</em></h1>
-            <p class="hero-lead">A safety-engineering perspective on selecting, verifying and maintaining the knowledge an AI agent needs—without turning a draft, an old decision or an external document into unquestioned authority.</p>
-            <div class="hero-tags"><span>Long-term memory</span><span>Runtime context</span><span>Human approval</span><span>Evidence provenance</span></div>
+            <p class="eyebrow">Governance as Code / Supplier-invoice verification</p>
+            <h1 id="page-title">Right invoice.<br><em>Right contract.</em><br>Right context.</h1>
+            <p class="hero-lead">Before AI comments on a disputed supplier charge, it needs the <strong>approved contract and rate card</strong>, relevant case history and trusted validation rules. Each record must belong to the right case and role. The result supports a <strong>human reviewer</strong>; it never authorizes payment.</p>
+            <div class="hero-tags"><span>Approved rates</span><span>Case-specific history</span><span>Trusted checks</span><span>Human authority</span></div>
           </div>
           <div class="hero-art" role="img" aria-label="Three governed knowledge stores feed a bounded runtime context, then a verification gate and human reviewer.">
-            <div class="flow-label">KNOWLEDGE SUPPLY</div>
-            <div class="flow-sources"><span>SEMANTIC<br><small>Domain facts</small></span><span>EPISODIC<br><small>Prior events</small></span><span>PROCEDURAL<br><small>Task rules</small></span></div>
-            <div class="flow-join" aria-hidden="true">↓ &nbsp; curated, scoped, current &nbsp; ↓</div>
-            <div class="flow-window"><small>NEXT STEP</small><strong>Short-term context</strong><span>instructions + verified facts + tools + selected evidence</span></div>
+            <div class="flow-label">THREE CONTEXT TYPES</div>
+            <div class="flow-sources"><span>SEMANTIC<br><small>Signed contract &amp; rates</small></span><span>EPISODIC<br><small>Invoice correction history</small></span><span>PROCEDURAL<br><small>Checking and escalation</small></span></div>
+            <div class="flow-join" aria-hidden="true">↓ &nbsp; approved, current, case and role scoped &nbsp; ↓</div>
+            <div class="flow-window"><small>NEXT STEP</small><strong>Invoice-review context</strong><span>approved terms + relevant history + trusted rules</span></div>
             <div class="flow-join" aria-hidden="true">↓</div>
             <div class="flow-verify">Evidence checks <span>→</span> Human decision</div>
           </div>
@@ -68,33 +69,51 @@
         </section>
 
         <div class="section-links" aria-label="On this page">
-          <a href="#mental-model">Memory map</a><a href="#lab">Try the context lab</a><a href="#lifecycle">Knowledge lifecycle</a><a href="#operating-model">Operating model</a><a href="#assurance">Assurance gates</a>
+          <a href="#invoice-source-map">Invoice claim-to-decision map</a><a href="#mental-model">Context types</a><a href="#lab">Try the context lab</a><a href="#lifecycle">Knowledge lifecycle</a><a href="#operating-model">Operating model</a><a href="#assurance">Assurance gates</a>
         </div>
 
+<section id="invoice-source-map" class="gac-invoice-context-map content-section" aria-labelledby="invoice-source-map-title">
+<p class="eyebrow">00 / An example from the actual business workflow</p>
+<h2 id="invoice-source-map-title">A supplier claims a higher rate. Which source should the AI trust?</h2>
+<p class="gac-invoice-context-lead">The claim in the invoice is not the same as an authorized contract term. The workflow must trace the discrepancy through source authority, case scope and independent checks before any human decision.</p>
+<div class="gac-invoice-dual">
+<article class="gac-invoice-claim"><small>01 · Incoming claim · Untrusted</small><h3>Supplier invoice: €120/hour</h3><p>An attached email says the rate increased. This document is evidence to examine, not an approved amendment and never a source of AI instructions.</p></article>
+<article class="gac-invoice-authority"><small>02 · Contract authority · Verified source</small><h3>Effective rate card: €95/hour</h3><p>The approved rate card is owned, versioned and checked for applicability. Draft or expired documents cannot silently replace it.</p></article>
+</div>
+<div class="gac-invoice-arrow" aria-hidden="true">↓ Validate authority · currency · case · role · relevance ↓</div>
+<div class="gac-invoice-packet"><small>03 · Construct minimum sufficient context</small><h3>Provide only task-relevant, admissible records</h3><div><article><strong>Semantic</strong><p>Signed rate, effective period and evidence reference.</p></article><article><strong>Episodic</strong><p>Earlier correction from the same invoice case, if authorized.</p></article><article><strong>Procedural</strong><p>Deterministic checks and human escalation from trusted workflow code.</p></article></div></div>
+<div class="gac-invoice-arrow" aria-hidden="true">↓ Deterministic checks first · Optional AI reasoning only for uncertainty ↓</div>
+<div class="gac-invoice-dual">
+<article class="gac-invoice-result"><small>04 · Independent discrepancy finding</small><h3>€25/hour difference</h3><p>Code calculates the difference. It does not establish whether a valid amendment exists. Missing evidence triggers an escalation rather than an unsupported model claim.</p></article>
+<article class="gac-invoice-authority"><small>05 · Human accountability</small><h3>Reviewer accepts, rejects or requests clarification</h3><p>An AI explanation does not update contract authority or approve payments. The reviewer evaluates source references and records a traceable disposition.</p></article>
+</div>
+<p class="gac-invoice-source-note">Illustrative, fabricated amounts and records. No invoice is analyzed and no payment decision is made on this public page. <a href="/architecture/">Inspect the existing architecture</a>.</p>
+</section>
         <section id="mental-model" class="content-section" aria-labelledby="memory-title">
-          <div class="section-heading"><p class="eyebrow">01 / Distinguish the layers</p><h2 id="memory-title">Long-term memory is not the context window.</h2><p>Long-term memory stores knowledge on demand. Short-term memory is the limited, case-specific working material presented for the current step. More data is not automatically better context.</p></div>
+          <div class="section-heading"><p class="eyebrow">01 / Distinguish the layers</p><h2 id="memory-title">Which context matters for an invoice review?</h2><p>Semantic facts, episodic history and procedural rules serve different purposes. Retrieve only verified and authorized material for this invoice, task, role and point in time.</p></div>
           <div class="memory-grid">
-            <article class="memory-card semantic"><span class="card-index">LTM / 01</span><div class="memory-symbol" aria-hidden="true">◇</div><h3>Semantic memory</h3><p>What is true about the domain: approved terms, baselines, definitions and applicable requirements.</p><div class="memory-example"><b>Supplier example</b><span>Approved fee ceiling and its effective period</span></div><p class="memory-boundary">Control: source owner, approved version, validity and scope.</p></article>
-            <article class="memory-card episodic"><span class="card-index">LTM / 02</span><div class="memory-symbol" aria-hidden="true">↺</div><h3>Episodic memory</h3><p>What happened before: submissions, exceptions, verification trails and reviewer actions.</p><div class="memory-example"><b>Supplier example</b><span>A previous invoice correction and the reviewer’s concern</span></div><p class="memory-boundary">Control: case isolation; history is not automatically a policy.</p></article>
-            <article class="memory-card procedural"><span class="card-index">LTM / 03</span><div class="memory-symbol" aria-hidden="true">≡</div><h3>Procedural memory</h3><p>How to perform the task: approved processes, deterministic checks, approved tools and escalation rules.</p><div class="memory-example"><b>Supplier example</b><span>Validate arithmetic before interpreting a disputed rate</span></div><p class="memory-boundary">Control: instructions and permissions come from trusted code, not retrieved prose.</p></article>
+            <article class="memory-card semantic"><span class="card-index">LTM / 01</span><div class="memory-symbol" aria-hidden="true">◇</div><h3>Semantic memory</h3><p>What the business has authorized: signed supplier terms, rate cards and their effective dates.</p><div class="memory-example"><b>Supplier example</b><span>Effective contractual fee ceiling and approved supplier rate card</span></div><p class="memory-boundary">Control: source owner, approved version, validity and scope.</p></article>
+            <article class="memory-card episodic"><span class="card-index">LTM / 02</span><div class="memory-symbol" aria-hidden="true">↺</div><h3>Episodic memory</h3><p>What happened in this case: prior submissions, disputes, corrections and reviewer decisions.</p><div class="memory-example"><b>Supplier example</b><span>The same case’s earlier correction and reviewer challenge</span></div><p class="memory-boundary">Control: case isolation; history is not automatically a policy.</p></article>
+            <article class="memory-card procedural"><span class="card-index">LTM / 03</span><div class="memory-symbol" aria-hidden="true">≡</div><h3>Procedural memory</h3><p>How to perform the review: trusted arithmetic, permitted tools, evidence checks and escalation.</p><div class="memory-example"><b>Supplier example</b><span>Recalculate invoice totals before interpreting a disputed rate</span></div><p class="memory-boundary">Control: instructions and permissions come from trusted code, not retrieved prose.</p></article>
           </div>
           <div class="working-memory">
-            <div><span class="working-icon" aria-hidden="true">◎</span><div><h3>Short-term memory / runtime window</h3><p>Trusted role instructions + this case’s verified facts + permitted tools + selected long-term evidence + bounded recent conversation.</p></div></div>
+            <div><span class="working-icon" aria-hidden="true">◎</span><div><h3>Short-term memory / runtime window</h3><p>Signed rate and contract terms + this case’s correction history + trusted validation rules + permitted tools. Supplier claims remain claims.</p></div></div>
             <strong>Right evidence, right step, right case.</strong>
           </div>
         </section>
 
         <section id="lab" class="content-section lab-section" aria-labelledby="lab-title">
-          <div class="section-heading"><p class="eyebrow">02 / Interactive model · browser-only</p><h2 id="lab-title">Try the context compiler.</h2><p>Change the task, case, reader role and evidence budget. The synthetic examples demonstrate why an agent should exclude unapproved, expired, irrelevant or out-of-scope material even when it is available.</p></div>
+          <div class="section-heading"><p class="eyebrow">02 / Interactive model · browser-only</p><h2 id="lab-title">Select evidence for a supplier invoice.</h2><p>Choose a review task, case, reader role and evidence limit. The interactive simulation now verifies exact required records: a different document of the same knowledge category cannot replace a missing signed contract or trusted checking procedure.</p></div>
           <div class="lab-frame">
+            <p class="gac-invoice-lab-story">Case A: a supplier claims a changed rate. Case B: a corrected invoice must be checked against case-specific history. Withdraw an approved policy or lower the evidence limit to see how the context becomes incomplete.</p>
             <div class="lab-toolbar">
-              <label>Task<select id="lab-task"><option value="fee">Validate an invoice fee</option><option value="resubmission">Review a resubmission</option><option value="audit">Reconstruct a decision</option></select></label>
+              <label>Task<select id="lab-task"><option value="fee">Check a claimed invoice rate</option><option value="resubmission">Review a corrected supplier invoice</option><option value="audit">Reconstruct an invoice decision</option></select></label>
               <label>Case<select id="lab-case"><option value="A">Case A</option><option value="B">Case B</option></select></label>
               <label>Reader role<select id="lab-role"><option value="reviewer">Reviewer</option><option value="auditor">Auditor</option></select></label>
-              <label>Evidence budget<select id="lab-budget"><option value="2">Focused · 2 sources</option><option value="3" selected>Balanced · 3 sources</option><option value="5">Expanded · 5 sources</option></select></label>
+              <label>Evidence slots<select id="lab-budget"><option value="2">Focused · 2 sources</option><option value="3" selected>Balanced · 3 sources</option><option value="5">Expanded · 5 sources</option></select></label>
             </div>
-            <div class="lab-actions"><label class="checkbox-label"><input id="lab-withdraw" type="checkbox"> Simulate withdrawal of the approved fee policy</label><button type="button" id="lab-reset">Reset scenario</button></div>
-            <div class="lab-overview" role="status" aria-live="polite" aria-atomic="true"><div><small>ADMITTED SOURCES</small><strong id="lab-admitted">—</strong></div><div><small>EXCLUDED SOURCES</small><strong id="lab-excluded">—</strong></div><div><small>REQUIRED COVERAGE</small><strong id="lab-coverage">—</strong></div></div>
+            <div class="lab-actions"><label class="checkbox-label"><input id="lab-withdraw" type="checkbox"> Withdraw the approved fee policy</label><button type="button" id="lab-reset">Reset scenario</button></div>
+            <div class="lab-overview" role="status" aria-live="polite" aria-atomic="true"><div><small>ADMITTED SOURCES</small><strong id="lab-admitted">—</strong></div><div><small>EXCLUDED SOURCES</small><strong id="lab-excluded">—</strong></div><div><small>ESSENTIAL EVIDENCE</small><strong id="lab-coverage">—</strong></div></div>
             <div class="lab-columns">
               <section aria-labelledby="candidate-title"><div class="lab-column-head"><h3 id="candidate-title">Available knowledge candidates</h3><span>synthetic records</span></div><div id="lab-candidates" class="record-list"></div></section>
               <section aria-labelledby="window-title"><div class="lab-column-head"><h3 id="window-title">Assembled runtime context</h3><span>selected for next action</span></div><div id="lab-window" class="context-panel"></div><div id="lab-reasons" class="decision-reasons"></div></section>
@@ -104,7 +123,7 @@
         </section>
 
         <section id="lifecycle" class="content-section" aria-labelledby="lifecycle-title">
-          <div class="section-heading"><p class="eyebrow">03 / Make corporate knowledge trustworthy</p><h2 id="lifecycle-title">Knowledge has a lifecycle, not just a vector index.</h2><p>An agent should consume auditable operational knowledge. Ideas and plans still matter, but belong to a different status than records used for decisions.</p></div>
+          <div class="section-heading"><p class="eyebrow">03 / Make corporate knowledge trustworthy</p><h2 id="lifecycle-title">A proposed supplier rate is not an authorized rate card.</h2><p>The contract owner must approve the operative revision, scope and effective dates before a new rate is used in invoice verification. A supplier proposal is not permission to change the checking baseline.</p></div>
           <ol class="pipeline" aria-label="Governed knowledge lifecycle"><li><b>01</b><strong>Create</strong><span>An owner records a candidate claim and original source.</span></li><li><b>02</b><strong>Share</strong><span>Experts challenge details, scope and contradictions.</span></li><li><b>03</b><strong>Integrate</strong><span>Check permissions, semantics, versions and completeness.</span></li><li><b>04</b><strong>Publish</strong><span>Human approval creates an accountable operational record.</span></li><li><b>05</b><strong>Utilize</strong><span>Retrieve only task-relevant, valid, authorized knowledge.</span></li></ol>
           <div class="lifecycle-split">
             <div class="status-example good"><span>Eligible after controls</span><strong>Operational and current</strong><p>Owned · source-cited · reviewed · approved · case/role scoped · within its validity period</p></div>
@@ -114,13 +133,13 @@
         </section>
 
         <section id="operating-model" class="content-section" aria-labelledby="operating-title">
-          <div class="section-heading"><p class="eyebrow">04 / AI-first is process redesign</p><h2 id="operating-title">Start with the outcome. Trace down to the systems.</h2><p>The lecture’s “skin, meat, skeleton” view helps reveal the process and data that must be understood before replacing a workflow step with an agent.</p></div>
+          <div class="section-heading"><p class="eyebrow">04 / AI-first is process redesign</p><h2 id="operating-title">Start with the reviewer’s decision, then trace the checks and sources.</h2><p>The outcome is not an AI-generated opinion; it is a defensible invoice disposition grounded in approved records and verified controls. Human decision rights stay explicit.</p></div>
           <div class="anatomy">
-            <article><span class="anatomy-tag">SKIN / OUTCOME</span><h3>A defensible human decision</h3><p>A reviewer understands the exception, the evidence and the available response.</p></article>
+            <article><span class="anatomy-tag">SKIN / OUTCOME</span><h3>An authorized invoice disposition</h3><p>The named reviewer understands the supplier exception and chooses an accountable disposition.</p></article>
             <span class="anatomy-arrow" aria-hidden="true">↓</span>
-            <article><span class="anatomy-tag">MEAT / PROCESS</span><h3>Verified, reviewable steps</h3><p>Intake → deterministic checks → baseline comparison → evidence challenge → human disposition.</p></article>
+            <article><span class="anatomy-tag">MEAT / PROCESS</span><h3>Verified, reviewable steps</h3><p>Document intake → Tier 1 arithmetic → Tier 2 contract evidence → optional Tier 3 AI → human review.</p></article>
             <span class="anatomy-arrow" aria-hidden="true">↓</span>
-            <article><span class="anatomy-tag">SKELETON / SYSTEMS</span><h3>Controlled capabilities</h3><p>Submission schemas, approved source records, tool contracts, case history, audit events and reviewer controls.</p></article>
+            <article><span class="anatomy-tag">SKELETON / SYSTEMS</span><h3>Controlled capabilities</h3><p>Invoice schemas, current rate cards, signed contracts, verified tools, case history and audit records.</p></article>
           </div>
           <div class="operating-grid">
             <article><span>HUMAN-LED</span><h3>Intent &amp; authority</h3><p>Owners define the outcomes, policy boundaries, risk appetite and reviewer decision rights.</p></article>
@@ -143,7 +162,7 @@
           <div class="truth-table"><h3>What exists versus what is being developed</h3><div class="truth-row"><strong>Existing backend concepts</strong><p>Case-continuity history, compact prior-run digests, contract clause retrieval, deterministic rules, case isolation, CoVe and human decision boundaries.</p></div><div class="truth-row"><strong>Proposed integration</strong><p>Enterprise knowledge publication registry, owner-approved source lifecycle, shared refresh queues and governed context compilation wired into live agent runs.</p></div><div class="truth-row"><strong>Public website today</strong><p>A read-only, synthetic learning space. The interactive compiler here is a browser simulation, not a claim of live memory retrieval, deployment or enterprise approval.</p></div></div>
         </section>
 
-        <section class="closing" aria-labelledby="closing-title"><div><p class="eyebrow">Explore the wider assurance system</p><h2 id="closing-title">A useful model needs the right context.<br>A trustworthy system needs the right controls.</h2><p>The point is not to automate every judgment. It is to make information, uncertainty, verification and human accountability explicit.</p></div><div class="closing-actions"><a href="/architecture/">Explore the architecture <span aria-hidden="true">↗</span></a><a href="/ai-assurance/">See assurance controls <span aria-hidden="true">↗</span></a><a href="/safety-origin/">Safety engineering origins <span aria-hidden="true">↗</span></a></div></section>
+        <section class="closing" aria-labelledby="closing-title"><div><p class="eyebrow">Explore the wider assurance system</p><h2 id="closing-title">An invoice claim is not a contract fact.<br>Responsible review connects both to evidence.</h2><p>The point is not to automate every judgment. It is to make information, uncertainty, verification and human accountability explicit.</p></div><div class="closing-actions"><a href="/architecture/">Explore the architecture <span aria-hidden="true">↗</span></a><a href="/ai-assurance/">See assurance controls <span aria-hidden="true">↗</span></a><a href="/safety-origin/">Safety engineering origins <span aria-hidden="true">↗</span></a></div></section>
         <footer class="source-foot"><p><strong>Learning source:</strong> TUM × BCG, <i>AI Value Creation — AI-First Organization</i>, 2 July 2026 (Nina Kataeva and Alan Grimm), slides discussing context engineering, memory, knowledge management and AI-first process design. This page is an independent technical interpretation and does not reproduce or imply endorsement of the original lecture.</p><p><strong>Implementation distinction:</strong> Browser examples are synthetic; protected backend data and GitHub development branches are not connected to this public page.</p><p>Governance as Code · Independent knowledge-sharing from a functional-safety perspective</p></footer>
       </div>
     </main>

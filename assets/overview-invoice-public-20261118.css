@@ -1,0 +1,17 @@
+/* Public static compatibility: SVG illustration only.
+   No DOM mutation or React-hydration interference with pinned v7.5.19. */
+main .space-y-12:has(#introduction-title) #use-case{order:1!important}
+main .space-y-12:has(#introduction-title) section:has(#overview-kpis){order:2!important}
+main .space-y-12:has(#introduction-title) #use-case::before{
+  content:"";display:block!important;width:100%;aspect-ratio:1440 / 835;
+  border:1px solid #bedbd5;border-radius:22px;
+  background:#f6fbf9 url("/assets/overview-invoice-journey-20261118.svg") center / 100% 100% no-repeat;
+  box-shadow:0 13px 35px rgba(18,67,82,.065);margin:0 0 26px;
+}
+@media(max-width:750px){
+  main .space-y-12:has(#introduction-title) #use-case::before{
+    aspect-ratio:760 / 2395;
+    background-image:url("/assets/overview-invoice-journey-mobile-20261118.svg");
+    border-radius:14px;margin:0 0 20px
+  }
+}

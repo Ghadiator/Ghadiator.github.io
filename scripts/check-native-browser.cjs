@@ -5,13 +5,13 @@ const { chromium } = require("playwright-core");
 const fs = require("node:fs");
 const base = process.env.BASE_URL || "http://127.0.0.1:8765";
 const routes = [
-  "/", "/introduction/", "/business-impact/", "/architecture/", "/ai-roles/", "/governance/", "/governance-code/", "/ai-assurance/",
+  "/", "/introduction/", "/business-impact/", "/use-case-assessment/", "/architecture/", "/ai-roles/", "/governance/", "/governance-code/", "/ai-assurance/",
   "/red-team/", "/cases/", "/dashboard/", "/token-economics/", "/safety-origin/",
   "/tickets/", "/tickets/new/", "/ticket/", "/inbound/", "/monitor/",
   "/audit/", "/pool-analytics/", "/upload/", "/integration/"
 ];
 const expectedNav = [
-  "Overview", "Business value & KPIs", "Architecture",
+  "Overview", "Business value & KPIs", "Use case assessment", "Architecture",
   "Personas", "Context Engineering", "Assurance", "Failure Lab",
   "Validation workspace", "Analytics", "Token Economics",
   "Safety Origins", "Framework Explorer", "Governance Code"
@@ -31,7 +31,7 @@ const widths = [
    const context=await browser.newContext({viewport:{width:viewport.width,height:viewport.height}});
    const page=await context.newPage();
    const errors=[],api=[];
-   page.on("pageerror",e=>errors.push(e.message));
+   page.on("pageerror",e=>errors.push(page.url()+" :: "+e.message));
    page.on("request",r=>{if(new URL(r.url()).pathname.startsWith("/api/"))api.push(r.url())});
    for(const route of routes){
     const response=await page.goto(base+route,{waitUntil:"domcontentloaded",timeout:45000});
@@ -47,11 +47,11 @@ const widths = [
    const learning = await page.goto(base+"/context-engineering/",{waitUntil:"domcontentloaded"});
    assert.equal(learning?.status(),200,viewport.label+" context-engineering HTTP");
    await page.locator("#lab-coverage").waitFor({state:"visible"});
-   assert.equal((await page.locator("#lab-coverage").textContent())?.trim(),"Required kinds present");
+   assert.equal((await page.locator("#lab-coverage").textContent())?.trim(),"Required records present");
    await page.locator("#lab-withdraw").check();
    assert.equal((await page.locator("#lab-coverage").textContent())?.trim(),"Gap → human");
    await page.locator("#lab-reset").click();
-   assert.equal((await page.locator("#lab-coverage").textContent())?.trim(),"Required kinds present");
+   assert.equal((await page.locator("#lab-coverage").textContent())?.trim(),"Required records present");
    // Prevent the white stand-alone sidebar regression. The learning route
    // must have the same DOM shell, grouped links, dark gradient and icons.
    await page.locator('[data-gac-consolidated-nav]').waitFor({state:"attached",timeout:12000});
@@ -80,6 +80,17 @@ const widths = [
    await page.goto(base+"/",{waitUntil:"domcontentloaded"});
    await page.locator('nav.public-nav a[href="/governance-code/"]').waitFor({state:"attached",timeout:12000});
    await page.locator('[data-gac-consolidated-nav]').waitFor({state:"attached",timeout:15000});
+   // The Overview's six-step visual is a CSS SVG after the pinned static
+   // Next.js hydration, not DOM rewriting (which caused React #418).
+   const invoiceVisual=await page.locator("#use-case").evaluate(el=>{
+     const visual=getComputedStyle(el,"::before");
+     return {image:visual.backgroundImage,content:visual.content,display:visual.display};
+   });
+   assert.match(invoiceVisual.image,/overview-invoice-journey(?:-mobile)?-20261118\.svg/,
+     viewport.label+": supplier-invoice visual must render");
+   assert.notEqual(invoiceVisual.display,"none",
+     viewport.label+": use-case visual must remain visible");
+   checks+=2;
    const nav=page.locator('nav[aria-label="Main navigation"] [data-gac-consolidated-nav] a span');
    const labels=(await nav.allTextContents()).map(x=>x.trim());
    assert.deepEqual(labels,expectedNav,viewport.label+": navigation must consolidate five workbench views, pool analytics and Origins");
@@ -93,7 +104,7 @@ const widths = [
    // not just opening every URL through page.goto (which used to mask it).
    if(viewport.label==="desktop"){
     const sidebarRoutes=[
-     ["/","Overview"],["/context-engineering/","Context Engineering"],
+     ["/","Overview"],["/use-case-assessment/","Use case assessment"],["/context-engineering/","Context Engineering"],
      ["/business-impact/","Business value & KPIs"],
      ["/architecture/","Architecture"],["/ai-roles/","Personas"],
      ["/ai-assurance/","Assurance"],["/red-team/","Failure Lab"],
