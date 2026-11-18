@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 2395" role="img" aria-labelledby="title desc">
+<title id="title">Six steps of governed invoice validation, ending in a human decision</title><desc id="desc">Supplier invoice intake, deterministic checks, contract evidence, optional AI reasoning, and human disposition. No autonomous payment approval.</desc>
+<rect x="1" y="1" width="758" height="2393" rx="26" fill="#f6fbf9" stroke="#c8e0dd" stroke-width="2"/>
+<text x="32" y="54" font-family="Arial,sans-serif" font-size="21" font-weight="700" fill="#218174">SUPPLIER-INVOICE REVIEW</text>
+<text x="32" y="100" font-family="Arial,sans-serif" font-size="33" font-weight="700" fill="#183b4d">Six controlled steps. One human decision.</text>
+<g><rect x="24" y="132" width="712" height="340" rx="22" fill="#fff" stroke="#c9dfe1" stroke-width="2"/>
+<rect x="42" y="150" width="85" height="50" rx="12" fill="#e4f4ee"/>
+<text x="85" y="186" text-anchor="middle" font-size="31" font-family="Arial,sans-serif" font-weight="700" fill="#1d786d">01</text>
+<text x="713" y="186" text-anchor="end" font-size="18" font-family="Arial,sans-serif" font-weight="700" fill="#477a79" letter-spacing="1.6">COLLECT</text>
+<text x="46" y="234" font-size="30" font-family="Arial,sans-serif" font-weight="700" fill="#1d4254"><tspan x="46" dy="0">Supplier submits</tspan><tspan x="46" dy="37.5">invoice &amp; evidence</tspan></text>
+<text x="46" y="317" font-size="25" font-family="Arial,sans-serif" fill="#546e7b"><tspan x="46" dy="0">Workbook, service record and</tspan><tspan x="46" dy="36">supporting documents enter a</tspan><tspan x="46" dy="36">versioned supplier case.</tspan></text>
+<line x1="46" y1="384" x2="714" y2="384" stroke="#d9e8e8"/>
+<text x="46" y="409" font-size="21" font-family="Arial,sans-serif" font-weight="600" fill="#286e64">Supplier / operations</text>
+<text x="46" y="442" font-size="19" font-family="Arial,sans-serif" fill="#567481">Output: Invoice + records</text></g><g><rect x="24" y="495" width="712" height="340" rx="22" fill="#fff" stroke="#c9dfe1" stroke-width="2"/>
+<rect x="42" y="513" width="85" height="50" rx="12" fill="#e4f4ee"/>
+<text x="85" y="549" text-anchor="middle" font-size="31" font-family="Arial,sans-serif" font-weight="700" fill="#1d786d">02</text>
+<text x="713" y="549" text-anchor="end" font-size="18" font-family="Arial,sans-serif" font-weight="700" fill="#477a79" letter-spacing="1.6">VALIDATE INPUT</text>
+<text x="46" y="597" font-size="30" font-family="Arial,sans-serif" font-weight="700" fill="#1d4254"><tspan x="46" dy="0">Structure the</tspan><tspan x="46" dy="37.5">submission</tspan></text>
+<text x="46" y="680" font-size="25" font-family="Arial,sans-serif" fill="#546e7b"><tspan x="46" dy="0">Typed fields and completeness</tspan><tspan x="46" dy="36">checks establish what was</tspan><tspan x="46" dy="36">actually received.</tspan></text>
+<line x1="46" y1="747" x2="714" y2="747" stroke="#d9e8e8"/>
+<text x="46" y="772" font-size="21" font-family="Arial,sans-serif" font-weight="600" fill="#286e64">Deterministic</text>
+<text x="46" y="805" font-size="19" font-family="Arial,sans-serif" fill="#567481">Output: Validated fields</text></g><g><rect x="24" y="858" width="712" height="340" rx="22" fill="#fff" stroke="#c9dfe1" stroke-width="2"/>
+<rect x="42" y="876" width="85" height="50" rx="12" fill="#e4f4ee"/>
+<text x="85" y="912" text-anchor="middle" font-size="31" font-family="Arial,sans-serif" font-weight="700" fill="#1d786d">03</text>
+<text x="713" y="912" text-anchor="end" font-size="18" font-family="Arial,sans-serif" font-weight="700" fill="#477a79" letter-spacing="1.6">TIER 1 · CODE</text>
+<text x="46" y="960" font-size="30" font-family="Arial,sans-serif" font-weight="700" fill="#1d4254"><tspan x="46" dy="0">Check exact</tspan><tspan x="46" dy="37.5">invoice facts</tspan></text>
+<text x="46" y="1043" font-size="25" font-family="Arial,sans-serif" fill="#546e7b"><tspan x="46" dy="0">Recalculate quantities, rates</tspan><tspan x="46" dy="36">and totals. These checks</tspan><tspan x="46" dy="36">do not require an LLM.</tspan></text>
+<line x1="46" y1="1110" x2="714" y2="1110" stroke="#d9e8e8"/>
+<text x="46" y="1135" font-size="21" font-family="Arial,sans-serif" font-weight="600" fill="#286e64">Deterministic</text>
+<text x="46" y="1168" font-size="19" font-family="Arial,sans-serif" fill="#567481">Output: Reproducible findings</text></g><g><rect x="24" y="1221" width="712" height="340" rx="22" fill="#fff" stroke="#c9dfe1" stroke-width="2"/>
+<rect x="42" y="1239" width="85" height="50" rx="12" fill="#e4f4ee"/>
+<text x="85" y="1275" text-anchor="middle" font-size="31" font-family="Arial,sans-serif" font-weight="700" fill="#1d786d">04</text>
+<text x="713" y="1275" text-anchor="end" font-size="18" font-family="Arial,sans-serif" font-weight="700" fill="#477a79" letter-spacing="1.6">TIER 2 · EVIDENCE</text>
+<text x="46" y="1323" font-size="30" font-family="Arial,sans-serif" font-weight="700" fill="#1d4254"><tspan x="46" dy="0">Compare approved</tspan><tspan x="46" dy="37.5">contract sources</tspan></text>
+<text x="46" y="1406" font-size="25" font-family="Arial,sans-serif" fill="#546e7b"><tspan x="46" dy="0">Verify rates against signed</tspan><tspan x="46" dy="36">contracts and purchase orders.</tspan><tspan x="46" dy="36">Python tools check the facts.</tspan></text>
+<line x1="46" y1="1473" x2="714" y2="1473" stroke="#d9e8e8"/>
+<text x="46" y="1498" font-size="21" font-family="Arial,sans-serif" font-weight="600" fill="#286e64">Independent evidence</text>
+<text x="46" y="1531" font-size="19" font-family="Arial,sans-serif" fill="#567481">Output: Source-linked differences</text></g><g><rect x="24" y="1584" width="712" height="340" rx="22" fill="#fff" stroke="#c9dfe1" stroke-width="2"/>
+<rect x="42" y="1602" width="85" height="50" rx="12" fill="#e4f4ee"/>
+<text x="85" y="1638" text-anchor="middle" font-size="31" font-family="Arial,sans-serif" font-weight="700" fill="#1d786d">05</text>
+<text x="713" y="1638" text-anchor="end" font-size="18" font-family="Arial,sans-serif" font-weight="700" fill="#477a79" letter-spacing="1.6">TIER 3 · OPTIONAL</text>
+<text x="46" y="1686" font-size="30" font-family="Arial,sans-serif" font-weight="700" fill="#1d4254"><tspan x="46" dy="0">Reason about</tspan><tspan x="46" dy="37.5">unresolved claims</tspan></text>
+<text x="46" y="1769" font-size="25" font-family="Arial,sans-serif" fill="#546e7b"><tspan x="46" dy="0">A bounded agent committee</tspan><tspan x="46" dy="36">examines material exceptions.</tspan><tspan x="46" dy="36">AI claims remain advisory.</tspan></text>
+<line x1="46" y1="1836" x2="714" y2="1836" stroke="#d9e8e8"/>
+<text x="46" y="1861" font-size="21" font-family="Arial,sans-serif" font-weight="600" fill="#286e64">Optional agentic AI</text>
+<text x="46" y="1894" font-size="19" font-family="Arial,sans-serif" fill="#567481">Output: Review recommendation</text></g><g><rect x="24" y="1947" width="712" height="340" rx="22" fill="#fff" stroke="#c9dfe1" stroke-width="2"/>
+<rect x="42" y="1965" width="85" height="50" rx="12" fill="#e4f4ee"/>
+<text x="85" y="2001" text-anchor="middle" font-size="31" font-family="Arial,sans-serif" font-weight="700" fill="#1d786d">06</text>
+<text x="713" y="2001" text-anchor="end" font-size="18" font-family="Arial,sans-serif" font-weight="700" fill="#477a79" letter-spacing="1.6">HUMAN GATE</text>
+<text x="46" y="2049" font-size="30" font-family="Arial,sans-serif" font-weight="700" fill="#1d4254"><tspan x="46" dy="0">Reviewer makes</tspan><tspan x="46" dy="37.5">the disposition</tspan></text>
+<text x="46" y="2132" font-size="25" font-family="Arial,sans-serif" fill="#546e7b"><tspan x="46" dy="0">An authorized human accepts,</tspan><tspan x="46" dy="36">rejects or requests correction.</tspan><tspan x="46" dy="36">The record preserves evidence.</tspan></text>
+<line x1="46" y1="2199" x2="714" y2="2199" stroke="#d9e8e8"/>
+<text x="46" y="2224" font-size="21" font-family="Arial,sans-serif" font-weight="600" fill="#286e64">Human reviewer</text>
+<text x="46" y="2257" font-size="19" font-family="Arial,sans-serif" fill="#567481">Output: Decision + audit trace</text></g>
+<rect x="24" y="2314" width="712" height="65" rx="12" fill="#153f49"/>
+<text x="41" y="2340" font-family="Arial,sans-serif" font-size="19" font-weight="700" fill="#d9ffef">Code verifies · AI advises · Human authorizes</text>
+<text x="41" y="2366" font-family="Arial,sans-serif" font-size="17" fill="#c6e5e5">No autonomous payment approval</text>
+</svg>
