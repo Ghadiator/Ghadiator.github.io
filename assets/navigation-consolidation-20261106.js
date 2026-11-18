@@ -7,7 +7,7 @@
 (function(){
 "use strict";
 const grouped=[
- {heading:"START",items:[["/","Overview"],["/business-impact/","Business value & KPIs"],["/architecture/","Architecture"]]},
+ {heading:"START",items:[["/","Overview"],["/business-impact/","Business value & KPIs"],["/use-case-assessment/","Use case assessment"],["/architecture/","Architecture"]]},
  {heading:"GOVERNANCE & DEFENCES",items:[["/ai-roles/","Personas"],["/context-engineering/","Context Engineering"],["/ai-assurance/","Assurance"],["/red-team/","Failure Lab"]]},
  {heading:"VALIDATION & INSIGHTS",items:[["/cases/","Validation workspace"],["/dashboard/","Analytics"],["/token-economics/","Token Economics"]]},
  {heading:"ORIGINS",items:[["/safety-origin/","Safety Origins"],["/governance/","Framework Explorer"],["/governance-code/","Governance Code"]]}
@@ -74,6 +74,7 @@ function ensureGovernanceCodeIcon(root){
 const publishedNavIconMarkup={
  "/": "<path d=\"M12 7v14\"></path><path d=\"M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z\"></path>",
  "/business-impact/": "<path d=\"m12 14 4-4\"></path><path d=\"M3.34 19a10 10 0 1 1 17.32 0\"></path>",
+ "/use-case-assessment/": "<path d=\"M8 4h11a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z\"></path><path d=\"M9 10h8\"></path><path d=\"M9 14h6\"></path><path d=\"M9 18h5\"></path>",
  "/architecture/": "<rect width=\"8\" height=\"8\" x=\"3\" y=\"3\" rx=\"2\"></rect><path d=\"M7 11v4a2 2 0 0 0 2 2h4\"></path><rect width=\"8\" height=\"8\" x=\"13\" y=\"13\" rx=\"2\"></rect>",
  "/ai-roles/": "<path d=\"M16 10a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 14.286V4a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z\"></path><path d=\"M20 9a2 2 0 0 1 2 2v10.286a.71.71 0 0 1-1.212.502l-2.202-2.202A2 2 0 0 0 17.172 19H10a2 2 0 0 1-2-2v-1\"></path>",
  "/ai-assurance/": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\"></path><path d=\"m9 12 2 2 4-4\"></path>",
