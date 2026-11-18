@@ -91,6 +91,28 @@ const widths = [
    assert.notEqual(invoiceVisual.display,"none",
      viewport.label+": use-case visual must remain visible");
    checks+=2;
+   // The original KPI section must remain visible and before the expanded
+   // use-case explanation, even when that explanation gains a large SVG.
+   const introOrder=await page.evaluate(()=>{
+     const rect=selector=>{
+       const el=document.querySelector(selector);
+       if(!el)return null;
+       const r=el.getBoundingClientRect();
+       return {top:r.top,bottom:r.bottom,width:r.width};
+     };
+     return {
+       hero:rect('section:has(#introduction-title)'),
+       kpi:rect('section:has(#overview-kpis)'),
+       usecase:rect('#use-case')
+     };
+   });
+   assert.ok(introOrder.hero&&introOrder.kpi&&introOrder.usecase,
+     viewport.label+": the original Overview sections must be retained");
+   assert.ok(introOrder.kpi.width>0 &&
+     introOrder.hero.bottom<=introOrder.kpi.top+8 &&
+     introOrder.kpi.bottom<=introOrder.usecase.top+8,
+     viewport.label+": KPI / use-case order regressed "+JSON.stringify(introOrder));
+   checks+=3;
    const nav=page.locator('nav[aria-label="Main navigation"] [data-gac-consolidated-nav] a span');
    const labels=(await nav.allTextContents()).map(x=>x.trim());
    assert.deepEqual(labels,expectedNav,viewport.label+": navigation must consolidate five workbench views, pool analytics and Origins");
