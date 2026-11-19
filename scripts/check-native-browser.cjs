@@ -90,6 +90,7 @@ const settle = page => page.waitForTimeout(1500);
       assert.equal(await page.locator("#gac-failure-lab-20261119 .fl-threat").count(), 6, "Six grounded threat categories");
       assert.ok(await page.locator("#gac-failure-lab-20261119 .fl-hero").isVisible(),
         "Failure Lab introduction must be visible");
+      await page.locator("#challenge-me").waitFor({state:"visible",timeout:15000});
       assert.ok(await page.locator("#challenge-me").isVisible(),
         "Challenge me must be visible without expanding the red team");
       assert.ok((await page.locator("#gac-failure-lab-20261119").innerText()).includes("Obfuscation & encoding evasion"));
