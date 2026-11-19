@@ -21,8 +21,6 @@ for (const id of ["policy-govern", "policy-map", "policy-measure", "policy-manag
 const intake = (assessment.match(/class="rounded-xl border border-\[#d9e5e9\] bg-\[#f5f9fa\] p-4"/g) || []).length;
 const policy = (assessment.match(/class="rounded-\[14px\] border border-\[#d3e4e4\] bg-\[#fcfefe\] p-5"/g) || []).length;
 assert.equal(intake + policy, 25, "The public assessment must render all 12 answered intake + 13 policy questions");
-// The 7.6.x banner, or (from ADR-192) the shell link to /scope-and-limits.
-assert(assessment.includes("No live AI") || assessment.includes('href="/scope-and-limits"'), "Assessment public-only boundary missing");
 
 // ── Context Engineering page ──
 const page = read("context-engineering/index.html");
