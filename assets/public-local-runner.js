@@ -74,6 +74,8 @@ function ibanValid(value){
  }
  return rem===1;
 }
+// ADR-198: one wording for a finding in both runtimes (invoice_rules.py _fmt).
+function fmt(c){return c===null||c===undefined?"missing":(Number(c)/100).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}
 function checkDateWindow(a,b){return validDate(a)&&validDate(b)&&a<=b}
 function run(input,{sampleContract=false}={}){
  const validation=[],events=[];let seq=0;
@@ -126,60 +128,83 @@ function run(input,{sampleContract=false}={}){
  const discount=lines.reduce((s,x)=>s+(gross(x)-cents(x.amount)),0n);
  const deterministic=[
  ["R1: Line amounts equal quantity × rate less line discount",
-  lines.every(x=>cents(x.amount)===gross(x)-pctOf(gross(x),x.discount_pct))],
- ["R2: Subtotal equals the sum of line amounts",cents(input.subtotal)===subtotal],
- ["R3: Discount total equals the sum of line discounts",cents(input.discount_total)===discount],
+  lines.every(x=>cents(x.amount)===gross(x)-pctOf(gross(x),x.discount_pct)),
+  ()=>`lines ${JSON.stringify(lines.filter(x=>cents(x.amount)!==gross(x)-pctOf(gross(x),x.discount_pct)).map(x=>x.service_code))} do not equal quantity × rate less discount; correct the line amounts.`],
+ ["R2: Subtotal equals the sum of line amounts",cents(input.subtotal)===subtotal,
+  ()=>`subtotal ${fmt(cents(input.subtotal))} but the lines sum to ${fmt(subtotal)}.`],
+ ["R3: Discount total equals the sum of line discounts",cents(input.discount_total)===discount,
+  ()=>`discount total ${fmt(cents(input.discount_total))} but the line discounts sum to ${fmt(discount)}.`],
  ["R4: Tax amount equals subtotal × tax rate",
-  cents(input.tax_amount)===pctOf(cents(input.subtotal),input.tax_rate)],
+  cents(input.tax_amount)===pctOf(cents(input.subtotal),input.tax_rate),
+  ()=>`tax ${fmt(cents(input.tax_amount))} but subtotal × ${input.tax_rate} is ${fmt(pctOf(cents(input.subtotal),input.tax_rate))}.`],
  ["R5: Invoice total equals subtotal plus tax",
-  cents(input.total)===cents(input.subtotal)+cents(input.tax_amount)],
- ["R6: Service period is ordered",checkDateWindow(input.period_start,input.period_end)],
- ["R7: Invoice date follows the service period",input.invoice_date>=input.period_end],
+  cents(input.total)===cents(input.subtotal)+cents(input.tax_amount),
+  ()=>`total ${fmt(cents(input.total))} but subtotal plus tax is ${fmt(cents(input.subtotal)+cents(input.tax_amount))}.`],
+ ["R6: Service period is ordered",checkDateWindow(input.period_start,input.period_end),
+  ()=>`service period ${input.period_start} to ${input.period_end} is not ordered.`],
+ ["R7: Invoice date follows the service period",input.invoice_date>=input.period_end,
+  ()=>`invoice date ${input.invoice_date} is before the period end ${input.period_end}.`],
  ["R8: Delivery falls inside the service period",
-  input.delivery_date>=input.period_start&&input.delivery_date<=input.period_end],
+  input.delivery_date>=input.period_start&&input.delivery_date<=input.period_end,
+  ()=>`delivery ${input.delivery_date} is outside the period ${input.period_start} to ${input.period_end}.`],
  ["R9: Due date equals invoice date plus payment terms",
-  input.due_date===addDays(input.invoice_date,input.payment_terms_days)],
- ["R10: Service codes are unique",new Set(lines.map(x=>x.service_code)).size===lines.length],
- ["R11: Supplier IBAN passes the mod-97 checksum",ibanValid(input.supplier_iban)],
+  input.due_date===addDays(input.invoice_date,input.payment_terms_days),
+  ()=>`due date ${input.due_date} but invoice date plus ${input.payment_terms_days} days is ${addDays(input.invoice_date,input.payment_terms_days)}.`],
+ ["R10: Service codes are unique",new Set(lines.map(x=>x.service_code)).size===lines.length,
+  ()=>"a service code appears on more than one line."],
+ ["R11: Supplier IBAN passes the mod-97 checksum",ibanValid(input.supplier_iban),
+  ()=>`IBAN ${input.supplier_iban} fails the mod-97 checksum.`],
  ["R12: Base-currency total equals total × FX rate",
-  cents(input.total_in_base)===(cents(input.total)*BigInt(Math.round(Number(input.fx_rate||0)*10000))+5000n)/10000n],
+  cents(input.total_in_base)===(cents(input.total)*BigInt(Math.round(Number(input.fx_rate||0)*10000))+5000n)/10000n,
+  ()=>`base total ${fmt(cents(input.total_in_base))} but total × ${input.fx_rate} is ${fmt((cents(input.total)*BigInt(Math.round(Number(input.fx_rate||0)*10000))+5000n)/10000n)}.`],
  ["R13: A same-currency invoice carries an FX rate of one",
-  input.currency!==input.base_currency||Number(input.fx_rate)===1],
+  input.currency!==input.base_currency||Number(input.fx_rate)===1,
+  ()=>`same currency ${input.currency} but FX rate ${input.fx_rate}.`],
  ["R14: Line tax rates agree with the invoice tax rate",
-  lines.every(x=>Number(x.line_tax_rate)===Number(input.tax_rate))],
+  lines.every(x=>Number(x.line_tax_rate)===Number(input.tax_rate)),
+  ()=>`a line tax rate differs from the invoice tax rate ${input.tax_rate}.`],
  ["R16: Taxable and non-taxable bases sum to the subtotal",
-  cents(input.taxable_base)+cents(input.non_taxable_base)===cents(input.subtotal)],
+  cents(input.taxable_base)+cents(input.non_taxable_base)===cents(input.subtotal),
+  ()=>`taxable ${fmt(cents(input.taxable_base))} plus non-taxable ${fmt(cents(input.non_taxable_base))} is not the subtotal ${fmt(cents(input.subtotal))}.`],
  ["R17: Tax is charged on the taxable base only",
-  cents(input.tax_amount)===pctOf(cents(input.taxable_base),input.tax_rate)],
+  cents(input.tax_amount)===pctOf(cents(input.taxable_base),input.tax_rate),
+  ()=>`tax ${fmt(cents(input.tax_amount))} is not charged on the taxable base ${fmt(cents(input.taxable_base))}.`],
  ["R18: A reverse-charge invoice carries no tax",
-  String(input.reverse_charge||"No").toLowerCase()!=="yes"||cents(input.tax_amount)===0n],
- ["R19: Bank BIC is well formed",/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(String(input.bank_bic||""))],
+  String(input.reverse_charge||"No").toLowerCase()!=="yes"||cents(input.tax_amount)===0n,
+  ()=>`reverse charge applies but tax is ${fmt(cents(input.tax_amount))}.`],
+ ["R19: Bank BIC is well formed",/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(String(input.bank_bic||"")),
+  ()=>`BIC '${input.bank_bic||""}' is not well formed.`],
  ["R20: The IBAN's country agrees with the BIC's",
-  String(input.supplier_iban||"").slice(0,2).toUpperCase()===String(input.bank_bic||"").slice(4,6).toUpperCase()],
+  String(input.supplier_iban||"").slice(0,2).toUpperCase()===String(input.bank_bic||"").slice(4,6).toUpperCase(),
+  ()=>`IBAN country ${String(input.supplier_iban||"").slice(0,2).toUpperCase()} differs from BIC country ${String(input.bank_bic||"").slice(4,6).toUpperCase()}.`],
  ["R21: Incoterms is a recognised three-letter term",
-  ["EXW","FCA","FAS","FOB","CFR","CIF","CPT","CIP","DAP","DPU","DDP"].includes(String(input.incoterms||"").toUpperCase())],
+  ["EXW","FCA","FAS","FOB","CFR","CIF","CPT","CIP","DAP","DPU","DDP"].includes(String(input.incoterms||"").toUpperCase()),
+  ()=>`Incoterms '${input.incoterms||""}' is not a recognised term.`],
  ["R22: Discount and late-fee rates are within sane bounds",
-  Number(input.early_payment_discount_pct||0)<=0.1&&Number(input.late_fee_pct||0)<=0.2],
+  Number(input.early_payment_discount_pct||0)<=0.1&&Number(input.late_fee_pct||0)<=0.2,
+  ()=>`early discount ${input.early_payment_discount_pct} or late fee ${input.late_fee_pct} is out of bounds.`],
  ["R23: Submission timestamp is not before the invoice date",
-  String(input.submitted_at||"").slice(0,10)>=String(input.invoice_date||"")],
+  String(input.submitted_at||"").slice(0,10)>=String(input.invoice_date||""),
+  ()=>`submitted ${String(input.submitted_at||"").slice(0,10)||"missing"} before the invoice date ${input.invoice_date}.`],
  ];
- deterministic.forEach(([label,ok])=>check("rules",label,ok));
- if(contract)check("rules","R15: Required service reports are attached",contract.required_documents.every(d=>(input.documents||[]).includes(d)));
+ deterministic.forEach(([label,ok,why])=>check("rules",label,ok,ok?"":why()));
+ if(contract){const missingDocs=contract.required_documents.filter(d=>!(input.documents||[]).includes(d));check("rules","R15: Required service reports are attached",!missingDocs.length,missingDocs.length?`missing required documents ${JSON.stringify(missingDocs)}.`:"");}
  else unchecked("rules","R15: Required service reports are attached","No approved contract document requirements available");
  if(contract){
   const matches=[
-   ["C1: Supplier matches contract",input.supplier_id===contract.supplier_id],
-   ["C2: Contract ID matches",input.contract_id===contract.contract_id],
-   ["C3: Purchase order matches",input.purchase_order===contract.purchase_order],
-   ["C4: Contract currency matches",input.currency===contract.currency],
-   ["C5: Service period within contract",input.period_start>=contract.valid_from&&input.period_end<=contract.valid_to],
-   ["C6: Rates match approved rate card",lines.every(r=>contract.rates[r.service_code]!==undefined&&cents(r.unit_rate)===cents(contract.rates[r.service_code]))],
-   ["C7: Total within spending limit",cents(input.total)<=cents(contract.spending_limit)],
+   ["C1: Supplier matches contract",input.supplier_id===contract.supplier_id,()=>`supplier ${input.supplier_id} but the contract is with ${contract.supplier_id}.`],
+   ["C2: Contract ID matches",input.contract_id===contract.contract_id,()=>`contract ${input.contract_id} but expected ${contract.contract_id}.`],
+   ["C3: Purchase order matches",input.purchase_order===contract.purchase_order,()=>`purchase order ${input.purchase_order} but the contract quotes ${contract.purchase_order}.`],
+   ["C4: Contract currency matches",input.currency===contract.currency,()=>`currency ${input.currency} but the contract is in ${contract.currency}.`],
+   ["C5: Service period within contract",input.period_start>=contract.valid_from&&input.period_end<=contract.valid_to,()=>`period ${input.period_start} to ${input.period_end} is outside the contract ${contract.valid_from} to ${contract.valid_to}.`],
+   ["C6: Rates match approved rate card",lines.every(r=>contract.rates[r.service_code]!==undefined&&cents(r.unit_rate)===cents(contract.rates[r.service_code])),()=>`lines ${JSON.stringify(lines.filter(r=>contract.rates[r.service_code]===undefined||cents(r.unit_rate)!==cents(contract.rates[r.service_code])).map(r=>r.service_code))} are not at the approved rate card.`],
+   ["C7: Total within spending limit",cents(input.total)<=cents(contract.spending_limit),()=>`total ${fmt(cents(input.total))} exceeds the limit ${fmt(cents(contract.spending_limit))}.`],
    ["C9: Payment account matches the approved bank account",
-    String(input.supplier_iban||"").replace(/\s+/g,"").toUpperCase()===String(contract.bank_account||"").toUpperCase()],
-   ["C10: Buyer entity matches the contract",input.buyer_entity===contract.buyer_entity]
+    String(input.supplier_iban||"").replace(/\s+/g,"").toUpperCase()===String(contract.bank_account||"").toUpperCase(),
+    ()=>`payment account ${input.supplier_iban} is not the approved account; confirm with the supplier by phone.`],
+   ["C10: Buyer entity matches the contract",input.buyer_entity===contract.buyer_entity,()=>`buyer entity ${input.buyer_entity} but the contract binds ${contract.buyer_entity}.`]
   ];
-  matches.forEach(([label,ok])=>check("contract",label,ok));
+  matches.forEach(([label,ok,why])=>check("contract",label,ok,ok?"":why()));
   unchecked("contract","C8: Invoice not previously approved","No authoritative approved-invoice register available in this browser");
   const prior=cents(contract.prior_period_total),cur=cents(input.total),pct=prior>0n?Number((cur-prior)*10000n/prior)/100:0;
   if(pct>20)log("advisory","local.variance","Service-volume exception candidate",`${pct.toFixed(1)}% compared with synthetic prior period; no AI persona called`);

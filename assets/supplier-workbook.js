@@ -304,18 +304,45 @@ async function open(file){
  }
  const header=await rows("Invoice"),items=await rows("LineItems");
  if(header[0]?.[0]!=="Field"||header[0]?.[1]!=="Value")throw Error("Invoice sheet must start with Field and Value headers");
- if(["service_code","quantity","unit_rate","amount"].some((x,i)=>items[0]?.[i]!==x))throw Error("LineItems headers do not match the supplier template");
+ // ADR-198: read what build() writes. LineItems has the eight LINE_COLUMNS
+ // (looked up by header name), the Invoice sheet carries section bands (a
+ // label with an empty value), and a file saved again in Excel stores
+ // numbers and dates as plain cell numbers, so each value is normalised by
+ // its kind into the strings the preflight expects.
+ const head=(items[0]||[]).map(x=>String(x??"").trim());
+ const missing=LINE_FIELDS.filter(x=>!head.includes(x));
+ if(missing.length)throw Error("LineItems headers do not match the supplier template (missing "+missing.join(", ")+")");
+ const unknownCol=head.filter(x=>x&&!LINE_FIELDS.includes(x));
+ if(unknownCol.length)throw Error("Unknown LineItems column: "+unknownCol.join(", "));
+ const DATE_FIELDS=new Set(["period_start","period_end","delivery_date","invoice_date","due_date"]);
+ const norm=(key,kind,raw)=>{
+  const v=String(raw??"").trim();
+  if(v==="")return "";
+  const n=Number(v);
+  if(DATE_FIELDS.has(key)&&/^\d+(\.\d+)?$/.test(v)){
+   const d=new Date(Date.UTC(1899,11,30)+Math.floor(n)*86400000);return d.toISOString().slice(0,10);
+  }
+  if(Number.isNaN(n)||kind==="text")return v;
+  if(kind==="money")return n.toFixed(2);
+  if(kind==="rate")return key==="fx_rate"?n.toFixed(4):n.toFixed(2);
+  if(kind==="int")return String(Math.round(n));
+  return String(n);
+ };
  const obj={};
  for(const row of header.slice(1)){
   const key=String(row[0]||"").trim();
+  const value=String(row[1]??"").trim();
   if(!key)continue;
+  if(!fields.includes(key)&&value==="")continue; // a section band
   if(!fields.includes(key)||Object.hasOwn(obj,key))throw Error("Unknown or duplicated invoice field: "+key);
-  obj[key]=String(row[1]??"");
+  obj[key]=norm(key,FIELD_KIND.get(key),value);
  }
- obj.version=Number(obj.version);obj.documents=String(obj.documents||"").split(/[,;|]/).map(x=>x.trim()).filter(Boolean);
- obj.lines=items.slice(1).filter(r=>r.some(x=>String(x??"").trim())).map(row=>({
-  service_code:String(row[0]??""),quantity:String(row[1]??""),unit_rate:String(row[2]??""),amount:String(row[3]??"")
- }));
+ obj.version=Number(obj.version);obj.payment_terms_days=Number(obj.payment_terms_days);
+ obj.documents=String(obj.documents||"").split(/[,;|]/).map(x=>x.trim()).filter(Boolean);
+ for(const key of Object.keys(obj))if(obj[key]===""&&key!=="documents")delete obj[key];
+ const kindOf=new Map(LINE_COLUMNS);
+ obj.lines=items.slice(1).filter(r=>r.some(x=>String(x??"").trim())).map(row=>
+  Object.fromEntries(LINE_FIELDS.map(f=>[f,norm(f,kindOf.get(f),row[head.indexOf(f)])])));
  if(!obj.lines.length)throw Error("No service lines found in LineItems");
  return obj;
 }
