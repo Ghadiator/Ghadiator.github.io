@@ -84,7 +84,7 @@ const settle = page => page.waitForTimeout(1500);
       assert.ok(horizontal.olderRowRemoved, "The new two-row component is still displayed");
       if(viewport.width < 1200) assert.ok(horizontal.scroller, "Small viewports must scroll inside the figure");
 
-      // ── Failure Lab: threat taxonomy, local challenge and collapsed campaign ──
+      // ── Failure Lab: real-LLM attacker game, honest offline state, hints and collapsed evidence ──
       await page.goto(base + "/red-team/", { waitUntil: "load" });
       await page.locator("#gac-failure-lab-20261119").waitFor({ state: "attached", timeout: 15000 });
       assert.equal(await page.locator("#gac-failure-lab-20261119 .fl-threat").count(), 6, "Six grounded threat categories");
@@ -96,13 +96,21 @@ const settle = page => page.waitForTimeout(1500);
       const campaign = page.locator("#gac-recorded-red-team-20261119");
       await campaign.waitFor({ state: "attached", timeout: 15000 });
       assert.equal(await campaign.evaluate(el=>el.open), false, "Recorded red team should start collapsed");
-      await page.locator("#fl-select").selectOption("obfuscation");
-      await page.getByRole("button",{name:/Load a sample/}).click();
-      await page.getByRole("button",{name:/Inspect the attempt/}).click();
-      const challengeText = await page.locator(".fl-result").textContent();
-      assert.ok(await page.locator(".fl-result").isVisible(), "Challenge result must be visible");
-      assert.ok(challengeText.includes("Teaching analysis"),
-        "Challenge me must return a clearly labelled local analysis. Actual: " + challengeText.slice(0,400) + "; browser errors: " + JSON.stringify(errors));
+      await page.locator("#fl-mission").selectOption("obfuscation");
+      await page.getByRole("button",{name:/Use a sample/}).click();
+      assert.match(await page.locator("#fl-payload").inputValue(),/1gn0re/,
+        "Sample must load a real attack draft");
+      await page.getByRole("button",{name:/Reveal hint 1/}).click();
+      assert.match(await page.locator(".fl-hint-box").innerText(),/Hint 1:/,
+        "Challenge hints must be progressive and usable");
+      await page.getByRole("button",{name:/Reveal hint 2/}).click();
+      assert.match(await page.locator(".fl-hint-box").innerText(),/Hint 2:/);
+      assert.equal(await page.getByRole("button",{name:/Attack the defender/}).isDisabled(),true,
+        "No LLM attack must be submitted without an explicitly configured sandbox");
+      assert.match(await page.locator("#fl-defender-status").textContent(),/not configured/i,
+        "Offline model status must be visible and honest");
+      assert.ok((await page.locator(".fl-result").textContent()).includes("No reply or success score is invented"),
+        "Offline challenge must not fabricate an LLM verdict");
       await campaign.locator("summary").click();
       assert.equal(await campaign.locator("[data-attack]").count(),7, "Recorded control probes remain accessible");
       const topLinks = await page.locator(".public-sidebar .public-nav a").evaluateAll(as=>as.map(a=>a.getAttribute("href")));
