@@ -60,8 +60,8 @@ const settle = page => page.waitForTimeout(1500);
       assert.equal(await page.locator(".sc-card").count(), 11, "Featured ADR count");
       await page.getByRole("button", { name: "All", exact: true }).click();
       assert.equal(await page.locator(".sc-card").count(), 35, "All public ADRs must have content");
-      await page.locator(".sc-card").first().click();
-      assert.ok((await page.locator(".sc-detail").first().innerText()).includes("Design decision"),
+      await page.locator(".sc-card summary").first().click();
+      assert.ok((await page.locator(".sc-detail").first().textContent()).includes("Design decision"),
         "Expanded ADR has a decision");
       await page.getByRole("searchbox", { name: "Search architecture decisions" }).fill("ADR-082");
       assert.equal(await page.locator(".sc-card").count(), 0, "Excluded ADR must not appear");
