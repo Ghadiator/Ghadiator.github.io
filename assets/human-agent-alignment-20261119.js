@@ -57,7 +57,17 @@ function restore(){
  figure.parentNode.insertBefore(hint,figure);
  section.dataset.alignedCollaboration="1";
 }
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",restore,{once:true});else restore();
-const observer=new MutationObserver(()=>restore());
-observer.observe(document.body,{childList:true,subtree:true});
+// Never change React-owned DOM during Next.js hydration. Once the load
+// event and hydration grace period have completed, install the compatibility
+// view and watch only for subsequent client-side route changes.
+let observer;
+const start=()=>{
+  window.setTimeout(()=>{
+    restore();
+    observer=new MutationObserver(()=>restore());
+    observer.observe(document.body,{childList:true,subtree:true});
+  },2200);
+};
+if(document.readyState==="complete")start();
+else window.addEventListener("load",start,{once:true});
 })();
