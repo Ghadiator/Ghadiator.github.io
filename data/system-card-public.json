@@ -1,0 +1,288 @@
+{
+  "version": "2026-11-19",
+  "name": "Governance as Code · System card",
+  "purpose": "A governed supplier-invoice and contract-validation workflow: deterministic checks, evidence-scoped AI advice for unresolved exceptions, and final human authority.",
+  "boundary": "The reviewer remains responsible for the disposition. Agent recommendations are advisory, and the public site cannot approve or modify a case.",
+  "decisions": [
+    {
+      "id": "ADR-034",
+      "group": "Assurance",
+      "title": "Deterministic verification",
+      "why": "Model agreement is not independent evidence.",
+      "choice": "Verify material claims with Python checks against declared sources.",
+      "limit": "A true calculation can still be misleading when context is missing."
+    },
+    {
+      "id": "ADR-036",
+      "group": "Architecture",
+      "title": "Workflow and reasoning have different jobs",
+      "why": "An LLM-driven process router would make routine state changes variable.",
+      "choice": "Use LangGraph for workflow control and PydanticAI for bounded reasoning.",
+      "limit": "State transitions remain separate from advisory model outputs."
+    },
+    {
+      "id": "ADR-040",
+      "group": "Accountability",
+      "title": "A reconstructible process ledger",
+      "why": "Retries after a human pause could duplicate audit records.",
+      "choice": "Append events with stable identifiers and idempotent writes.",
+      "limit": "An audit event does not prove that someone examined the evidence."
+    },
+    {
+      "id": "ADR-042",
+      "group": "Accountability",
+      "title": "Pause for a named human decision",
+      "why": "An exception cannot silently become a machine approval.",
+      "choice": "Interrupt the workflow; resume with a typed reviewer decision.",
+      "limit": "Final approval remains outside model authority."
+    },
+    {
+      "id": "ADR-061",
+      "group": "Architecture",
+      "title": "One observability interface",
+      "why": "Operational events and authoritative process history have different purposes.",
+      "choice": "Expose an integration boundary without conflating live views and audit evidence.",
+      "limit": "A live dashboard is not the canonical ledger."
+    },
+    {
+      "id": "ADR-064",
+      "group": "Accountability",
+      "title": "Lessons do not silently change policy",
+      "why": "Operational feedback can undermine reproducibility when fed back automatically.",
+      "choice": "Separate the lessons channel from the running engine and review policy changes explicitly.",
+      "limit": "Recording a lesson is not deploying a new rule."
+    },
+    {
+      "id": "ADR-070",
+      "group": "Architecture",
+      "title": "Evidence-aware context budgets",
+      "why": "Large prompts cost more and hide source selection.",
+      "choice": "Document context compaction and token budgets while preserving important evidence.",
+      "limit": "Compression must not discard the basis for a verdict."
+    },
+    {
+      "id": "ADR-071",
+      "group": "Accountability",
+      "title": "Regulatory roles and evidence",
+      "why": "Model and application responsibilities must not be conflated.",
+      "choice": "Maintain intended-purpose, oversight and technical documentation linked to controls.",
+      "limit": "Technical documentation does not itself establish certification."
+    },
+    {
+      "id": "ADR-083",
+      "group": "Architecture",
+      "title": "Orchestration framework trade-off",
+      "why": "Typed agent calls and stateful orchestration solve different problems.",
+      "choice": "Keep the bounded hybrid and document alternatives for production migration.",
+      "limit": "A future migration route is not a shipped capability."
+    },
+    {
+      "id": "ADR-084",
+      "group": "Accountability",
+      "title": "Golden samples from review",
+      "why": "Synthetic test examples are not a substitute for observed reviewer disagreements.",
+      "choice": "Curate reviewer feedback into a separate evaluation channel.",
+      "limit": "An observation needs review before becoming a benchmark."
+    },
+    {
+      "id": "ADR-091",
+      "group": "Assurance",
+      "title": "Verification before and after synthesis",
+      "why": "Filtering preliminary assertions does not protect the final Judge synthesis.",
+      "choice": "Use pre-Judge and post-Judge claim verification with a bounded retry path.",
+      "limit": "Verification remains limited by source quality."
+    },
+    {
+      "id": "ADR-098",
+      "group": "Architecture",
+      "title": "Static site, protected runtime",
+      "why": "A public reference page must not be mistaken for a live workflow.",
+      "choice": "Use a static Next.js export for presentation and a separate protected API for execution.",
+      "limit": "Public navigation cannot confer runtime permission."
+    },
+    {
+      "id": "ADR-103",
+      "group": "Accountability",
+      "title": "Case-level access controls",
+      "why": "Being signed in does not authorise access to every case.",
+      "choice": "Check permissions for each case and its related records.",
+      "limit": "A hidden UI control is not server-side authorisation."
+    },
+    {
+      "id": "ADR-104",
+      "group": "Assurance",
+      "title": "A single guarded verification path",
+      "why": "Separate verification entry points can enforce inconsistent budgets.",
+      "choice": "Use one guarded verifier with explicit results and shared limits.",
+      "limit": "Unsupported or neutral claims must remain labelled."
+    },
+    {
+      "id": "ADR-107",
+      "group": "Accountability",
+      "title": "Reasons and a second reviewer",
+      "why": "High-impact overrides need attribution and independent challenge.",
+      "choice": "Require rationale and classified reasons; use dual review for specified actions.",
+      "limit": "Attribution alone cannot establish reviewer attention."
+    },
+    {
+      "id": "ADR-113",
+      "group": "Assurance",
+      "title": "Untrusted content boundary",
+      "why": "External text can try to redirect the assistant's instructions.",
+      "choice": "Sanitise, delimit and scrub text at the relevant model boundaries.",
+      "limit": "Filtering never replaces structural permissions."
+    },
+    {
+      "id": "ADR-117",
+      "group": "Assurance",
+      "title": "Revisions grounded in evidence",
+      "why": "Repeating the original persuasive briefing can repeat its mistake.",
+      "choice": "Give the retry relevant verification evidence.",
+      "limit": "Revised wording must still be checked."
+    },
+    {
+      "id": "ADR-119",
+      "group": "Architecture",
+      "title": "Capacity reservations before model calls",
+      "why": "Rate limits can otherwise cause silent degradation during a run.",
+      "choice": "Reserve capacity and wait within configured provider limits.",
+      "limit": "Capacity reservations cannot guarantee service availability."
+    },
+    {
+      "id": "ADR-120",
+      "group": "Architecture",
+      "title": "Fail-closed shared capacity limits",
+      "why": "Local counters can miss concurrent workers or unknown models.",
+      "choice": "Govern token and request budgets with a shared backend and deny unknown configurations.",
+      "limit": "Missing limit settings must not mean unlimited use."
+    },
+    {
+      "id": "ADR-141",
+      "group": "Assurance",
+      "title": "One case per model context",
+      "why": "Case information may contaminate another case's reasoning.",
+      "choice": "Isolate each model context and lint reusable lessons for case data.",
+      "limit": "Context separation is not a claim about pretrained model memory."
+    },
+    {
+      "id": "ADR-142",
+      "group": "Assurance",
+      "title": "Narrow Judge output, deterministic assembly",
+      "why": "Complex nested generation contracts are fragile under model variation.",
+      "choice": "Return a narrow structured draft and assemble scored findings in code.",
+      "limit": "Model prose carries no automatic decision weight."
+    },
+    {
+      "id": "ADR-148",
+      "group": "Accountability",
+      "title": "Purpose-built read-only audit assistant",
+      "why": "An auditor needs evidence explanations rather than operational tools.",
+      "choice": "Keep the audit persona read-only and separate from decision actions.",
+      "limit": "An assistant explanation is not an independent assessment."
+    },
+    {
+      "id": "ADR-149",
+      "group": "Assurance",
+      "title": "Preserve the whole verification path",
+      "why": "A final answer can conceal rejected or revised claims.",
+      "choice": "Record pre- and post-Judge checking with explicit outcomes.",
+      "limit": "Only recorded checks can be represented as executed."
+    },
+    {
+      "id": "ADR-170",
+      "group": "Experience",
+      "title": "One coherent design language",
+      "why": "Separate styling copies drift across public and protected surfaces.",
+      "choice": "Share design tokens instead of copying ad-hoc presentation output.",
+      "limit": "Visual unity must not conceal capability differences."
+    },
+    {
+      "id": "ADR-181",
+      "group": "Assurance",
+      "title": "Attack wording beyond signatures",
+      "why": "Pattern matching misses paraphrased prompt injections.",
+      "choice": "Test against evolving adversarial language and record the guard's gaps.",
+      "limit": "Passing known attacks does not prove complete resistance."
+    },
+    {
+      "id": "ADR-182",
+      "group": "Assurance",
+      "title": "Optional semantic injection screening",
+      "why": "Deterministic signatures cannot capture every adversarial intent.",
+      "choice": "Allow an optional screen to add, but never remove, deterministic redactions.",
+      "limit": "The screening model remains fallible and is off by default."
+    },
+    {
+      "id": "ADR-183",
+      "group": "Accountability",
+      "title": "Exact-origin cross-origin policy",
+      "why": "The public site and protected API do not share an origin.",
+      "choice": "Permit only explicitly configured origins when cross-origin access is needed.",
+      "limit": "Origin checks do not grant case access."
+    },
+    {
+      "id": "ADR-185",
+      "group": "Accountability",
+      "title": "Named public API surfaces",
+      "why": "Permitted origins alone do not restrict endpoint authority.",
+      "choice": "Publish a deliberate allowlist of public routes.",
+      "limit": "Protected actions must remain inaccessible from public mode."
+    },
+    {
+      "id": "ADR-187",
+      "group": "Accountability",
+      "title": "Dual control uses distinct people",
+      "why": "An unauthenticated demo cannot assume session IDs distinguish reviewers.",
+      "choice": "Require distinct named reviewers for the relevant dual-control path.",
+      "limit": "Names alone are not strong proof of identity."
+    },
+    {
+      "id": "ADR-188",
+      "group": "Experience",
+      "title": "Example workbook as a testable contract",
+      "why": "The downloadable workbook must match what intake expects.",
+      "choice": "Check field coverage, workbook structure and browser preflight.",
+      "limit": "A sample workbook is not evidence of external integration."
+    },
+    {
+      "id": "ADR-190",
+      "group": "Experience",
+      "title": "Business-value narrative with evidence",
+      "why": "Repeated and reordered claims obscure what has been measured.",
+      "choice": "Show the KPI taxonomy once, separating observed measures from objectives.",
+      "limit": "Desired productivity improvements are not measured outcomes."
+    },
+    {
+      "id": "ADR-191",
+      "group": "Experience",
+      "title": "Navigation by purpose",
+      "why": "A scattered sidebar and anonymous blocks impede exploration.",
+      "choice": "Group pages by user task and show typed module inputs and outputs.",
+      "limit": "A module contract does not demonstrate a particular execution."
+    },
+    {
+      "id": "ADR-197",
+      "group": "Experience",
+      "title": "Supplier-invoice intake",
+      "why": "A sample is not usable when the intake accepts a different workbook.",
+      "choice": "Accept the published invoice structure at the intake boundary.",
+      "limit": "Successful parsing is not contractual approval."
+    },
+    {
+      "id": "ADR-200",
+      "group": "Experience",
+      "title": "Figures derived from engineering mechanisms",
+      "why": "Simplified diagrams can accidentally overstate safeguards.",
+      "choice": "Show the implemented control mechanisms and use only grounded KPI evidence.",
+      "limit": "Explanatory figures are not live run measurements."
+    },
+    {
+      "id": "ADR-201",
+      "group": "Experience",
+      "title": "Invoice runs as KPI evidence",
+      "why": "Reference simulations do not prove measured end-to-end business value.",
+      "choice": "Exercise invoice scenarios through available stages and report missing measures.",
+      "limit": "Synthetic scenarios do not establish representative savings."
+    }
+  ]
+}
