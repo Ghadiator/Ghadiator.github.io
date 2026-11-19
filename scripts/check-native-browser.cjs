@@ -93,8 +93,9 @@ const settle = page => page.waitForTimeout(1500);
       await page.locator("#fl-select").selectOption("obfuscation");
       await page.getByRole("button",{name:/Load a sample/}).click();
       await page.getByRole("button",{name:/Inspect the attempt/}).click();
-      assert.ok((await page.locator(".fl-result").innerText()).includes("Teaching analysis"),
-        "Challenge me must return a clearly labelled local analysis");
+      const challengeText = await page.locator(".fl-result").textContent();
+      assert.ok(challengeText.includes("Teaching analysis"),
+        "Challenge me must return a clearly labelled local analysis. Actual: " + challengeText.slice(0,400) + "; browser errors: " + JSON.stringify(errors));
       await campaign.locator("summary").click();
       assert.equal(await campaign.locator("[data-attack]").count(),7, "Recorded control probes remain accessible");
       const topLinks = await page.locator(".public-sidebar .public-nav a").evaluateAll(as=>as.map(a=>a.getAttribute("href")));
