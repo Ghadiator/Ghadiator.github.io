@@ -58,6 +58,8 @@ const settle = page => page.waitForTimeout(1500);
       await page.goto(base + "/introduction/", { waitUntil: "load" });
       await page.locator("#gac-horizontal-figure-20261119[data-horizontal-restored='original-8-step-svg']")
         .waitFor({ state: "attached", timeout: 15000 });
+      assert.ok(await page.locator("#gac-horizontal-figure-20261119 img").isVisible(),
+        "Recovered horizontal figure must be visible, not merely present in the DOM");
       const horizontal = await page.evaluate(async () => {
         const section = document.getElementById("gac-horizontal-figure-20261119");
         const image = section?.querySelector("img");
@@ -86,6 +88,10 @@ const settle = page => page.waitForTimeout(1500);
       await page.goto(base + "/red-team/", { waitUntil: "load" });
       await page.locator("#gac-failure-lab-20261119").waitFor({ state: "attached", timeout: 15000 });
       assert.equal(await page.locator("#gac-failure-lab-20261119 .fl-threat").count(), 6, "Six grounded threat categories");
+      assert.ok(await page.locator("#gac-failure-lab-20261119 .fl-hero").isVisible(),
+        "Failure Lab introduction must be visible");
+      assert.ok(await page.locator("#challenge-me").isVisible(),
+        "Challenge me must be visible without expanding the red team");
       assert.ok((await page.locator("#gac-failure-lab-20261119").innerText()).includes("Obfuscation & encoding evasion"));
       const campaign = page.locator("#gac-recorded-red-team-20261119");
       await campaign.waitFor({ state: "attached", timeout: 15000 });
@@ -94,6 +100,7 @@ const settle = page => page.waitForTimeout(1500);
       await page.getByRole("button",{name:/Load a sample/}).click();
       await page.getByRole("button",{name:/Inspect the attempt/}).click();
       const challengeText = await page.locator(".fl-result").textContent();
+      assert.ok(await page.locator(".fl-result").isVisible(), "Challenge result must be visible");
       assert.ok(challengeText.includes("Teaching analysis"),
         "Challenge me must return a clearly labelled local analysis. Actual: " + challengeText.slice(0,400) + "; browser errors: " + JSON.stringify(errors));
       await campaign.locator("summary").click();
