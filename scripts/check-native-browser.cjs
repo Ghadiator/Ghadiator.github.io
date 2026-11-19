@@ -65,7 +65,7 @@ const settle = page => page.waitForTimeout(1500);
         const exception = figure?.querySelector("[data-lane='exception-path']");
         const human = figure?.querySelector(".gac-final-steps>article");
         const mode = figure?.querySelector(".gac-mode");
-        const avatars = Array.from(exception?.querySelectorAll("a[href*='/ai-roles#']") || []);
+        const avatars = Array.from(exception?.querySelectorAll("a[href*='/ai-roles/']") || []);
         const rect = el => el.getBoundingClientRect();
         if (!step || !exception || !human || !mode || avatars.length !== 3) return null;
         const ex = rect(exception);
