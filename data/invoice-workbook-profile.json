@@ -1,0 +1,2487 @@
+{
+ "summary": {
+  "attributes": 72,
+  "contract_guarded": 11,
+  "invoice_guarded": 23,
+  "unguarded": 38,
+  "rules": 33,
+  "scenarios_isolated": 9,
+  "scenarios": 9
+ },
+ "groups": [
+  "Identification",
+  "Parties",
+  "Dates and terms",
+  "Amounts",
+  "Delivery and logistics",
+  "Tax detail",
+  "Payment",
+  "Commercial terms",
+  "Controls and audit",
+  "Evidence",
+  "LineItems"
+ ],
+ "attributes": [
+  {
+   "sheet": "Invoice",
+   "group": "Identification",
+   "name": "case_id",
+   "kind": "text",
+   "description": "Case reference the supplier quotes.",
+   "reference": "CASE-LOCAL-001",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Identification",
+   "name": "invoice_id",
+   "kind": "text",
+   "description": "Supplier's invoice number; the external system ID of the case.",
+   "reference": "INV-LOCAL-001",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Identification",
+   "name": "version",
+   "kind": "int",
+   "description": "Submission version; increases on each resubmission.",
+   "reference": "1",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +1",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Identification",
+   "name": "supplier_id",
+   "kind": "text",
+   "description": "Supplier code in the supplier registry.",
+   "reference": "SUP-014",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "C1"
+   ],
+   "control": "contract",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "C1"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [
+      "C1"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Identification",
+   "name": "contract_id",
+   "kind": "text",
+   "description": "Contract the invoice bills against; the case key.",
+   "reference": "CTR-2026-014",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R15",
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5",
+    "C6",
+    "C7",
+    "C9",
+    "C10"
+   ],
+   "control": "contract",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": [
+      "R15",
+      "C1",
+      "C2",
+      "C3",
+      "C4",
+      "C5",
+      "C6",
+      "C7",
+      "C9",
+      "C10"
+     ]
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": [
+      "R15",
+      "C1",
+      "C2",
+      "C3",
+      "C4",
+      "C5",
+      "C6",
+      "C7",
+      "C9",
+      "C10"
+     ]
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Identification",
+   "name": "purchase_order",
+   "kind": "text",
+   "description": "Buyer purchase-order number.",
+   "reference": "PO-2026-082",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "C3"
+   ],
+   "control": "contract",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "C3"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [
+      "C3"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Parties",
+   "name": "supplier_name",
+   "kind": "text",
+   "description": "Supplier legal name.",
+   "reference": "Meridian Facilities BV",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Parties",
+   "name": "supplier_tax_id",
+   "kind": "text",
+   "description": "Supplier VAT or tax registration number.",
+   "reference": "NL853201943B01",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Parties",
+   "name": "supplier_country",
+   "kind": "text",
+   "description": "Supplier country, ISO-2.",
+   "reference": "NL",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Parties",
+   "name": "supplier_iban",
+   "kind": "text",
+   "description": "Supplier bank account (IBAN).",
+   "reference": "NL91ABNA0417164300",
+   "distinct_values": 2,
+   "varied_by": [
+    "account"
+   ],
+   "rules": [
+    "R11",
+    "R20",
+    "C9"
+   ],
+   "control": "contract",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R11",
+      "R20",
+      "C9"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [
+      "R11",
+      "C9"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Parties",
+   "name": "buyer_name",
+   "kind": "text",
+   "description": "Buyer (client) company name.",
+   "reference": "Northwind Operations",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Parties",
+   "name": "buyer_entity",
+   "kind": "text",
+   "description": "Buyer legal-entity code.",
+   "reference": "NW-DE-01",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "C10"
+   ],
+   "control": "contract",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "C10"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [
+      "C10"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Parties",
+   "name": "buyer_country",
+   "kind": "text",
+   "description": "Buyer country, ISO-2.",
+   "reference": "DE",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Parties",
+   "name": "buyer_cost_centre",
+   "kind": "text",
+   "description": "Buyer cost centre charged.",
+   "reference": "CC-4820",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Dates and terms",
+   "name": "period_start",
+   "kind": "date",
+   "description": "First day of the billed service period.",
+   "reference": "2026-08-01",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R6",
+    "R8",
+    "C5"
+   ],
+   "control": "contract",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R6",
+      "R8",
+      "C5"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +45 days",
+     "failed": [
+      "R6",
+      "R8"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Dates and terms",
+   "name": "period_end",
+   "kind": "date",
+   "description": "Last day of the billed service period.",
+   "reference": "2026-08-31",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R6",
+    "R7",
+    "R8",
+    "C5"
+   ],
+   "control": "contract",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R6",
+      "R7",
+      "R8",
+      "C5"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +45 days",
+     "failed": [
+      "R7"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Dates and terms",
+   "name": "delivery_date",
+   "kind": "date",
+   "description": "Date the service or goods were delivered.",
+   "reference": "2026-08-29",
+   "distinct_values": 2,
+   "varied_by": [
+    "delivery"
+   ],
+   "rules": [
+    "R8"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R8"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +45 days",
+     "failed": [
+      "R8"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Dates and terms",
+   "name": "invoice_date",
+   "kind": "date",
+   "description": "Invoice issue date.",
+   "reference": "2026-09-01",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R7",
+    "R9",
+    "R23"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R7",
+      "R9",
+      "R23"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +45 days",
+     "failed": [
+      "R9",
+      "R23"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Dates and terms",
+   "name": "payment_terms_days",
+   "kind": "int",
+   "description": "Payment term in days from the invoice date.",
+   "reference": "30",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R9"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R9"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +1",
+     "failed": [
+      "R9"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Dates and terms",
+   "name": "due_date",
+   "kind": "date",
+   "description": "Payment due date.",
+   "reference": "2026-10-01",
+   "distinct_values": 2,
+   "varied_by": [
+    "terms"
+   ],
+   "rules": [
+    "R9"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R9"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +45 days",
+     "failed": [
+      "R9"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Amounts",
+   "name": "currency",
+   "kind": "text",
+   "description": "Invoice currency, ISO-4217.",
+   "reference": "EUR",
+   "distinct_values": 2,
+   "varied_by": [
+    "currency"
+   ],
+   "rules": [
+    "C4"
+   ],
+   "control": "contract",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "C4"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [
+      "C4"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Amounts",
+   "name": "subtotal",
+   "kind": "money",
+   "description": "Sum of line amounts before discount and tax.",
+   "reference": "19000.00",
+   "distinct_values": 3,
+   "varied_by": [
+    "rate",
+    "limit"
+   ],
+   "rules": [
+    "R2",
+    "R4",
+    "R5",
+    "R16"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R2",
+      "R4",
+      "R5",
+      "R16"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +1.00",
+     "failed": [
+      "R2",
+      "R4",
+      "R5",
+      "R16"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Amounts",
+   "name": "discount_total",
+   "kind": "money",
+   "description": "Total discount granted.",
+   "reference": "0.00",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R3"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R3"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +1.00",
+     "failed": [
+      "R3"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Amounts",
+   "name": "tax_rate",
+   "kind": "fraction",
+   "description": "Headline tax rate as a fraction.",
+   "reference": "0.19",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R4",
+    "R14",
+    "R17"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R4",
+      "R14",
+      "R17"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +0.01",
+     "failed": [
+      "R4",
+      "R14",
+      "R17"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "typed as a percent (×100)",
+     "failed": [
+      "R4",
+      "R14",
+      "R17"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Amounts",
+   "name": "tax_amount",
+   "kind": "money",
+   "description": "Total tax charged.",
+   "reference": "3610.00",
+   "distinct_values": 3,
+   "varied_by": [
+    "rate",
+    "limit"
+   ],
+   "rules": [
+    "R4",
+    "R5",
+    "R17"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R4",
+      "R5",
+      "R17"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +1.00",
+     "failed": [
+      "R4",
+      "R5",
+      "R17"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Amounts",
+   "name": "total",
+   "kind": "money",
+   "description": "Invoice total payable, in the invoice currency.",
+   "reference": "22610.00",
+   "distinct_values": 4,
+   "varied_by": [
+    "total",
+    "rate",
+    "limit"
+   ],
+   "rules": [
+    "R5",
+    "R12"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R5",
+      "R12"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +1.00",
+     "failed": [
+      "R5",
+      "R12"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Amounts",
+   "name": "base_currency",
+   "kind": "text",
+   "description": "Buyer's reporting currency, ISO-4217.",
+   "reference": "EUR",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Amounts",
+   "name": "fx_rate",
+   "kind": "fraction",
+   "description": "Rate from invoice currency to base currency.",
+   "reference": "1.0000",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R12",
+    "R13"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R12",
+      "R13"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +0.01",
+     "failed": [
+      "R12",
+      "R13"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "typed as a percent (×100)",
+     "failed": [
+      "R12",
+      "R13"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Amounts",
+   "name": "total_in_base",
+   "kind": "money",
+   "description": "Invoice total converted to the base currency.",
+   "reference": "22610.00",
+   "distinct_values": 4,
+   "varied_by": [
+    "total",
+    "rate",
+    "limit"
+   ],
+   "rules": [
+    "R12"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R12"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +1.00",
+     "failed": [
+      "R12"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Delivery and logistics",
+   "name": "delivery_address",
+   "kind": "text",
+   "description": "Where the service was delivered.",
+   "reference": "Hafenstrasse 12, 20457 Hamburg",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Delivery and logistics",
+   "name": "delivery_country",
+   "kind": "text",
+   "description": "Delivery country, ISO-2.",
+   "reference": "DE",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Delivery and logistics",
+   "name": "incoterms",
+   "kind": "text",
+   "description": "Incoterms rule, e.g. DAP.",
+   "reference": "DAP",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R21"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R21"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [
+      "R21"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Delivery and logistics",
+   "name": "shipment_ref",
+   "kind": "text",
+   "description": "Shipment or dispatch reference.",
+   "reference": "SHP-2026-08-3391",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Delivery and logistics",
+   "name": "site_id",
+   "kind": "text",
+   "description": "Buyer site identifier.",
+   "reference": "SITE-HH-02",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Delivery and logistics",
+   "name": "site_contact",
+   "kind": "text",
+   "description": "Contact person at the delivery site.",
+   "reference": "operations@northwind.example",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Delivery and logistics",
+   "name": "delivery_note_ref",
+   "kind": "text",
+   "description": "Delivery note reference.",
+   "reference": "DN-2026-08-7741",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Tax detail",
+   "name": "tax_scheme",
+   "kind": "text",
+   "description": "Tax scheme applied, e.g. VAT.",
+   "reference": "VAT",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Tax detail",
+   "name": "tax_jurisdiction",
+   "kind": "text",
+   "description": "Jurisdiction whose tax rules apply.",
+   "reference": "DE",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Tax detail",
+   "name": "reverse_charge",
+   "kind": "text",
+   "description": "Whether reverse charge applies (Yes/No).",
+   "reference": "No",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R18"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "flipped",
+     "failed": [
+      "R18"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Tax detail",
+   "name": "exemption_code",
+   "kind": "text",
+   "description": "Tax exemption code, when one applies.",
+   "reference": null,
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Tax detail",
+   "name": "taxable_base",
+   "kind": "money",
+   "description": "Amount subject to tax.",
+   "reference": "19000.00",
+   "distinct_values": 3,
+   "varied_by": [
+    "rate",
+    "limit"
+   ],
+   "rules": [
+    "R16",
+    "R17"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R16",
+      "R17"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +1.00",
+     "failed": [
+      "R16",
+      "R17"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Tax detail",
+   "name": "non_taxable_base",
+   "kind": "money",
+   "description": "Amount not subject to tax.",
+   "reference": "0.00",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R16"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +1.00",
+     "failed": [
+      "R16"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Payment",
+   "name": "payment_method",
+   "kind": "text",
+   "description": "Payment method, e.g. SEPA transfer.",
+   "reference": "SEPA credit transfer",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Payment",
+   "name": "bank_name",
+   "kind": "text",
+   "description": "Supplier's bank.",
+   "reference": "ABN AMRO",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Payment",
+   "name": "bank_bic",
+   "kind": "text",
+   "description": "Supplier's bank BIC.",
+   "reference": "ABNANL2A",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R19",
+    "R20"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R19",
+      "R20"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [
+      "R19"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Payment",
+   "name": "remittance_ref",
+   "kind": "text",
+   "description": "Reference to quote on payment.",
+   "reference": "RF18 5390 0754 7034",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Payment",
+   "name": "early_payment_discount_pct",
+   "kind": "fraction",
+   "description": "Early-payment discount as a fraction.",
+   "reference": "0.02",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R22"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +0.01",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "typed as a percent (×100)",
+     "failed": [
+      "R22"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Payment",
+   "name": "late_fee_pct",
+   "kind": "fraction",
+   "description": "Late-payment fee as a fraction.",
+   "reference": "0.08",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R22"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +0.01",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "typed as a percent (×100)",
+     "failed": [
+      "R22"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Commercial terms",
+   "name": "contract_line_ref",
+   "kind": "text",
+   "description": "Contract line the invoice bills against.",
+   "reference": "CTR-2026-014-L3",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Commercial terms",
+   "name": "po_line_ref",
+   "kind": "text",
+   "description": "Purchase-order line reference.",
+   "reference": "PO-2026-082-010",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Commercial terms",
+   "name": "framework_agreement",
+   "kind": "text",
+   "description": "Framework agreement the contract sits under.",
+   "reference": "FA-2024-NW-07",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Commercial terms",
+   "name": "price_basis",
+   "kind": "text",
+   "description": "Pricing basis, e.g. rate card or fixed fee.",
+   "reference": "Rate card",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Commercial terms",
+   "name": "rate_card_version",
+   "kind": "text",
+   "description": "Version of the rate card used.",
+   "reference": "RC-2026.2",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Commercial terms",
+   "name": "renewal_flag",
+   "kind": "text",
+   "description": "Whether the contract is in renewal (Yes/No).",
+   "reference": "No",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "flipped",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Controls and audit",
+   "name": "submitted_by",
+   "kind": "text",
+   "description": "Person who submitted the invoice.",
+   "reference": "m.devries@meridian.example",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Controls and audit",
+   "name": "submitted_at",
+   "kind": "text",
+   "description": "Submission timestamp as written by the supplier.",
+   "reference": "2026-09-01T09:14:00Z",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R23"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R23"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Controls and audit",
+   "name": "prepared_by",
+   "kind": "text",
+   "description": "Person who prepared the invoice.",
+   "reference": "Meridian billing desk",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Controls and audit",
+   "name": "reviewed_by_supplier",
+   "kind": "text",
+   "description": "Supplier-side reviewer.",
+   "reference": "Yes",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "flipped",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Controls and audit",
+   "name": "revision_reason",
+   "kind": "text",
+   "description": "Why this version replaces the previous one.",
+   "reference": null,
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Controls and audit",
+   "name": "source_system",
+   "kind": "text",
+   "description": "Supplier system that produced the invoice.",
+   "reference": "Meridian Billing 4.2",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Evidence",
+   "name": "documents",
+   "kind": "text",
+   "description": "Supporting documents the supplier lists.",
+   "reference": "service-report, timesheet",
+   "distinct_values": 2,
+   "varied_by": [
+    "missing"
+   ],
+   "rules": [
+    "R15"
+   ],
+   "control": "contract",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R15"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [
+      "R15"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Evidence",
+   "name": "service_report_ref",
+   "kind": "text",
+   "description": "Service report reference.",
+   "reference": "SR-2026-08-014",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Evidence",
+   "name": "approval_ref",
+   "kind": "text",
+   "description": "Buyer approval reference.",
+   "reference": "AP-2026-08-221",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "Invoice",
+   "group": "Evidence",
+   "name": "supplier_note",
+   "kind": "text",
+   "description": "Free-text note from the supplier.",
+   "reference": "Synthetic reference submission.",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "LineItems",
+   "group": "LineItems",
+   "name": "service_code",
+   "kind": "text",
+   "description": "Rate-card code of the delivered service, e.g. maintenance-hour.",
+   "reference": "maintenance-hour",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R10",
+    "C6"
+   ],
+   "control": "contract",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "C6"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [
+      "C6"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "duplicated on a second line",
+     "failed": [
+      "R10",
+      "C6"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "LineItems",
+   "group": "LineItems",
+   "name": "description",
+   "kind": "text",
+   "description": "Free-text description of the delivered service.",
+   "reference": "Scheduled plant maintenance",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "LineItems",
+   "group": "LineItems",
+   "name": "quantity",
+   "kind": "number",
+   "description": "Delivered quantity, in `unit`.",
+   "reference": "100",
+   "distinct_values": 2,
+   "varied_by": [
+    "limit"
+   ],
+   "rules": [
+    "R1",
+    "R3"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R1",
+      "R3"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +1.00",
+     "failed": [
+      "R1",
+      "R3"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "LineItems",
+   "group": "LineItems",
+   "name": "unit",
+   "kind": "text",
+   "description": "Unit of measure: hour, visit, item, …",
+   "reference": "hour",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [],
+   "control": "none",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "altered",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "LineItems",
+   "group": "LineItems",
+   "name": "unit_rate",
+   "kind": "money",
+   "description": "Price per unit, in the invoice currency.",
+   "reference": "100.00",
+   "distinct_values": 2,
+   "varied_by": [
+    "rate"
+   ],
+   "rules": [
+    "R1",
+    "R3",
+    "C6"
+   ],
+   "control": "contract",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R1",
+      "R3",
+      "C6"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +1.00",
+     "failed": [
+      "R1",
+      "R3",
+      "C6"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "LineItems",
+   "group": "LineItems",
+   "name": "discount_pct",
+   "kind": "fraction",
+   "description": "Line discount as a fraction (0.05 = 5 %).",
+   "reference": "0.00",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R1"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +0.01",
+     "failed": [
+      "R1"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "typed as a percent (×100)",
+     "failed": [],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "LineItems",
+   "group": "LineItems",
+   "name": "line_tax_rate",
+   "kind": "fraction",
+   "description": "Tax rate on this line as a fraction.",
+   "reference": "0.19",
+   "distinct_values": 1,
+   "varied_by": [],
+   "rules": [
+    "R14"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R14"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +0.01",
+     "failed": [
+      "R14"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "typed as a percent (×100)",
+     "failed": [
+      "R14"
+     ],
+     "unverified": []
+    }
+   ]
+  },
+  {
+   "sheet": "LineItems",
+   "group": "LineItems",
+   "name": "amount",
+   "kind": "money",
+   "description": "Line net amount as stated by the supplier.",
+   "reference": "10000.00",
+   "distinct_values": 3,
+   "varied_by": [
+    "rate",
+    "limit"
+   ],
+   "rules": [
+    "R1",
+    "R2",
+    "R3"
+   ],
+   "control": "invoice",
+   "mutations": [
+    {
+     "mutation": "blank",
+     "failed": [
+      "R1",
+      "R2",
+      "R3"
+     ],
+     "unverified": []
+    },
+    {
+     "mutation": "shifted +1.00",
+     "failed": [
+      "R1",
+      "R2",
+      "R3"
+     ],
+     "unverified": []
+    }
+   ]
+  }
+ ],
+ "rules": [
+  {
+   "rule_id": "R1",
+   "label": "Line amounts equal quantity × rate less line discount",
+   "tier": 1,
+   "fan_in": 4
+  },
+  {
+   "rule_id": "R2",
+   "label": "Subtotal equals the sum of line amounts",
+   "tier": 1,
+   "fan_in": 2
+  },
+  {
+   "rule_id": "R3",
+   "label": "Discount total equals the sum of line discounts",
+   "tier": 1,
+   "fan_in": 4
+  },
+  {
+   "rule_id": "R4",
+   "label": "Tax amount equals subtotal × tax rate",
+   "tier": 1,
+   "fan_in": 3
+  },
+  {
+   "rule_id": "R5",
+   "label": "Invoice total equals subtotal plus tax",
+   "tier": 1,
+   "fan_in": 3
+  },
+  {
+   "rule_id": "R6",
+   "label": "Service period is ordered",
+   "tier": 1,
+   "fan_in": 2
+  },
+  {
+   "rule_id": "R7",
+   "label": "Invoice date follows the service period",
+   "tier": 1,
+   "fan_in": 2
+  },
+  {
+   "rule_id": "R8",
+   "label": "Delivery falls inside the service period",
+   "tier": 1,
+   "fan_in": 3
+  },
+  {
+   "rule_id": "R9",
+   "label": "Due date equals invoice date plus payment terms",
+   "tier": 1,
+   "fan_in": 3
+  },
+  {
+   "rule_id": "R10",
+   "label": "Service codes are unique",
+   "tier": 1,
+   "fan_in": 1
+  },
+  {
+   "rule_id": "R11",
+   "label": "Supplier IBAN passes the mod-97 checksum",
+   "tier": 1,
+   "fan_in": 1
+  },
+  {
+   "rule_id": "R12",
+   "label": "Base-currency total equals total × FX rate",
+   "tier": 1,
+   "fan_in": 3
+  },
+  {
+   "rule_id": "R13",
+   "label": "A same-currency invoice carries an FX rate of one",
+   "tier": 1,
+   "fan_in": 1
+  },
+  {
+   "rule_id": "R14",
+   "label": "Line tax rates agree with the invoice tax rate",
+   "tier": 1,
+   "fan_in": 2
+  },
+  {
+   "rule_id": "R15",
+   "label": "Required service reports are attached",
+   "tier": 1,
+   "fan_in": 2
+  },
+  {
+   "rule_id": "R16",
+   "label": "Taxable and non-taxable bases sum to the subtotal",
+   "tier": 1,
+   "fan_in": 3
+  },
+  {
+   "rule_id": "R17",
+   "label": "Tax is charged on the taxable base only",
+   "tier": 1,
+   "fan_in": 3
+  },
+  {
+   "rule_id": "R18",
+   "label": "A reverse-charge invoice carries no tax",
+   "tier": 1,
+   "fan_in": 1
+  },
+  {
+   "rule_id": "R19",
+   "label": "Bank BIC is well formed",
+   "tier": 1,
+   "fan_in": 1
+  },
+  {
+   "rule_id": "R20",
+   "label": "The IBAN's country agrees with the BIC's",
+   "tier": 1,
+   "fan_in": 2
+  },
+  {
+   "rule_id": "R21",
+   "label": "Incoterms is a recognised three-letter term",
+   "tier": 1,
+   "fan_in": 1
+  },
+  {
+   "rule_id": "R22",
+   "label": "Discount and late-fee rates are within sane bounds",
+   "tier": 1,
+   "fan_in": 2
+  },
+  {
+   "rule_id": "R23",
+   "label": "Submission timestamp is not before the invoice date",
+   "tier": 1,
+   "fan_in": 2
+  },
+  {
+   "rule_id": "C1",
+   "label": "Supplier matches contract",
+   "tier": 2,
+   "fan_in": 2
+  },
+  {
+   "rule_id": "C2",
+   "label": "Contract ID matches",
+   "tier": 2,
+   "fan_in": 1
+  },
+  {
+   "rule_id": "C3",
+   "label": "Purchase order matches",
+   "tier": 2,
+   "fan_in": 2
+  },
+  {
+   "rule_id": "C4",
+   "label": "Contract currency matches",
+   "tier": 2,
+   "fan_in": 2
+  },
+  {
+   "rule_id": "C5",
+   "label": "Service period within contract",
+   "tier": 2,
+   "fan_in": 3
+  },
+  {
+   "rule_id": "C6",
+   "label": "Rates match approved rate card",
+   "tier": 2,
+   "fan_in": 3
+  },
+  {
+   "rule_id": "C7",
+   "label": "Total within spending limit",
+   "tier": 2,
+   "fan_in": 1
+  },
+  {
+   "rule_id": "C8",
+   "label": "Invoice not previously approved",
+   "tier": 2,
+   "fan_in": 0
+  },
+  {
+   "rule_id": "C9",
+   "label": "Payment account matches the approved bank account",
+   "tier": 2,
+   "fan_in": 2
+  },
+  {
+   "rule_id": "C10",
+   "label": "Buyer entity matches the contract",
+   "tier": 2,
+   "fan_in": 2
+  }
+ ],
+ "scenarios": [
+  {
+   "kind": "clean",
+   "intended_rule": null,
+   "failed_rules": [],
+   "changed": [],
+   "total": 22610.0,
+   "limit_headroom": 2390.0,
+   "change_vs_prior": 0.19,
+   "advisory": false
+  },
+  {
+   "kind": "total",
+   "intended_rule": "R5",
+   "failed_rules": [
+    "R5"
+   ],
+   "changed": [
+    "total",
+    "total_in_base"
+   ],
+   "total": 22360.0,
+   "limit_headroom": 2640.0,
+   "change_vs_prior": 0.1768,
+   "advisory": false
+  },
+  {
+   "kind": "rate",
+   "intended_rule": "C6",
+   "failed_rules": [
+    "C6"
+   ],
+   "changed": [
+    "subtotal",
+    "tax_amount",
+    "total",
+    "total_in_base",
+    "taxable_base",
+    "unit_rate",
+    "amount"
+   ],
+   "total": 23800.0,
+   "limit_headroom": 1200.0,
+   "change_vs_prior": 0.2526,
+   "advisory": true
+  },
+  {
+   "kind": "missing",
+   "intended_rule": "R15",
+   "failed_rules": [
+    "R15"
+   ],
+   "changed": [
+    "documents"
+   ],
+   "total": 22610.0,
+   "limit_headroom": 2390.0,
+   "change_vs_prior": 0.19,
+   "advisory": false
+  },
+  {
+   "kind": "limit",
+   "intended_rule": "C7",
+   "failed_rules": [
+    "C7"
+   ],
+   "changed": [
+    "subtotal",
+    "tax_amount",
+    "total",
+    "total_in_base",
+    "taxable_base",
+    "quantity",
+    "amount"
+   ],
+   "total": 34510.0,
+   "limit_headroom": -9510.0,
+   "change_vs_prior": 0.8163,
+   "advisory": true
+  },
+  {
+   "kind": "currency",
+   "intended_rule": "C4",
+   "failed_rules": [
+    "C4"
+   ],
+   "changed": [
+    "currency"
+   ],
+   "total": 22610.0,
+   "limit_headroom": 2390.0,
+   "change_vs_prior": 0.19,
+   "advisory": false
+  },
+  {
+   "kind": "account",
+   "intended_rule": "C9",
+   "failed_rules": [
+    "C9"
+   ],
+   "changed": [
+    "supplier_iban"
+   ],
+   "total": 22610.0,
+   "limit_headroom": 2390.0,
+   "change_vs_prior": 0.19,
+   "advisory": false
+  },
+  {
+   "kind": "delivery",
+   "intended_rule": "R8",
+   "failed_rules": [
+    "R8"
+   ],
+   "changed": [
+    "delivery_date"
+   ],
+   "total": 22610.0,
+   "limit_headroom": 2390.0,
+   "change_vs_prior": 0.19,
+   "advisory": false
+  },
+  {
+   "kind": "terms",
+   "intended_rule": "R9",
+   "failed_rules": [
+    "R9"
+   ],
+   "changed": [
+    "due_date"
+   ],
+   "total": 22610.0,
+   "limit_headroom": 2390.0,
+   "change_vs_prior": 0.19,
+   "advisory": false
+  }
+ ],
+ "lines": [
+  {
+   "service_code": "maintenance-hour",
+   "unit": "hour",
+   "quantity": 100.0,
+   "unit_rate": 100.0,
+   "card_rate": 100.0,
+   "amount": 10000.0,
+   "share_of_subtotal": 0.5263157894736842
+  },
+  {
+   "service_code": "callout-visit",
+   "unit": "visit",
+   "quantity": 25.0,
+   "unit_rate": 180.0,
+   "card_rate": 180.0,
+   "amount": 4500.0,
+   "share_of_subtotal": 0.23684210526315788
+  },
+  {
+   "service_code": "parts-consumable",
+   "unit": "item",
+   "quantity": 50.0,
+   "unit_rate": 90.0,
+   "card_rate": 90.0,
+   "amount": 4500.0,
+   "share_of_subtotal": 0.23684210526315788
+  }
+ ],
+ "thresholds": {
+  "service_code": "maintenance-hour",
+  "reference_quantity": 100.0,
+  "variance_quantity": 102,
+  "limit_quantity": 121,
+  "spending_limit": 25000.0,
+  "variance_threshold": 0.2
+ }
+}
