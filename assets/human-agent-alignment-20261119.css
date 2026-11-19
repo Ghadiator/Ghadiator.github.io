@@ -1,0 +1,44 @@
+/* Restore the owner-preferred aligned swimlanes around the current, fitted agent cards. 
+   This public-export bridge mirrors OverviewHumanAgentCollaboration.tsx until next atomic export. */
+#human-agent-collaboration.gac-aligned-collab{overflow:hidden;border:1px solid #c6dfe4;border-radius:22px;background:#fff;box-shadow:0 14px 45px rgba(13,58,78,.075);padding:0!important}
+#human-agent-collaboration.gac-aligned-collab>header{background:radial-gradient(ellipse at 95% -30%,rgba(53,193,185,.20),transparent 47%),linear-gradient(105deg,#fff,#f5fbfc);padding:28px 28px 23px;border-left:5px solid #008f8b}
+#human-agent-collaboration.gac-aligned-collab>header h2{font-size:clamp(28px,3vw,36px);font-weight:800}
+#human-agent-collaboration.gac-aligned-collab>figure{display:block!important;margin:0;border:0!important;border-radius:0!important;box-shadow:none!important;padding:14px 0 0!important;overflow-x:auto;overscroll-behavior-x:contain}
+#human-agent-collaboration.gac-aligned-collab>figure>.grid{display:grid!important;grid-template-columns:176px minmax(0,1fr)!important;align-items:stretch;gap:12px;min-width:1450px;margin:0 20px}
+#human-agent-collaboration.gac-aligned-collab>figure>.grid>div:first-child{display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:flex-start!important;min-height:95px;padding:15px!important;border-radius:17px}
+#human-agent-collaboration.gac-aligned-collab>figure>.grid>div:first-child>span{margin-top:12px}
+#human-agent-collaboration.gac-aligned-collab>figure>.grid:nth-of-type(5){grid-template-columns:176px minmax(0,1fr) 161px!important}
+#human-agent-collaboration.gac-aligned-collab>figure>.grid.gac-execution-row{grid-template-columns:176px minmax(0,1fr) 161px!important}
+#human-agent-collaboration.gac-aligned-collab>figure>.grid.gac-execution-row>div:first-child{min-height:410px}
+#human-agent-collaboration.gac-aligned-collab>figure>.flex.justify-center{min-width:1450px;margin:3px 0}
+#human-agent-collaboration.gac-aligned-collab .gac-exec-body{position:relative;display:grid!important;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:11px;align-items:stretch;padding:68px 12px 14px!important;min-width:0;max-width:none}
+#human-agent-collaboration.gac-aligned-collab .gac-main-steps{display:grid!important;grid-template-columns:1fr 15px 1fr 15px 1fr 15px 1fr!important;align-items:stretch;gap:5px!important;grid-column:1;grid-row:1;min-width:0}
+#human-agent-collaboration.gac-aligned-collab .gac-main-steps li{min-width:0}
+#human-agent-collaboration.gac-aligned-collab .gac-main-steps article{min-height:256px}
+#human-agent-collaboration.gac-aligned-collab .gac-main-steps li>span[aria-hidden=true]{display:flex!important;align-items:center;justify-content:center}
+#human-agent-collaboration.gac-aligned-collab .gac-down-arrow{display:none!important}
+#human-agent-collaboration.gac-aligned-collab .gac-final-steps{display:grid!important;grid-template-columns:minmax(270px,1fr) 16px minmax(140px,.44fr)!important;align-items:stretch;gap:8px!important;grid-column:2;grid-row:1;min-width:0}
+#human-agent-collaboration.gac-aligned-collab .gac-final-steps>div:first-child{min-width:0;display:flex;flex-direction:column}
+#human-agent-collaboration.gac-aligned-collab .gac-final-steps [data-lane=exception-path]{flex:1;min-height:256px;display:flex;flex-direction:column;justify-content:center;padding:10px!important}
+#human-agent-collaboration.gac-aligned-collab .gac-final-steps [data-lane=exception-path]>.mt-2{margin-top:13px}
+#human-agent-collaboration.gac-aligned-collab .gac-final-steps [data-lane=fast-path]{display:none!important}
+#human-agent-collaboration.gac-aligned-collab .gac-final-steps>article{min-height:256px}
+#human-agent-collaboration.gac-aligned-collab .gac-support-row{grid-column:1/-1;grid-row:2;margin-top:3px;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:9px}
+#human-agent-collaboration.gac-aligned-collab .gac-independent-assurance{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;border:2px dashed #b4c4ce;border-radius:17px;background:#f9fbfd;padding:12px 9px;color:#284e62}
+#human-agent-collaboration.gac-aligned-collab .gac-independent-assurance strong{font-size:13px;line-height:1.35}
+#human-agent-collaboration.gac-aligned-collab .gac-independent-assurance a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;border-radius:10px;background:#edf5f8;padding:11px;text-decoration:none;color:#264e62;font-weight:700;font-size:12px}
+#human-agent-collaboration.gac-aligned-collab .gac-independent-assurance p{font-size:11px;line-height:1.5;color:#657b89}
+#human-agent-collaboration.gac-aligned-collab .gac-fast-overlay{grid-column:1/-1;grid-row:1;position:absolute;pointer-events:none;top:4px;left:49%;width:48%;height:58px;overflow:visible}
+#human-agent-collaboration.gac-aligned-collab .gac-mode{min-width:1450px;margin:0 20px 14px;padding:18px 24px;border:1px solid #c9dbe7;border-radius:16px;background:#f6fafc;display:grid;grid-template-columns:1fr 1fr;gap:12px 40px}
+#human-agent-collaboration.gac-aligned-collab .gac-mode h3{color:#183f58;font-size:12px;font-weight:800;margin:0 0 8px}
+#human-agent-collaboration.gac-aligned-collab .gac-mode-options{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;text-align:center;background:white;border:1px solid #c4d9e1;border-radius:10px;padding:4px;font-size:12px;font-weight:650;color:#526f80}
+#human-agent-collaboration.gac-aligned-collab .gac-mode-options>span{padding:9px 5px;border-radius:8px}
+#human-agent-collaboration.gac-aligned-collab .gac-mode-options>.selected{background:#00978e;color:#fff;font-weight:800}
+#human-agent-collaboration.gac-aligned-collab .gac-mode-note{grid-column:1/-1;color:#365c70;font-size:12px;line-height:1.6;display:flex;align-items:center;gap:8px}
+#human-agent-collaboration.gac-aligned-collab .gac-mode-note>span{color:#088a7b;font-weight:900}
+#human-agent-collaboration.gac-aligned-collab .gac-scroll-hint{margin:0;padding:9px 22px;font-size:12px;font-weight:700;color:#207b76;background:#eff8f7}
+#human-agent-collaboration.gac-aligned-collab>figure>.flex.flex-wrap{min-width:1450px;margin-top:12px;border-top:1px solid #d5e5e7;padding:13px 24px;background:#f7fbfc}
+@media(min-width:1550px){#human-agent-collaboration.gac-aligned-collab .gac-scroll-hint{display:none}}
+@media(max-width:1550px){#human-agent-collaboration.gac-aligned-collab .gac-scroll-hint{display:block}}
+@media(max-width:640px){#human-agent-collaboration.gac-aligned-collab>header{padding:21px 18px}#human-agent-collaboration.gac-aligned-collab>figure{padding-top:10px!important}}
+@media(prefers-reduced-motion:reduce){#human-agent-collaboration.gac-aligned-collab *{scroll-behavior:auto!important;transition:none!important}}
