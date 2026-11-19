@@ -54,38 +54,52 @@ const settle = page => page.waitForTimeout(1500);
         checks++;
       }
 
-      // ── Restored collaboration: aligned stages, fitted avatars, true bypass ──
+      // ── Original eight-stage figure; no two-row CSS reflow ──
       await page.goto(base + "/introduction/", { waitUntil: "load" });
-      await page.locator("#human-agent-collaboration[data-aligned-collaboration='1']").waitFor({ state: "attached", timeout: 15000 });
-      assert.equal(await page.locator("#human-agent-collaboration [data-lane='fast-path-bypass']").count(), 1,
-        "Fast path bypass highlight must be present");
-      const alignment = await page.evaluate(() => {
-        const figure = document.querySelector("#human-agent-collaboration");
-        const step = figure?.querySelector(".gac-main-steps article");
-        const exception = figure?.querySelector("[data-lane='exception-path']");
-        const human = figure?.querySelector(".gac-final-steps>article");
-        const mode = figure?.querySelector(".gac-mode");
-        const avatars = Array.from(exception?.querySelectorAll("a[href*='/ai-roles/']") || []);
-        const rect = el => el.getBoundingClientRect();
-        if (!step || !exception || !human || !mode || avatars.length !== 3) return null;
-        const ex = rect(exception);
+      await page.locator("#gac-horizontal-figure-20261119[data-horizontal-restored='original-8-step-svg']")
+        .waitFor({ state: "attached", timeout: 15000 });
+      const horizontal = await page.evaluate(async () => {
+        const section = document.getElementById("gac-horizontal-figure-20261119");
+        const image = section?.querySelector("img");
+        const scroller = section?.querySelector(".gac-horizontal-scroll");
+        if (!image || !scroller) return null;
+        if (!image.complete) await new Promise(resolve => { image.addEventListener("load",resolve,{once:true});image.addEventListener("error",resolve,{once:true}); });
+        const svg = await fetch(image.src).then(r => r.text());
         return {
-          aligned: Math.max(Math.abs(rect(step).top - ex.top), Math.abs(rect(human).top - ex.top)),
-          fitted: avatars.every(a => {
-            const b = rect(a);
-            return b.left >= ex.left - 2 && b.right <= ex.right + 2
-              && b.top >= ex.top - 2 && b.bottom <= ex.bottom + 2;
-          }),
-          mode: mode.textContent.includes("Human-led agent operations"),
-          attackerOutside: Boolean(figure.querySelector(".gac-independent-assurance a[href*='#attacker']")),
-          horizontalScrollInsideFigure: Boolean(figure.querySelector("figure").scrollWidth > figure.querySelector("figure").clientWidth),
+          loaded: image.naturalWidth === 1800 && image.naturalHeight === 1140,
+          original: svg.includes('x="245" y="600"') && svg.includes('x="1424" y="600"'),
+          eight: (svg.match(/text x=".*?" y="625"/g)||[]).length >= 8,
+          bypass: svg.includes('gac-fast-path-bypass') && svg.includes('FAST PATH · SKIP STEP 5'),
+          human: svg.includes('HUMAN SIGN-OFF'),
+          committee: ["Proponent","Opponent","CoVe","Judge"].every(x=>svg.includes(x)),
+          scroller: scroller.scrollWidth > scroller.clientWidth,
+          olderRowRemoved: !document.getElementById("human-agent-collaboration")
         };
       });
-      assert.ok(alignment, "Collaboration restoration did not mount");
-      assert.ok(alignment.aligned <= 5, `Workflow cards lost horizontal alignment: ${alignment.aligned}px`);
-      assert.ok(alignment.fitted, "Tier-3 agents extend beyond their exception block");
-      assert.ok(alignment.mode && alignment.attackerOutside, "Operating model or isolated assurance missing");
-      if (viewport.width < 1200) assert.ok(alignment.horizontalScrollInsideFigure, "Small viewports need an internal horizontal scroll");
+      assert.ok(horizontal, "Horizontal SVG not mounted");
+      assert.ok(horizontal.loaded && horizontal.original && horizontal.bypass && horizontal.human && horizontal.committee,
+        "The original horizontal figure or its true bypass is missing: " + JSON.stringify(horizontal));
+      assert.ok(horizontal.olderRowRemoved, "The new two-row component is still displayed");
+      if(viewport.width < 1200) assert.ok(horizontal.scroller, "Small viewports must scroll inside the figure");
+
+      // ── Failure Lab: threat taxonomy, local challenge and collapsed campaign ──
+      await page.goto(base + "/red-team/", { waitUntil: "load" });
+      await page.locator("#gac-failure-lab-20261119").waitFor({ state: "attached", timeout: 15000 });
+      assert.equal(await page.locator("#gac-failure-lab-20261119 .fl-threat").count(), 6, "Six grounded threat categories");
+      assert.ok((await page.locator("#gac-failure-lab-20261119").innerText()).includes("Obfuscation & encoding evasion"));
+      const campaign = page.locator("#gac-recorded-red-team-20261119");
+      await campaign.waitFor({ state: "attached", timeout: 15000 });
+      assert.equal(await campaign.evaluate(el=>el.open), false, "Recorded red team should start collapsed");
+      await page.locator("#fl-select").selectOption("obfuscation");
+      await page.getByRole("button",{name:/Load a sample/}).click();
+      await page.getByRole("button",{name:/Inspect the attempt/}).click();
+      assert.ok((await page.locator(".fl-result").innerText()).includes("Teaching analysis"),
+        "Challenge me must return a clearly labelled local analysis");
+      await campaign.locator("summary").click();
+      assert.equal(await campaign.locator("[data-attack]").count(),7, "Recorded control probes remain accessible");
+      const topLinks = await page.locator(".public-sidebar .public-nav a").evaluateAll(as=>as.map(a=>a.getAttribute("href")));
+      assert.ok(topLinks.indexOf("/red-team") === topLinks.indexOf("/architecture")+1,
+        "Failure Lab should be directly after Architecture in the sidebar");
 
       // ── System card must render complete, domain-neutral ADRs ──
       await page.goto(base + "/system-card/", { waitUntil: "load" });
