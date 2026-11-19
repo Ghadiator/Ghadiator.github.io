@@ -29,3 +29,46 @@ jobs:
           assert obj['previous_public_site_commit']=='fbb9a3302170ce594510e0fe86e64d5f163711c8'
           print('Native Pages release manifest and static routes checked')
           PY
+
+      - name: Validate the public system card and the shipped vocabulary
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          node --check assets/system-card-refined-20261119.js
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          data = json.loads(Path("data/system-card-public.json").read_text())
+          decisions = data["decisions"]
+          assert len(decisions) >= 20, "Public ADR catalogue too small"
+          ids = [d["id"] for d in decisions]
+          assert len(ids) == len(set(ids)), "Duplicate ADR IDs"
+          assert ids == sorted(ids), "Source ADR IDs should be in source order"
+          assert all(all(str(d.get(k, "")).strip() for k in
+                         ("id", "group", "title", "why", "choice", "limit"))
+                     for d in decisions), "Empty public ADR fields"
+          page = Path("system-card/index.html").read_text(encoding="utf-8")
+          assert 'id="gac-system-card-app"' in page
+
+          # Every page, data file and script the live pages load must be free
+          # of the retired insurance vocabulary and of the excluded ADR-082.
+          forbidden = re.compile(
+              r"\b(?:insurance|insurers?|medical|reinsurance|underwriting|"
+              r"actuarial|premiums?|ibnr|broker)\b", re.IGNORECASE)
+          pages = [p for p in Path(".").rglob("*.html") if ".git" not in p.parts]
+          sources = set(pages) | set(Path("data").glob("*.json")) | {
+              Path("data/system-card.md"), Path("assets/system-card-refined-20261119.js")}
+          for html in pages:
+              for ref in re.findall(r'/_next/static/[^"\']+\.js', html.read_text(encoding="utf-8")):
+                  sources.add(Path(ref.lstrip("/")))
+          for path in sorted(sources):
+              if not path.exists():
+                  continue
+              content = path.read_text(encoding="utf-8")
+              hit = forbidden.search(content)
+              assert not hit, f"Legacy-domain term {hit.group(0)!r} in {path}"
+              assert "ADR-082" not in content, f"Excluded ADR in {path}"
+          print(f"Public system card: {len(decisions)} entries; {len(sources)} shipped files carry no legacy-domain term")
+          PY
