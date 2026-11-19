@@ -54,6 +54,39 @@ const settle = page => page.waitForTimeout(1500);
         checks++;
       }
 
+      // ── Restored collaboration: aligned stages, fitted avatars, true bypass ──
+      await page.goto(base + "/introduction/", { waitUntil: "load" });
+      await page.locator("#human-agent-collaboration[data-aligned-collaboration='1']").waitFor({ state: "attached", timeout: 15000 });
+      assert.equal(await page.locator("#human-agent-collaboration [data-lane='fast-path-bypass']").count(), 1,
+        "Fast path bypass highlight must be present");
+      const alignment = await page.evaluate(() => {
+        const figure = document.querySelector("#human-agent-collaboration");
+        const step = figure?.querySelector(".gac-main-steps article");
+        const exception = figure?.querySelector("[data-lane='exception-path']");
+        const human = figure?.querySelector(".gac-final-steps>article");
+        const mode = figure?.querySelector(".gac-mode");
+        const avatars = Array.from(exception?.querySelectorAll("a[href*='/ai-roles/']") || []);
+        const rect = el => el.getBoundingClientRect();
+        if (!step || !exception || !human || !mode || avatars.length !== 3) return null;
+        const ex = rect(exception);
+        return {
+          aligned: Math.max(Math.abs(rect(step).top - ex.top), Math.abs(rect(human).top - ex.top)),
+          fitted: avatars.every(a => {
+            const b = rect(a);
+            return b.left >= ex.left - 2 && b.right <= ex.right + 2
+              && b.top >= ex.top - 2 && b.bottom <= ex.bottom + 2;
+          }),
+          mode: mode.textContent.includes("Human-led agent operations"),
+          attackerOutside: Boolean(figure.querySelector(".gac-independent-assurance a[href*='#attacker']")),
+          horizontalScrollInsideFigure: Boolean(figure.querySelector("figure").scrollWidth > figure.querySelector("figure").clientWidth),
+        };
+      });
+      assert.ok(alignment, "Collaboration restoration did not mount");
+      assert.ok(alignment.aligned <= 5, `Workflow cards lost horizontal alignment: ${alignment.aligned}px`);
+      assert.ok(alignment.fitted, "Tier-3 agents extend beyond their exception block");
+      assert.ok(alignment.mode && alignment.attackerOutside, "Operating model or isolated assurance missing");
+      if (viewport.width < 1200) assert.ok(alignment.horizontalScrollInsideFigure, "Small viewports need an internal horizontal scroll");
+
       // ── System card must render complete, domain-neutral ADRs ──
       await page.goto(base + "/system-card/", { waitUntil: "load" });
       await page.locator(".sc-card").first().waitFor({ state: "visible", timeout: 15000 });
