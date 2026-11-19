@@ -1,0 +1,17 @@
+/* Extends the existing Failure Lab editorial tokens for an attacker-versus-
+   actual sandbox LLM interaction, without fake browser-scored verdicts. */
+#gac-failure-lab-20261119 #challenge-me .fl-challenge-target{margin-top:11px;padding:11px 12px;border:1px solid #bfe2d7;border-radius:10px;background:#fff;font:700 12px/1.6 ui-monospace,SFMono-Regular,Consolas,monospace;color:#247064;overflow-wrap:anywhere}
+#gac-failure-lab-20261119 #challenge-me .fl-hint-box{margin-top:17px;border:1px solid #c3dfd6;background:#e8f5f0;border-radius:12px;padding:12px 15px;min-height:60px}
+#gac-failure-lab-20261119 #challenge-me .fl-hint-box p{font-size:12px;line-height:1.7;margin:3px 0;color:#35695d}
+#gac-failure-lab-20261119 #challenge-me .fl-exchange{padding-top:16px;margin-top:15px;border-top:1px solid #e4efeb}
+#gac-failure-lab-20261119 #challenge-me .fl-exchange p{overflow-wrap:anywhere}
+#gac-failure-lab-20261119 #challenge-me .fl-attack-text{margin:9px 0 14px;border:1px solid #f0dacb;border-radius:10px;background:#fff4ed;padding:12px;color:#684c3d;font:12px/1.7 ui-monospace,monospace}
+#gac-failure-lab-20261119 #challenge-me .fl-reply-text{margin:9px 0 14px;border:1px solid #c7e5d6;border-radius:10px;background:#edf9f3;padding:12px;color:#235e55;font-size:13px;line-height:1.7;white-space:pre-wrap}
+#gac-failure-lab-20261119 #challenge-me .fl-model-held,#gac-failure-lab-20261119 #challenge-me .fl-model-win{font-size:12px;font-weight:800;line-height:1.6}
+#gac-failure-lab-20261119 #challenge-me .fl-model-held{color:#267a69}
+#gac-failure-lab-20261119 #challenge-me .fl-model-win{color:#ab5631}
+#gac-failure-lab-20261119 #challenge-me .fl-challenge-warning{margin-top:14px;padding:12px;background:#eff8f5;border-radius:10px;font-size:12px;color:#39756c;line-height:1.6}
+#gac-failure-lab-20261119 #challenge-me #fl-defender-status{max-width:450px;line-height:1.6;white-space:normal;text-align:center}
+#gac-failure-lab-20261119 #challenge-me button:focus-visible,#gac-failure-lab-20261119 #challenge-me select:focus-visible,#gac-failure-lab-20261119 #challenge-me textarea:focus-visible{outline:3px solid #0b9990;outline-offset:2px}
+#gac-failure-lab-20261119 #challenge-me .fl-challengebody>.fl-result{align-self:stretch}
+@media(max-width:760px){#gac-failure-lab-20261119 #challenge-me #fl-defender-status{text-align:left}}
