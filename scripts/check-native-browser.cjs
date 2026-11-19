@@ -18,7 +18,7 @@ const routes = [
   "/", "/introduction/", "/business-impact/", "/use-case-assessment/", "/architecture/",
   "/ai-roles/", "/context-engineering/", "/governance/", "/governance-code/", "/ai-assurance/",
   "/red-team/", "/safety/", "/safety-origin/", "/workspace/", "/cases/", "/dashboard/",
-  "/token-economics/", "/audit/", "/pool-analytics/", "/upload/", "/integration/"
+  "/token-economics/", "/audit/", "/pool-analytics/", "/upload/", "/integration/", "/system-card/"
 ];
 const widths = [
   { width: 390, height: 844, label: "mobile" },
@@ -53,6 +53,19 @@ const settle = page => page.waitForTimeout(1500);
         assert.ok(size.body <= size.width + 1, `${viewport.label} ${route}: horizontal overflow ${size.body}>${size.width}`);
         checks++;
       }
+
+      // ── System card must render complete, domain-neutral ADRs ──
+      await page.goto(base + "/system-card/", { waitUntil: "load" });
+      await page.locator(".sc-card").first().waitFor({ state: "visible", timeout: 15000 });
+      assert.equal(await page.locator(".sc-card").count(), 11, "Featured ADR count");
+      await page.getByRole("button", { name: "All", exact: true }).click();
+      assert.equal(await page.locator(".sc-card").count(), 35, "All public ADRs must have content");
+      await page.locator(".sc-card summary").first().click();
+      assert.ok((await page.locator(".sc-detail").first().textContent()).includes("Design decision"),
+        "Expanded ADR has a decision");
+      await page.getByRole("searchbox", { name: "Search architecture decisions" }).fill("ADR-082");
+      assert.equal(await page.locator(".sc-card").count(), 0, "Excluded ADR must not appear");
+      await page.getByRole("searchbox", { name: "Search architecture decisions" }).fill("");
 
       // ── Recorded-evidence panels must render ──
       await page.goto(base + "/architecture/", { waitUntil: "load" });

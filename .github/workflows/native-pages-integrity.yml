@@ -29,3 +29,42 @@ jobs:
           assert obj['previous_public_site_commit']=='fbb9a3302170ce594510e0fe86e64d5f163711c8'
           print('Native Pages release manifest and static routes checked')
           PY
+
+      - name: Validate the public system card and ADR catalogue
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          node --check assets/system-card-refined-20261119.js
+          node --check _next/static/chunks/app/system-card/page-4dded9dd62850795.js
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          data = json.loads(Path("data/system-card-public.json").read_text())
+          decisions = data["decisions"]
+          assert len(decisions) >= 20, "Public ADR catalogue too small"
+          ids = [d["id"] for d in decisions]
+          assert len(ids) == len(set(ids)), "Duplicate ADR IDs"
+          assert ids == sorted(ids), "Source ADR IDs should be in source order"
+          assert all(all(str(d.get(k, "")).strip() for k in
+                         ("id", "group", "title", "why", "choice", "limit"))
+                     for d in decisions), "Empty public ADR fields"
+          forbidden = re.compile(
+              r"\b(?:insurance|medical|reinsurance|underwriting|actuarial|"
+              r"premiums?|ibnr|broker)\b", re.IGNORECASE)
+          sources = [
+              Path("data/system-card-public.json"),
+              Path("data/system-card.md"),
+              Path("system-card/index.html"),
+              Path("assets/system-card-refined-20261119.js"),
+          ]
+          for path in sources:
+              content = path.read_text(encoding="utf-8")
+              assert not forbidden.search(content), f"Legacy-domain term in {path}"
+              assert "ADR-082" not in content, f"Excluded ADR in {path}"
+          page = Path("system-card/index.html").read_text(encoding="utf-8")
+          assert 'id="gac-system-card-app"' in page
+          assert 'assets/system-card-refined-20261119.js' in page
+          print(f"Public system card: {len(decisions)} complete entries; exclusion and page checks passed")
+          PY

@@ -1,0 +1,55 @@
+/* System card: engineering editorial, scoped to its own route */
+#gac-system-card-app{max-width:1320px;margin:auto;padding:clamp(18px,3vw,52px);color:#193443}
+#gac-system-card-app *{box-sizing:border-box}
+#gac-system-card-app .sc-hero{position:relative;overflow:hidden;background:linear-gradient(120deg,#102b3d 0%,#124a55 62%,#176b70);border-radius:22px;padding:clamp(28px,4vw,56px);color:#e9f8f7;box-shadow:0 16px 42px #153f491f}
+#gac-system-card-app .sc-hero:after{content:"";position:absolute;pointer-events:none;right:-12%;top:-48%;width:60%;aspect-ratio:1;border-radius:50%;border:1px solid #ffffff24;box-shadow:0 0 0 35px #ffffff08,0 0 0 85px #ffffff06,0 0 0 145px #ffffff04}
+#gac-system-card-app .sc-eyebrow{display:block;color:#2b8887;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin:0 0 12px}
+#gac-system-card-app .sc-hero .sc-eyebrow{color:#8de1d2}
+#gac-system-card-app h1{color:#fff;font-size:clamp(35px,4.4vw,56px);font-weight:760;letter-spacing:-.05em;line-height:1.06;margin:9px 0 18px}
+#gac-system-card-app .sc-hero p{color:#d4ecee;max-width:760px;font-size:clamp(15px,1.4vw,18px);line-height:1.65;margin:0}
+#gac-system-card-app .sc-hero-foot{margin-top:23px;display:inline-flex;gap:10px;align-items:center;border:1px solid #c2f2e65b;border-radius:100px;padding:9px 15px;color:#e2fff8;font-size:12px;font-weight:750;background:#061e2b55}
+#gac-system-card-app .sc-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#80e8cf}
+#gac-system-card-app .sc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0 40px}
+#gac-system-card-app .sc-stat{border:1px solid #d7e5ea;border-radius:16px;background:white;padding:22px 24px}
+#gac-system-card-app .sc-stat strong{display:block;color:#123c4a;font-size:28px;line-height:1.1;letter-spacing:-.03em}
+#gac-system-card-app .sc-stat span{display:block;margin-top:5px;color:#5c7281;font-size:12px;line-height:1.45}
+#gac-system-card-app h2{color:#183b4a;font-size:clamp(23px,2.5vw,31px);letter-spacing:-.035em;line-height:1.2;margin:0 0 10px;font-weight:760}
+#gac-system-card-app .sc-lead{max-width:790px;color:#556d78;font-size:14px;line-height:1.75;margin:0 0 20px}
+#gac-system-card-app .sc-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+#gac-system-card-app .sc-step{border:1px solid #d7e6e7;border-radius:16px;background:linear-gradient(180deg,#fff,#f5f9fa);padding:21px 17px;min-height:135px}
+#gac-system-card-app .sc-step b{font-size:12px;color:#1b898b;letter-spacing:.09em}
+#gac-system-card-app .sc-step h3{font-size:16px;color:#173c4a;font-weight:750;margin:12px 0 6px}
+#gac-system-card-app .sc-step p{font-size:12px;color:#627b85;line-height:1.55;margin:0}
+#gac-system-card-app .sc-boundary{padding:21px 24px;border-radius:15px;background:#e9f7f3;border:1px solid #bde7d9;color:#285c5d;margin:0 0 46px}
+#gac-system-card-app .sc-boundary strong{display:block;color:#15565a;margin-bottom:5px;font-size:13px}
+#gac-system-card-app .sc-boundary p{font-size:13px;line-height:1.7;margin:0}
+#gac-system-card-app .sc-tools{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin:21px 0 12px}
+#gac-system-card-app .sc-search{flex:1;min-width:210px;border:1px solid #cbdde3;border-radius:11px;background:white;padding:12px 14px;color:#193c48;font:inherit;font-size:13px}
+#gac-system-card-app .sc-filter{border:1px solid #d3e1e5;border-radius:22px;padding:10px 14px;color:#425f6e;background:#fff;font:inherit;font-size:12px;font-weight:750;cursor:pointer}
+#gac-system-card-app .sc-filter:hover{background:#edf8f6;border-color:#75bab4}
+#gac-system-card-app .sc-filter[aria-pressed=true]{background:#164b57;border-color:#164b57;color:#fff}
+#gac-system-card-app .sc-count{color:#647d8a;font-size:12px;margin:7px 0 15px}
+#gac-system-card-app .sc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#gac-system-card-app details.sc-card{align-self:start;border:1px solid #dce6eb;border-radius:16px;background:#fff;box-shadow:0 5px 19px #163b490a;overflow:hidden}
+#gac-system-card-app details.sc-card[open]{border-color:#7bc2bb;box-shadow:0 8px 22px #125d671c}
+#gac-system-card-app .sc-card summary{list-style:none;display:grid;grid-template-columns:41px 1fr 20px;gap:12px;padding:18px;cursor:pointer}
+#gac-system-card-app .sc-card summary::-webkit-details-marker{display:none}
+#gac-system-card-app .sc-no{display:grid;place-items:center;border-radius:11px;width:40px;height:40px;background:#e7f3f3;color:#1b7076;font-size:14px;font-weight:800}
+#gac-system-card-app .sc-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 6px}
+#gac-system-card-app .sc-ref{font-size:11px;color:#137887;font-weight:800;letter-spacing:.03em}
+#gac-system-card-app .sc-tag{font-size:10px;color:#526c7a;background:#f0f5f6;border:1px solid #e3edef;border-radius:100px;padding:3px 8px}
+#gac-system-card-app .sc-cardtitle{font-size:15px;line-height:1.38;font-weight:740;color:#173c4a}
+#gac-system-card-app .sc-plus{font-size:22px;color:#43868b;line-height:1.25;transition:transform .2s}
+#gac-system-card-app details[open] .sc-plus{transform:rotate(45deg)}
+#gac-system-card-app .sc-detail{border-top:1px solid #e5eef1;padding:5px 19px 20px}
+#gac-system-card-app .sc-detail h4{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:#267b82;font-weight:800;margin:14px 0 5px}
+#gac-system-card-app .sc-detail p{color:#4e6875;font-size:13px;line-height:1.67;margin:0}
+#gac-system-card-app .sc-detail h4:last-of-type{color:#9c723c}
+#gac-system-card-app .sc-empty{grid-column:1/-1;text-align:center;padding:40px;border:1px dashed #adc7cd;border-radius:14px;color:#56717c;font-size:13px}
+#gac-system-card-app .sc-note{background:#f2f7f8;border-left:3px solid #3eb4a9;border-radius:0 12px 12px 0;padding:17px 20px;margin:26px 0;color:#526f7c;font-size:12px;line-height:1.7}
+#gac-system-card-app .sc-links{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}
+#gac-system-card-app .sc-links a{padding:11px 15px;background:#fff;border:1px solid #d2e4e6;border-radius:10px;color:#156d79;font-size:12px;font-weight:750;text-decoration:none}
+#gac-system-card-app .sc-links a:hover{background:#eaf7f4}
+@media(max-width:1080px){#gac-system-card-app .sc-grid{grid-template-columns:1fr}#gac-system-card-app .sc-flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:630px){#gac-system-card-app{padding:15px}#gac-system-card-app .sc-hero{border-radius:17px;padding:29px 22px}#gac-system-card-app .sc-stats{grid-template-columns:repeat(2,minmax(0,1fr))}#gac-system-card-app .sc-stat:last-child{grid-column:1/-1}#gac-system-card-app .sc-flow{gap:8px}#gac-system-card-app .sc-step{padding:15px 12px}}
+@media(prefers-reduced-motion:reduce){#gac-system-card-app *{transition:none!important}}
