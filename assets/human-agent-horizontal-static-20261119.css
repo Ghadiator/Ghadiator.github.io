@@ -1,0 +1,10 @@
+/* Restored original eight-stage horizontal figure: the page uses the SVG itself,
+   not CSS reflow of the later two-row React component. */
+#gac-horizontal-figure-20261119{display:block;scroll-margin-top:6rem;max-width:100%}
+#gac-horizontal-figure-20261119 .gac-horizontal-scroll{overflow-x:auto;overscroll-behavior-x:contain;border:1px solid #c6dfe4;border-radius:20px;background:white;box-shadow:0 14px 45px rgba(13,58,78,.075)}
+#gac-horizontal-figure-20261119 img{display:block;width:100%;min-width:1420px;height:auto}
+#gac-horizontal-figure-20261119 .gac-horizontal-hint{margin:9px 0 0;color:#207e74;font-weight:750;font-size:12px}
+#gac-horizontal-figure-20261119 .gac-horizontal-caption{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:13px;padding-top:10px}
+#gac-horizontal-figure-20261119 .gac-horizontal-caption p{margin:0;max-width:760px;color:#597681;line-height:1.6;font-size:12px}
+#gac-horizontal-figure-20261119 .gac-horizontal-caption a{color:#087d76;font-weight:750;text-decoration:underline;text-underline-offset:3px;font-size:12px}
+@media(min-width:1450px){#gac-horizontal-figure-20261119 .gac-horizontal-hint{display:none}}
