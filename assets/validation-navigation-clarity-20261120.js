@@ -87,13 +87,146 @@
     }).join("");
   }
 
+  // This is the public, recorded reference to the *same* 15-case register.
+  // It is a queue-style projection of the pinned source, not a second
+  // operational database, a generated example, or a live HITL endpoint.
+  var PUBLIC_CASES_GIT_BLOB = "0a60ad3044c06d37e21fbef1a3bd6218044643c6";
+  function queueEsc(input) {
+    return String(input == null ? "" : input).replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function queuePriority(record) {
+    if (record.state === "Awaiting_reviewer") return 0;
+    if (record.state === "Awaiting_supplier") return 1;
+    return 2;
+  }
+  function queueLabel(record) {
+    var names = {
+      Awaiting_reviewer: "Awaiting reviewer",
+      Awaiting_supplier: "Awaiting supplier",
+      Approved: "Approved",
+      Rejected: "Rejected",
+      Intake_rejected: "Intake rejected"
+    };
+    return names[record.state] || "Unknown recorded state";
+  }
+  async function readVerifiedCases() {
+    var response = await fetch("/data/cases.json", { cache: "no-store", credentials: "omit" });
+    if (!response.ok) throw new Error("Recorded case register is unavailable (" + response.status + ").");
+    if (!window.crypto || !window.crypto.subtle) throw new Error("Source identity verification unavailable.");
+    var bytes = new Uint8Array(await response.arrayBuffer());
+    var header = new TextEncoder().encode("blob " + bytes.byteLength + "\u0000");
+    var payload = new Uint8Array(header.length + bytes.length);
+    payload.set(header);
+    payload.set(bytes, header.length);
+    var digest = await window.crypto.subtle.digest("SHA-1", payload);
+    var sha = Array.from(new Uint8Array(digest))
+      .map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+    if (sha !== PUBLIC_CASES_GIT_BLOB) {
+      throw new Error("Recorded case data changed from its verified source. Queue withheld.");
+    }
+    var file = JSON.parse(new TextDecoder().decode(bytes));
+    if (!Array.isArray(file.cases) || file.cases.length !== 15 ||
+        new Set(file.cases.map(function (c) { return c.slug; })).size !== 15 ||
+        file.cases.some(function (c) {
+          return !/^supplier_[a-z_]+$/.test(c.slug) ||
+            !["Awaiting_reviewer", "Awaiting_supplier", "Approved", "Rejected", "Intake_rejected"].includes(c.state) ||
+            !Number.isInteger(c.event_count) || typeof c.title !== "string";
+        })) throw new Error("Recorded case register has an unexpected structure.");
+    return file.cases.map(function (c, original) {
+      return Object.assign({ order: original }, c);
+    }).sort(function (a, b) {
+      return queuePriority(a) - queuePriority(b) || a.order - b.order;
+    });
+  }
+  function queueRender(host, items, filter, search) {
+    var table = host.querySelector("[data-gac-queue-rows]");
+    var summary = host.querySelector("[data-gac-queue-status]");
+    if (!table || !summary) return;
+    var active = items.filter(function (item) { return queuePriority(item) < 2; });
+    var selected = items.filter(function (item) {
+      if (filter === "attention" && queuePriority(item) >= 2) return false;
+      var q = search.toLowerCase().trim();
+      return !q || [item.slug, item.title, item.state, item.route || ""]
+        .join(" ").toLowerCase().includes(q);
+    });
+    summary.textContent =
+      items.filter(function (c) { return c.state === "Awaiting_reviewer"; }).length +
+      " awaiting reviewer · " +
+      items.filter(function (c) { return c.state === "Awaiting_supplier"; }).length +
+      " awaiting supplier · " +
+      (items.length - active.length) + " other recorded outcomes · " +
+      selected.length + " shown";
+    if (!selected.length) {
+      table.innerHTML = '<tr><td colspan="4" class="gac-queue-empty">No recorded cases match this filter.</td></tr>';
+      return;
+    }
+    table.innerHTML = selected.map(function (c) {
+      var activeState = queuePriority(c) < 2;
+      return '<tr class="' + (activeState ? 'gac-queue-pending' : '') + '">' +
+        '<td><a class="gac-queue-case" href="/case/?id=' +
+          encodeURIComponent(c.slug) + '#source-evidence">' +
+          queueEsc(c.slug.replace(/^supplier_/, "").replace(/_/g, "-")) +
+          '</a><span class="gac-queue-title">' + queueEsc(c.title) + '</span></td>' +
+        '<td><span class="gac-queue-state' + (activeState ? ' is-pending' : '') +
+          '">' + queueEsc(queueLabel(c)) + '</span></td>' +
+        '<td><span class="gac-queue-route">' + queueEsc(c.route || "Intake boundary") +
+          '</span><span class="gac-queue-detail">' + c.event_count +
+          ' recorded events · ' + (Number(c.attempts) || 0) + ' attempt(s)</span></td>' +
+        '<td><a class="gac-queue-review" href="/case/?id=' +
+          encodeURIComponent(c.slug) + '#source-evidence">Inspect evidence →</a></td>' +
+        '</tr>';
+    }).join("");
+  }
+  async function initializeQueue(host) {
+    if (!host || host.dataset.gacQueueReady === "true") return;
+    host.dataset.gacQueueReady = "true";
+    var output = host.querySelector("[data-gac-queue-rows]");
+    var filterInput = host.querySelector("[data-gac-queue-filter]");
+    var searchInput = host.querySelector("[data-gac-queue-search]");
+    if (!output || !filterInput || !searchInput) return;
+    try {
+      var cases = await readVerifiedCases();
+      if (!host.isConnected) return;
+      function update() {
+        queueRender(host, cases, filterInput.value, searchInput.value);
+      }
+      filterInput.addEventListener("change", update);
+      searchInput.addEventListener("input", update);
+      update();
+    } catch (error) {
+      if (!host.isConnected) return;
+      output.innerHTML = '<tr><td colspan="4" class="gac-queue-empty" role="alert">' +
+        queueEsc(error.message) + '</td></tr>';
+      var summary = host.querySelector("[data-gac-queue-status]");
+      if (summary) summary.textContent = "Recorded evidence unavailable; no unverified queue will be shown.";
+    }
+  }
+
   var workspaceHTML =
     '<section id="gac-workspace-guide" class="gac-clarity-hub gac-ops-workspace" aria-labelledby="gac-workspace-title">' +
+      '<div class="gac-queue-first">' +
+        '<p class="gac-clarity-eyebrow">VALIDATION WORKSPACE · CASE REVIEW</p>' +
+        '<h1 id="gac-workspace-title">Case review queue</h1>' +
+        '<p class="gac-queue-intro">See submitted cases and pending human work first. Select any case to inspect the supporting source, executed checks, reviewer outcome and audit trail.</p>' +
+        '<p class="gac-ops-mode"><strong>Recorded public reference:</strong> this is the existing set of 15 synthetic, archived case runs—NOT a live case queue. The secured operational workbench keeps the live review queue.</p>' +
+        '<div class="gac-queue-controls">' +
+          '<label>Show <select data-gac-queue-filter aria-label="Filter recorded cases"><option value="all">All recorded cases</option><option value="attention">Awaiting action only</option></select></label>' +
+          '<label>Find case <input data-gac-queue-search type="search" placeholder="Case, state or validation route" aria-label="Search recorded cases"/></label>' +
+          '<a href="/cases/">Open full case register →</a>' +
+        '</div>' +
+        '<p class="gac-queue-summary" data-gac-queue-status role="status" aria-live="polite">Verifying the archived case register…</p>' +
+        '<div class="gac-queue-table-scroll" role="region" aria-label="Recorded validation cases" tabindex="0">' +
+          '<table class="gac-queue-table"><thead><tr><th scope="col">Case</th><th scope="col">Review status</th><th scope="col">Validation route &amp; evidence</th><th scope="col">Review</th></tr></thead>' +
+            '<tbody data-gac-queue-rows><tr><td colspan="4" class="gac-queue-empty">Verifying published case identities…</td></tr></tbody>' +
+          '</table></div>' +
+      '</div>' +
       '<div class="gac-ops-header">' +
         '<p class="gac-clarity-eyebrow">VALIDATION WORKSPACE · CONTROL FLOW & HUMAN OVERSIGHT</p>' +
-        '<h1 id="gac-workspace-title">How the validation system works</h1>' +
+        '<h2 class="gac-ops-heading">How the validation system works</h2>' +
         '<p class="gac-clarity-lead">Follow the generic control path from submitted evidence through deterministic checks, authoritative comparisons and conditional AI investigation to accountable human review. This is the <strong>operational design</strong>—not a walkthrough of one chosen case.</p>' +
-        '<p class="gac-ops-mode"><strong>Public reference mode:</strong> the flow below describes implemented controls. GitHub Pages does not process private uploads, run the backend or authorize live decisions.</p>' +
+        '<p class="gac-ops-mode"><strong>Control reference:</strong> the mechanisms below describe the generic implemented workflow. No private uploads, backend runs or real approvals occur on this public site.</p>' +
       '</div>' +
       '<section class="gac-ops-process" aria-label="Validation sequence and controls">' +
         '<div class="gac-ops-section-top"><div><p class="gac-clarity-eyebrow">HOW THE SYSTEM HANDLES A SUBMISSION</p>' +
@@ -126,11 +259,11 @@
       '</section>' +
       '<section class="gac-ops-evidence" aria-labelledby="gac-ops-evidence-title">' +
         '<div class="gac-ops-section-top"><div><p class="gac-clarity-eyebrow">EXPLAINABILITY CONTRACT</p>' +
-        '<h2 id="gac-ops-evidence-title">What “where” and “how” must mean</h2></div></div>' +
+        '<h2 id="gac-ops-evidence-title">Evidence, reasoning and decision trace</h2></div></div>' +
         '<div class="gac-ops-evidence-grid">' +
-          '<div><h3>Show me where you found it</h3><p>Source attachment, sheet and cell when verifiable; otherwise the exact recorded JSON field, version and original value. Keep submission fields separate from the approved contract or CRM/Pricing reference.</p></div>' +
-          '<div><h3>Show me how you did it</h3><p>Rule/check ID, actual parsed operands, executed comparison and reference snapshot. Reproduce deterministic arithmetic. For Tier 3, show verified claims, escalation triggers and uncertainty—not fabricated cell-level AI causality.</p></div>' +
-          '<div><h3>Show me who decided</h3><p>Reviewer identity, permitted action, reason code, rationale, required second authorization and ordered audit evidence, bound to the correct case run and version.</p></div>' +
+          '<div><h3>Source provenance</h3><p>Source attachment, sheet and cell when verifiable; otherwise the exact recorded JSON field, version and original value. Keep submission fields separate from the approved contract or CRM/Pricing reference.</p></div>' +
+          '<div><h3>Validation reasoning</h3><p>Rule/check ID, actual parsed operands, executed comparison and reference snapshot. Reproduce deterministic arithmetic. For Tier 3, show verified claims, escalation triggers and uncertainty—not fabricated cell-level AI causality.</p></div>' +
+          '<div><h3>Reviewer accountability</h3><p>Reviewer identity, permitted action, reason code, rationale, required second authorization and ordered audit evidence, bound to the correct case run and version.</p></div>' +
         '</div>' +
       '</section>' +
       '<nav class="gac-ops-destinations" aria-label="Open existing operational views">' +
@@ -202,6 +335,7 @@
     if (host && host.getAttribute("data-gac-ops-ready") !== "true") {
       host.setAttribute("data-gac-ops-ready", "true");
       showOperationalStage(0, host);
+      initializeQueue(host);
       host.addEventListener("click", function (event) {
         var button = event.target.closest("[data-gac-ops-stage]");
         if (!button || !host.contains(button)) return;

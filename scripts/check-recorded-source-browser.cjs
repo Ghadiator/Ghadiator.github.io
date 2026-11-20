@@ -43,7 +43,7 @@ const widths = [
       assert.ok(page.url().includes("id=supplier_variance_review"),
         "Queued case navigation: " + page.url());
       const panel = page.locator("#source-evidence");
-      await panel.getByText("Show me where you found it").waitFor({ state: "visible", timeout: 15000 });
+      await panel.getByText("Source evidence & validation trace").waitFor({ state: "visible", timeout: 15000 });
       const body = await panel.innerText();
       assert.ok(body.includes("42 verified event records"), "42 event records pinned");
       assert.ok(body.includes("30.0%") && body.includes("20.0%"), "Recorded volume finding reproducible");
@@ -83,7 +83,7 @@ const widths = [
     const page = await context.newPage();
     await page.goto(base + "/case/?id=supplier_rate_correction#source-evidence", { waitUntil: "load" });
     const panel = page.locator("#source-evidence");
-    await panel.getByText("Show me where you found it").waitFor({ state: "visible", timeout: 15000 });
+    await panel.getByText("Source evidence & validation trace").waitFor({ state: "visible", timeout: 15000 });
     await panel.locator(".gac-src-rules:not(.gac-src-contract) > summary").click();
     assert.ok((await panel.locator(".gac-src-rules:not(.gac-src-contract)").innerText()).includes("event #40"),
       "Second submission attempt must point to its own recorded rule event, not attempt one");
