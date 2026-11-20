@@ -1,4 +1,4 @@
 {
   "endpoint": null,
-  "description": "Live LLM defender unavailable: an isolated HTTPS sandbox must be separately deployed and explicitly configured."
+  "description": "Live LLM challenge disabled until a separate explicitly-authorised, rate-limited HTTPS sandbox is deployed."
 }
