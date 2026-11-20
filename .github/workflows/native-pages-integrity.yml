@@ -30,6 +30,13 @@ jobs:
           print('Native Pages release manifest and static routes checked')
           PY
 
+      - name: Verify recorded-case source-to-finding evidence on public Pages
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          node --check assets/recorded-case-source-evidence-20261120.js
+          node scripts/check-recorded-source-evidence.mjs
+
       - name: Validate the public system card and the shipped vocabulary
         shell: bash
         run: |
