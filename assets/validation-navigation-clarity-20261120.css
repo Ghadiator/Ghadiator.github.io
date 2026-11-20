@@ -98,3 +98,36 @@ main.gac-clarity-cases section[aria-label="From collection to the case record"]{
 @media(max-width:1050px){.gac-ops-stages{grid-template-columns:repeat(3,minmax(0,1fr))}.gac-ops-evidence-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.gac-ops-stages{grid-template-columns:repeat(2,minmax(0,1fr))}.gac-ops-detail-grid,.gac-ops-control-grid{grid-template-columns:1fr}.gac-ops-stage{min-height:96px}.gac-ops-detail{padding:14px;min-height:0}}
 @media(prefers-reduced-motion:reduce){.gac-ops-stage{transition:none}}
+
+
+/* Operational priority: real case rows first, generic pipeline below.
+ * Public Pages is SHA-verified recorded data; private queue uses the API. */
+.gac-ops-workspace{max-width:1180px}
+.gac-queue-first{margin:0 0 18px;padding:0 0 24px;border-bottom:2px solid #bfdcd6}
+.gac-queue-first h1{font-size:clamp(23px,3vw,34px);line-height:1.22;font-weight:770;margin:0;color:#204753}
+.gac-queue-intro{font-size:13px;line-height:1.7;color:#52717a;max-width:930px;margin:9px 0}
+.gac-queue-controls{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin:15px 0 10px}
+.gac-queue-controls label{display:flex;flex-direction:column;gap:5px;color:#3a6069;font-size:11px;font-weight:700;min-width:180px;flex:1 1 210px}
+.gac-queue-controls select,.gac-queue-controls input{font:inherit;font-size:12px;font-weight:400;width:100%;background:white;border:1px solid #bcd7d4;border-radius:7px;min-height:37px;padding:8px 10px;color:#335a64}
+.gac-queue-controls a{font-size:11px;font-weight:700;color:#157f6e!important;text-decoration:underline!important;text-underline-offset:3px;padding:10px 0}
+.gac-queue-summary{margin:8px 0 10px;font-size:11px;font-weight:700;color:#326f67;line-height:1.5}
+.gac-queue-table-scroll{overflow:auto;max-height:430px;border:1px solid #cde0de;border-radius:9px;outline-offset:2px}
+.gac-queue-table{width:100%;min-width:670px;border-collapse:collapse;text-align:left;font-size:12px;line-height:1.55}
+.gac-queue-table thead th{position:sticky;top:0;z-index:2;background:#eff7f4;color:#2b6660;font-size:11px;font-weight:750;text-transform:none;padding:11px 13px;border-bottom:1px solid #cde0dc}
+.gac-queue-table tbody td{padding:11px 13px;border-bottom:1px solid #e0ebea;vertical-align:top;color:#506c75}
+.gac-queue-table tbody tr:last-child td{border-bottom:0}
+.gac-queue-table tbody tr:hover{background:#f2faf6}
+.gac-queue-table tbody tr.gac-queue-pending{background:#f0f9f5}
+.gac-queue-table tbody tr.gac-queue-pending:hover{background:#e3f4ec}
+.gac-queue-case{font-family:ui-monospace,Consolas,monospace;font-size:11px;font-weight:750;text-decoration:underline!important;color:#1d796b!important}
+.gac-queue-title{display:block;margin-top:3px;color:#607980;font-size:11px;line-height:1.5;max-width:280px}
+.gac-queue-state{display:inline-block;border:1px solid #d4e1e3;padding:4px 7px;background:#f5f8f8;border-radius:5px;color:#5b737d;font-size:11px;white-space:nowrap;font-weight:700}
+.gac-queue-state.is-pending{background:#e1f3eb;color:#186d5b;border-color:#9fcdbf}
+.gac-queue-route{display:block;font-family:ui-monospace,Consolas,monospace;font-size:10px;color:#526e78;overflow-wrap:anywhere}
+.gac-queue-detail{display:block;color:#718992;font-size:10px;margin-top:3px}
+.gac-queue-review{color:#167e6d!important;text-decoration:underline!important;text-underline-offset:3px;font-size:11px;font-weight:750;white-space:nowrap}
+.gac-queue-empty{text-align:center;padding:25px!important;color:#6c828b;font-size:12px}
+.gac-ops-header{padding:4px 0}
+.gac-ops-workspace .gac-ops-heading{font-size:clamp(17px,2vw,23px);font-weight:750;color:#284d57;margin:0}
+.gac-ops-workspace .gac-ops-header .gac-clarity-lead{font-size:12px;margin:8px 0}
+@media(max-width:650px){.gac-queue-controls{gap:8px}.gac-queue-table-scroll{max-height:380px}.gac-queue-first{padding-bottom:16px}}
