@@ -26,12 +26,28 @@ def main(ref: str) -> int:
         ["git", "ls-tree", "-r", "--name-only", ref], capture_output=True, text=True, check=True,
     ).stdout.split()
     changed = 0
-    for name in files:
+    html = [name for name in files if name.endswith(".html")]
+    old_tags = {
+        name: dict.fromkeys(TAG.findall(subprocess.run(
+            ["git", "show", f"{ref}:{name}"], capture_output=True, text=True).stdout))
+        for name in html
+    }
+    # Tags most pages of the reference carried (the global ones): a page that
+    # is new in this publish (no reference copy) gets these, so a new route
+    # is not the one page without the global enhancements.
+    counts: dict[str, int] = {}
+    for tags in old_tags.values():
+        for tag in tags:
+            counts[tag] = counts.get(tag, 0) + 1
+    global_tags = [t for t, n in counts.items() if n >= 0.8 * len(old_tags)]
+    targets = sorted(set(html) | {str(p) for p in pathlib.Path(".").rglob("*.html")
+                                  if not str(p).startswith((".git", "node_modules"))})
+    for name in targets:
         path = pathlib.Path(name)
-        if not name.endswith(".html") or not path.exists():
+        if not path.exists():
             continue
-        old = subprocess.run(["git", "show", f"{ref}:{name}"], capture_output=True, text=True).stdout
         cur = path.read_text(encoding="utf-8")
+        old = "".join(old_tags.get(name, dict.fromkeys(global_tags)))
         missing = [t for t in dict.fromkeys(TAG.findall(old)) if t not in cur]
         for tag in missing:
             anchor = "</head>" if tag.startswith("<link") else "</body>"
