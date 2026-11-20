@@ -26,7 +26,7 @@ const variants = [
       });
       const page = await context.newPage();
       const errors = [], forbiddenApiCalls = [];
-      page.on("pageerror", (e) => errors.push(e.message));
+      page.on("pageerror", (e) => errors.push(page.url() + " :: " + e.message));
       page.on("request", (r) => {
         if (new URL(r.url()).pathname.startsWith("/api/")) forbiddenApiCalls.push(r.url());
       });
