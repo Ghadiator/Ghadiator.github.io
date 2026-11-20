@@ -680,14 +680,15 @@
       style.href = css;
       document.head.appendChild(style);
     }
-    updateRoute();
-    // Next.js performs same-document client routing. Initialising only
-    // on DOMContentLoaded breaks Cases → Case (no new document is loaded).
-    // Observe the app shell so routing, rendering and browser back/forward
-    // all update the same existing source-evidence section.
+    // The static export streams a React Server Component payload. Inserting
+    // a source panel into the React-owned <main> while initial hydration is
+    // still attaching can create #418 mismatches. Attach only after the
+    // compiled client has had its hydration window; SPA transitions after
+    // this point are already client-rendered and can update immediately.
+    var ready = false;
     var scheduled = false;
     var observer = new MutationObserver(function () {
-      if (scheduled) return;
+      if (!ready || scheduled) return;
       scheduled = true;
       window.requestAnimationFrame(function () {
         scheduled = false;
@@ -695,7 +696,13 @@
       });
     });
     observer.observe(document.body, { childList: true, subtree: true });
-    window.addEventListener("popstate", updateRoute);
+    setTimeout(function () {
+      ready = true;
+      updateRoute();
+    }, 2400);
+    window.addEventListener("popstate", function () {
+      if (ready) window.requestAnimationFrame(updateRoute);
+    });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
   else init();
