@@ -18,7 +18,7 @@ const routes = [
   "/", "/introduction/", "/business-impact/", "/use-case-assessment/", "/architecture/",
   "/ai-roles/", "/context-engineering/", "/governance/", "/governance-code/", "/ai-assurance/",
   "/red-team/", "/safety/", "/safety-origin/", "/workspace/", "/cases/", "/dashboard/",
-  "/token-economics/", "/audit/", "/pool-analytics/", "/upload/", "/integration/", "/system-card/"
+  "/token-economics/", "/audit/", "/upload/", "/integration/", "/system-card/"
 ];
 const widths = [
   { width: 390, height: 844, label: "mobile" },
