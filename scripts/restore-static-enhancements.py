@@ -9,7 +9,9 @@ Run this right after a publish:
 
 It copies every <script>/<link> tag that points at /assets/ from the given
 commit's HTML into the current HTML, when the current file lacks it:
-scripts before </body>, stylesheets before </head>.
+scripts before </body>, stylesheets before </head>. A tag that every
+page of the given commit carries is global: it is also added to pages the
+commit did not have yet (a new route).
 """
 from __future__ import annotations
 
@@ -25,14 +27,20 @@ def main(ref: str) -> int:
     files = subprocess.run(
         ["git", "ls-tree", "-r", "--name-only", ref], capture_output=True, text=True, check=True,
     ).stdout.split()
+    old_pages = {
+        name: subprocess.run(["git", "show", f"{ref}:{name}"], capture_output=True, text=True).stdout
+        for name in files if name.endswith(".html")
+    }
+    tag_sets = [set(TAG.findall(html)) for html in old_pages.values() if TAG.search(html)]
+    global_tags = sorted(set.intersection(*tag_sets)) if tag_sets else []
+    current = sorted(str(p) for p in pathlib.Path(".").rglob("*.html") if ".git" not in p.parts)
     changed = 0
-    for name in files:
+    for name in current:
         path = pathlib.Path(name)
-        if not name.endswith(".html") or not path.exists():
-            continue
-        old = subprocess.run(["git", "show", f"{ref}:{name}"], capture_output=True, text=True).stdout
+        old = old_pages.get(name)
         cur = path.read_text(encoding="utf-8")
-        missing = [t for t in dict.fromkeys(TAG.findall(old)) if t not in cur]
+        wanted = TAG.findall(old) if old is not None else global_tags
+        missing = [t for t in dict.fromkeys(wanted) if t not in cur]
         for tag in missing:
             anchor = "</head>" if tag.startswith("<link") else "</body>"
             cur = cur.replace(anchor, tag + anchor, 1)
