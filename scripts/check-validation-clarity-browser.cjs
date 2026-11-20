@@ -45,7 +45,7 @@ const variants = [
       assert.ok((await hub.locator("#gac-ops-detail").innerText()).includes("Crosscheck_failed"));
       await hub.locator('[data-gac-ops-stage="3"]').click();
       const aiDetail = await hub.locator("#gac-ops-detail").innerText();
-      assert.ok(aiDetail.includes("Chain-of-Verification") && aiDetail.includes("not always invoked"));
+      assert.ok(aiDetail.includes("Chain-of-Verification") && aiDetail.includes("not called for every submission"));
       await hub.locator('[data-gac-ops-stage="4"]').click();
       const hitlDetail = await hub.locator("#gac-ops-detail").innerText();
       assert.ok(hitlDetail.includes("reason code") && hitlDetail.includes("different reviewer"));
