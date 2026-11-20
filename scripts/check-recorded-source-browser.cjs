@@ -38,7 +38,10 @@ const widths = [
         return link && link.getAttribute("href").endsWith("#source-evidence");
       }, null, { timeout: 15000 });
       await caseLink.click();
-      assert.ok(page.url().includes("id=supplier_variance_review"));
+      await page.waitForURL((url) =>
+        url.searchParams.get("id") === "supplier_variance_review", { timeout: 15000 });
+      assert.ok(page.url().includes("id=supplier_variance_review"),
+        "Queued case navigation: " + page.url());
       const panel = page.locator("#source-evidence");
       await panel.getByText("Show me where you found it").waitFor({ state: "visible", timeout: 15000 });
       const body = await panel.innerText();
