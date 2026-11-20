@@ -46,3 +46,55 @@ main.gac-clarity-cases section[aria-label="From collection to the case record"]{
 @media(max-width:900px){.gac-clarity-route-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gac-clarity-case-grid{grid-template-columns:1fr}}
 @media(max-width:560px){.gac-clarity-hub{padding:15px}.gac-clarity-route-grid{grid-template-columns:1fr}.gac-clarity-route-grid a{min-height:0}.gac-clarity-secondary{grid-template-columns:1fr}.gac-clarity-action{width:100%;justify-content:center}.gac-clarity-cases-start{margin:14px 0}}
 @media(prefers-reduced-motion:reduce){.gac-clarity-route-grid a{transition:none}}
+
+/* Validation Workspace is a general operating/control explanation, not a case
+ * promotion. The stage selector changes distinct inputs/checks/outputs/safety
+ * descriptions; navigation to stored cases remains secondary. */
+.gac-ops-workspace{max-width:1180px}
+.gac-ops-workspace .gac-clarity-lead{max-width:940px}
+.gac-ops-header{padding:2px 0 8px}
+.gac-ops-mode{max-width:950px;padding:10px 13px;margin:13px 0 6px;background:#f3f7f8;border-left:3px solid #6e98a1;color:#4b6c78;font-size:11px;line-height:1.65}
+.gac-ops-workspace h2{margin:0;font-size:clamp(16px,2vw,21px);line-height:1.35;font-weight:750;color:#244a57}
+.gac-ops-process,.gac-ops-routing,.gac-ops-controls,.gac-ops-evidence{border-top:1px solid #d8e8e4;margin-top:19px;padding-top:21px}
+.gac-ops-section-top{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:9px;margin-bottom:16px}
+.gac-ops-explain{font-size:11px;line-height:1.6;color:#63838b;max-width:330px}
+.gac-ops-stages{list-style:none!important;margin:0!important;padding:0!important;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+.gac-ops-stages li{min-width:0;margin:0!important}
+.gac-ops-stage{display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;width:100%;height:100%;min-height:112px;border:1px solid #c9e1dd;background:#f6fbf9;padding:11px 9px;border-radius:8px;cursor:pointer;color:#395d65;transition:background .15s,border-color .15s}
+.gac-ops-stage:hover,.gac-ops-stage:focus-visible{border-color:#5aa394;background:#edf8f4;outline-offset:2px}
+.gac-ops-stage.is-active{border-color:#178777;background:#dbf3e9;box-shadow:inset 0 0 0 1px #178777}
+.gac-ops-stage-number{font-family:ui-monospace,Consolas,monospace;font-size:10px;font-weight:750;letter-spacing:.05em;color:#247f72}
+.gac-ops-stage strong{font-size:11px;line-height:1.35;font-weight:750;color:#24555d}
+.gac-ops-stage small{font-size:10px;line-height:1.45;color:#68808a}
+.gac-ops-detail{margin-top:11px;background:#f5faf9;border:1px solid #cde2dd;border-radius:10px;padding:17px 19px;min-height:218px}
+.gac-ops-detail-heading{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px}
+.gac-ops-detail-heading span{font-size:10px;font-weight:750;letter-spacing:.07em;color:#147b6e;border:1px solid #95cdbd;background:#e2f4ed;padding:4px 6px;border-radius:4px}
+.gac-ops-detail-heading h3{margin:0;font-size:16px;font-weight:750;color:#22545b}
+.gac-ops-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0}
+.gac-ops-detail-grid>div{min-width:0}
+.gac-ops-detail-grid dt{font-size:11px;font-weight:750;color:#1c776a;margin:0 0 4px}
+.gac-ops-detail-grid dd{margin:0;font-size:12px;line-height:1.65;color:#4b6b76}
+.gac-ops-inspect-link{display:inline-block;margin-top:16px;font-size:11px;font-weight:750;color:#187e6e!important;text-decoration:underline!important;text-underline-offset:3px}
+.gac-ops-table-scroll{overflow:auto;border:1px solid #d5e6e3;border-radius:9px}
+.gac-ops-table{width:100%;border-collapse:collapse;min-width:610px;font-size:12px;line-height:1.6}
+.gac-ops-table th{background:#f0f7f5;color:#2a6863;text-align:left;font-weight:750;font-size:11px;letter-spacing:.01em}
+.gac-ops-table th,.gac-ops-table td{padding:10px 12px;border-bottom:1px solid #e0ebe9;vertical-align:top}
+.gac-ops-table tr:last-child td{border-bottom:0}
+.gac-ops-table td{color:#4d6b77}
+.gac-ops-table code{white-space:nowrap;font-size:11px;color:#1c665e;background:#edf8f4;border-radius:4px;padding:2px 5px}
+.gac-ops-control-grid{list-style:none!important;margin:0!important;padding:0!important;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gac-ops-control-grid li{border:1px solid #d0e5df;border-radius:9px;padding:16px;min-width:0;background:#fcfefd;margin:0!important}
+.gac-ops-control-grid span{font-size:10px;font-weight:750;color:#278273;letter-spacing:.04em}
+.gac-ops-control-grid strong{display:block;margin:6px 0;color:#25545a;font-size:14px}
+.gac-ops-control-grid p{margin:0;font-size:12px;line-height:1.7;color:#5a7780}
+.gac-ops-evidence-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.gac-ops-evidence-grid>div{padding:15px;border-left:3px solid #368d82;background:#f5faf9;border-radius:6px}
+.gac-ops-evidence-grid h3{font-size:12px;font-weight:750;color:#226e66;margin:0 0 8px}
+.gac-ops-evidence-grid p{font-size:11px;line-height:1.7;margin:0;color:#506e76}
+.gac-ops-destinations{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:22px 0 12px;border-top:1px solid #d8e8e4;padding-top:20px}
+.gac-ops-destinations strong{color:#305a60;font-size:12px;margin-right:6px}
+.gac-ops-destinations a{font-size:11px;color:#1e786f!important;text-decoration:none!important;border:1px solid #a9d5c8;padding:8px 10px;border-radius:6px;background:#f1faf6;font-weight:700}
+.gac-ops-destinations a:hover,.gac-ops-destinations a:focus-visible{background:#daefe7;border-color:#318d7a}
+@media(max-width:1050px){.gac-ops-stages{grid-template-columns:repeat(3,minmax(0,1fr))}.gac-ops-evidence-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.gac-ops-stages{grid-template-columns:repeat(2,minmax(0,1fr))}.gac-ops-detail-grid,.gac-ops-control-grid{grid-template-columns:1fr}.gac-ops-stage{min-height:96px}.gac-ops-detail{padding:14px;min-height:0}}
+@media(prefers-reduced-motion:reduce){.gac-ops-stage{transition:none}}
