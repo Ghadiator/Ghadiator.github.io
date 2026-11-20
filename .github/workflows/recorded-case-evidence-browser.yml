@@ -38,6 +38,7 @@ jobs:
           node --check assets/validation-navigation-clarity-20261120.js
           node --check scripts/check-validation-clarity-browser.cjs
           node scripts/check-recorded-source-evidence.mjs
+          node scripts/check-public-navigation-scripts.mjs
       - name: Install browser driver
         run: |
           npm init -y >/dev/null
