@@ -118,12 +118,12 @@ const variants = [
     navPage.on("pageerror", e => navigationErrors.push(navPage.url()+" :: "+e.message));
     await navPage.goto(base + "/architecture/",{waitUntil:"load",timeout:45000});
     await navPage.locator('a[href="/workspace"]').first().click();
-    await navPage.waitForURL(url => url.pathname.replace(/\\/$/,"") === "/workspace");
+    await navPage.waitForURL(url => url.pathname.replace(/[/]$/, "") === "/workspace");
     const navigatedGuide = navPage.locator("#gac-workspace-guide");
     await navigatedGuide.waitFor({state:"visible",timeout:16000});
     assert.equal(await navigatedGuide.locator(".gac-clarity-route-grid a").count(),5);
     await navigatedGuide.locator('a[href="/cases/"]').click();
-    await navPage.waitForURL(url => url.pathname.replace(/\\/$/,"") === "/cases");
+    await navPage.waitForURL(url => url.pathname.replace(/[/]$/, "") === "/cases");
     await navPage.locator("#gac-cases-guide").waitFor({state:"visible",timeout:16000});
     await navPage.locator('.gac-clarity-case-grid a[href*="supplier_currency_mismatch"]').click();
     await navPage.waitForURL(url => url.searchParams.get("id")==="supplier_currency_mismatch");
