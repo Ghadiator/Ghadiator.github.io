@@ -34,20 +34,41 @@ const variants = [
       await page.goto(base + "/workspace/", { waitUntil: "load", timeout: 45000 });
       const hub = page.locator("#gac-workspace-guide");
       await hub.waitFor({ state: "visible", timeout: 16000 });
-      assert.ok((await hub.innerText()).includes("What each part of the workspace actually does"));
-      assert.equal(await hub.locator(".gac-clarity-route-grid a").count(), 5);
-      const targets = await hub.locator(".gac-clarity-route-grid a").evaluateAll((nodes) =>
-        nodes.map((a) => new URL(a.href).pathname)
-      );
-      assert.deepEqual(targets, ["/tickets/", "/inbound/", "/architecture/", "/cases/", "/audit/"]);
-      assert.equal(new Set(targets).size, 5, "A choice must open a genuinely different route");
-      assert.ok((await hub.innerText()).includes("This is what “Scenario Theater” was intended to explain."));
+      assert.ok((await hub.innerText()).includes("How the validation system works"));
+      assert.equal(await hub.locator("[data-gac-ops-stage]").count(), 6,
+        "Six real validation and governance stages must be inspectable");
+      assert.equal(await hub.locator("[data-gac-ops-stage][aria-pressed=true]").count(), 1);
+      await hub.locator('[data-gac-ops-stage="1"]').click();
+      assert.ok((await hub.locator("#gac-ops-detail").innerText()).includes("Rules_failed"),
+        "Tier 1 must explain the short-circuit condition");
+      await hub.locator('[data-gac-ops-stage="2"]').click();
+      assert.ok((await hub.locator("#gac-ops-detail").innerText()).includes("Crosscheck_failed"));
+      await hub.locator('[data-gac-ops-stage="3"]').click();
+      const aiDetail = await hub.locator("#gac-ops-detail").innerText();
+      assert.ok(aiDetail.includes("Chain-of-Verification") && aiDetail.includes("not always invoked"));
+      await hub.locator('[data-gac-ops-stage="4"]').click();
+      const hitlDetail = await hub.locator("#gac-ops-detail").innerText();
+      assert.ok(hitlDetail.includes("reason code") && hitlDetail.includes("different reviewer"));
+      await hub.locator('[data-gac-ops-stage="5"]').click();
+      assert.ok((await hub.locator("#gac-ops-detail").innerText()).includes("ordered transitions"));
+      const workspaceText = await hub.innerText();
+      assert.ok(workspaceText.includes("Show me where you found it"));
+      assert.ok(workspaceText.includes("Show me how you did it"));
+      assert.ok(workspaceText.includes("Show me who decided"));
+      assert.ok(workspaceText.includes("Validation_passed"));
+      assert.ok(workspaceText.includes("four-eyes") || workspaceText.includes("four-eyes control"));
+      assert.ok(!workspaceText.includes("€13,000"), "Generic workspace must not showcase a featured invoice");
+      assert.equal(await hub.locator('a[href*="supplier_variance_review"]').count(), 0,
+        "No special case should be promoted within Validation Workspace");
       assert.equal(await page.locator("nav[aria-label='Validation workspace views']").isVisible(), false,
         "Original five embedded-page tabs must not appear");
-      assert.equal(await hub.locator('a[href*="supplier_variance_review"]').count(), 1,
-        "One featured evidence walkthrough, not duplicate case lists");
+      assert.equal(await hub.locator(".gac-ops-destinations a").count(), 6);
+      const targets = await hub.locator(".gac-ops-destinations a").evaluateAll((nodes) =>
+        nodes.map((a) => new URL(a.href).pathname)
+      );
+      assert.deepEqual(targets, ["/tickets/", "/inbound/", "/architecture/", "/cases/", "/audit/", "/monitor/"]);
 
-      await hub.locator('a[href="/cases/"]').click();
+      await hub.locator('.gac-ops-destinations a[href="/cases/"]').click();
       await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === "/cases");
       const guide = page.locator("#gac-cases-guide");
       await guide.waitFor({ state: "visible", timeout: 16000 });
@@ -89,7 +110,7 @@ const variants = [
       assert.deepEqual(errors, [], "Browser exceptions: " + errors.join(" | "));
       await context.close();
       console.log("PASS " + variant.name +
-        ": distinct destinations → 15 cases → recorded source/threshold/verification/human review");
+        ": generic control flow → human oversight → 15 cases → actual source/decision");
     }
     const context = await browser.newContext({ viewport: { width: 1280, height: 820 } });
     const page = await context.newPage();
@@ -121,8 +142,9 @@ const variants = [
     await navPage.waitForURL(url => url.pathname.replace(/[/]$/, "") === "/workspace");
     const navigatedGuide = navPage.locator("#gac-workspace-guide");
     await navigatedGuide.waitFor({state:"visible",timeout:16000});
-    assert.equal(await navigatedGuide.locator(".gac-clarity-route-grid a").count(),5);
-    await navigatedGuide.locator('a[href="/cases/"]').click();
+    assert.equal(await navigatedGuide.locator("[data-gac-ops-stage]").count(), 6);
+    assert.equal(await navigatedGuide.locator('a[href*="supplier_variance_review"]').count(), 0);
+    await navigatedGuide.locator('.gac-ops-destinations a[href="/cases/"]').click();
     await navPage.waitForURL(url => url.pathname.replace(/[/]$/, "") === "/cases");
     await navPage.locator("#gac-cases-guide").waitFor({state:"visible",timeout:16000});
     await navPage.locator('.gac-clarity-case-grid a[href*="supplier_currency_mismatch"]').click();
@@ -131,6 +153,6 @@ const variants = [
     assert.ok((await navPage.locator("#source-evidence .gac-src-story").innerText()).includes("USD"));
     assert.deepEqual(navigationErrors, [],"React errors during cross-route navigation: "+navigationErrors.join(" | "));
     await navContext.close();
-    console.log("PASS cross-route: Architecture sidebar → Workspace guide → Cases → recorded currency evidence");
+    console.log("PASS cross-route: Architecture sidebar → generic validation controls → Cases → recorded currency evidence");
   } finally { await browser.close(); }
 })().catch((error) => { console.error(error); process.exit(1); });
