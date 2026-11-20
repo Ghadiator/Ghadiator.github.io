@@ -469,27 +469,26 @@
     }
   }
 
-  async function caseMode() {
-    var slug = new URLSearchParams(window.location.search).get("id");
+  var activeRouteKey = null;
+
+  async function caseMode(slug, key) {
     if (!slug || !Object.prototype.hasOwnProperty.call(SCENARIO_BLOBS, slug)) return;
     ensureMounted();
-    var parent = document.getElementById("main-content");
-    var scheduled = false;
-    if (parent) new MutationObserver(function () {
-      if (scheduled || (app && app.isConnected)) return;
-      scheduled = true;
-      window.requestAnimationFrame(function () { scheduled = false; ensureMounted(); });
-    }).observe(parent, { childList: true, subtree: true });
     try {
       var records = await verifyJSON("/data/cases.json", CASES_BLOB);
       var scenario = await verifyJSON("/data/scenarios/" + slug + ".json", SCENARIO_BLOBS[slug]);
+      // A Next.js navigation may have changed the route during a fetch.
+      // Never display another case's data in this case's evidence panel.
+      if (activeRouteKey !== key) return;
       var record = (records.cases || []).find(function (c) { return c.slug === slug; });
       if (!record) throw new Error("No verified recorded case for this route.");
       checkIntegrity(record, scenario);
       ensureMounted();
       renderCase(record, scenario);
     } catch (error) {
+      if (activeRouteKey !== key) return;
       ensureMounted();
+      if (!app) return;
       app.innerHTML = '<p class="gac-src-error" role="alert"><strong>Source evidence withheld.</strong> ' +
         esc(error.message || String(error)) + '</p>';
     }
@@ -498,33 +497,61 @@
   function casesMode() {
     var main = document.getElementById("main-content");
     if (!main) return;
-    function linkExistingCaseRows() {
-      main.querySelectorAll('a[href^="/case/?id="]').forEach(function (link) {
-        var parsed = new URL(link.href, window.location.origin);
-        var slug = parsed.searchParams.get("id");
-        if (!Object.prototype.hasOwnProperty.call(SCENARIO_BLOBS, slug)) return;
-        if (parsed.hash !== "#source-evidence") {
-          parsed.hash = "source-evidence";
-          link.href = parsed.pathname + parsed.search + parsed.hash;
-          link.title = "Recorded case: inspect source fields, validation methods and event evidence";
-        }
-      });
+    main.querySelectorAll('a[href^="/case/?id="]').forEach(function (link) {
+      var parsed = new URL(link.href, window.location.origin);
+      var slug = parsed.searchParams.get("id");
+      if (!Object.prototype.hasOwnProperty.call(SCENARIO_BLOBS, slug)) return;
+      if (parsed.hash !== "#source-evidence") {
+        parsed.hash = "source-evidence";
+        link.href = parsed.pathname + parsed.search + parsed.hash;
+        link.title = "Recorded case: inspect source fields, validation methods and event evidence";
+      }
+    });
+  }
+
+  function updateRoute() {
+    var path = window.location.pathname.replace(/\/+$/, "");
+    var slug = new URLSearchParams(window.location.search).get("id");
+    var key = path === "/case" ? path + "?id=" + slug : path;
+    if (path !== "/cases" && path !== "/case") {
+      activeRouteKey = null;
+      if (app && app.isConnected) app.remove();
+      app = null;
+      return;
     }
-    linkExistingCaseRows();
-    var observer = new MutationObserver(linkExistingCaseRows);
-    observer.observe(main, { childList: true, subtree: true });
+    if (activeRouteKey !== key) {
+      if (app && app.isConnected) app.remove();
+      app = null;
+      activeRouteKey = key;
+      if (path === "/case") caseMode(slug, key);
+    }
+    if (path === "/cases") casesMode();
+    else if (app && !app.isConnected) ensureMounted();
   }
 
   function init() {
-    var path = window.location.pathname.replace(/\/+$/, "");
-    if (path !== "/case" && path !== "/cases") return;
     if (!document.querySelector('link[href="' + css + '"]')) {
       var style = document.createElement("link");
-      style.rel = "stylesheet"; style.href = css;
+      style.rel = "stylesheet";
+      style.href = css;
       document.head.appendChild(style);
     }
-    if (path === "/case") caseMode();
-    else casesMode();
+    updateRoute();
+    // Next.js performs same-document client routing. Initialising only
+    // on DOMContentLoaded breaks Cases → Case (no new document is loaded).
+    // Observe the app shell so routing, rendering and browser back/forward
+    // all update the same existing source-evidence section.
+    var scheduled = false;
+    var observer = new MutationObserver(function () {
+      if (scheduled) return;
+      scheduled = true;
+      window.requestAnimationFrame(function () {
+        scheduled = false;
+        updateRoute();
+      });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener("popstate", updateRoute);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
   else init();
