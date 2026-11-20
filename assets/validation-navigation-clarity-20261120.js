@@ -97,17 +97,30 @@
     }
   }
   function init() {
-    update();
+    // The exported Next.js document may stream server markup AFTER
+    // DOMContentLoaded. Mutating its React-owned elements before hydration
+    // triggers #418 mismatches and can drop event handlers. Wait for the
+    // client bundle to attach, then mount only once; observe later route
+    // changes and reapply idempotently.
+    var hydrated = false;
     var scheduled = false;
     var observer = new MutationObserver(function () {
-      if (scheduled) return;
+      if (!hydrated || scheduled) return;
       scheduled = true;
       requestAnimationFrame(function () { scheduled = false; update(); });
     });
-    // The compiled Next app streams content and uses same-document routes.
-    // Restore the correct guide after hydration without mutating the source fixtures.
     observer.observe(document.body, { subtree: true, childList: true });
-    window.addEventListener("popstate", update);
+    function mountAfterHydration() {
+      hydrated = true;
+      update();
+    }
+    // Conservative grace window for the already-compiled public export.
+    // The initial route's React shell is static once hydrated; this
+    // enhancement must not replace React's own children during attach.
+    setTimeout(mountAfterHydration, 2200);
+    window.addEventListener("popstate", function () {
+      if (hydrated) requestAnimationFrame(update);
+    });
   }
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init, { once: true });
