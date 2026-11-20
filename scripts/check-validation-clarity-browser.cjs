@@ -1,0 +1,112 @@
+/* Dedicated UX acceptance of public Validation Workspace and recorded Cases.
+ * This exercises real published synthetic fixtures in Chromium, not fake cards.
+ */
+"use strict";
+const assert = require("node:assert/strict");
+const { chromium } = require("playwright-core");
+const fs = require("node:fs");
+const base = process.env.BASE_URL || "http://127.0.0.1:8765";
+const variants = [
+  { width: 390, height: 844, name: "mobile" },
+  { width: 768, height: 1000, name: "tablet" },
+  { width: 1440, height: 900, name: "desktop" }
+];
+
+(async () => {
+  const executablePath = process.env.CHROME_PATH ||
+    ["/usr/bin/google-chrome", "/usr/bin/chromium"].find(fs.existsSync);
+  assert.ok(executablePath, "Chromium not available");
+  const browser = await chromium.launch({
+    executablePath, headless: true, args: ["--no-sandbox"]
+  });
+  try {
+    for (const variant of variants) {
+      const context = await browser.newContext({
+        viewport: { width: variant.width, height: variant.height }
+      });
+      const page = await context.newPage();
+      const errors = [], forbiddenApiCalls = [];
+      page.on("pageerror", (e) => errors.push(e.message));
+      page.on("request", (r) => {
+        if (new URL(r.url()).pathname.startsWith("/api/")) forbiddenApiCalls.push(r.url());
+      });
+
+      await page.goto(base + "/workspace/", { waitUntil: "load", timeout: 45000 });
+      const hub = page.locator("#gac-workspace-guide");
+      await hub.waitFor({ state: "visible", timeout: 16000 });
+      assert.ok((await hub.innerText()).includes("What each part of the workspace actually does"));
+      assert.equal(await hub.locator(".gac-clarity-route-grid a").count(), 5);
+      const targets = await hub.locator(".gac-clarity-route-grid a").evaluateAll((nodes) =>
+        nodes.map((a) => new URL(a.href).pathname)
+      );
+      assert.deepEqual(targets, ["/tickets/", "/inbound/", "/architecture/", "/cases/", "/audit/"]);
+      assert.equal(new Set(targets).size, 5, "A choice must open a genuinely different route");
+      assert.ok((await hub.innerText()).includes("This is what “Scenario Theater” was intended to explain."));
+      assert.equal(await page.locator("nav[aria-label='Validation workspace views']").isVisible(), false,
+        "Original five embedded-page tabs must not appear");
+      assert.equal(await hub.locator('a[href*="supplier_variance_review"]').count(), 1,
+        "One featured evidence walkthrough, not duplicate case lists");
+
+      await hub.locator('a[href="/cases/"]').click();
+      await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === "/cases");
+      const guide = page.locator("#gac-cases-guide");
+      await guide.waitFor({ state: "visible", timeout: 16000 });
+      assert.equal(await guide.locator(".gac-clarity-case-grid > a").count(), 3);
+      assert.equal(await page.locator('[data-gac-origin-panel]').isVisible(), false,
+        "Redundant metric tabs must be hidden from the case decision path");
+      assert.equal(await page.locator('section[aria-label="From collection to the case record"]').isVisible(), false,
+        "Duplicated decorative diagram must be hidden in the case list");
+      const table = page.locator("#recorded-case-list");
+      await table.waitFor({ state: "visible", timeout: 16000 });
+      assert.equal(await table.locator("tbody tr").count(), 15,
+        "Existing 15-case record must remain intact and actionable");
+
+      await guide.locator('a[href*="supplier_variance_review"]').click();
+      await page.waitForURL((url) => url.searchParams.get("id") === "supplier_variance_review");
+      const source = page.locator("#source-evidence");
+      await source.getByText("Show me where you found it").waitFor({ state: "visible", timeout: 16000 });
+      assert.equal(await source.locator(".gac-src-walkthrough > li").count(), 4);
+      assert.equal(await source.locator(".gac-src-story-step").count(), 3);
+      const story = await source.locator(".gac-src-story").innerText();
+      assert.ok(story.includes("13000.00") && story.includes("10000.00"));
+      assert.ok(story.includes("30.0%") && story.includes("20.0%"));
+      assert.ok(story.includes("event #30") && story.includes("event #31") && story.includes("event #32"));
+      assert.ok((await source.locator("[data-gac-current-cell]").innerText()).includes("Submission!B9"),
+        "Opening a finding must select its exact recorded input automatically");
+      await source.getByRole("tab", { name: "Contract reference" }).click();
+      assert.ok((await source.locator("[data-gac-grid]").innerText()).includes("Previous period total"));
+      await source.locator(".gac-src-contract > summary").click();
+      assert.ok((await source.locator(".gac-src-contract").innerText()).includes("event #22"),
+        "Contract check provenance must show the actual archived event");
+      assert.ok((await source.innerText()).includes("not a preview of an original uploaded XLSX"));
+      assert.equal(await source.locator('button').filter({hasText:/Approve|Reject/i}).count(),0);
+
+      const size = await page.evaluate(() => ({
+        body: document.documentElement.scrollWidth, viewport: innerWidth
+      }));
+      assert.ok(size.body <= size.viewport + 1, variant.name + " page overflow");
+      assert.deepEqual(forbiddenApiCalls, [], "Public UI must not call operational API");
+      assert.deepEqual(errors, [], "Browser exceptions: " + errors.join(" | "));
+      await context.close();
+      console.log("PASS " + variant.name +
+        ": distinct destinations → 15 cases → recorded source/threshold/verification/human review");
+    }
+    const context = await browser.newContext({ viewport: { width: 1280, height: 820 } });
+    const page = await context.newPage();
+    await page.goto(base + "/case/?id=supplier_currency_mismatch#source-evidence",
+      {waitUntil:"load",timeout:45000});
+    const source = page.locator("#source-evidence");
+    await source.getByText("Show me where you found it").waitFor({state:"visible",timeout:16000});
+    const explanation = await source.locator(".gac-src-story").innerText();
+    assert.ok(explanation.includes("Submitted currency USD vs approved contract currency EUR — mismatch."));
+    assert.ok(explanation.includes("event #22"));
+    assert.ok((await source.locator("[data-gac-current-cell]").innerText()).includes("Submission!"),
+      "Deterministic mismatch should preselect the related recorded field");
+    await source.locator(".gac-src-contract > summary").click();
+    const contractChecks = source.locator(".gac-src-contract .gac-src-rule");
+    assert.equal(await contractChecks.count(), 8);
+    assert.ok((await source.locator(".gac-src-contract").innerText()).includes("Currency matches contract"));
+    await context.close();
+    console.log("PASS contract mismatch: original recorded USD vs EUR, event #22 and named input paths");
+  } finally { await browser.close(); }
+})().catch((error) => { console.error(error); process.exit(1); });
