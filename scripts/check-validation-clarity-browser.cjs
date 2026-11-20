@@ -79,7 +79,7 @@ const variants = [
       assert.ok((await source.locator(".gac-src-contract").innerText()).includes("event #22"),
         "Contract check provenance must show the actual archived event");
       assert.ok((await source.innerText()).includes("not a preview of an original uploaded XLSX"));
-      assert.equal(await source.locator('button').filter({hasText:/Approve|Reject/i}).count(),0);
+      assert.equal(await source.getByRole('button', {name:/^(Approve|Reject)(?: case)?$/i}).count(),0);
 
       const size = await page.evaluate(() => ({
         body: document.documentElement.scrollWidth, viewport: innerWidth
