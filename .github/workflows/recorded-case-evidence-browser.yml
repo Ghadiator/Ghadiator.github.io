@@ -15,8 +15,11 @@ on:
     paths:
       - "case/index.html"
       - "cases/index.html"
+      - "workspace/index.html"
       - "assets/recorded-case-source-evidence-20261120.*"
+      - "assets/validation-navigation-clarity-20261120.*"
       - "scripts/check-recorded-source*"
+      - "scripts/check-validation-clarity*"
 permissions:
   contents: read
 jobs:
