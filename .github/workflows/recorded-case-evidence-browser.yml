@@ -4,16 +4,22 @@ on:
     paths:
       - "case/index.html"
       - "cases/index.html"
+      - "workspace/index.html"
       - "assets/recorded-case-source-evidence-20261120.*"
+      - "assets/validation-navigation-clarity-20261120.*"
       - "scripts/check-recorded-source*"
+      - "scripts/check-validation-clarity*"
       - ".github/workflows/recorded-case-evidence-browser.yml"
   push:
     branches: [main]
     paths:
       - "case/index.html"
       - "cases/index.html"
+      - "workspace/index.html"
       - "assets/recorded-case-source-evidence-20261120.*"
+      - "assets/validation-navigation-clarity-20261120.*"
       - "scripts/check-recorded-source*"
+      - "scripts/check-validation-clarity*"
 permissions:
   contents: read
 jobs:
@@ -29,7 +35,10 @@ jobs:
         run: |
           node --check assets/recorded-case-source-evidence-20261120.js
           node --check scripts/check-recorded-source-browser.cjs
+          node --check assets/validation-navigation-clarity-20261120.js
+          node --check scripts/check-validation-clarity-browser.cjs
           node scripts/check-recorded-source-evidence.mjs
+          node scripts/check-public-navigation-scripts.mjs
       - name: Install browser driver
         run: |
           npm init -y >/dev/null
@@ -45,4 +54,6 @@ jobs:
           cat /tmp/gac-pages.log
           exit 1
       - name: Exercise recorded case on mobile tablet and desktop
-        run: node scripts/check-recorded-source-browser.cjs
+        run: |
+          node scripts/check-recorded-source-browser.cjs
+          node scripts/check-validation-clarity-browser.cjs
