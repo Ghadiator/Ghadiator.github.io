@@ -97,6 +97,15 @@
     }
   }
   function init() {
+    // Load scoped navigation styling even when the user arrives through a
+    // client-side sidebar transition from an unrelated published route.
+    var styleUrl = "/assets/validation-navigation-clarity-20261120.css";
+    if (!document.querySelector('link[href="' + styleUrl + '"]')) {
+      var stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.href = styleUrl;
+      document.head.appendChild(stylesheet);
+    }
     // The exported Next.js document may stream server markup AFTER
     // DOMContentLoaded. Mutating its React-owned elements before hydration
     // triggers #418 mismatches and can drop event handlers. Wait for the
