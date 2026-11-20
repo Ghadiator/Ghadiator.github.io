@@ -32,6 +32,7 @@ jobs:
           node scripts/check-recorded-source-evidence.mjs
       - name: Install browser driver
         run: |
+          npm init -y >/dev/null
           npm install --no-save --no-package-lock playwright-core@1.56.1
           command -v google-chrome || command -v chromium
       - name: Start Pages server
