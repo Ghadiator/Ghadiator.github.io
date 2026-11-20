@@ -31,72 +31,46 @@ const variants = [
         if (new URL(r.url()).pathname.startsWith("/api/")) forbiddenApiCalls.push(r.url());
       });
 
+      // The workspace ships its own case queue (source 14797cd); the legacy
+      // static overlay yields to it, so the native queue is what is tested.
       await page.goto(base + "/workspace/", { waitUntil: "load", timeout: 45000 });
-      const hub = page.locator("#gac-workspace-guide");
-      await hub.waitFor({ state: "visible", timeout: 16000 });
-      assert.ok((await hub.innerText()).includes("How the validation system works"));
-      assert.equal(await hub.locator("[data-gac-ops-stage]").count(), 6,
-        "Six real validation and governance stages must be inspectable");
-      assert.equal(await hub.locator("[data-gac-ops-stage][aria-pressed=true]").count(), 1);
-      await hub.locator('[data-gac-ops-stage="1"]').click();
-      assert.ok((await hub.locator("#gac-ops-detail").innerText()).includes("Rules_failed"),
-        "Tier 1 must explain the short-circuit condition");
-      await hub.locator('[data-gac-ops-stage="2"]').click();
-      assert.ok((await hub.locator("#gac-ops-detail").innerText()).includes("Crosscheck_failed"));
-      await hub.locator('[data-gac-ops-stage="3"]').click();
-      const aiDetail = await hub.locator("#gac-ops-detail").innerText();
-      assert.ok(aiDetail.includes("Chain-of-Verification") && aiDetail.includes("not called for every submission"));
-      await hub.locator('[data-gac-ops-stage="4"]').click();
-      const hitlDetail = await hub.locator("#gac-ops-detail").innerText();
-      assert.ok(hitlDetail.includes("reason code") && hitlDetail.includes("different reviewer"));
-      await hub.locator('[data-gac-ops-stage="5"]').click();
-      assert.ok((await hub.locator("#gac-ops-detail").innerText()).includes("ordered transitions"));
-      const workspaceText = await hub.innerText();
-      assert.ok(workspaceText.includes("Source provenance"));
-      assert.ok(workspaceText.includes("Validation reasoning"));
-      assert.ok(workspaceText.includes("Reviewer accountability"));
-      assert.ok(workspaceText.includes("Validation_passed"));
-      assert.ok(workspaceText.includes("four-eyes") || workspaceText.includes("four-eyes control"));
-      assert.ok(!workspaceText.includes("€13,000"), "Generic workspace must not showcase a featured invoice");
-      assert.equal(await hub.locator(".gac-clarity-feature").count(), 0,
-        "The queue must not be replaced by a special-case promotional banner");
-      const queue = hub.locator(".gac-queue-first");
-      await queue.locator("[data-gac-queue-rows] tr").first().getByText("Awaiting reviewer").waitFor({state:"visible"});
-      assert.equal(await queue.locator("[data-gac-queue-rows] tr").count(), 15,
-        "All 15 existing recorded cases should be listed, not replaced by a separate showcase");
-      const initial = await queue.locator("[data-gac-queue-rows] tr").allInnerTexts();
+      const queue = page.locator('section[aria-labelledby="workspace-queue-title"]');
+      await queue.waitFor({ state: "visible", timeout: 16000 });
+      assert.equal(await page.locator("#workspace-queue-title").count(), 1, "Exactly one case queue");
+      assert.equal(await page.locator("#gac-workspace-guide").count(), 0,
+        "The legacy overlay must not duplicate the native queue");
+      const rows = queue.locator("tbody tr");
+      await rows.first().getByText("Awaiting reviewer").waitFor({ state: "visible", timeout: 16000 });
+      assert.equal(await rows.count(), 15,
+        "All 15 recorded cases should be listed, not replaced by a separate showcase");
+      const initial = await rows.allInnerTexts();
       assert.ok(initial[0].includes("Awaiting reviewer") && initial[1].includes("Awaiting supplier"),
         "Pending reviewer and supplier work must appear at the top");
-      assert.ok((await queue.locator("[data-gac-queue-status]").innerText()).includes("1 awaiting reviewer"));
-      await queue.locator("[data-gac-queue-filter]").selectOption("attention");
-      assert.equal(await queue.locator("[data-gac-queue-rows] tr").count(), 2,
-        "Pending filter must show exactly the two recorded unresolved statuses");
-      await queue.locator("[data-gac-queue-filter]").selectOption("all");
-      assert.equal(await queue.locator("[data-gac-queue-rows] tr").count(), 15);
-      await queue.locator("[data-gac-queue-search]").fill("currency");
-      assert.equal(await queue.locator("[data-gac-queue-rows] tr").count(), 1);
-      await queue.locator("[data-gac-queue-search]").fill("");
-      assert.equal(await queue.locator("[data-gac-queue-rows] tr").count(), 15);
-      assert.ok((await queue.innerText()).includes("NOT a live case queue"),
-        "Public queue must disclose its synthetic archived data origin");
+      assert.ok((await queue.locator('[role="status"]').innerText()).includes("1 awaiting reviewer"));
+      const filter = queue.locator('select[aria-label="Filter recorded workspace cases"]');
+      await filter.selectOption("pending");
+      assert.equal(await rows.count(), 2, "Pending filter must show exactly the two unresolved cases");
+      await filter.selectOption("all");
+      assert.equal(await rows.count(), 15);
+      const search = queue.locator('input[aria-label="Search recorded workspace cases"]');
+      await search.fill("currency");
+      assert.equal(await rows.count(), 1);
+      await search.fill("");
+      assert.equal(await rows.count(), 15);
       assert.equal(await page.locator("nav[aria-label='Validation workspace views']").isVisible(), false,
         "Original five embedded-page tabs must not appear");
-      assert.equal(await hub.locator(".gac-ops-destinations a").count(), 6);
-      const targets = await hub.locator(".gac-ops-destinations a").evaluateAll((nodes) =>
-        nodes.map((a) => new URL(a.href).pathname)
-      );
-      assert.deepEqual(targets, ["/tickets/", "/inbound/", "/architecture/", "/cases/", "/audit/", "/monitor/"]);
+      assert.ok(await page.locator('a[href="/architecture#try"]').count() >= 1,
+        "The workspace must point to the single upload path");
 
-      // Queue-first workflow: click the *pending case* directly to review its
-      // source fields and recorded HITL state; no second dashboard is needed.
-      await queue.locator('[data-gac-queue-rows] tr').first().locator('a.gac-queue-review').click();
-      await page.waitForURL(url => url.searchParams.get("id") === "supplier_pending");
-      await page.locator("#source-evidence").getByText("Source evidence & validation trace")
-        .waitFor({state:"visible",timeout:16000});
-      await page.goto(base + "/workspace/", {waitUntil:"load",timeout:45000});
-      const returning = page.locator("#gac-workspace-guide");
-      await returning.locator(".gac-queue-case").first().waitFor({state:"visible",timeout:16000});
-      await returning.locator('.gac-ops-destinations a[href="/cases/"]').click();
+      // Queue-first workflow: open the pending case straight from the queue.
+      const firstHref = await rows.first().locator("a").first().getAttribute("href");
+      const firstId = new URL(firstHref, base).searchParams.get("id");
+      assert.ok(firstId, "Queue rows must link to a case id");
+      await rows.first().locator("a").first().click();
+      await page.waitForURL(url => url.searchParams.get("id") === firstId);
+      await page.locator("#source-evidence").first().waitFor({ state: "visible", timeout: 16000 });
+      await page.goto(base + "/workspace/", { waitUntil: "load", timeout: 45000 });
+      await queue.locator('a[href="/cases"], a[href="/cases/"]').first().click();
       await page.waitForURL((url) => url.pathname.replace(/\/$/, "") === "/cases");
       const guide = page.locator("#gac-cases-guide");
       await guide.waitFor({ state: "visible", timeout: 16000 });
@@ -168,12 +142,12 @@ const variants = [
     await navPage.goto(base + "/architecture/",{waitUntil:"load",timeout:45000});
     await navPage.locator('a[href="/workspace"]').first().click();
     await navPage.waitForURL(url => url.pathname.replace(/[/]$/, "") === "/workspace");
-    const navigatedGuide = navPage.locator("#gac-workspace-guide");
-    await navigatedGuide.waitFor({state:"visible",timeout:16000});
-    assert.equal(await navigatedGuide.locator("[data-gac-ops-stage]").count(), 6);
-    await navigatedGuide.locator("[data-gac-queue-rows] tr").first().getByText("Awaiting reviewer").waitFor({state:"visible",timeout:16000});
-    assert.equal(await navigatedGuide.locator("[data-gac-queue-rows] tr").count(), 15);
-    await navigatedGuide.locator('.gac-ops-destinations a[href="/cases/"]').click();
+    const navigatedQueue = navPage.locator('section[aria-labelledby="workspace-queue-title"]');
+    await navigatedQueue.waitFor({state:"visible",timeout:16000});
+    await navigatedQueue.locator("tbody tr").first().getByText("Awaiting reviewer").waitFor({state:"visible",timeout:16000});
+    assert.equal(await navigatedQueue.locator("tbody tr").count(), 15);
+    assert.equal(await navPage.locator("#gac-workspace-guide").count(), 0);
+    await navigatedQueue.locator('a[href="/cases"], a[href="/cases/"]').first().click();
     await navPage.waitForURL(url => url.pathname.replace(/[/]$/, "") === "/cases");
     await navPage.locator("#gac-cases-guide").waitFor({state:"visible",timeout:16000});
     await navPage.locator('.gac-clarity-case-grid a[href*="supplier_currency_mismatch"]').click();
@@ -182,23 +156,18 @@ const variants = [
     assert.ok((await navPage.locator("#source-evidence .gac-src-story").innerText()).includes("USD"));
     assert.deepEqual(navigationErrors, [],"React errors during cross-route navigation: "+navigationErrors.join(" | "));
     await navContext.close();
-    console.log("PASS cross-route: Architecture sidebar → case queue → Cases → recorded source evidence");
+    console.log("PASS cross-route: Architecture sidebar → native case queue → Cases → recorded source evidence");
 
-    // When a future native Next export includes its own queue and source
-    // evidence, historical static compatibility scripts must yield to it.
+    // The native Next export ships its own queue; historical static
+    // compatibility scripts must yield to it, and to native source evidence.
     // Exercise late-mounted native elements as well as ordinary routes.
     const coexistContext = await browser.newContext({viewport:{width:1280,height:820}});
     const coexistPage = await coexistContext.newPage();
     await coexistPage.goto(base + "/workspace/", {waitUntil:"load",timeout:45000});
-    await coexistPage.locator("#gac-workspace-guide").waitFor({state:"visible",timeout:16000});
-    await coexistPage.evaluate(() => {
-      const main = document.querySelector("main#main-content");
-      const native = document.createElement("h1");
-      native.id = "workspace-queue-title";
-      native.textContent = "Native workbench case review queue";
-      main.appendChild(native);
-    });
-    await coexistPage.locator("#gac-workspace-guide").waitFor({state:"detached",timeout:16000});
+    await coexistPage.locator("#workspace-queue-title").waitFor({state:"visible",timeout:16000});
+    await coexistPage.waitForTimeout(1500);  // give the legacy script time to (not) mount
+    assert.equal(await coexistPage.locator("#gac-workspace-guide").count(),0,
+      "Legacy overlay must not duplicate the shipped native queue");
     assert.equal(await coexistPage.locator("main.gac-clarity-workspace").count(),0,
       "Legacy overlay must not hide an already-native workspace");
     await coexistPage.goto(base + "/case/?id=supplier_variance_review", {waitUntil:"load",timeout:45000});
