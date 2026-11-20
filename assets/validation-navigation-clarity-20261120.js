@@ -86,6 +86,10 @@
     var route = currentRoute();
     var main = document.querySelector("main#main-content");
     if (!main) return;
+    // Next.js may navigate without a full reload. Never leave a guide
+    // from the previous route attached to the next page.
+    if (route !== "/workspace") main.querySelector("#gac-workspace-guide")?.remove();
+    if (route !== "/cases") main.querySelector("#gac-cases-guide")?.remove();
     if (route === "/workspace") workspaceMode(main);
     else if (route === "/cases") casesMode(main);
     else {
