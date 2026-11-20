@@ -86,6 +86,15 @@
     var route = currentRoute();
     var main = document.querySelector("main#main-content");
     if (!main) return;
+    // Load the style only on the two target routes and only when the
+    // enhanced content is mounted after hydration.
+    if ((route === "/workspace" || route === "/cases") &&
+        !document.querySelector('link[href="/assets/validation-navigation-clarity-20261120.css"]')) {
+      var stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.href = "/assets/validation-navigation-clarity-20261120.css";
+      document.head.appendChild(stylesheet);
+    }
     // Next.js may navigate without a full reload. Never leave a guide
     // from the previous route attached to the next page.
     if (route !== "/workspace") main.querySelector("#gac-workspace-guide")?.remove();
@@ -97,15 +106,6 @@
     }
   }
   function init() {
-    // Load scoped navigation styling even when the user arrives through a
-    // client-side sidebar transition from an unrelated published route.
-    var styleUrl = "/assets/validation-navigation-clarity-20261120.css";
-    if (!document.querySelector('link[href="' + styleUrl + '"]')) {
-      var stylesheet = document.createElement("link");
-      stylesheet.rel = "stylesheet";
-      stylesheet.href = styleUrl;
-      document.head.appendChild(stylesheet);
-    }
     // The exported Next.js document may stream server markup AFTER
     // DOMContentLoaded. Mutating its React-owned elements before hydration
     // triggers #418 mismatches and can drop event handlers. Wait for the
