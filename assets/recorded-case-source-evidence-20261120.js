@@ -111,7 +111,8 @@
       ["spending_limit", "Spending limit"],
       ["variance_threshold", "Volume variance threshold"],
       ["valid_from", "Contract valid from"], ["valid_to", "Contract valid to"],
-      ["version", "Reference version"]
+      ["version", "Reference version"],
+      ["required_documents", "Required documents"]
     ];
     var output = [
       addFieldRows("Submission", sub, submissionFields, "submission")
@@ -195,8 +196,61 @@
     R3: ["submission.period_start", "submission.period_end"],
     R4: ["submission.invoice_date", "submission.period_end"],
     R5: ["submission.lines[0].service_code"],
-    R6: ["submission.documents"]
+    R6: ["submission.documents", "contract.required_documents", "submission.missing_documents"]
   };
+
+  var CONTRACT_INPUTS = {
+    "Supplier matches contract registry": ["submission.supplier_id", "contract.supplier_id"],
+    "Contract identifier matches": ["contract.contract_id"],
+    "Purchase order matches": ["submission.purchase_order", "contract.purchase_order"],
+    "Currency matches contract": ["submission.currency", "contract.currency"],
+    "Service period is covered by contract": [
+      "submission.period_start", "submission.period_end",
+      "contract.valid_from", "contract.valid_to"
+    ],
+    "Rates match approved rate card": ["submission.lines[0].unit_rate"],
+    "Invoice total stays within spending limit": ["submission.total", "contract.spending_limit"],
+    "Invoice is not already approved": ["submission.invoice_id"]
+  };
+
+  function contractCheckEvent(scenario, check, attempt) {
+    var matching = scenario.events.filter(function (ev) {
+      return ev.kind === "contract.check" && ev.label &&
+        ev.label.startsWith(check + " — ");
+    });
+    return matching[attempt - 1] || null;
+  }
+
+  function contractCheckExplanation(record, check) {
+    var s = record.submission || {}, c = record.contract || {};
+    if (check === "Currency matches contract" && s.currency != null && c.currency != null) {
+      return "Submitted currency " + s.currency + " vs approved contract currency " +
+        c.currency + (s.currency === c.currency ? " — matches." : " — mismatch.");
+    }
+    if (check === "Purchase order matches" && s.purchase_order && c.purchase_order) {
+      return "Submitted PO " + s.purchase_order + " vs recorded approved PO " +
+        c.purchase_order + (s.purchase_order === c.purchase_order ? " — matches." : " — mismatch.");
+    }
+    if (check === "Supplier matches contract registry" && s.supplier_id && c.supplier_id) {
+      return "Submitted supplier ID " + s.supplier_id + " vs recorded reference " +
+        c.supplier_id + (s.supplier_id === c.supplier_id ? " — matches." : " — mismatch.");
+    }
+    if (check === "Invoice total stays within spending limit" &&
+        amount(s.total) !== null && amount(c.spending_limit) !== null) {
+      return "Submitted invoice " + s.total + " vs documented limit " + c.spending_limit +
+        (amount(s.total) <= amount(c.spending_limit) ? " — within limit." : " — exceeds limit.");
+    }
+    if (check === "Rates match approved rate card") {
+      return "Only the submitted unit rate is in this public snapshot. The approved rate card is not retained here; inspect the numbered recorded check event, not a fabricated reference cell.";
+    }
+    if (check === "Invoice is not already approved") {
+      return "The durable approved-invoice register is not part of the historical public fixture; no duplicate-check reference cell is asserted.";
+    }
+    if (check === "Contract identifier matches") {
+      return "Only the approved contract identifier is present in the published case object. The full input-to-reference comparison is not independently replayable.";
+    }
+    return "Recorded check verdict from the numbered fixture event. No claim of an independent source-value replay for this check.";
+  }
 
   function recordedCheckEvent(scenario, id, attempt) {
     var matching = scenario.events.filter(function (e) {
@@ -359,6 +413,86 @@
           '</details>';
       }).join("");
 
+    var contractRules = (record.contract_checks || []).map(function (c) {
+      var event = contractCheckEvent(scenario, c.name, c.attempt);
+      var recordedVerdict = event && event.label.endsWith(c.ok ? " — PASS" : " — FAIL");
+      var paths = CONTRACT_INPUTS[c.name] || [];
+      var cellRefs = refs(paths);
+      return '<details class="gac-src-rule" data-gac-paths="' + esc(paths.join("|")) + '">' +
+        '<summary>Attempt ' + c.attempt + ' · ' + esc(c.name) +
+        ' <strong>' + (c.ok ? "PASS" : "FAIL") + '</strong>' +
+        (recordedVerdict ? '<span class="gac-src-event">event #' + event.seq + '</span>' : "") +
+        '</summary><p>' + esc(contractCheckExplanation(record, c.name)) + '</p>' +
+        '<div class="gac-src-paths">' +
+        (cellRefs.length ? cellRefs.map(function (ref) { return sourceButton(ref); }).join("") :
+          '<span class="gac-src-quiet">No recorded source fields uniquely justify a cell link.</span>') +
+        '</div>' +
+        (!recordedVerdict ? '<p class="gac-src-quiet">An exact recorded check event for this attempt could not be verified.</p>' : '') +
+        '</details>';
+    }).join("");
+
+    var failedChecks = (record.checks || []).filter(function (c) { return !c.ok; });
+    var failedContractChecks = (record.contract_checks || []).filter(function (c) { return !c.ok; });
+    var selectedEvidencePaths = (record.findings || []).map(function (finding) {
+      var mapped = provenanceForFinding(record, finding);
+      return mapped ? mapped.paths : [];
+    }).flat();
+    if (!selectedEvidencePaths.length && failedContractChecks.length) {
+      selectedEvidencePaths = CONTRACT_INPUTS[failedContractChecks[0].name] || [];
+    }
+    if (!selectedEvidencePaths.length && failedChecks.length) {
+      selectedEvidencePaths = ruleFieldPaths(record, failedChecks[0].id);
+    }
+    var defaultRefs = refs(selectedEvidencePaths);
+    if (defaultRefs.length) pinned = defaultRefs;
+
+    var eventProof = scenario.events.filter(function (event) {
+      return ["committee.opponent.argument", "verification.result", "committee.judge.argument"].includes(event.kind);
+    });
+    var evidenceStory = "";
+    if ((record.findings || []).some(function (f) { return f.code === "volume_variance"; })) {
+      var finding = record.findings.find(function (f) { return f.code === "volume_variance"; });
+      var proof = provenanceForFinding(record, finding);
+      var cve = eventProof.find(function (e) { return e.kind === "verification.result" && String(e.detail).startsWith("volume_variance:"); });
+      var proposal = eventProof.find(function (e) { return e.kind === "committee.opponent.argument"; });
+      var judge = eventProof.find(function (e) { return e.kind === "committee.judge.argument"; });
+      evidenceStory =
+        '<div class="gac-src-story" aria-label="Reconstructed calculation and recorded checkpoints">' +
+        '<div class="gac-src-story-step"><strong>1 · Source values</strong><p>Invoice total ' +
+        sourceButton(lookup["submission.total"], asText(record.submission.total)) +
+        ' and earlier period ' +
+        sourceButton(lookup["contract.prior_period_total"], asText(record.contract.prior_period_total)) +
+        '. The threshold ' +
+        sourceButton(lookup["contract.variance_threshold"], asText(Number(record.contract.variance_threshold) * 100) + "%") +
+        ' is on the <em>contract reference</em>, not the submission.</p></div>' +
+        '<div class="gac-src-story-step"><strong>2 · Reproduce the check</strong><p>' +
+        esc(proof ? proof.explanation : "No independently reconcilable numeric evidence.") +
+        '</p></div>' +
+        '<div class="gac-src-story-step"><strong>3 · Recorded challenge and verification</strong><p>' +
+        (proposal ? "Opponent proposed the exception in recorded event #" + proposal.seq + ". " : "No recorded opponent proposal. ") +
+        (cve ? "A structured claim was checked in event #" + cve.seq + ". " : "No structured verification event. ") +
+        (judge ? "The scripted Judge packaged it in event #" + judge.seq + "." : "") +
+        ' <span class="gac-src-quiet">Scripted reference roles; no live LLM inference or independently verified Proponent argument.</span></p></div>' +
+        '</div>';
+    } else if (failedChecks.length || failedContractChecks.length) {
+      var failure = failedContractChecks[0];
+      var first = failure
+        ? contractCheckEvent(scenario, failure.name, failure.attempt)
+        : recordedCheckEvent(scenario, failedChecks[0].id, failedChecks[0].attempt);
+      evidenceStory =
+        '<div class="gac-src-story" aria-label="Failed check and recorded decision">' +
+        '<div class="gac-src-story-step"><strong>1 · Recorded failed check</strong><p>' +
+        esc(failure ? failure.name : failedChecks[0].name) +
+        (first ? ' · event #' + first.seq : " · event identity unavailable") +
+        '</p></div>' +
+        '<div class="gac-src-story-step"><strong>2 · Inputs and method</strong><p>' +
+        esc(failure ? contractCheckExplanation(record, failure.name) : replayRule(record, failedChecks[0].id)) +
+        '</p></div>' +
+        '<div class="gac-src-story-step"><strong>3 · Recorded follow-up</strong><p>' +
+        esc(record.attempts > 1 ? "The fixture includes a later submission attempt; inspect the attempt-specific rule events below." :
+            "The failure is retained in the recorded case, and a human decision or correction gate follows.") +
+        '</p></div></div>';
+    }
     var actor = (record.gates || [])[0];
     var worksheets = sheets.map(function (sheet) {
       return '<button class="gac-src-tab" type="button" role="tab" data-gac-sheet="' + esc(sheet.name) +
@@ -373,10 +507,17 @@
         ' · ' + esc(record.case_id || "Recorded scenario") +
         ' · <strong>' + scenario.events.length + ' verified event records</strong></p></div>' +
         '<span class="gac-src-chip">Read-only reference</span></div>' +
+      '<ol class="gac-src-walkthrough" aria-label="How to inspect this case">' +
+        '<li><strong>1 · Start with the finding</strong><span>Which comparison or rule raised it?</span></li>' +
+        '<li><strong>2 · Locate the source</strong><span>Click a value to jump to its recorded field.</span></li>' +
+        '<li><strong>3 · Inspect the check</strong><span>Reproduce arithmetic or open the recorded event.</span></li>' +
+        '<li><strong>4 · See human accountability</strong><span>Read the archived reviewer action and reason.</span></li>' +
+      '</ol>' +
       '<p class="gac-src-truth"><strong>Evidence boundary:</strong> this is an Excel-style projection of the ' +
         '<em>recorded synthetic supplier fixture</em>, not a preview of an original uploaded XLSX. ' +
         'The historical public run did not retain an original workbook. Every displayed input comes ' +
         'from the pinned recorded case JSON; neither an upload nor a human approval is performed here.</p>' +
+      evidenceStory +
       '<div class="gac-src-layout">' +
         '<div class="gac-src-workbook">' +
           '<div class="gac-src-bar"><strong>Recorded fields · spreadsheet view</strong>' +
@@ -391,6 +532,8 @@
           '<p class="gac-src-quiet">Select a finding to locate its known input fields; arithmetic is replayed independently. ' +
             'The check verdict, human decision and numbered event sequence come from the recorded run.</p>' +
           (findingCards || '<p class="gac-src-quiet">No recorded machine finding on this case.</p>') +
+          (contractRules ? '<details class="gac-src-rules gac-src-contract"><summary>Tier 2 · Recorded contract checks (' +
+            (record.contract_checks || []).length + ')</summary>' + contractRules + '</details>' : '') +
           '<details class="gac-src-rules"><summary>Recorded deterministic rule checks (' +
             (record.checks || []).length + ')</summary>' + rules + '</details>' +
           '<div class="gac-src-decision"><strong>Recorded human outcome</strong>' +
@@ -410,6 +553,7 @@
         'Scripted recorded fixture, not live models or private client data.</p>';
 
     showSheet();
+    if (pinned.length) highlight();
     renderReady = true;
     app.addEventListener("click", function (ev) {
       var tab = ev.target.closest("[data-gac-sheet]");
