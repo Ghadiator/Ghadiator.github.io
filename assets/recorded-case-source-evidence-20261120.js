@@ -198,21 +198,44 @@
     R6: ["submission.documents"]
   };
 
-  function recordedCheckEvent(scenario, id) {
-    return scenario.events.find(function (e) {
+  function recordedCheckEvent(scenario, id, attempt) {
+    var matching = scenario.events.filter(function (e) {
       return e.kind === "checks.rule" && e.label &&
         new RegExp("^" + id + " (PASS|FAIL)").test(e.label);
     });
+    // Multiple submission attempts execute the same rule again. Never
+    // substitute attempt 1's event as evidence for attempt 2.
+    return matching[attempt - 1] || null;
+  }
+
+  function ruleFieldPaths(record, id) {
+    var lines = (record.submission && record.submission.lines) || [];
+    if (id === "R1") return lines.flatMap(function (line, n) {
+      return ["quantity", "unit_rate", "amount"].filter(function (key) {
+        return Object.prototype.hasOwnProperty.call(line, key);
+      }).map(function (key) { return "submission.lines[" + n + "]." + key; });
+    });
+    if (id === "R2") return ["submission.total"].concat(
+      lines.map(function (_, n) { return "submission.lines[" + n + "].amount"; })
+    );
+    if (id === "R5") return lines.map(function (_, n) {
+      return "submission.lines[" + n + "].service_code";
+    });
+    return CHECK_INPUTS[id] || [];
   }
 
   function replayRule(record, id) {
     var sub = record.submission || {}, lines = sub.lines || [];
     if (id === "R1" && lines.length) {
-      var line = lines[0], q = amount(line.quantity), rate = amount(line.unit_rate), a = amount(line.amount);
-      if (q !== null && rate !== null && a !== null) {
-        return q + " × " + rate + " = " + (q * rate).toFixed(2) +
-          "; recorded amount " + line.amount +
-          ((Math.abs(q * rate - a) <= 0.0000001) ? " — arithmetic agrees." : " — arithmetic disagrees.");
+      var parts = lines.map(function (line, n) {
+        var q = amount(line.quantity), rate = amount(line.unit_rate), a = amount(line.amount);
+        if (q === null || rate === null || a === null) return null;
+        return "Line " + (n + 1) + ": " + q + " × " + rate + " = " +
+          (q * rate).toFixed(2) + "; recorded " + line.amount +
+          (Math.abs(q * rate - a) <= 0.0000001 ? " (agrees)" : " (disagrees)");
+      });
+      if (parts.every(function (part) { return part !== null; })) {
+        return parts.join("; ") + ".";
       }
     }
     if (id === "R2" && lines.length) {
@@ -323,8 +346,8 @@
 
     var rules = (record.checks || []).filter(function (c) { return c.attempt === record.attempts; })
       .map(function (c) {
-        var event = recordedCheckEvent(scenario, c.id);
-        var paths = CHECK_INPUTS[c.id] || [];
+        var event = recordedCheckEvent(scenario, c.id, c.attempt);
+        var paths = ruleFieldPaths(record, c.id);
         var evGood = event && event.label.indexOf(c.ok ? " PASS " : " FAIL ") > 0;
         return '<details class="gac-src-rule" data-gac-paths="' + esc(paths.join("|")) + '">' +
           '<summary>' + esc(c.id) + ' · ' + esc(c.name) +
