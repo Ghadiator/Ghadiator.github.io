@@ -655,6 +655,15 @@
 
   function updateRoute() {
     var path = window.location.pathname.replace(/\/+$/, "");
+    // Global route navigation support: stylesheet only on the evidence
+    // routes and only after the client has mounted. Do not alter <head>
+    // while Next is hydrating an unrelated page.
+    if ((path === "/case" || path === "/cases") &&
+        !document.querySelector('link[href="' + css + '"]')) {
+      var style = document.createElement("link");
+      style.rel = "stylesheet"; style.href = css;
+      document.head.appendChild(style);
+    }
     var slug = new URLSearchParams(window.location.search).get("id");
     var key = path === "/case" ? path + "?id=" + slug : path;
     if (path !== "/cases" && path !== "/case") {
@@ -674,12 +683,6 @@
   }
 
   function init() {
-    if (!document.querySelector('link[href="' + css + '"]')) {
-      var style = document.createElement("link");
-      style.rel = "stylesheet";
-      style.href = css;
-      document.head.appendChild(style);
-    }
     // The static export streams a React Server Component payload. Inserting
     // a source panel into the React-owned <main> while initial hydration is
     // still attaching can create #418 mismatches. Attach only after the
