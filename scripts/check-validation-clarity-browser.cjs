@@ -183,5 +183,41 @@ const variants = [
     assert.deepEqual(navigationErrors, [],"React errors during cross-route navigation: "+navigationErrors.join(" | "));
     await navContext.close();
     console.log("PASS cross-route: Architecture sidebar → case queue → Cases → recorded source evidence");
+
+    // When a future native Next export includes its own queue and source
+    // evidence, historical static compatibility scripts must yield to it.
+    // Exercise late-mounted native elements as well as ordinary routes.
+    const coexistContext = await browser.newContext({viewport:{width:1280,height:820}});
+    const coexistPage = await coexistContext.newPage();
+    await coexistPage.goto(base + "/workspace/", {waitUntil:"load",timeout:45000});
+    await coexistPage.locator("#gac-workspace-guide").waitFor({state:"visible",timeout:16000});
+    await coexistPage.evaluate(() => {
+      const main = document.querySelector("main#main-content");
+      const native = document.createElement("h1");
+      native.id = "workspace-queue-title";
+      native.textContent = "Native workbench case review queue";
+      main.appendChild(native);
+    });
+    await coexistPage.locator("#gac-workspace-guide").waitFor({state:"detached",timeout:16000});
+    assert.equal(await coexistPage.locator("main.gac-clarity-workspace").count(),0,
+      "Legacy overlay must not hide an already-native workspace");
+    await coexistPage.goto(base + "/case/?id=supplier_variance_review", {waitUntil:"load",timeout:45000});
+    await coexistPage.locator("#source-evidence.gac-src-panel").waitFor({state:"visible",timeout:16000});
+    await coexistPage.evaluate(() => {
+      const main = document.querySelector("main#main-content");
+      const native = document.createElement("section");
+      native.id = "source-evidence";
+      native.dataset.nativeSource = "yes";
+      native.textContent = "Native source evidence";
+      main.appendChild(native);
+    });
+    await coexistPage.waitForFunction(() =>
+      document.querySelectorAll("#source-evidence").length === 1 &&
+      document.querySelector("#source-evidence")?.dataset.nativeSource === "yes",
+      null, {timeout:16000});
+    assert.equal(await coexistPage.locator(".gac-src-panel").count(),0,
+      "Legacy synthetic projection must yield to native original-workbook evidence");
+    await coexistContext.close();
+    console.log("PASS native coexistence: no duplicated workspace queue or source-evidence panel");
   } finally { await browser.close(); }
 })().catch((error) => { console.error(error); process.exit(1); });
