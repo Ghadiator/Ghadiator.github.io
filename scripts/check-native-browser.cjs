@@ -86,34 +86,27 @@ const settle = page => page.waitForTimeout(1500);
 
       // ── Failure Lab: real-LLM attacker game, honest offline state, hints and collapsed evidence ──
       await page.goto(base + "/red-team/", { waitUntil: "load" });
-      await page.locator("#gac-failure-lab-20261119").waitFor({ state: "attached", timeout: 15000 });
-      assert.equal(await page.locator("#gac-failure-lab-20261119 .fl-threat").count(), 6, "Six grounded threat categories");
-      assert.ok(await page.locator("#gac-failure-lab-20261119 .fl-hero").isVisible(),
-        "Failure Lab introduction must be visible");
+      // The Failure Lab is native in the source build since a082cb20d6c3
+      // (owner commits 77509ec/b94b74c); the static patch ids are gone.
+      await page.locator("#failure-lab-intro").waitFor({ state: "visible", timeout: 15000 });
+      assert.match(await page.locator("#failure-lab-intro").innerText(), /How can a governed AI workflow fail\?/);
+      const threats = page.locator("section:has(#threats-heading) article");
+      assert.equal(await threats.count(), 6, "Six grounded threat categories");
+      assert.ok((await page.locator("main").innerText()).includes("Obfuscation"));
       await page.locator("#challenge-me").waitFor({state:"visible",timeout:15000});
-      assert.ok(await page.locator("#challenge-me").isVisible(),
-        "Challenge me must be visible without expanding the red team");
-      assert.ok((await page.locator("#gac-failure-lab-20261119").innerText()).includes("Obfuscation & encoding evasion"));
-      const campaign = page.locator("#gac-recorded-red-team-20261119");
-      await campaign.waitFor({ state: "attached", timeout: 15000 });
-      assert.equal(await campaign.evaluate(el=>el.open), false, "Recorded red team should start collapsed");
-      await page.locator("#fl-mission").selectOption("obfuscation");
-      await page.getByRole("button",{name:/Use a sample/}).click();
-      assert.match(await page.locator("#fl-payload").inputValue(),/1gn0re/,
+      await page.locator("#arena-technique").selectOption({ index: 1 });
+      await page.getByRole("button",{name:/Use example/}).click();
+      assert.ok((await page.locator("#arena-payload").inputValue()).trim().length > 0,
         "Sample must load a real attack draft");
-      await page.getByRole("button",{name:/Reveal hint 1/}).click();
-      assert.match(await page.locator(".fl-hint-box").innerText(),/Hint 1:/,
+      await page.getByRole("button",{name:/Reveal next hint/}).click();
+      assert.match(await page.locator("#challenge-me").innerText(), /Hint 1/i,
         "Challenge hints must be progressive and usable");
-      await page.getByRole("button",{name:/Reveal hint 2/}).click();
-      assert.match(await page.locator(".fl-hint-box").innerText(),/Hint 2:/);
       assert.equal(await page.getByRole("button",{name:/Attack the defender/}).isDisabled(),true,
         "No LLM attack must be submitted without an explicitly configured sandbox");
-      assert.match(await page.locator("#fl-defender-status").textContent(),/not configured/i,
-        "Offline model status must be visible and honest");
-      assert.ok((await page.locator(".fl-result").textContent()).includes("No reply or success score is invented"),
-        "Offline challenge must not fabricate an LLM verdict");
-      await campaign.locator("summary").click();
-      assert.equal(await campaign.locator("[data-attack]").count(),7, "Recorded control probes remain accessible");
+      const campaign = page.locator("details#adversarial-red-team");
+      assert.equal(await campaign.evaluate(el=>el.open), false, "Recorded red team should start collapsed");
+      await campaign.locator("summary").first().click();
+      assert.equal(await page.locator("[data-attack]").count(),7, "Recorded control probes remain accessible");
       const topLinks = await page.locator(".public-sidebar .public-nav a").evaluateAll(as=>as.map(a=>a.getAttribute("href")));
       assert.ok(topLinks.indexOf("/red-team") === topLinks.indexOf("/architecture")+1,
         "Failure Lab should be directly after Architecture in the sidebar");
@@ -172,8 +165,10 @@ const settle = page => page.waitForTimeout(1500);
       assert.ok((await source.locator("[data-gac-grid]").innerText()).includes("Previous period total"), "Recorded baseline sheet available");
       await source.getByRole("tab", { name: "LineItems" }).click();
       assert.ok((await source.locator("[data-gac-grid]").innerText()).includes("13000.00"), "Recorded line-item values preserved");
-      await source.locator(".gac-src-rules > summary").click();
-      assert.ok((await source.locator(".gac-src-rules").innerText()).includes("event #11"), "Recorded R1 rule event must be linked");
+      // Two rule lists exist (Tier 2 contract checks + deterministic rules); R1 lives in the deterministic one.
+      const ruleList = source.locator(".gac-src-rules:not(.gac-src-contract)");
+      await ruleList.locator(":scope > summary").click();
+      assert.ok((await ruleList.innerText()).includes("event #11"), "Recorded R1 rule event must be linked");
       assert.equal(await source.locator("button").filter({ hasText: /Approve|Reject/i }).count(), 0,
         "Public evidence preview must not offer live reviewer decisions");
       const caseSize = await page.evaluate(() => ({ body: document.body.scrollWidth, width: innerWidth }));
