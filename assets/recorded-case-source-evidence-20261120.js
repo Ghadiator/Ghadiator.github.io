@@ -502,7 +502,7 @@
     app.innerHTML =
       '<div class="gac-src-top">' +
         '<div><p class="gac-src-kicker">Recorded case · source evidence</p>' +
-        '<h2>Show me where you found it</h2>' +
+        '<h2>Source evidence &amp; validation trace</h2>' +
         '<p class="gac-src-intro">' + esc(record.title || record.slug) +
         ' · ' + esc(record.case_id || "Recorded scenario") +
         ' · <strong>' + scenario.events.length + ' verified event records</strong></p></div>' +
@@ -528,7 +528,7 @@
             'The typed JSON path identifies the actual recorded source field.</p>' +
         '</div>' +
         '<div class="gac-src-reasoning">' +
-          '<h3>Show me how you did it</h3>' +
+          '<h3>Executed checks &amp; findings</h3>' +
           '<p class="gac-src-quiet">Select a finding to locate its known input fields; arithmetic is replayed independently. ' +
             'The check verdict, human decision and numbered event sequence come from the recorded run.</p>' +
           (findingCards || '<p class="gac-src-quiet">No recorded machine finding on this case.</p>') +
