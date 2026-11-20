@@ -108,5 +108,29 @@ const variants = [
     assert.ok((await source.locator(".gac-src-contract").innerText()).includes("Currency matches contract"));
     await context.close();
     console.log("PASS contract mismatch: original recorded USD vs EUR, event #22 and named input paths");
+
+    // Entry from another React route is not a full document refresh in all
+    // Next.js journeys. A global script must keep the workspace guide and
+    // source provenance discoverable from the sidebar as well.
+    const navContext = await browser.newContext({viewport:{width:1440,height:900}});
+    const navPage = await navContext.newPage();
+    const navigationErrors = [];
+    navPage.on("pageerror", e => navigationErrors.push(navPage.url()+" :: "+e.message));
+    await navPage.goto(base + "/architecture/",{waitUntil:"load",timeout:45000});
+    await navPage.locator('a[href="/workspace"]').first().click();
+    await navPage.waitForURL(url => url.pathname.replace(/\\/$/,"") === "/workspace");
+    const navigatedGuide = navPage.locator("#gac-workspace-guide");
+    await navigatedGuide.waitFor({state:"visible",timeout:16000});
+    assert.equal(await navigatedGuide.locator(".gac-clarity-route-grid a").count(),5);
+    await navigatedGuide.locator('a[href="/cases/"]').click();
+    await navPage.waitForURL(url => url.pathname.replace(/\\/$/,"") === "/cases");
+    await navPage.locator("#gac-cases-guide").waitFor({state:"visible",timeout:16000});
+    await navPage.locator('.gac-clarity-case-grid a[href*="supplier_currency_mismatch"]').click();
+    await navPage.waitForURL(url => url.searchParams.get("id")==="supplier_currency_mismatch");
+    await navPage.locator("#source-evidence .gac-src-story").waitFor({state:"visible",timeout:16000});
+    assert.ok((await navPage.locator("#source-evidence .gac-src-story").innerText()).includes("USD"));
+    assert.deepEqual(navigationErrors, [],"React errors during cross-route navigation: "+navigationErrors.join(" | "));
+    await navContext.close();
+    console.log("PASS cross-route: Architecture sidebar → Workspace guide → Cases → recorded currency evidence");
   } finally { await browser.close(); }
 })().catch((error) => { console.error(error); process.exit(1); });
