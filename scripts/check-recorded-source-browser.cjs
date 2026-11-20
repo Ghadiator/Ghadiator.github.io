@@ -57,7 +57,7 @@ const widths = [
       assert.ok((await panel.locator("[data-gac-grid]").innerText()).includes("Previous period total"));
       await panel.getByRole("tab", { name: "LineItems" }).click();
       assert.ok((await panel.locator("[data-gac-grid]").innerText()).includes("13000.00"));
-      await panel.locator(".gac-src-rules > summary").click();
+      await panel.locator(".gac-src-rules:not(.gac-src-contract) > summary").click();
       assert.ok((await panel.locator(".gac-src-rules").innerText()).includes("event #11"));
       assert.equal(await panel.locator("button").filter({ hasText: /Approve|Reject/i }).count(), 0);
       const dimensions = await page.evaluate(() => ({
@@ -84,7 +84,7 @@ const widths = [
     await page.goto(base + "/case/?id=supplier_rate_correction#source-evidence", { waitUntil: "load" });
     const panel = page.locator("#source-evidence");
     await panel.getByText("Show me where you found it").waitFor({ state: "visible", timeout: 15000 });
-    await panel.locator(".gac-src-rules > summary").click();
+    await panel.locator(".gac-src-rules:not(.gac-src-contract) > summary").click();
     assert.ok((await panel.locator(".gac-src-rules").innerText()).includes("event #40"),
       "Second submission attempt must point to its own recorded rule event, not attempt one");
     assert.equal(await panel.locator(".gac-src-rule").count(), 6);
