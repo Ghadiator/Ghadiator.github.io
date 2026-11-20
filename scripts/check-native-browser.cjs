@@ -165,8 +165,10 @@ const settle = page => page.waitForTimeout(1500);
       assert.ok((await source.locator("[data-gac-grid]").innerText()).includes("Previous period total"), "Recorded baseline sheet available");
       await source.getByRole("tab", { name: "LineItems" }).click();
       assert.ok((await source.locator("[data-gac-grid]").innerText()).includes("13000.00"), "Recorded line-item values preserved");
-      await source.locator(".gac-src-rules > summary").click();
-      assert.ok((await source.locator(".gac-src-rules").innerText()).includes("event #11"), "Recorded R1 rule event must be linked");
+      // Two rule lists exist (Tier 2 contract checks + deterministic rules); R1 lives in the deterministic one.
+      const ruleList = source.locator(".gac-src-rules:not(.gac-src-contract)");
+      await ruleList.locator(":scope > summary").click();
+      assert.ok((await ruleList.innerText()).includes("event #11"), "Recorded R1 rule event must be linked");
       assert.equal(await source.locator("button").filter({ hasText: /Approve|Reject/i }).count(), 0,
         "Public evidence preview must not offer live reviewer decisions");
       const caseSize = await page.evaluate(() => ({ body: document.body.scrollWidth, width: innerWidth }));
