@@ -146,6 +146,41 @@ const settle = page => page.waitForTimeout(1500);
       assert.match(await page.locator("[data-gac-origin-panel]").innerText(), /208/);
       assert.match(await page.locator("[data-gac-origin-panel]").innerText(), /571/);
 
+      // ── Recorded case: source → check → evidence → reviewer outcome ──
+      const recordedLink = page.locator('a[href*="id=supplier_variance_review"]').first();
+      await recordedLink.waitFor({ state: "visible", timeout: 15000 });
+      await page.waitForFunction(() => {
+        const a = document.querySelector('a[href*="id=supplier_variance_review"]');
+        return a?.getAttribute("href")?.endsWith("#source-evidence");
+      }, { timeout: 10000 });
+      await recordedLink.click();
+      assert.ok(page.url().includes("id=supplier_variance_review"), "Queue link must open the selected recorded case");
+      const source = page.locator("#source-evidence");
+      await source.waitFor({ state: "visible", timeout: 15000 });
+      await source.getByText("Show me where you found it").waitFor({ state: "visible" });
+      const text = await source.innerText();
+      assert.ok(text.includes("42 verified event records"), "Exact recorded event count");
+      assert.ok(text.includes("30.0%") && text.includes("20.0%"), "Actual recorded variance and contract threshold");
+      assert.ok(text.includes("not a preview of an original uploaded XLSX"), "No invented original Excel provenance");
+      assert.ok(text.includes("Recorded human outcome"), "Recorded reviewer outcome remains visible");
+      assert.ok(text.includes("data/cases.json") || text.includes("cases.json"), "Source file disclosure");
+      await source.locator(".gac-src-finding").first().hover();
+      assert.match(await source.locator("[data-gac-current-cell]").innerText(), /Submission!B9/);
+      assert.ok((await source.locator(".gac-src-cell.is-selected").count()) >= 1, "Hover must highlight real recorded fixture fields");
+      await source.getByRole("tab", { name: "Contract reference" }).click();
+      assert.ok(await source.getByRole("tab", { name: "Contract reference" }).getAttribute("aria-selected") === "true");
+      assert.ok((await source.locator("[data-gac-grid]").innerText()).includes("Previous period total"), "Recorded baseline sheet available");
+      await source.getByRole("tab", { name: "LineItems" }).click();
+      assert.ok((await source.locator("[data-gac-grid]").innerText()).includes("13000.00"), "Recorded line-item values preserved");
+      await source.locator(".gac-src-rules > summary").click();
+      assert.ok((await source.locator(".gac-src-rules").innerText()).includes("event #11"), "Recorded R1 rule event must be linked");
+      assert.equal(await source.locator("button").filter({ hasText: /Approve|Reject/i }).count(), 0,
+        "Public evidence preview must not offer live reviewer decisions");
+      const caseSize = await page.evaluate(() => ({ body: document.body.scrollWidth, width: innerWidth }));
+      assert.ok(caseSize.body <= caseSize.width + 1,
+        `${viewport.label}: case source panel must not overflow the page`);
+      checks++;
+
       // ── Native content that carries the governance story ──
       await page.goto(base + "/business-impact/", { waitUntil: "load" });
       // 8.0.0 Business Value rework: old KPIs and the new AI-created KPIs.
