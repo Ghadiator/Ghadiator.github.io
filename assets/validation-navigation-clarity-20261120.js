@@ -121,7 +121,7 @@
           '<li><span>01 · INSPECT</span><strong>See the underlying evidence</strong><p>Read the original workbook where retained and authorized; inspect exact typed inputs, rule operands and check-time reference values. Missing source coordinates must remain visibly unverified.</p></li>' +
           '<li><span>02 · CHALLENGE</span><strong>Question an exception</strong><p>Separate hard-rule failures, failed contract comparisons and AI-generated advisory tags. Open the recorded validation method and request clarification instead of accepting an unsupported explanation.</p></li>' +
           '<li><span>03 · DECIDE</span><strong>Record a reasoned action</strong><p>The responsible reviewer chooses an available decision, supplies a reason code and written rationale, and confirms the action. The machine does not set a terminal human verdict.</p></li>' +
-          '<li><span>04 · SECOND APPROVAL</span><strong>Control high-risk overrides</strong><p>When a reviewer proposes a high-risk override or anomaly dismissal, the proposal remains pending until a different reviewer authorizes it. The initiator cannot serve as the second approver.</p></li>' +
+          '<li><span>04 · INDEPENDENT APPROVAL</span><strong>Enforce four-eyes control</strong><p>When a reviewer proposes a high-risk override or anomaly dismissal, the proposal remains pending until a different reviewer authorizes it. The initiator cannot serve as the second approver.</p></li>' +
         '</ol>' +
       '</section>' +
       '<section class="gac-ops-evidence" aria-labelledby="gac-ops-evidence-title">' +
