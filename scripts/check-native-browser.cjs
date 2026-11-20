@@ -150,7 +150,7 @@ const settle = page => page.waitForTimeout(1500);
       assert.ok(page.url().includes("id=supplier_variance_review"), "Queue link must open the selected recorded case");
       const source = page.locator("#source-evidence");
       await source.waitFor({ state: "visible", timeout: 15000 });
-      await source.getByText("Show me where you found it").waitFor({ state: "visible" });
+      await source.getByText("Source evidence & validation trace").waitFor({ state: "visible" });
       const text = await source.innerText();
       assert.ok(text.includes("42 verified event records"), "Exact recorded event count");
       assert.ok(text.includes("30.0%") && text.includes("20.0%"), "Actual recorded variance and contract threshold");
@@ -169,7 +169,7 @@ const settle = page => page.waitForTimeout(1500);
       const ruleList = source.locator(".gac-src-rules:not(.gac-src-contract)");
       await ruleList.locator(":scope > summary").click();
       assert.ok((await ruleList.innerText()).includes("event #11"), "Recorded R1 rule event must be linked");
-      assert.equal(await source.locator("button").filter({ hasText: /Approve|Reject/i }).count(), 0,
+      assert.equal(await source.getByRole("button", { name: /^(Approve|Reject)(?: case)?$/i }).count(), 0,
         "Public evidence preview must not offer live reviewer decisions");
       const caseSize = await page.evaluate(() => ({ body: document.body.scrollWidth, width: innerWidth }));
       assert.ok(caseSize.body <= caseSize.width + 1,

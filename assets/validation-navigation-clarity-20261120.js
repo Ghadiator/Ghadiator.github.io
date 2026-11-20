@@ -326,6 +326,14 @@
     '</section>';
 
   function workspaceMode(main) {
+    // Future canonical Next exports render their own queue. Never append the
+    // compatibility overlay on top of an already-native operational view.
+    // This also handles a native queue mounted after the old export script.
+    if (main.querySelector("#workspace-queue-title")) {
+      main.querySelector("#gac-workspace-guide")?.remove();
+      main.classList.remove("gac-clarity-workspace");
+      return;
+    }
     main.classList.add("gac-clarity-workspace");
     main.classList.remove("gac-clarity-cases");
     if (!main.querySelector("#gac-workspace-guide")) {

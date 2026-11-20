@@ -596,7 +596,17 @@
     }
   }
 
+  function nativeSourceEvidenceExists() {
+    // The eventual native workbook evidence workbench owns this ID. A
+    // compatibility fixture reconstruction must never shadow a real source
+    // mapping or create duplicate IDs during a future Next.js rebuild.
+    return Array.from(document.querySelectorAll("#source-evidence")).some(function (node) {
+      return node !== app && !node.classList.contains("gac-src-panel");
+    });
+  }
+
   function ensureMounted() {
+    if (nativeSourceEvidenceExists()) return;
     var main = document.getElementById("main-content");
     if (!main) return;
     if (!app) {
@@ -623,7 +633,7 @@
       var scenario = await verifyJSON("/data/scenarios/" + slug + ".json", SCENARIO_BLOBS[slug]);
       // A Next.js navigation may have changed the route during a fetch.
       // Never display another case's data in this case's evidence panel.
-      if (activeRouteKey !== key) return;
+      if (activeRouteKey !== key || nativeSourceEvidenceExists()) return;
       var record = (records.cases || []).find(function (c) { return c.slug === slug; });
       if (!record) throw new Error("No verified recorded case for this route.");
       checkIntegrity(record, scenario);
@@ -666,6 +676,12 @@
     }
     var slug = new URLSearchParams(window.location.search).get("id");
     var key = path === "/case" ? path + "?id=" + slug : path;
+    if (path === "/case" && nativeSourceEvidenceExists()) {
+      if (app && app.isConnected) app.remove();
+      app = null;
+      activeRouteKey = key;
+      return;
+    }
     if (path !== "/cases" && path !== "/case") {
       activeRouteKey = null;
       if (app && app.isConnected) app.remove();
