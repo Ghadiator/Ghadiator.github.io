@@ -112,7 +112,7 @@ const settle = page => page.waitForTimeout(1500);
       // Run-time controls; preserve that position without a delayed jump.
       const failureLink = '.public-sidebar .public-nav a[href="/red-team"]';
       const runtime = page.locator(".public-sidebar .public-nav section").filter({
-        has: page.locator(failureLink)
+        has: page.locator('a[href="/red-team"]')
       });
       assert.equal(await runtime.count(), 1, "Exactly one Failure Lab sidebar entry");
       assert.equal(await runtime.locator("h3").innerText(), "Run-time controls");
