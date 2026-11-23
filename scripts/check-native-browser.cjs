@@ -107,9 +107,32 @@ const settle = page => page.waitForTimeout(1500);
       assert.equal(await campaign.evaluate(el=>el.open), false, "Recorded red team should start collapsed");
       await campaign.locator("summary").first().click();
       assert.equal(await page.locator("[data-attack]").count(),7, "Recorded control probes remain accessible");
-      const topLinks = await page.locator(".public-sidebar .public-nav a").evaluateAll(as=>as.map(a=>a.getAttribute("href")));
-      assert.ok(topLinks.indexOf("/red-team") === topLinks.indexOf("/architecture")+1,
-        "Failure Lab should be directly after Architecture in the sidebar");
+      // A former static compatibility patch moved Failure Lab into Overview
+      // 2300 ms after load. The native source places it in Governance /
+      // Run-time controls; preserve that position without a delayed jump.
+      const failureLink = '.public-sidebar .public-nav a[href="/red-team"]';
+      const runtime = page.locator(".public-sidebar .public-nav section").filter({
+        has: page.locator(failureLink)
+      });
+      assert.equal(await runtime.count(), 1, "Exactly one Failure Lab sidebar entry");
+      assert.equal(await runtime.locator("h3").innerText(), "Run-time controls");
+      await page.waitForTimeout(2600);
+      assert.equal(await runtime.count(), 1, "Failure Lab must not change groups after load");
+      assert.equal(await runtime.locator("h3").innerText(), "Run-time controls");
+      assert.equal(await page.locator(failureLink).getAttribute("aria-current"), "page",
+        "Failure Lab should be active on its own page");
+
+      // Exercise actual sidebar navigation in both directions. Native links
+      // are standard document URLs, so programmatic click also works when
+      // the mobile menu is collapsed.
+      await page.locator('.public-sidebar .public-nav a[href="/"]').evaluate(a=>a.click());
+      await page.waitForURL(url=>url.pathname==="/", {timeout:15000});
+      assert.equal(await page.locator('.public-sidebar .public-nav a[href="/"]').getAttribute("aria-current"),
+        "page", "Introduction must become active after leaving Failure Lab");
+      await page.locator(failureLink).evaluate(a=>a.click());
+      await page.waitForURL(url=>url.pathname==="/red-team/" || url.pathname==="/red-team", {timeout:15000});
+      assert.equal(await page.locator(failureLink).getAttribute("aria-current"), "page",
+        "Failure Lab must become active after returning from Overview");
 
       // ── System card must render complete, domain-neutral ADRs ──
       await page.goto(base + "/system-card/", { waitUntil: "load" });
