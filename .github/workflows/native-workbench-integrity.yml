@@ -14,5 +14,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python scripts/check-native-release.py
+      - name: Verify stable public navigation and Failure Lab placement
+        run: node scripts/check-public-navigation-scripts.mjs
       - name: Verify every recorded committee role and CoVe event
         run: node scripts/check-committee-case-evidence.cjs

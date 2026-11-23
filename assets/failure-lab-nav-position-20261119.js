@@ -1,16 +1,14 @@
-/* Navigation parity with native PublicShell: Failure Lab belongs with
- * introductory engineering explorations, not buried at the rail's bottom.
- * Move after hydration to avoid mismatching the exported React tree. */
-(function(){"use strict";
-function promote(){
- const nav=document.querySelector(".public-sidebar nav.public-nav");
- if(!nav)return;
- const failure=nav.querySelector('a[href="/red-team"], a[href="/red-team/"]');
- const architecture=nav.querySelector('a[href="/architecture"], a[href="/architecture/"]');
- if(!failure||!architecture||failure.nextElementSibling===architecture)return;
- architecture.insertAdjacentElement("afterend",failure);
- if(failure.closest("section")===architecture.closest("section"))failure.dataset.promoted="1";
-}
-function start(){window.setTimeout(promote,2300)}
-if(document.readyState==="complete")start();else window.addEventListener("load",start,{once:true});
-})();
+/* Legacy compatibility script retained because the pinned static export
+ * includes this URL on existing pages.
+ *
+ * The native PublicShell already renders Failure Lab under
+ * GOVERNANCE > Run-time controls beside Context Engineering. Previously
+ * this script waited 2300 ms and reparented that link after Architecture
+ * under OVERVIEW. The delayed DOM mutation made the sidebar visibly jump
+ * after each page load and moved a React-owned node outside its rendered
+ * group. It also risked hydration/remount inconsistencies.
+ *
+ * Do not mutate or relocate navigation elements here. The native shell
+ * and future atomic exports are the single source of truth for placement.
+ */
+(() => { "use strict"; })();
