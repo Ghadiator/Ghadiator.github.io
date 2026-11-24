@@ -78,8 +78,8 @@ const sizes=[{width:390,height:844,label:"mobile"},
           "simulation.email.dispatch","simulation.supplier.reply"])
         assert.ok(events.includes(kind),"Missing simulated event: "+kind);
       await page.getByRole("button",{name:/Show all 42 events/}).click();
-      assert.ok((await page.locator("main").innerText()).includes("Recorded source events · unchanged"),
-        "Immutable real source history must be labelled separately");
+      await page.getByRole("heading",{name:/Recorded source events · unchanged/})
+        .waitFor({state:"visible",timeout:15000});
       assert.deepEqual(errors,[],size.label+" uncaught browser errors");
       assert.deepEqual(privateCalls,[],size.label+" must not send protected API requests");
       const dim=await page.evaluate(()=>({full:document.documentElement.scrollWidth,width:innerWidth}));
