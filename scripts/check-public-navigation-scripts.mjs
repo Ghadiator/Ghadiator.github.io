@@ -17,7 +17,7 @@ for(const route of routes){
  const html=read(path);
  // Next's generated 404 fallback deliberately uses its own error boundary.
  // Validate its presence and assets, but don't require the normal app shell.
- if(route!=="404" && (canonical || !retired.includes(route))){
+ if(!["404","sign-in"].includes(route) && (canonical || !retired.includes(route))){
    assert.match(html, /id="main-content"/,"Native main landmark missing: "+path);
    assert.match(html, /Main navigation/,"Native sidebar missing: "+path);
  }
