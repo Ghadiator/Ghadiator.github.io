@@ -123,7 +123,7 @@ assert.ok(chrome, "Chrome/Chromium is required for browser acceptance");
           anchors=>anchors.map(a=>a.getAttribute("href")));
         for(const href of navigation){
           if(!href||!href.startsWith("/")||href==="/")continue;
-          const parsed=new URL(href,location.origin);
+          const parsed=new URL(href,siteOrigin);
           const route=parsed.pathname.replace(/^\/+|\/+$/g,"");
           assert.ok(published.has(route),"Sidebar points to an unexported page: "+href);
         }
