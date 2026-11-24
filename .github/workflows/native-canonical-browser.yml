@@ -1,0 +1,48 @@
+name: Canonical public workbench browser acceptance
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check published route inventory (zero aliases)
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('.site-release.json').read_text())
+          published=set(m['published_routes'])
+          for name in ('workspace','workspace/case','failure-lab'):
+              assert name in published, f"Missing canonical route: {name}"
+              assert Path(name,'index.html').is_file()
+          for name in ('case','cases','red-team','analytics','introduction','workflow-reference','tickets/new'):
+              assert name not in published, f"Obsolete route in manifest: {name}"
+              assert not Path(name,'index.html').exists(), f"Obsolete route still published: {name}"
+          assert Path('data/cases.json').exists(), "Recorded case evidence must survive"
+          PY
+      - name: Install browser driver (CI-only)
+        run: |
+          npm init -y >/dev/null
+          npm install --no-save --no-package-lock playwright-core@1.56.1
+          command -v google-chrome || command -v chromium
+      - name: Start static Pages server
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/gac-pages.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8765/workspace/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/gac-pages.log
+          exit 1
+      - name: Test case approvals, supplier review and canonical navigation
+        run: node scripts/check-published-canonical.cjs

@@ -21,8 +21,8 @@
           "href": "/architecture"
         },
         {
-          "label": "Follow a case",
-          "href": "/cases"
+          "label": "Validation workspace",
+          "href": "/workspace"
         }
       ]
     },
@@ -280,8 +280,8 @@
       "answer": "A named person is the final decision-maker. The workflow presents evidence and recommendations, but AI cannot approve a supplier claim or release a payment. The human gate is a control boundary, not just an interface convention.",
       "links": [
         {
-          "label": "Recorded decisions",
-          "href": "/cases"
+          "label": "Validation workspace",
+          "href": "/workspace"
         },
         {
           "label": "Assurance evidence",
@@ -332,7 +332,7 @@
       "links": [
         {
           "label": "Failure Lab",
-          "href": "/red-team"
+          "href": "/failure-lab"
         },
         {
           "label": "Attacker role",
@@ -406,8 +406,8 @@
       "answer": "Recorded supplier cases let you inspect the observed steps, rule outcomes, reasoning boundaries and the final human gate.",
       "links": [
         {
-          "label": "Recorded cases",
-          "href": "/cases"
+          "label": "Validation workspace",
+          "href": "/workspace"
         },
         {
           "label": "Architecture replay",
