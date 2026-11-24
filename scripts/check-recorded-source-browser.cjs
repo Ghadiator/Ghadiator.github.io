@@ -77,6 +77,7 @@ const sizes=[{width:390,height:844,label:"mobile"},
       for(const kind of ["simulation.hitl.decided","simulation.email.approved",
           "simulation.email.dispatch","simulation.supplier.reply"])
         assert.ok(events.includes(kind),"Missing simulated event: "+kind);
+      await page.getByRole("button",{name:/Show all 42 events/}).click();
       assert.ok((await page.locator("main").innerText()).includes("Recorded source events · unchanged"),
         "Immutable real source history must be labelled separately");
       assert.deepEqual(errors,[],size.label+" uncaught browser errors");
