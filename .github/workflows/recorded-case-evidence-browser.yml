@@ -2,40 +2,44 @@ name: Recorded-case source evidence browser acceptance
 on:
   pull_request:
     paths:
-      - "case/index.html"
-      - "cases/index.html"
       - "workspace/index.html"
-      - "assets/recorded-case-source-evidence-20261120.*"
-      - "assets/validation-navigation-clarity-20261120.*"
+      - "workspace/case/index.html"
+      - "failure-lab/index.html"
+      - "data/cases.json"
+      - "data/scenarios/**"
+      - "data/recorded-kpi-evidence.json"
+      - "data/synthetic-governance-metrics.json"
       - "scripts/check-recorded-source*"
       - "scripts/check-validation-clarity*"
+      - "scripts/check-public-navigation-scripts.mjs"
       - ".github/workflows/recorded-case-evidence-browser.yml"
   push:
     branches: [main]
     paths:
-      - "case/index.html"
-      - "cases/index.html"
       - "workspace/index.html"
-      - "assets/recorded-case-source-evidence-20261120.*"
-      - "assets/validation-navigation-clarity-20261120.*"
+      - "workspace/case/index.html"
+      - "failure-lab/index.html"
+      - "data/cases.json"
+      - "data/scenarios/**"
+      - "data/recorded-kpi-evidence.json"
+      - "data/synthetic-governance-metrics.json"
       - "scripts/check-recorded-source*"
       - "scripts/check-validation-clarity*"
+      - "scripts/check-public-navigation-scripts.mjs"
 permissions:
   contents: read
 jobs:
   recorded-case:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Check recorded fixture identity and module syntax
+      - name: Verify real fixture integrity and native test syntax
         run: |
-          node --check assets/recorded-case-source-evidence-20261120.js
           node --check scripts/check-recorded-source-browser.cjs
-          node --check assets/validation-navigation-clarity-20261120.js
           node --check scripts/check-validation-clarity-browser.cjs
           node scripts/check-recorded-source-evidence.mjs
           node scripts/check-public-navigation-scripts.mjs
@@ -44,16 +48,16 @@ jobs:
           npm init -y >/dev/null
           npm install --no-save --no-package-lock playwright-core@1.56.1
           command -v google-chrome || command -v chromium
-      - name: Start Pages server
+      - name: Start public Pages server on the canonical workspace
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/gac-pages.log 2>&1 &
           for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:8765/cases/ >/dev/null; then exit 0; fi
+            if curl -fsS http://127.0.0.1:8765/workspace/ >/dev/null; then exit 0; fi
             sleep 1
           done
           cat /tmp/gac-pages.log
           exit 1
-      - name: Exercise recorded case on mobile tablet and desktop
+      - name: Exercise native case provenance and human-review simulation
         run: |
           node scripts/check-recorded-source-browser.cjs
           node scripts/check-validation-clarity-browser.cjs

@@ -35,7 +35,11 @@ assert(page.includes("synthetic"), "Must disclose synthetic examples");
 assert(page.includes("AI-First Organization"), "Source attribution missing");
 
 // ── Every public route keeps the same navigation entry ──
-for (const route of ["index.html", "introduction/index.html", "use-case-assessment/index.html"])
+const active = JSON.parse(read(".site-release.json")).published_routes;
+const canonical = active.includes("failure-lab") && active.includes("workspace/case");
+const linked = canonical ? ["index.html", "workspace/index.html", "use-case-assessment/index.html"]
+  : ["index.html", "introduction/index.html", "use-case-assessment/index.html"];
+for (const route of linked)
   assert(read(route).includes('href="/context-engineering"'), route + ": Context Engineering navigation link missing");
 
 console.log("Context Engineering and Use Case Assessment: native sections, 25 answered questions, attribution and navigation passed.");
