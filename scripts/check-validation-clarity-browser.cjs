@@ -28,7 +28,14 @@ const sizes=[{width:390,height:844,label:"mobile"},
        calls.push(r.url());
    });
    await page.goto(base+"/architecture/",{waitUntil:"load",timeout:45000});
-   await page.locator('.public-sidebar a[href="/workspace"]').first().click();
+   // Small screens have a collapsed sidebar. Opening it is part of the
+   // actual mobile navigation contract; hidden links must not be force-clicked.
+   const workspaceLink=page.locator('.public-sidebar a[href="/workspace"]').first();
+   if(!(await workspaceLink.isVisible())){
+     await page.locator('button.menu-toggle').click();
+     await workspaceLink.waitFor({state:"visible",timeout:10000});
+   }
+   await workspaceLink.click();
    await page.waitForURL(url=>url.pathname.replace(/\/$/,"")==="/workspace",{timeout:16000});
    const q=page.locator('section[aria-labelledby="workspace-queue-title"]');
    await q.waitFor({state:"visible",timeout:16000});
