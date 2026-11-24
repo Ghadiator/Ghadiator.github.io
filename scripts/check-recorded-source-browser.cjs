@@ -39,8 +39,8 @@ const sizes=[{width:390,height:844,label:"mobile"},
       const text=await source.innerText();
       assert.ok(text.includes("30.0%")&&text.includes("20.0%"),
         "Original 30% discrepancy and 20% permitted threshold are both visible");
-      assert.ok(text.includes("Where it was found")&&text.includes("How the checks worked it"),
-        "Both field provenance and executed checks must be visible");
+      assert.ok((await source.getByRole("tab").count())>=3 && /Tier 1|R1/.test(text),
+        "Recorded source must expose the field-grid sheets and executed rule evidence");
       const selected=source.locator('[role="status"]').first();
       assert.match(await selected.innerText(),/Submission!B9/,
         "The actual recorded input cell is selected by default");
