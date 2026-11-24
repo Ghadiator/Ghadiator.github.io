@@ -14,7 +14,7 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
-          for page in index.html architecture/index.html governance/index.html introduction/index.html safety-origin/index.html; do
+          for page in index.html architecture/index.html governance/index.html workspace/index.html safety-origin/index.html; do
             test -s "$page"
           done
           test -d _next/static
@@ -27,6 +27,13 @@ jobs:
           assert len(obj['source_commit']) == 40
           assert len(obj['output_digest_sha256']) == 64
           assert obj['previous_public_site_commit']=='fbb9a3302170ce594510e0fe86e64d5f163711c8'
+          routes=set(obj['published_routes'])
+          if {'failure-lab','workspace/case'}.issubset(routes):
+              for canonical in ('failure-lab','workspace/case','dashboard'):
+                  assert Path(canonical,'index.html').is_file(), canonical
+              for retired in ('case','cases','red-team','analytics','introduction','tickets/new','workflow-reference'):
+                  assert retired not in routes, retired
+                  assert not Path(retired,'index.html').exists(), retired
           print('Native Pages release manifest and static routes checked')
           PY
 
