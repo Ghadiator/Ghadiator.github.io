@@ -18,8 +18,18 @@ for(const route of routes){
  // Next's generated 404 fallback deliberately uses its own error boundary.
  // Validate its presence and assets, but don't require the normal app shell.
  if(!["404","sign-in"].includes(route) && (canonical || !retired.includes(route))){
-   assert.match(html, /id="main-content"/,"Native main landmark missing: "+path);
-   assert.match(html, /Main navigation/,"Native sidebar missing: "+path);
+   if(route==="workspace/case" && canonical){
+     // Next statically exports a Suspense boundary for query-param case detail.
+     // The full shell is hydrated by the route's own client JS. Browser checks
+     // assert its actual accessible navigation and all recorded evidence.
+     assert.match(html, /Validation workspace · Case · Governance as Code/,
+       "Missing canonical case route metadata: "+path);
+     assert.match(html, /static\/chunks\/app\/workspace\/case\/page-[^" ]+\.js/,
+       "Missing compiled case client page: "+path);
+   }else{
+     assert.match(html, /id="main-content"/,"Native main landmark missing: "+path);
+     assert.match(html, /Main navigation/,"Native sidebar missing: "+path);
+   }
  }
  for(const [,raw] of html.matchAll(/(?:href|src)="(\/[^"]*)"/g)){
    if(raw.startsWith("//"))continue;
