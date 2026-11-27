@@ -15,6 +15,12 @@ on:
       - ".github/workflows/verify-human-agent-visual-20261106.yml"
 permissions:
   contents: read
+
+# Superseded read-only verification need not compete with newer source checks.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   static-visual:
     runs-on: ubuntu-latest
