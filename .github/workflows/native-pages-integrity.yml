@@ -3,9 +3,19 @@ on:
   push:
     branches: [main]
   pull_request:
+
+# Superseded read-only verification need not compete with newer source checks.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
     steps:
