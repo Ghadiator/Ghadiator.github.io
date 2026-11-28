@@ -1,22 +1,27 @@
 name: Verify governed human-agent collaboration Introduction visual
+# Native layout replaces the retired November 6 CSS-overlay implementation.
 on:
   pull_request:
     paths:
-      - "assets/governed-human-agent-collaboration-20261106.svg"
-      - "assets/governed-human-agent-collaboration-mobile-20261106.svg"
-      - "assets/introduction-order-and-kpis-20261106.css"
+      - "index.html"
+      - "_next/static/**"
+      - "scripts/check-native-introduction-visuals.cjs"
+      - "scripts/check-native-introduction-svg.py"
       - ".github/workflows/verify-human-agent-visual-20261106.yml"
+      - "visuals/human-agent-horizontal-fastpath-20261119.svg"
   push:
     branches: [main]
     paths:
-      - "assets/governed-human-agent-collaboration-20261106.svg"
-      - "assets/governed-human-agent-collaboration-mobile-20261106.svg"
-      - "assets/introduction-order-and-kpis-20261106.css"
+      - "index.html"
+      - "_next/static/**"
+      - "scripts/check-native-introduction-visuals.cjs"
+      - "scripts/check-native-introduction-svg.py"
       - ".github/workflows/verify-human-agent-visual-20261106.yml"
+      - "visuals/human-agent-horizontal-fastpath-20261119.svg"
+  workflow_dispatch:
 permissions:
   contents: read
 
-# Superseded read-only verification need not compete with newer source checks.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -24,90 +29,30 @@ concurrency:
 jobs:
   static-visual:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
-      - name: Verify SVG syntax and non-executable content
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          import xml.etree.ElementTree as ET
-          for path in [
-              Path('assets/governed-human-agent-collaboration-20261106.svg'),
-              Path('assets/governed-human-agent-collaboration-mobile-20261106.svg')
-          ]:
-              data=path.read_text()
-              node=ET.fromstring(data)
-              assert node.tag.endswith('svg')
-              for bad in ('<script', '<foreignObject', 'javascript:', '<image', 'xlink:href'):
-                  assert bad not in data, (path, bad)
-              for required in ('Augmented', 'Human-led', 'Proponent', 'Opponent', 'CoVe', 'Judge', 'Analytics', 'Integrator', 'Reporter', 'Audit', 'Attacker'):
-                  assert required in data, (path, required)
-              print('Safe SVG:',path)
-          css=Path('assets/introduction-order-and-kpis-20261106.css').read_text()
-          assert '::before' in css
-          assert 'order: 5 !important' in css
-          assert 'order: 6 !important' in css
-          assert 'order: 7 !important' in css
-          assert 'Standalone MANUAL workflow' in css
-          assert 'governed-human-agent-collaboration-mobile-20261106.svg' in css
-          print('CSS positioning and desktop/mobile assets verified')
-          PY
-      - name: Set up browser tooling
+      - name: Verify native SVG syntax, semantics and safety
+        run: python3 scripts/check-native-introduction-svg.py human
+      - name: Install browser tooling
         run: |
           npm init -y >/dev/null
           npm install --no-save --no-package-lock playwright-core@1.56.1
           command -v google-chrome || command -v chromium
-      - name: Serve static checkout
-        shell: bash
+      - name: Serve public files
         run: |
-          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/gac-human-agent-http.log 2>&1 &
+          python3 -m http.server 8765 --bind 127.0.0.1 >"$RUNNER_TEMP/native-intro-http.log" 2>&1 &
           for n in $(seq 1 30); do curl -fsS http://127.0.0.1:8765/ -o /dev/null && exit 0; sleep 1; done
-          cat /tmp/gac-human-agent-http.log
-          exit 1
-      - name: Verify browser placement and capture desktop/mobile
-        shell: bash
-        run: |
-          node <<'JS'
-          const {chromium}=require('playwright-core');
-          const fs=require('node:fs');
-          (async()=>{
-            const cp=require('node:child_process');
-            const executablePath=process.env.CHROME_BIN || cp.execFileSync('sh',['-c','command -v google-chrome || command -v chromium']).toString().trim();
-            const browser=await chromium.launch({executablePath,headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
-            fs.mkdirSync('/tmp/gac-human-agent', {recursive:true});
-            for(const width of [1440,390]){
-              const page=await browser.newPage({viewport:{width,height:900},deviceScaleFactor:1});
-              await page.goto('http://127.0.0.1:8765/',{waitUntil:'networkidle'});
-              await page.locator('#overview-agent-strip').waitFor();
-              const data=await page.evaluate(()=>{
-                const root=document.querySelector('main .space-y-12:has(#introduction-title)');
-                const roster=document.querySelector('main .space-y-12:has(#introduction-title) aside[aria-labelledby="overview-agent-strip"], main .space-y-12:has(#introduction-title) section[aria-labelledby="overview-agent-strip"]');
-                if(!root||!roster)return null;
-                const pseudo=getComputedStyle(root,'::before');
-                const rosterStyle=getComputedStyle(roster);
-                return {image:pseudo.backgroundImage,display:pseudo.display,order:pseudo.order,width:pseudo.width,rosterOrder:rosterStyle.order,role:roster.tagName};
-              });
-              if(!data)throw new Error('Missing Introduction / roster at '+width);
-              if(data.display==='none'||data.order!=='5'||data.rosterOrder!=='6')throw new Error('Placement mismatch '+width+': '+JSON.stringify(data));
-              const expected=width===390?'collaboration-mobile-20261106.svg':'collaboration-20261106.svg';
-              if(!data.image.includes(expected))throw new Error('Wrong image '+width+': '+JSON.stringify(data));
-              const asset=await page.request.get('http://127.0.0.1:8765/assets/governed-human-agent-collaboration'+(width===390?'-mobile':'')+'-20261106.svg');
-              if(!asset.ok())throw new Error('Missing SVG '+width);
-              await page.screenshot({path:'/tmp/gac-human-agent/intro-'+width+'.png',fullPage:true});
-              console.log('PASS',width,data);
-              await page.close();
-            }
-            await browser.close();
-          })().catch(e=>{console.error(e);process.exit(1)});
-          JS
-      - name: Retain viewport evidence
+          cat "$RUNNER_TEMP/native-intro-http.log"; exit 1
+      - name: Verify current native placement and capture evidence
+        env:
+          EVIDENCE_DIR: ${{ runner.temp }}/native-intro-human
+        run: node scripts/check-native-introduction-visuals.cjs human
+      - name: Retain review images
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: governed-human-agent-introduction-review
-          path: /tmp/gac-human-agent/*.png
-          if-no-files-found: ignore
+          name: native-intro-human-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-intro-human/*.png
+          if-no-files-found: warn
           retention-days: 5
